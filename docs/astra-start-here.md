@@ -94,7 +94,16 @@ Gates 7–9: production bible → full build + QA → pilot → expand bands
 **Baseline band:** Lvl 2 (grades 4–5); Lvl 1 (2–3), Lvl 3 (6–8), Lvl 4 (9–12) later — same world, different expression  
 **Home (working):** Map / unlock destinations as students write (not theme-park clutter; explore cleaner UI)
 
-### Instruction — Concept A vs B (locked)
+### Instruction — blended A+B (Emily leaning; planning lock)
+
+**Blend (not A-or-B):** Shorts for the first big Learn / any brand-new big topic. Desk coach (voice + taps; optional images/animations; **no video player**) for Notice / Try / Build / mini-Learns / Reflect, plus gate nudges in Apply.
+
+| Piece | Role in the blend |
+| --- | --- |
+| **A — Shorts** | One (sometimes up to 2–3) Short for a brand-new big Learn only |
+| **B — Desk coach** | Day-to-day instruction on the writing desk: practice slots, mini-Learns, Reflect, Apply gates |
+
+**Building blocks (still true):**
 
 | | **A — Shorts factory** | **B — Desk coach** |
 | --- | --- | --- |
@@ -105,6 +114,41 @@ Gates 7–9: production bible → full build + QA → pilot → expand bands
 
 **C:** not chosen yet  
 **Non-negotiable:** never a wall of reading; balance audio / visual / light text
+
+### Learn as a mode (multi-Learn OK)
+
+- **Learn = a mode**, not a one-and-done clip. A lesson can have more than one Learn beat (big Learn + mini-Learns).
+- **Shorts budget:** max **2–3 Shorts**, and only for **brand-new** big topics / the first big Learn.
+- **Everything else Learn-shaped** (mini-Learns, refreshers, nudges) → **desk coach**, not another Short.
+- Practice slots (Notice / Try / Build), Reflect, and Apply gate nudges stay desk.
+
+### Desk coach = forest guide cast (recommended)
+
+**Orion recommendation:** The desk coach **is** the same enchanted-forest guide cast (one familiar helper at the desk) — **not** a separate unnamed “desk coach” character.
+
+- One familiar guide speaks at the desk across Notice / Try / Build / mini-Learns / Reflect / Apply gates.
+- Kennady still gates **cast look + names** (who that helper is, how they look).
+- **Status:** recommended + **open call for Kennady** (see below). Do not invent a second coach persona.
+
+### Lesson factory pipeline (plan now, generate later)
+
+**Rule:** Planning only until Emily says **start**. No Shorts scripts, video packages, or lesson asset generation before that.
+
+**Inputs (from Emily):**
+- Current Luna videos / lesson guts for the skill being remade
+
+**Outputs (from Orion — planning package):**
+1. **Carry / remake / cut map** — what keeps, what remakes, what drops from Luna
+2. **One Short plan** for the big Learn (brand-new topic only; still a plan, not generated media)
+3. **Desk-coach beats** for practice slots (Notice / Try / Build / mini-Learns / Reflect / Apply gates)
+4. **Filled lesson spine** (slots + chosen activities)
+5. **Spreadsheet row** (factory feed for later generation)
+
+**Later (only when Emily says start):** run the factory to generate Shorts / audio / desk assets from the approved plan.
+
+### Evidence spine
+
+Drafted in chat — **not locked yet.** Do not treat a full Evidence activity table as approved until Kennady/Emily lock it.
 
 ---
 
@@ -117,7 +161,7 @@ Gates 7–9: production bible → full build + QA → pilot → expand bands
 | Slot | Job | Activities that fit |
 | --- | --- | --- |
 | **Warm-up** | Get ideas flowing | Quick write · Speak then type · Picture talk |
-| **Learn** | Meet the skill | **A** Shorts factory · **B** Desk coach (+ image/anim) |
+| **Learn** | Meet the skill (mode; may repeat) | **Short** for first/big brand-new Learn · **desk coach** for mini-Learns |
 | **Notice** | Spot it in a model | Proof or fluff? · Source vs opinion · Strong/weak · Fix the fake cite |
 | **Try** | Supported practice | Sentence starters · Echo write · Too vague → specific · Speed sort |
 | **Build** | Write the skill alone | One proof sentence · Spotlight replay · Frame that fades |
@@ -133,9 +177,9 @@ Gates 7–9: production bible → full build + QA → pilot → expand bands
 - **Speak then type** — Student says the idea aloud (or records), then types a short version.
 - **Picture talk** — One image; audio asks what they notice; tiny optional text; they respond.
 
-**Learn**
-- **A · Shorts factory** — Short generated clip (hook → model → tap check) from a template + skill details.
-- **B · Desk coach** — Spoken coach on the writing desk with taps; may use images/short animations; no video player.
+**Learn** (mode — can appear more than once)
+- **A · Shorts factory** — Short generated clip (hook → model → tap check) for the **first / brand-new big Learn** only (max 2–3 Shorts per new topic).
+- **B · Desk coach** — Spoken forest-guide coach on the writing desk with taps; may use images/short animations; no video player. Default for mini-Learns and all practice/reflect/gate beats.
 
 **Notice**
 - **Proof or fluff?** — Tap sentences; proof lights up, fluff fizzles; audio explains why.
@@ -208,11 +252,13 @@ Gates 7–9: production bible → full build + QA → pilot → expand bands
 
 - [ ] Are Gates 0 and 1 already approved?
 - [ ] Mentors: one guide vs one per region? Who maps where?
+- [ ] **Desk coach = same forest guide cast?** (Orion recommends yes — one familiar helper at the desk, not a separate unnamed coach. Gate look + name.)
 - [ ] Astra + Pip: animal + look
 - [ ] Region name for Writing a Draft (+ final region names)
 - [ ] Stars / constellation vs “no space imagery”
 - [ ] AI feedback on open writing? Teacher review?
 - [ ] Grades 9–12: in scope or park as reference only?
+- [ ] Evidence spine (drafted in chat) — lock or revise?
 
 ---
 
