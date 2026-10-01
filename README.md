@@ -6,9 +6,11 @@ Three clickable concepts share the same section structure:
 
 | Tab | Working title | Vibe |
 | --- | --- | --- |
-| **A** | Soft world | Enchanted twilight woodland; writing opens gates; characters lead |
-| **B** | Clear studio | Calm writing tool first; world as light frame |
-| **C** | Journal-as-map | No quests; mentor-as-editor; path is the Writer’s Journal |
+| **A** | Deep forest immersion | Fully in the woodland; writing opens paths/bridges/gates; characters lead; most magical |
+| **B** | Forest with a clear desk | Same forest home/map; cream desk cards mid-lesson; skill names first; forest frames |
+| **C** | Living forest journal | Journal pages as clearings; collect/revise changes the woods; mentor-as-editor |
+
+**Brand lock:** every concept is the enchanted forest — differentiation is immersion density vs desk clarity vs journal-as-woods, never leaving the brand.
 
 Shared lesson skill on every tab: **Evidence or Examples** (grades 4–5 Short Responses), with steps Warm-up → Learn → Notice → Try → Build → Apply → Reflect.
 
@@ -73,4 +75,4 @@ UI shell: `src/App.tsx` · styles: `src/index.css`.
 
 ## Stack
 
-Vite + React + TypeScript · Manrope · mobile-friendly · soft twilight tint on Concept A only.
+Vite + React + TypeScript · Manrope · mobile-friendly · enchanted-forest brand on all three tabs (A densest, B cream desk over woods, C journal + moss).

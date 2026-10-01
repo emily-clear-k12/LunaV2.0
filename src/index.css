@@ -1,12 +1,12 @@
 :root {
   --font: 'Manrope', system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
-  --bg: #f6f5f8;
-  --surface: #ffffff;
-  --text: #1c1a22;
-  --muted: #5c5668;
-  --border: #e4e0eb;
-  --accent: #5b4a7a;
-  --accent-soft: #ebe6f3;
+  --bg: #eef3ec;
+  --surface: #fbfaf6;
+  --text: #1c241c;
+  --muted: #4f5c4f;
+  --border: #d5e0d2;
+  --accent: #3d5c45;
+  --accent-soft: #e4efe4;
   --radius: 12px;
   --shadow: 0 1px 2px rgba(28, 26, 34, 0.04), 0 8px 24px rgba(28, 26, 34, 0.06);
   color-scheme: light;
@@ -117,25 +117,25 @@ code {
   color: var(--muted);
 }
 
-.tab.theme-twilight.active {
-  --accent: #5a3d7a;
-  --accent-soft: #f0e8f8;
-  border-color: #7a5a9a;
-  background: linear-gradient(160deg, #f3ebf9 0%, #ebe4f4 100%);
+.tab.theme-immersion.active {
+  --accent: #3a4a2e;
+  --accent-soft: #e4ebe0;
+  border-color: #5a7a4a;
+  background: linear-gradient(160deg, #dfe8d6 0%, #e8efe4 55%, #f0e8f4 100%);
 }
 
-.tab.theme-studio.active {
-  --accent: #3d5a6e;
-  --accent-soft: #e8f0f4;
-  border-color: #5a7a8e;
-  background: #eef4f7;
+.tab.theme-desk.active {
+  --accent: #3d5c45;
+  --accent-soft: #eef5ea;
+  border-color: #7a9a6a;
+  background: linear-gradient(160deg, #f7f3e8 0%, #eef5ea 100%);
 }
 
 .tab.theme-journal.active {
-  --accent: #5a4a3a;
-  --accent-soft: #f5efe8;
-  border-color: #8a7a68;
-  background: #f7f2eb;
+  --accent: #4a5a38;
+  --accent-soft: #ebe6d8;
+  border-color: #8a7a58;
+  background: linear-gradient(160deg, #f0ebe0 0%, #e6efe0 100%);
 }
 
 .main {
@@ -150,16 +150,24 @@ code {
   padding: 1.25rem 1.25rem 1.5rem;
 }
 
-.concept-panel.theme-twilight {
-  background: linear-gradient(180deg, #f7f2fb 0%, #ffffff 28%);
+.concept-panel.theme-immersion {
+  /* densest woodland wash + hint of twilight */
+  background:
+    linear-gradient(180deg, rgba(232, 236, 220, 0.95) 0%, rgba(251, 250, 246, 0.98) 42%),
+    linear-gradient(135deg, #c9d4b8 0%, transparent 55%),
+    #e8efe0;
 }
 
-.concept-panel.theme-studio {
-  background: linear-gradient(180deg, #f4f8fa 0%, #ffffff 22%);
+.concept-panel.theme-desk {
+  /* cream desk cards over soft forest wash — calm, still forest */
+  background:
+    linear-gradient(180deg, #f8f4ea 0%, #fbfaf6 35%, #f4f8f0 100%);
 }
 
 .concept-panel.theme-journal {
-  background: linear-gradient(180deg, #f9f5f0 0%, #ffffff 22%);
+  /* paper + moss */
+  background:
+    linear-gradient(180deg, #f3ebe0 0%, #f7f5ee 40%, #eef3e8 100%);
 }
 
 .section {
@@ -235,19 +243,19 @@ code {
   font-size: 0.88rem;
 }
 
-.theme-twilight .pill {
-  background: #ebe0f5;
-  color: #4a3268;
+.theme-immersion .pill {
+  background: #d5e2c8;
+  color: #2f3f28;
 }
 
-.theme-studio .pill {
-  background: #dce8ef;
-  color: #2f4a5a;
+.theme-desk .pill {
+  background: #e8efd8;
+  color: #3a4a30;
 }
 
 .theme-journal .pill {
-  background: #efe6dc;
-  color: #4a3a2a;
+  background: #e6dcc8;
+  color: #3f3a28;
 }
 
 .lesson-steps {
@@ -270,19 +278,20 @@ code {
   border: 1px solid #e8e4ef;
 }
 
-.theme-twilight .lesson-step {
-  background: #f0eaf6;
-  border-color: #e4d8ef;
+.theme-immersion .lesson-step {
+  background: #e4ebd8;
+  border-color: #cfd9be;
 }
 
-.theme-studio .lesson-step {
-  background: #eef3f6;
-  border-color: #dde7ed;
+.theme-desk .lesson-step {
+  /* cream card over forest — clearer chrome */
+  background: #faf7ef;
+  border-color: #e0d8c4;
 }
 
 .theme-journal .lesson-step {
-  background: #f5f0ea;
-  border-color: #ebe3d8;
+  background: #f0e9dc;
+  border-color: #ddd2c0;
 }
 
 .step-name {
@@ -302,10 +311,14 @@ code {
 }
 
 .keep-col {
-  background: #f8f7fa;
+  background: #f5f7f0;
   border: 1px solid var(--border);
   border-radius: 8px;
   padding: 0.75rem;
+}
+
+.theme-desk .keep-col {
+  background: #faf7ef;
 }
 
 .keep-col h3 {
@@ -335,8 +348,8 @@ code {
   font-size: 0.95rem;
   line-height: 1.5;
   color: var(--text);
-  background: #faf9fc;
-  border: 1px dashed #c8bfd6;
+  background: #f7f5ee;
+  border: 1px dashed #b8c4a8;
   border-radius: 8px;
 }
 

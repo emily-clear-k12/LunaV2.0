@@ -160,6 +160,7 @@ export default function App() {
           <h1>Astra explorations</h1>
           <p className="subtitle">
             Week-1 brainstorm for Kennady — design directions only, not the final product.
+            Brand lock: every concept lives in the enchanted forest.
           </p>
         </div>
       </header>
@@ -185,7 +186,7 @@ export default function App() {
 
       <footer className="site-footer">
         <p>
-          Placeholders for creative exploration · same lesson skill on every tab · edit copy in{' '}
+          Enchanted forest brand end-to-end · same lesson skill on every tab · edit copy in{' '}
           <code>src/data/concepts.ts</code>
         </p>
       </footer>
