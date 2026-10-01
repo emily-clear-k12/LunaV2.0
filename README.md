@@ -10,13 +10,23 @@ Three clickable concepts share the same section structure:
 | **B** | Clear studio | Calm writing tool first; world as light frame |
 | **C** | Journal-as-map | No quests; mentor-as-editor; path is the Writer’s Journal |
 
-Shared lesson skill on every tab: **Evidence or Examples** (grades 4–5 Short Responses), with gray-box steps Warm-up → Learn → Notice → Try → Build → Apply → Reflect.
+Shared lesson skill on every tab: **Evidence or Examples** (grades 4–5 Short Responses), with steps Warm-up → Learn → Notice → Try → Build → Apply → Reflect.
 
-## Live URL
+## Live URL (when Pages is on)
 
 **https://emily-clear-k12.github.io/LunaV2.0/**
 
-> Private repo Pages: only people with repo access can view the site when logged into GitHub. After the first push, if Pages is not live yet, open **Settings → Pages**, set **Source** to **GitHub Actions**, and re-run the **Deploy to GitHub Pages** workflow if needed.
+Built assets are already on the **`gh-pages`** branch (with `.nojekyll`). Vite `base` is `/LunaV2.0/`.
+
+### One-time: enable GitHub Pages
+
+1. Open **https://github.com/emily-clear-k12/LunaV2.0/settings/pages**
+2. Under **Build and deployment → Source**, choose **Deploy from a branch**
+3. Branch: **`gh-pages`** / folder: **`/`** (root) → Save
+
+**Note:** GitHub Pages on a **private** repo requires a paid plan (Pro / Team / Enterprise). On a free personal plan, either upgrade, or temporarily set the repo to **Public** if you want the site publicly viewable. The API returned: *“Your current plan does not support GitHub Pages for this repository.”* until that is resolved.
+
+After Pages is enabled, the URL above should serve this site. Private Pages (Pro+) are only visible to users logged in with repo access.
 
 ## Local development
 
@@ -25,19 +35,29 @@ npm install
 npm run dev
 ```
 
-Then open the URL Vite prints (usually `http://localhost:5173/LunaV2.0/`).
+Open the URL Vite prints (usually `http://localhost:5173/LunaV2.0/`).
 
 ```bash
-npm run build    # production build into dist/
-npm run preview  # preview the production build
+npm run build    # production build → dist/
+npm run preview  # preview production build
 ```
 
-## How Pages is set up
+## Redeploy to gh-pages
 
-- Vite `base` is `/LunaV2.0/` (GitHub Pages project site).
-- Workflow: [`.github/workflows/deploy-pages.yml`](.github/workflows/deploy-pages.yml)
-  - On push to `main` (and manual `workflow_dispatch`): `npm ci` → `npm run build` → upload `dist` → deploy with `actions/deploy-pages`.
-- One-time (if not already done): **Repo Settings → Pages → Build and deployment → Source: GitHub Actions**.
+After editing and committing to `main`:
+
+```bash
+npm run build
+touch dist/.nojekyll
+# orphan-push dist to gh-pages (example):
+rm -rf /tmp/luna-gh-pages && mkdir /tmp/luna-gh-pages && cp -a dist/. /tmp/luna-gh-pages/
+cd /tmp/luna-gh-pages && git init && git checkout -b gh-pages
+git add -A && git commit -m "Deploy Astra explorations"
+git remote add origin https://github.com/emily-clear-k12/LunaV2.0.git
+git push -u origin gh-pages --force
+```
+
+(Optional later: add a GitHub Actions workflow that builds on push to `main` and deploys to Pages. Pushing `.github/workflows/*` needs a token with the `workflow` scope.)
 
 ## How to edit concepts
 
@@ -47,10 +67,10 @@ Placeholder copy lives in one file:
 src/data/concepts.ts
 ```
 
-Edit hook, world, lesson beats, video rethink, keep/add/cut, and the “why this one” placeholder text. The notes textarea on each tab saves to `localStorage` in the browser only (not committed).
+Edit hook, world, lesson beats, video rethink, keep/add/cut, and the “why this one” placeholder. The notes textarea on each tab saves to **browser `localStorage` only** (not committed).
 
 UI shell: `src/App.tsx` · styles: `src/index.css`.
 
 ## Stack
 
-Vite + React + TypeScript · Manrope via Google Fonts · mobile-friendly layout.
+Vite + React + TypeScript · Manrope · mobile-friendly · soft twilight tint on Concept A only.
