@@ -166,6 +166,44 @@ Gates 7–9: production bible → full build + QA → pilot → expand bands
 
 ---
 
+### Expanded library (from brainstorm — add to slots)
+
+**Notice / Try / Build**
+- **Fix the mentor's draft** — Character draft has a mistake; student finds and fixes it (correct someone else before themselves).
+- **Color-code your writing** — Highlight answer / evidence / explanation in different colors (audio labels for low readers); strong for Short Responses / RACE–TIDE.
+- **Sentence that grows** — Kernel sentence lengthens as who/what/when/where/why/how are added (vine metaphor OK).
+- **One stem, three paths** — One stem; finish because / but / so as three trails.
+- **Scrambled paragraph** — Drag sentences into order; say why the first goes first.
+- **Spot the change** — Before/after sentence; tap what changed; say if it improved.
+- **Which is stronger?** — Two versions; choose one and pick a reason from a short list.
+- **Say it, then write it** — Record saying the sentence, then type (oral rehearsal, not voice-to-text).
+- **Sample student gallery** — Judge anonymous student work (bridge toward 6–8).
+
+**Story / world (keep light)**
+- **Content expeditions** — Lessons share a topic set (owls, volcanoes, Alamo); build knowledge while writing.
+- **Tools as objects** — Mentor tool linked to skill (notebook, magnifier, lens) once cast is locked.
+- **Pick your quest** — Choose between two opinion prompts; same skill.
+- **World reacts (small)** — e.g. lantern lights on a strong sentence; big unlocks stay with practice.
+
+**Support that fades**
+- **Hint ladder** — Nudge → example → mentor models (not instant answer).
+- **Toolbelt** — Earlier tools stay in Build; using them credits that skill (one skill, many places).
+- **Word drawer** — Starters/transitions/topic words; empties as frames fade.
+- **Show me one** — Optional strong model once per step.
+
+**Remembering / connecting**
+- **Review warm-up** — Warm-up sometimes pulls an older skill (spaced review).
+- **Word chest** — Precise words collected for later Build.
+- **One goal** — Reflect: pick one thing to try next practice.
+- **Practice bridge** — End points to a matching SCR/ECR practice prompt.
+
+**Priority**
+- Lock first: Fix mentor draft · Color-code · Sentence that grows · One stem three paths · Say it then write · Hint ladder · Toolbelt · Review warm-up · One goal
+- Stage later: Expeditions · Tools as objects · Gallery · Scrambled · Stronger/Spot the change
+- Use lightly: World reacts · Pick your quest · Word drawer/chest · Show me one · Practice bridge
+
+---
+
 ## Open calls for Kennady (don’t invent alone)
 
 - [ ] Are Gates 0 and 1 already approved?
