@@ -108,6 +108,64 @@ Gates 7–9: production bible → full build + QA → pilot → expand bands
 
 ---
 
+---
+
+## Lesson slots + activities library (working)
+
+**Architecture:** Fixed lesson slots. Reusable activities drop into those slots. The skill being taught picks which activities fill Notice, Try, etc.
+
+| Slot | Job | Activities that fit |
+| --- | --- | --- |
+| **Warm-up** | Get ideas flowing | Quick write · Speak then type · Picture talk |
+| **Learn** | Meet the skill | **A** Shorts factory · **B** Desk coach (+ image/anim) |
+| **Notice** | Spot it in a model | Proof or fluff? · Source vs opinion · Strong/weak · Fix the fake cite |
+| **Try** | Supported practice | Sentence starters · Echo write · Too vague → specific · Speed sort |
+| **Build** | Write the skill alone | One proof sentence · Spotlight replay · Frame that fades |
+| **Apply** | Full task | Two-prompt desk · Gate check · Full short response |
+| **Reflect** | Name the move | 3-item checklist · Coach names their move · Before/after peek |
+
+**Rule:** Every library item tags which slots it can live in. Each skill usually picks one activity per slot (sometimes two in Notice/Try).
+
+### Activity definitions (what each one is)
+
+**Warm-up**
+- **Quick write** — Audio prompt; student types 2–3 short sentences (or speaks first if needed).
+- **Speak then type** — Student says the idea aloud (or records), then types a short version.
+- **Picture talk** — One image; audio asks what they notice; tiny optional text; they respond.
+
+**Learn**
+- **A · Shorts factory** — Short generated clip (hook → model → tap check) from a template + skill details.
+- **B · Desk coach** — Spoken coach on the writing desk with taps; may use images/short animations; no video player.
+
+**Notice**
+- **Proof or fluff?** — Tap sentences; proof lights up, fluff fizzles; audio explains why.
+- **Source vs opinion** — Same stem; student chooses evidence mode (from text) or example mode (from life).
+- **Strong/weak** — Two models; pick the stronger; hear why.
+- **Fix the fake cite** — Almost-right quote; student finds the real line in the passage.
+
+**Try**
+- **Sentence starters** — Tap a starter chip, finish the sentence with support.
+- **Echo write** — Hear a strong model; rebuild with tiles; then free type.
+- **Too vague → specific** — Upgrade a vague line into a concrete example or clear evidence.
+- **Speed sort** — Short timed sort: evidence / example / neither.
+
+**Build**
+- **One proof sentence** — Write one evidence or example sentence alone (starter optional).
+- **Spotlight replay** — After writing, coach highlights *their* proof line out loud.
+- **Frame that fades** — Sentence frame helps early tries, then fades on later tries.
+
+**Apply**
+- **Two-prompt desk** — Answer a source prompt *and* an opinion prompt with the right kind of proof.
+- **Gate check** — Can't finish until required proof is present; audio says what's missing.
+- **Full short response** — Write the complete short response for the lesson goal.
+
+**Reflect**
+- **3-item checklist** — Student checks three concrete moves (not vague "I tried hard").
+- **Coach names their move** — Audio names the specific thing the student did well.
+- **Before/after peek** — Quick look at first try vs improved line.
+
+---
+
 ## Open calls for Kennady (don’t invent alone)
 
 - [ ] Are Gates 0 and 1 already approved?
