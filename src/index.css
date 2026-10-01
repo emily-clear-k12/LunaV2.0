@@ -1,0 +1,376 @@
+:root {
+  --font: 'Manrope', system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+  --bg: #f6f5f8;
+  --surface: #ffffff;
+  --text: #1c1a22;
+  --muted: #5c5668;
+  --border: #e4e0eb;
+  --accent: #5b4a7a;
+  --accent-soft: #ebe6f3;
+  --radius: 12px;
+  --shadow: 0 1px 2px rgba(28, 26, 34, 0.04), 0 8px 24px rgba(28, 26, 34, 0.06);
+  color-scheme: light;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  font-family: var(--font);
+  font-size: 16px;
+  line-height: 1.55;
+  color: var(--text);
+  background: var(--bg);
+}
+
+#root {
+  min-height: 100vh;
+}
+
+code {
+  font-size: 0.9em;
+  background: var(--accent-soft);
+  padding: 0.1em 0.35em;
+  border-radius: 4px;
+}
+
+.app {
+  max-width: 880px;
+  margin: 0 auto;
+  padding: 1.25rem 1rem 3rem;
+}
+
+.site-header {
+  margin-bottom: 1.25rem;
+}
+
+.header-inner h1 {
+  margin: 0 0 0.35rem;
+  font-size: clamp(1.6rem, 4vw, 2rem);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.subtitle {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.98rem;
+  max-width: 36em;
+}
+
+.tab-bar {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  margin-bottom: 1.25rem;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  padding: 0.5rem 0;
+  background: color-mix(in srgb, var(--bg) 92%, transparent);
+  backdrop-filter: blur(8px);
+}
+
+.tab {
+  flex: 1 1 140px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.15rem;
+  padding: 0.7rem 0.9rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface);
+  color: var(--text);
+  font-family: inherit;
+  cursor: pointer;
+  text-align: left;
+  transition: border-color 0.15s, box-shadow 0.15s, background 0.15s;
+}
+
+.tab:hover {
+  border-color: #cfc8db;
+}
+
+.tab.active {
+  border-color: var(--accent);
+  box-shadow: var(--shadow);
+  background: var(--accent-soft);
+}
+
+.tab-label {
+  font-weight: 700;
+  font-size: 0.95rem;
+}
+
+.tab-short {
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+
+.tab.theme-twilight.active {
+  --accent: #5a3d7a;
+  --accent-soft: #f0e8f8;
+  border-color: #7a5a9a;
+  background: linear-gradient(160deg, #f3ebf9 0%, #ebe4f4 100%);
+}
+
+.tab.theme-studio.active {
+  --accent: #3d5a6e;
+  --accent-soft: #e8f0f4;
+  border-color: #5a7a8e;
+  background: #eef4f7;
+}
+
+.tab.theme-journal.active {
+  --accent: #5a4a3a;
+  --accent-soft: #f5efe8;
+  border-color: #8a7a68;
+  background: #f7f2eb;
+}
+
+.main {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: calc(var(--radius) + 2px);
+  box-shadow: var(--shadow);
+  overflow: hidden;
+}
+
+.concept-panel {
+  padding: 1.25rem 1.25rem 1.5rem;
+}
+
+.concept-panel.theme-twilight {
+  background: linear-gradient(180deg, #f7f2fb 0%, #ffffff 28%);
+}
+
+.concept-panel.theme-studio {
+  background: linear-gradient(180deg, #f4f8fa 0%, #ffffff 22%);
+}
+
+.concept-panel.theme-journal {
+  background: linear-gradient(180deg, #f9f5f0 0%, #ffffff 22%);
+}
+
+.section {
+  padding: 1rem 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.section:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.section:first-child {
+  padding-top: 0;
+}
+
+.section-title {
+  margin: 0 0 0.65rem;
+  font-size: 1.05rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+.one-liner {
+  margin: 0 0 0.65rem;
+  font-size: 1.15rem;
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+.body-copy {
+  margin: 0 0 0.75rem;
+  color: var(--text);
+}
+
+.body-copy:last-child {
+  margin-bottom: 0;
+}
+
+.muted {
+  color: var(--muted);
+}
+
+.small {
+  font-size: 0.88rem;
+  margin: 0 0 0.65rem;
+}
+
+.bullet-list {
+  margin: 0;
+  padding-left: 1.2rem;
+}
+
+.bullet-list li {
+  margin-bottom: 0.35rem;
+}
+
+.skill-line {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem 0.75rem;
+  margin: 0 0 0.75rem;
+}
+
+.pill {
+  display: inline-block;
+  padding: 0.25rem 0.65rem;
+  border-radius: 999px;
+  background: var(--accent-soft);
+  color: var(--accent);
+  font-weight: 600;
+  font-size: 0.88rem;
+}
+
+.theme-twilight .pill {
+  background: #ebe0f5;
+  color: #4a3268;
+}
+
+.theme-studio .pill {
+  background: #dce8ef;
+  color: #2f4a5a;
+}
+
+.theme-journal .pill {
+  background: #efe6dc;
+  color: #4a3a2a;
+}
+
+.lesson-steps {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+}
+
+.lesson-step {
+  display: grid;
+  grid-template-columns: 6.5rem 1fr;
+  gap: 0.65rem;
+  align-items: start;
+  padding: 0.65rem 0.75rem;
+  background: #f3f1f6;
+  border-radius: 8px;
+  border: 1px solid #e8e4ef;
+}
+
+.theme-twilight .lesson-step {
+  background: #f0eaf6;
+  border-color: #e4d8ef;
+}
+
+.theme-studio .lesson-step {
+  background: #eef3f6;
+  border-color: #dde7ed;
+}
+
+.theme-journal .lesson-step {
+  background: #f5f0ea;
+  border-color: #ebe3d8;
+}
+
+.step-name {
+  font-weight: 700;
+  font-size: 0.88rem;
+}
+
+.step-beat {
+  font-size: 0.92rem;
+  color: var(--text);
+}
+
+.keep-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.75rem;
+}
+
+.keep-col {
+  background: #f8f7fa;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 0.75rem;
+}
+
+.keep-col h3 {
+  margin: 0 0 0.5rem;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--muted);
+}
+
+.keep-col ul {
+  margin: 0;
+  padding-left: 1.1rem;
+  font-size: 0.9rem;
+}
+
+.keep-col li {
+  margin-bottom: 0.35rem;
+}
+
+.notes-area {
+  width: 100%;
+  resize: vertical;
+  min-height: 7rem;
+  padding: 0.75rem 0.85rem;
+  font-family: inherit;
+  font-size: 0.95rem;
+  line-height: 1.5;
+  color: var(--text);
+  background: #faf9fc;
+  border: 1px dashed #c8bfd6;
+  border-radius: 8px;
+}
+
+.notes-area:focus {
+  outline: 2px solid color-mix(in srgb, var(--accent) 45%, transparent);
+  outline-offset: 1px;
+  border-style: solid;
+}
+
+.site-footer {
+  margin-top: 1.5rem;
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+
+.site-footer p {
+  margin: 0;
+}
+
+@media (max-width: 640px) {
+  .app {
+    padding: 1rem 0.75rem 2.5rem;
+  }
+
+  .lesson-step {
+    grid-template-columns: 1fr;
+    gap: 0.25rem;
+  }
+
+  .keep-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .concept-panel {
+    padding: 1rem;
+  }
+}
