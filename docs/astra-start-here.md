@@ -94,18 +94,27 @@ Gates 7–9: production bible → full build + QA → pilot → expand bands
 **Baseline band:** Lvl 2 (grades 4–5); Lvl 1 (2–3), Lvl 3 (6–8), Lvl 4 (9–12) later — same world, different expression  
 **Home (working):** Map / unlock destinations as students write (not theme-park clutter; explore cleaner UI)
 
-### Instruction — blended A+B (Emily leaning; planning lock)
+### Instruction — A/B pacing tabs (locked comparison; planning only)
 
-**Blend (not A-or-B):** Shorts for the first big Learn / any brand-new big topic. Desk coach (voice + taps; optional images/animations; **no video player**) for Notice / Try / Build / mini-Learns / Reflect, plus gate nudges in Apply.
+**A/B means pacing, not world vibes.** Emily locked two packages for Kennady to compare. They use the same instructional guts (the Luna lesson content, examples, practice, and response target); only the day-level pacing and package density change.
 
-| Piece | Role in the blend |
+| Tab | One-day pacing package | Mod 3 L3 — Details and Evidence example |
+| --- | --- | --- |
+| **A — focused** | One day = one main skill, with an approximately **20–25 minute target activity length**. It is evidence-primary; quoting is only an optional desk micro-tip. | Make Details and Evidence the main day’s focus, keeping the evidence work central and quoting as a small optional support. |
+| **B — dense** | Luna-style three beats in one day: **Details + Evidence + Quoting**. | Keep the same lesson guts, but package all three beats into one denser day. |
+
+This is a pacing/package comparison, not a choice between forest treatments, character vibes, or other concept marketing. A and B should be shown as tabs with the same lesson guts underneath; do not invent different instructional content for either tab.
+
+**Delivery building blocks (available inside either tab):** Shorts for a first/big brand-new Learn; desk coach (voice + taps; optional images/animations; **no video player**) for Notice / Try / Build / mini-Learns / Reflect, plus gate nudges in Apply.
+
+| Piece | Role across the pacing tabs |
 | --- | --- |
-| **A — Shorts** | One (sometimes up to 2–3) Short for a brand-new big Learn only |
-| **B — Desk coach** | Day-to-day instruction on the writing desk: practice slots, mini-Learns, Reflect, Apply gates |
+| **Shorts** | One (sometimes up to 2–3) Short for a brand-new big Learn only |
+| **Desk coach** | Day-to-day instruction on the writing desk: practice slots, mini-Learns, Reflect, Apply gates |
 
 **Building blocks (still true):**
 
-| | **A — Shorts factory** | **B — Desk coach** |
+| | **Shorts factory** | **Desk coach** |
 | --- | --- | --- |
 | What it is | Shorts-style instructional clips generated from templates | Voice + taps on the writing desk; **no video player** |
 | How it scales | Build factory once; feed skill/details → generate Shorts | Spreadsheet scripts → audio + interactive steps (+ images/short animations) |
