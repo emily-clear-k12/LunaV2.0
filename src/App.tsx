@@ -190,9 +190,11 @@ export default function App() {
           <code>src/data/concepts.ts</code>
         </p>
         <p>
-          <a href="./package-a-skeleton/">Package A skeleton walkthrough</a>
+          <a href="./package-a-skeleton/">Package A skeleton</a>
+          {' · '}
+          <a href="./package-b-skeleton/">Package B skeleton</a>
           {' '}
-          (wireframe student click-through · Details and Evidence)
+          (wireframe student click-throughs · Details and Evidence)
         </p>
       </footer>
     </div>

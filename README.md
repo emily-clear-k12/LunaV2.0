@@ -87,3 +87,13 @@ Plain student click-through for **Package A · Details and Evidence** (no art �
 
 Linked from the explorations site footer after deploy.
 
+## Package B skeleton walkthrough
+
+Plain student click-through for **Package B · Details and Evidence** dense 1:1 Luna map (no art — wireframe only):
+
+- Source: [`public/package-b-skeleton/`](public/package-b-skeleton/)
+- Pages URL: **https://emily-clear-k12.github.io/LunaV2.0/package-b-skeleton/**
+- Docs note: [`docs/package-b-walkthrough/`](docs/package-b-walkthrough/)
+
+Linked from the explorations site footer next to Package A after deploy.
+
