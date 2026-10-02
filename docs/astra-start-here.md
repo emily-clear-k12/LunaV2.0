@@ -105,6 +105,34 @@ Gates 7–9: production bible → full build + QA → pilot → expand bands
 
 This is a pacing/package comparison, not a choice between forest treatments, character vibes, or other concept marketing. A and B should be shown as tabs with the same lesson guts underneath; do not invent different instructional content for either tab.
 
+#### Mod 3 L3 — Details and Evidence example (locked; planning only)
+
+**Package A — focused (~23 min; one-skill Evidence)**
+
+| Beat | Locked detail |
+| --- | --- |
+| Warm-up | 2 |
+| Short | 4 — claim needs proof |
+| Notice | 2 — proof/fluff |
+| Try | 3 — mentor say-it-type |
+| Desk tip | 2 — quoting |
+| Build | 4 — hint ladder; one proof |
+| Apply | 5 — full SR + direct-quote gate |
+| Reflect | 1 — one goal |
+
+**Package B — dense (~35–45 min; three beats)**
+
+| Beat | Locked detail |
+| --- | --- |
+| Warm-up | 3 |
+| Details | 8–10 |
+| Evidence | 8–10 |
+| Quoting | 8–10 |
+| Apply | 8–10 — direct-quote gate |
+| Reflect | 2 |
+
+**Lock notes:** Both packages use a direct quote as the Apply gate. Package A matches the Concept A world; Package B matches the Concept B denser desk. Skip the Package C split. Planning only.
+
 **Delivery building blocks (available inside either tab):** Shorts for a first/big brand-new Learn; desk coach (voice + taps; optional images/animations; **no video player**) for Notice / Try / Build / mini-Learns / Reflect, plus gate nudges in Apply.
 
 | Piece | Role across the pacing tabs |
