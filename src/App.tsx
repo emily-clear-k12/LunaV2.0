@@ -189,6 +189,11 @@ export default function App() {
           Enchanted forest brand end-to-end · same lesson skill on every tab · edit copy in{' '}
           <code>src/data/concepts.ts</code>
         </p>
+        <p>
+          <a href="./package-a-skeleton/">Package A skeleton walkthrough</a>
+          {' '}
+          (wireframe student click-through · Details and Evidence)
+        </p>
       </footer>
     </div>
   )

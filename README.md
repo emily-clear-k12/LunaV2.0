@@ -76,3 +76,14 @@ UI shell: `src/App.tsx` · styles: `src/index.css`.
 ## Stack
 
 Vite + React + TypeScript · Manrope · mobile-friendly · enchanted-forest brand on all three tabs (A densest, B cream desk over woods, C journal + moss).
+
+## Package A skeleton walkthrough
+
+Plain student click-through for **Package A · Details and Evidence** (no art — wireframe only):
+
+- Source: [`public/package-a-skeleton/`](public/package-a-skeleton/)
+- Pages URL: **https://emily-clear-k12.github.io/LunaV2.0/package-a-skeleton/**
+- Docs note: [`docs/package-a-walkthrough/`](docs/package-a-walkthrough/)
+
+Linked from the explorations site footer after deploy.
+
