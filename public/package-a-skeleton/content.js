@@ -129,12 +129,14 @@ window.PACKAGE_A = {
           id: "j1",
           claim: "Thomas Jefferson helped shape American democracy.",
           text: 'The author of Leaders writes, "Jefferson wanted a government that listened to the people."',
+          rune: "Jefferson wanted a government that listened to the people.",
           answer: "proof",
         },
         {
           id: "j2",
           claim: "Thomas Jefferson helped shape American democracy.",
           text: 'In Building a Nation, Diaz says, "Jefferson believed schools were important so citizens could protect liberty."',
+          rune: "Jefferson believed schools were important so citizens could protect liberty.",
           answer: "proof",
         },
         {
@@ -147,12 +149,14 @@ window.PACKAGE_A = {
           id: "m1",
           claim: "Martin Luther King Jr. was an important leader in the Civil Rights Movement.",
           text: 'Martin Luther King himself said, "Injustice anywhere is a threat to justice everywhere."',
+          rune: "Injustice anywhere is a threat to justice everywhere.",
           answer: "proof",
         },
         {
           id: "m2",
           claim: "Martin Luther King Jr. was an important leader in the Civil Rights Movement.",
           text: 'The author of Change Leaders states, "King helped lead the Montgomery Bus Boycott to fight unfair laws."',
+          rune: "King helped lead the Montgomery Bus Boycott to fight unfair laws.",
           answer: "proof",
         },
         {

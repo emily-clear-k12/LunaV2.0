@@ -170,59 +170,166 @@
     );
   }
 
-  function renderProofFluff(step) {
-    const a = getAnswer(step.id);
-    return el(
-      "div",
-      {},
-      (step.items || []).map((item) => {
-        const picked = a[item.id];
-        const show = picked != null;
-        const ok = picked === item.answer;
-        return el("div", { className: "item-card" }, [
-          el("div", { className: "claim", text: `Claim: ${item.claim}` }),
-          el("div", { className: "evidence", text: item.text }),
-          el("div", { className: "tap-row" }, [
-            el("button", {
-              type: "button",
-              className: `choice-btn ${picked === "proof" ? "selected" : ""} ${
-                show && item.answer === "proof" ? "ok" : ""
-              } ${show && picked === "proof" && !ok ? "bad" : ""}`,
-              text: "Proof",
-              onClick: () => {
-                a[item.id] = "proof";
-                render();
-              },
-            }),
-            el("button", {
-              type: "button",
-              className: `choice-btn ${picked === "fluff" ? "selected" : ""} ${
-                show && item.answer === "fluff" ? "ok" : ""
-              } ${show && picked === "fluff" && !ok ? "bad" : ""}`,
-              text: "Fluff",
-              onClick: () => {
-                a[item.id] = "fluff";
-                render();
-              },
-            }),
-          ]),
-          show
-            ? el("div", {
-                className: `feedback ${ok ? "ok" : "bad"}`,
-                text: ok
-                  ? okFeedback(item.answer)
-                  : `Not quite — this is ${item.answer}.`,
-              })
-            : null,
-        ]);
-      })
-    );
+  function evidenceWithRune(text, rune, draw) {
+    if (!rune || !text.includes(rune)) {
+      return el("div", { className: "evidence", text: text });
+    }
+    const i = text.indexOf(rune);
+    const before = text.slice(0, i);
+    const after = text.slice(i + rune.length);
+    return el("div", { className: "evidence" }, [
+      before ? document.createTextNode(before) : null,
+      el("span", {
+        className: `rune-target ${draw ? "rune-draw" : ""}`,
+        text: rune,
+      }),
+      after ? document.createTextNode(after) : null,
+    ]);
   }
 
-  function okFeedback(answer) {
-    return answer === "proof"
-      ? "Proof — it supports the claim with a real reason."
-      : "Fluff — interesting, but it does not prove the claim.";
+  function classifyProofFluff(step, item, choice) {
+    const a = getAnswer(step.id);
+    if (a[item.id] === item.answer) return; // already locked correct
+    if (a._mistLock) return; // ignore taps during mist
+
+    if (choice === item.answer) {
+      a[item.id] = choice;
+      delete a._mist;
+      render();
+      return;
+    }
+
+    // Wrong: brief mist pulse, then reset — no lecture, answer does not stick
+    a._mist = item.id;
+    a._mistLock = true;
+    render();
+    window.setTimeout(() => {
+      if (a._mist === item.id) delete a._mist;
+      a._mistLock = false;
+      render();
+    }, 620);
+  }
+
+  function renderProofFluff(step) {
+    const a = getAnswer(step.id);
+    const items = step.items || [];
+    const sortedCount = items.filter((item) => a[item.id] === item.answer).length;
+    const allSorted = sortedCount === items.length && items.length > 0;
+
+    const trail = el(
+      "div",
+      {
+        className: `notice-trail ${allSorted ? "path-unlocked" : ""}`,
+        "aria-label": `Trail progress: ${sortedCount} of ${items.length} sorted`,
+      },
+      [
+        el("div", { className: "trail-label", text: "Trail" }),
+        el(
+          "div",
+          { className: "trail-path", role: "list" },
+          items.map((item, idx) => {
+            const locked = a[item.id] === item.answer;
+            const kind = locked ? item.answer : "idle";
+            return el("div", {
+              className: `trail-stone ${locked ? "ignited" : ""} stone-${kind}`,
+              role: "listitem",
+              "aria-label": locked
+                ? `Stone ${idx + 1} lit — ${item.answer}`
+                : `Stone ${idx + 1} waiting`,
+              title: locked ? item.answer : "unsorted",
+            });
+          })
+        ),
+        el("div", {
+          className: `trail-ahead ${allSorted ? "bright" : ""}`,
+          "aria-hidden": "true",
+        }),
+        allSorted
+          ? el("div", {
+              className: "trail-unlock-note",
+              text: "Path ahead open — evidence sorted.",
+            })
+          : el("div", {
+              className: "trail-unlock-note muted",
+              text: `${sortedCount}/${items.length} sorted`,
+            }),
+      ]
+    );
+
+    const cards = el(
+      "div",
+      { className: "notice-cards" },
+      items.map((item) => {
+        const picked = a[item.id];
+        const locked = picked === item.answer;
+        const misting = a._mist === item.id;
+        const plateClass = [
+          "item-card",
+          "bark-plate",
+          locked && item.answer === "proof" ? "magic-proof" : "",
+          locked && item.answer === "fluff" ? "magic-fluff" : "",
+          misting ? "mist-pulse" : "",
+        ]
+          .filter(Boolean)
+          .join(" ");
+
+        const statusText = locked
+          ? item.answer === "proof"
+            ? "Proof — supports the claim."
+            : "Fluff — dims; does not prove the claim."
+          : misting
+            ? "Mist — try the other mark."
+            : "";
+
+        return el(
+          "div",
+          {
+            className: plateClass,
+            "data-id": item.id,
+            "aria-live": misting || locked ? "polite" : "off",
+          },
+          [
+            el("div", { className: "claim", text: `Claim: ${item.claim}` }),
+            evidenceWithRune(item.text, item.rune, locked && item.answer === "proof"),
+            el("div", { className: "tap-row", role: "group", "aria-label": "Mark as proof or fluff" }, [
+              el("button", {
+                type: "button",
+                className: `choice-btn ${picked === "proof" ? "selected" : ""} ${
+                  locked && item.answer === "proof" ? "ok" : ""
+                }`,
+                text: "Proof",
+                "aria-pressed": picked === "proof" ? "true" : "false",
+                disabled: locked || misting ? true : false,
+                onClick: () => classifyProofFluff(step, item, "proof"),
+              }),
+              el("button", {
+                type: "button",
+                className: `choice-btn ${picked === "fluff" ? "selected" : ""} ${
+                  locked && item.answer === "fluff" ? "ok" : ""
+                }`,
+                text: "Fluff",
+                "aria-pressed": picked === "fluff" ? "true" : "false",
+                disabled: locked || misting ? true : false,
+                onClick: () => classifyProofFluff(step, item, "fluff"),
+              }),
+            ]),
+            statusText
+              ? el("div", {
+                  className: `feedback magic-status ${
+                    misting ? "warn" : locked ? "ok" : ""
+                  }`,
+                  text: statusText,
+                })
+              : null,
+          ]
+        );
+      })
+    );
+
+    return el("div", { className: `notice-magic ${allSorted ? "all-sorted" : ""}` }, [
+      trail,
+      cards,
+    ]);
   }
 
   function renderPickOne(step) {
