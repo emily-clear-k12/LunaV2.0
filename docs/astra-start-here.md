@@ -122,13 +122,15 @@ Gates 7–9: production bible → full build + QA → pilot → expand bands
 - **Everything else Learn-shaped** (mini-Learns, refreshers, nudges) → **desk coach**, not another Short.
 - Practice slots (Notice / Try / Build), Reflect, and Apply gate nudges stay desk.
 
-### Desk coach = forest guide cast (recommended)
+### Cast lock — desk guide and supporting roster (planning only)
 
-**Orion recommendation:** The desk coach **is** the same enchanted-forest guide cast (one familiar helper at the desk) — **not** a separate unnamed “desk coach” character.
+- **Desk guide for now: Astra.** Astra is one home guide voice at the desk for all skills.
+- **Supporting small roster:** **Moss, Pip, Briar** — world flavor for Notice / Reflect and similar moments, **not skill owners yet**.
+- **Skill does not map to character for now.** Do not assign a module or zone to a specific character yet.
+- **Species and looks are open for Kennady.** Emily recalled raccoon / badger vibes, but this file does not lock either species or any look.
+- **Planning only:** no lesson generation, Shorts, audio, or desk assets yet.
 
-- One familiar guide speaks at the desk across Notice / Try / Build / mini-Learns / Reflect / Apply gates.
-- Kennady still gates **cast look + names** (who that helper is, how they look).
-- **Status:** recommended + **open call for Kennady** (see below). Do not invent a second coach persona.
+Astra is the home guide voice for Notice / Try / Build / mini-Learns / Reflect / Apply gates. Moss, Pip, and Briar may add light world flavor; they do not own skills.
 
 ### Lesson factory pipeline (plan now, generate later)
 
@@ -252,8 +254,10 @@ Drafted in chat — **not locked yet.** Do not treat a full Evidence activity ta
 
 - [ ] Are Gates 0 and 1 already approved?
 - [ ] Mentors: one guide vs one per region? Who maps where?
-- [ ] **Desk coach = same forest guide cast?** (Orion recommends yes — one familiar helper at the desk, not a separate unnamed coach. Gate look + name.)
-- [ ] Astra + Pip: animal + look
+- [x] **Desk guide = Astra for now:** one home guide voice at the desk for all skills.
+- [ ] Approve the supporting roster’s looks/species: **Moss, Pip, Briar** (Emily recalled raccoon / badger vibes; do not treat those as locked species).
+- [ ] Confirm whether Moss / Pip / Briar rotate by module or zone later.
+- [ ] Keep skill ownership separate from character assignment for now; no skill maps to a character yet.
 - [ ] Region name for Writing a Draft (+ final region names)
 - [ ] Stars / constellation vs “no space imagery”
 - [ ] AI feedback on open writing? Teacher review?
