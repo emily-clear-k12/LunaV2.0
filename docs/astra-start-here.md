@@ -150,7 +150,25 @@ Astra is the home guide voice for Notice / Try / Build / mini-Learns / Reflect /
 
 ### Evidence spine
 
-Drafted in chat — **not locked yet.** Do not treat a full Evidence activity table as approved until Kennady/Emily lock it.
+**Locked lesson spine (planning only):**
+
+| Slot | Locked pick |
+| --- | --- |
+| **Warm-up** | Review warm-up (spaced craft, ~60–90s) |
+| **Learn₁** | Short — Evidence hook + model (Cite + Explain) |
+| **Notice** | Proof or fluff? |
+| **Try** | Mentor-draft correction + say-it-then-write |
+| **Learn₂ (mini)** | Desk coach — one micro-move before Build (e.g. drop fluff / exact quote) |
+| **Build** | Hint ladder → one proof sentence |
+| **Apply** | Full short response + gate check (needs real proof) |
+| **Reflect** | One goal |
+
+**Valid library swaps for other Evidence/Craft lessons (not rejects):**
+- **Notice** → Fix the fake cite
+- **Try** → Speed sort
+- **Build** → Color-code RACE or Because/but/so
+
+**Still open:** Passage type for Kennady/Emily later. Planning only; no video generation.
 
 ---
 
@@ -262,7 +280,7 @@ Drafted in chat — **not locked yet.** Do not treat a full Evidence activity ta
 - [ ] Stars / constellation vs “no space imagery”
 - [ ] AI feedback on open writing? Teacher review?
 - [ ] Grades 9–12: in scope or park as reference only?
-- [ ] Evidence spine (drafted in chat) — lock or revise?
+- [x] **Evidence spine — locked lesson spine above; passage type remains open for Kennady/Emily.**
 
 ---
 
