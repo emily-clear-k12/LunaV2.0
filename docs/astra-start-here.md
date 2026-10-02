@@ -120,6 +120,28 @@ This is a pacing/package comparison, not a choice between forest treatments, cha
 | Apply | 5 — full SR + any specific text proof (paraphrase OK; direct quote not required) |
 | Closer | 1 — Path builder: order answer → proof → explain; lights when right; no timer |
 
+#### Package A — locked 1:1 Luna Mod3 L3 → Astra map
+
+**Package only:** Keep Luna wording, examples, and instructional intent. This is a slot/package map, not a rewrite. Package A carries the Luna lesson into Astra as follows:
+
+| Astra beat | Luna source | Package treatment |
+| --- | --- | --- |
+| **Warm-up** | Slide 2 — **OVERPOWERED** sentence types | Shorten the warm-up; keep the Luna sentence-type wording. |
+| **Learn₁ Short** | Slides 1 + 7 — Lincoln weak/strong evidence | Keep as the first/big Learn Short. |
+| **Notice** | Slide 8 — Jefferson/MLK proof vs fluff | Keep as Notice. |
+| **Try** | Slide 9 — Armstrong best line; Slide 10 — Goodall two sentences (drop body outline chrome); Slide 12 — correct/incorrect quotes; Slide 13 — rainforest mentor fix + say-it-then-write | Keep as supported Try practice; drop only the body-outline chrome. |
+| **Learn₂ desk tip** | Slide 11 — quoting rules | Keep as a desk tip, not another Short. |
+| **Build** | Slide 14 — Jackie/Lunches starters + Slide 15 — Carson write | Use the starters and writing task with a hint ladder. |
+| **Apply** | **New Astra package step** — Luna claim + passage | Full short response with an any-specific-proof gate; paraphrase qualifies and a direct quote is not required. |
+| **Path builder closer** | Slide 16 — review energy | Close as answer → proof → explain. |
+| **Park for B** | Slides 3–6 — details/essay | Hold these for Package B; they are not part of Package A. |
+
+**Package A gate:** The Apply response must include any specific proof from the Luna passage. Paraphrase is enough; a direct quote is not required.
+
+**Package A closer:** The Path builder uses the order **answer → proof → explain**; it lights when the order is right and has no timer.
+
+**Package B parking lot:** Slides 3–6 (details/essay) stay parked for B rather than being added to this one-skill Evidence package.
+
 **Package B — dense (~35–45 min; three beats)**
 
 | Beat | Locked detail |
