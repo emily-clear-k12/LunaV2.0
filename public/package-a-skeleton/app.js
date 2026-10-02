@@ -61,6 +61,11 @@
         return (step.fields || []).some((f) => (a[f.id] || "").trim().length > 0);
       case "proof-fluff":
         return (step.items || []).every((item) => a[item.id] === item.answer);
+      case "quote-check": {
+        const sel = new Set(a.selected || []);
+        const right = (step.items || []).filter((i) => i.correct).map((i) => i.id);
+        return right.length === sel.size && right.every((id) => sel.has(id));
+      }
       case "pick-one-sentence": {
         const p = data.passages[step.passageKey];
         return a.choice === p.bestSentence;
@@ -83,7 +88,7 @@
       case "hint-ladder":
         return (a.text || "").trim().length > 10;
       case "apply-gate":
-        return hasSpecificProof(a.text || "", data.passages[step.passageKey]);
+        return hasSpecificProof(a.text || "", data.passages[step.passageKey], step.claim);
       case "path-builder":
         return (
           Array.isArray(a.slots) &&
@@ -95,13 +100,39 @@
     }
   }
 
-  function hasSpecificProof(text, passage) {
-    const t = (text || "").toLowerCase().trim();
+  /* Apply gate (Package A): any specific proof from the passage; paraphrase OK, quote not required.
+     - Words already in the claim never count (copying the claim back is not proof).
+     - Whole-word matches only ("lawn" is not "law"); simple plural/possessive folding.
+     - A quote only counts if its words really come from the passage (4+ words). */
+  function normText(s) {
+    return (s || "").toLowerCase().replace(/[“”]/g, '"').replace(/[‘’]/g, "'");
+  }
+  function stemWord(w) {
+    w = w.replace(/'s$/, "");
+    if (w.length > 3 && /s$/.test(w) && !/ss$/.test(w)) w = w.slice(0, -1);
+    return w;
+  }
+  function wordList(s) {
+    return (normText(s).match(/[a-z0-9']+/g) || []).map(stemWord);
+  }
+  function hasSpecificProof(text, passage, claim) {
+    const t = normText(text).trim();
     if (t.length < 30) return false;
-    if (/["“].{8,}["”]/.test(text)) return true;
-    const tokens = passage.proofTokens || [];
-    const hits = tokens.filter((tok) => t.includes(tok.toLowerCase()));
-    return hits.length >= 1;
+    const claimWords = new Set(wordList(claim || passage.claim || ""));
+    const said = " " + wordList(t).join(" ") + " ";
+
+    const passageLines = passage.sentences.map((s) => " " + wordList(s.text).join(" ") + " ");
+    const quotes = Array.from(t.matchAll(/"([^"]+)"/g)).map((m) => wordList(m[1]));
+    const realQuote = quotes.some(
+      (q) => q.length >= 4 && passageLines.some((line) => line.includes(" " + q.join(" ") + " "))
+    );
+    if (realQuote) return true;
+
+    return (passage.proofTokens || []).some((tok) => {
+      const tw = wordList(tok);
+      if (tw.length === 0 || tw.every((w) => claimWords.has(w))) return false;
+      return said.includes(" " + tw.join(" ") + " ");
+    });
   }
 
   function renderProgress() {
@@ -332,6 +363,42 @@
     ]);
   }
 
+  function renderQuoteCheck(step) {
+    const a = getAnswer(step.id);
+    if (!a.selected) a.selected = [];
+    const selected = new Set(a.selected);
+    const solved = canContinue(step);
+    const kids = (step.items || []).map((item) =>
+      el("button", {
+        type: "button",
+        className: `fix-btn ${selected.has(item.id) ? "selected" : ""}`,
+        style: "display:block;width:100%;text-align:left;margin-bottom:6px;",
+        "aria-pressed": selected.has(item.id) ? "true" : "false",
+        disabled: solved ? true : false,
+        onClick: () => {
+          if (selected.has(item.id)) selected.delete(item.id);
+          else selected.add(item.id);
+          a.selected = Array.from(selected);
+          render();
+        },
+      }, [
+        el("div", { text: item.text }),
+        solved ? el("div", { className: "subtitle", text: item.why }) : null,
+      ])
+    );
+    if (a.selected.length > 0) {
+      kids.push(
+        el("div", {
+          className: `feedback ${solved ? "ok" : "warn"}`,
+          text: solved
+            ? "Locked — those two follow every quoting rule."
+            : "Keep going — choose every correct sentence (and only the correct ones). Check the five rules from the tip.",
+        })
+      );
+    }
+    return el("div", {}, kids);
+  }
+
   function renderPickOne(step) {
     const p = data.passages[step.passageKey];
     const a = getAnswer(step.id);
@@ -545,7 +612,7 @@
   function renderApply(step) {
     const a = getAnswer(step.id);
     const passage = data.passages[step.passageKey];
-    const ok = hasSpecificProof(a.text || "", passage);
+    const ok = hasSpecificProof(a.text || "", passage, step.claim);
     const wrap = el("div", {}, [
       el("div", { className: "box", text: `Claim: ${step.claim}` }),
       passageBlock(step.passageKey),
@@ -571,12 +638,25 @@
     return wrap;
   }
 
+  function shuffledChips(chips, correctOrder) {
+    if (chips.length < 2) return chips.slice();
+    let out;
+    do {
+      out = chips.slice();
+      for (let i = out.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [out[i], out[j]] = [out[j], out[i]];
+      }
+    } while (out.every((c, i) => c === correctOrder[i]));
+    return out;
+  }
+
   function renderPathBuilder(step) {
     const a = getAnswer(step.id);
     if (!Array.isArray(a.slots) || a.slots.length !== 3) a.slots = [null, null, null];
     if (!Array.isArray(a.tray)) {
       const used = new Set(a.slots.filter(Boolean));
-      a.tray = step.chips.filter((c) => !used.has(c));
+      a.tray = shuffledChips(step.chips, step.correctOrder).filter((c) => !used.has(c));
     }
 
     const lit = a.slots.every((v, i) => v === step.correctOrder[i]);
@@ -632,7 +712,7 @@
         text: "Reset chips",
         onClick: () => {
           a.slots = [null, null, null];
-          a.tray = step.chips.slice();
+          a.tray = shuffledChips(step.chips, step.correctOrder);
           render();
         },
       }),
@@ -649,6 +729,8 @@
         return renderMultiInput(step);
       case "proof-fluff":
         return renderProofFluff(step);
+      case "quote-check":
+        return renderQuoteCheck(step);
       case "pick-one-sentence":
         return renderPickOne(step);
       case "pick-two-sentences":

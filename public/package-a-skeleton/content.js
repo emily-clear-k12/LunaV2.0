@@ -65,7 +65,6 @@ window.PACKAGE_A = {
         "nature",
         "protect",
         "earth",
-        "difference",
       ],
     },
   },
@@ -188,9 +187,65 @@ window.PACKAGE_A = {
       prompt:
         "Click on the two sentence numbers that can best be used as evidence that Jane Goodall made important discoveries about chimpanzees.",
       passageKey: "goodall",
-      continueLabel: "Next Try",
+      continueLabel: "Continue to Learn tip",
     },
 
+    {
+      id: "learn2",
+      slot: "Learn₂",
+      type: "read",
+      title: "Quoting evidence (desk tip)",
+      subtitle: "Optional micro-tip — not a second Short",
+      body: [
+        "Strong writers don't just copy evidence — they quote it correctly. That means using quotation marks and crediting the source.",
+        "Example claim: \"Martin Luther King Jr. inspired people with his words.\"",
+        "In his \"I Have a Dream\" speech, King said, \"I have a dream that one day this nation will rise up and live out the true meaning of its creed.\"",
+        "Rules to notice: credit the source · comma before the quote · quotation marks around exact words · quote starts with a capital · ending punctuation inside the marks.",
+      ],
+      continueLabel: "Continue to Try",
+    },
+
+    {
+      id: "try-quotes",
+      slot: "Try",
+      type: "quote-check",
+      title: "Correct or incorrect",
+      // Luna Mod 3 Lv2 L3 slide 12 (A8: Correct or Incorrect) — wording kept.
+      prompt: "Choose all the evidence sentences that correctly use quotation marks.",
+      items: [
+        {
+          id: "q1",
+          text: "The article, Voices of Freedom, explains, “Rosa Parks refused to give up her seat on the bus”.",
+          correct: false,
+          why: "The period belongs inside the quotation marks.",
+        },
+        {
+          id: "q2",
+          text: "In Protecting Nature, Maria Lopez writes “Everyone should do their part to recycle and help our Earth.”",
+          correct: false,
+          why: "Missing the comma after “writes.”",
+        },
+        {
+          id: "q3",
+          text: "The book, The Homework Wars notes, Homework can be detrimental to teens.",
+          correct: false,
+          why: "No quotation marks around the author's exact words.",
+        },
+        {
+          id: "q4",
+          text: "The author of Natural Disasters states, “Hurricanes form over warm ocean waters.”",
+          correct: true,
+          why: "Correct — source, comma, quotation marks, capital, period inside.",
+        },
+        {
+          id: "q5",
+          text: "The book Science Discoveries says, “Alexander Fleming discovered penicillin by accident.”",
+          correct: true,
+          why: "Correct — source, comma, quotation marks, capital, period inside.",
+        },
+      ],
+      continueLabel: "Next Try",
+    },
     {
       id: "try-mentor",
       slot: "Try",
@@ -228,21 +283,6 @@ window.PACKAGE_A = {
       ],
       sayItLabel: "I said the corrected evidence sentence out loud",
       typePrompt: "Type the corrected evidence sentence:",
-      continueLabel: "Continue to Learn tip",
-    },
-
-    {
-      id: "learn2",
-      slot: "Learn₂",
-      type: "read",
-      title: "Quoting evidence (desk tip)",
-      subtitle: "Optional micro-tip — not a second Short",
-      body: [
-        "Strong writers don't just copy evidence — they quote it correctly. That means using quotation marks and crediting the source.",
-        "Example claim: \"Martin Luther King Jr. inspired people with his words.\"",
-        "In his \"I Have a Dream\" speech, King said, \"I have a dream that one day this nation will rise up and live out the true meaning of its creed.\"",
-        "Rules to notice: credit the source · comma before the quote · quotation marks around exact words · quote starts with a capital · ending punctuation inside the marks.",
-      ],
       continueLabel: "Continue to Build",
     },
 
@@ -315,7 +355,7 @@ window.PACKAGE_A = {
       title: "Package A complete",
       body: [
         "You clicked through the full Package A student flow.",
-        "Warm-up → Learn₁ → Notice → Try → Learn₂ tip → Build → Apply → Path builder.",
+        "Warm-up → Learn₁ → Notice → Try → Learn₂ tip → Try → Build → Apply → Path builder.",
         "This shell is ready for a UI skin on top (same step ids + data).",
       ],
     },
