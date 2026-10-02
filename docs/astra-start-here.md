@@ -142,6 +142,24 @@ This is a pacing/package comparison, not a choice between forest treatments, cha
 
 **Package B parking lot:** Slides 3–6 (details/essay) stay parked for B rather than being added to this one-skill Evidence package.
 
+#### Package B — locked 1:1 Luna Mod3 L3 → Astra map
+
+**Package only:** Keep Luna wording, examples, and instructional intent. Package B is the denser one-day map; Slides 3–6 return from A’s parking lot.
+
+| Astra beat | Luna source / locked treatment |
+| --- | --- |
+| **Warm-up** | Slide 2 — **OVERPOWERED** sentence types |
+| **Details teach** | Slide 3 |
+| **Details practice** | Slides 4–6 |
+| **Evidence teach** | Slide 7 |
+| **Evidence practice** | Slides 8–10 |
+| **Quoting teach** | Slide 11 |
+| **Quoting practice** | Slides 12–13, including the say-it-then-write step |
+| **Build / Apply** | Slides 14–15, then the full short response with a direct-quote gate |
+| **Closer** | Slide 16 review energy → Path builder (answer → proof → explain) |
+
+**Denser vs A:** Slides 3–6 return, making Package B a denser Details + Evidence + Quoting day rather than A’s focused Evidence package.
+
 **Package B — dense (~35–45 min; three beats)**
 
 | Beat | Locked detail |
@@ -153,7 +171,7 @@ This is a pacing/package comparison, not a choice between forest treatments, cha
 | Apply | 8–10 — direct-quote gate |
 | Reflect | 2 |
 
-**Lock notes:** Package A’s Apply gate accepts any specific proof from the text; paraphrase qualifies, and a direct quote is **not required**. Package A closes with the **Path builder** in the order **answer → proof → explain**; it lights when the order is right and has **no timer**. For A, this replaces Reflect-as-closer / any Proof Rush / Spot-the-real wording. Package B may keep its prior direct-quote Apply gate and Reflect beat; the direct-quote reconsideration applies to A only. Package A matches the Concept A world; Package B matches the Concept B denser desk. Skip the Package C split. Planning only.
+**Lock notes:** Package A’s Apply gate accepts any specific proof from the text; paraphrase qualifies, and a direct quote is **not required**. Package A closes with the **Path builder** in the order **answer → proof → explain**; it lights when right and has **no timer**. For A, this replaces Reflect-as-closer / any Proof Rush / Spot-the-real wording. Package B may keep its prior direct-quote Apply gate and Reflect beat; the direct-quote reconsideration applies to A only. Package A matches the Concept A world; Package B matches the Concept B denser desk. Skip the Package C split. Planning only.
 
 **Delivery building blocks (available inside either tab):** Shorts for a first/big brand-new Learn; desk coach (voice + taps; optional images/animations; **no video player**) for Notice / Try / Build / mini-Learns / Reflect, plus gate nudges in Apply.
 
@@ -348,6 +366,6 @@ Astra is the home guide voice for Notice / Try / Build / mini-Learns / Reflect /
 
 ## How to use this file
 
-1. Work top to bottom — don’t stack decisions on an unapproved gate.  
-2. Bring **options + a recommendation**, not a single locked design.  
+1. Work top to bottom — don’t stack decisions on an unapproved gate. 
+2. Bring **options + a recommendation**, not a single locked design. 
 3. When something’s ready for Kennady, package it as a short gate packet (decision + why + what you need her to say yes to).
