@@ -100,14 +100,42 @@ Gates 7–9: production bible → full build + QA → pilot → expand bands
 
 | Tab | One-day pacing package | Mod 3 L3 — Details and Evidence example |
 | --- | --- | --- |
-| **A — focused** | One day = one main skill, with an approximately **20–25 minute target activity length**. It is evidence-primary; quoting is only an optional desk micro-tip. | Make Details and Evidence the main day’s focus, keeping the evidence work central and quoting as a small optional support. |
+| **A — focused** | **Three ~20-minute lessons, one skill each** (Details → Evidence → Quoting), with more practice time per skill. | Split Luna’s one lesson into A1 Details, A2 Evidence, A3 Quoting (see series table below). |
 | **B — dense** | Luna-style three beats in one day: **Details + Evidence + Quoting**. | Keep the same lesson guts, but package all three beats into one denser day. |
 
 This is a pacing/package comparison, not a choice between forest treatments, character vibes, or other concept marketing. A and B should be shown as tabs with the same lesson guts underneath; do not invent different instructional content for either tab.
 
+#### Package A = a three-lesson series (Emily, Oct 2)
+
+Package A is **not** one shorter lesson. It splits Luna Mod 3 L3 into **three ~20-minute lessons**, one skill per day, so each skill gets more practice time. Package B keeps all three skills in **one ~35–45-minute lesson**.
+
+| Lesson | Skill | Luna slides | Apply gate |
+| --- | --- | --- | --- |
+| **A1** | Details | 3 (teach) · 4–6 (sort, brainstorm, write three details) | Detail sentences (narrative) |
+| **A2** | Evidence | 7 (teach) · 8–10 (proof/fluff, Armstrong, Goodall) · 15 (Carson) | Any specific proof; paraphrase OK |
+| **A3** | Quoting | 11 (teach) · 12–14 (correct/incorrect, rainforest fix, Jackie/Lunches) · 16 (review) | Direct quote required |
+
+**Totals to show Kennady:** A = 3 days, ~60 min across the series · B = 1 day, ~40 min.
+
+**Content:** All three A lessons run on existing Luna content — no new lesson content needed for the split. Small gaps only:
+- **Warm-ups:** Luna has one (slide 2, OVERPOWERED). A2 and A3 need warm-ups — e.g. a quick review of the previous lesson’s skill.
+- **Apply passages:** A2 and A3 both want the Carson passage (slide 15) — share it or pick a second passage.
+- **Closers:** The Path builder (answer → proof → explain) fits A2. A1 and A3 need their own closer, or the Path builder runs once at the end of A3.
+- Extra practice beyond Luna only if Kennady asks for it.
+
+**Current skeleton status:** `package-a-skeleton` = **A2 Evidence**, but it still carries slides 11–14 from the earlier one-lesson map. Those move to A3 when the series is built. A1 and A3 skeletons are not built yet.
+
+#### Explorations site — tab plan
+
+| Tab | Shows |
+| --- | --- |
+| **A** | The three-lesson breakdown (A1 / A2 / A3), each with time, Luna slides, Apply gate, and a click-through |
+| **B** | The one big lesson (Details + Evidence + Quoting), with time and a click-through |
+| **C** | Design (look and feel). Not a third pacing option — label it as applying to whichever pacing wins. |
+
 #### Mod 3 L3 — Details and Evidence example (locked; planning only)
 
-**Package A — focused (~23 min; one-skill Evidence)**
+**Package A2 — Evidence (~23 min; lesson 2 of 3)**
 
 | Beat | Locked detail |
 | --- | --- |
@@ -120,7 +148,9 @@ This is a pacing/package comparison, not a choice between forest treatments, cha
 | Apply | 5 — full SR + any specific text proof (paraphrase OK; direct quote not required) |
 | Closer | 1 — Path builder: order answer → proof → explain; lights when right; no timer |
 
-#### Package A — locked 1:1 Luna Mod3 L3 → Astra map
+#### Package A2 (Evidence) — locked 1:1 Luna Mod3 L3 → Astra map
+
+**Series note:** This map was written when A was one lesson. With the three-lesson split, the quoting rows (slides 11–14) move to A3 and slides 3–6 become A1.
 
 **Package only:** Keep Luna wording, examples, and instructional intent. This is a slot/package map, not a rewrite. Package A carries the Luna lesson into Astra as follows:
 
@@ -134,13 +164,13 @@ This is a pacing/package comparison, not a choice between forest treatments, cha
 | **Build** | Slide 14 — Jackie/Lunches starters + Slide 15 — Carson write | Use the starters and writing task with a hint ladder. |
 | **Apply** | **New Astra package step** — Luna claim + passage | Full short response with an any-specific-proof gate; paraphrase qualifies and a direct quote is not required. |
 | **Path builder closer** | Slide 16 — review energy | Close as answer → proof → explain. |
-| **Park for B** | Slides 3–6 — details/essay | Hold these for Package B; they are not part of Package A. |
+| **Moved to A1 (and B)** | Slides 3–6 — details/essay | Not in A2. They become lesson A1 Details, and they stay in Package B’s one-day lesson. |
 
 **Package A gate:** The Apply response must include any specific proof from the Luna passage. Paraphrase is enough; a direct quote is not required.
 
 **Package A closer:** The Path builder uses the order **answer → proof → explain**; it lights when the order is right and has no timer.
 
-**Package B parking lot:** Slides 3–6 (details/essay) stay parked for B rather than being added to this one-skill Evidence package.
+**Slides 3–6:** Lesson A1 Details in the series; part of Package B’s one-day lesson.
 
 #### Package B — locked 1:1 Luna Mod3 L3 → Astra map
 
@@ -189,7 +219,7 @@ This is a pacing/package comparison, not a choice between forest treatments, cha
 | Access | Audio-first for low readers & bilingual; tiny on-screen text | Same — hear it, see it move, tap; little reading |
 | Carry from Luna | Keep lesson guts (scripts/examples); new Shorts package | Same guts; pour into coach beats + desk visuals |
 
-**C:** not chosen yet  
+**C:** design tab (look and feel) — not a third pacing package  
 **Non-negotiable:** never a wall of reading; balance audio / visual / light text
 
 ### Learn as a mode (multi-Learn OK)
@@ -361,6 +391,10 @@ Astra is the home guide voice for Notice / Try / Build / mini-Learns / Reflect /
 - [ ] AI feedback on open writing? Teacher review?
 - [ ] Grades 9–12: in scope or park as reference only?
 - [x] **Evidence spine — locked lesson spine above; passage type remains open for Kennady/Emily.**
+- [ ] Package A as a three-lesson series (A1 Details · A2 Evidence · A3 Quoting) — confirm. Note: the lock notes say “Skip the Package C split”; check this isn’t the same idea.
+- [ ] Warm-ups for A2 and A3 (Luna only has one) — review warm-ups OK?
+- [ ] A2 and A3 Apply: share the Carson passage, or use a second passage?
+- [ ] Closer for A1 and A3 (Path builder fits A2 only)
 
 ---
 
