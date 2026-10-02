@@ -115,10 +115,10 @@ This is a pacing/package comparison, not a choice between forest treatments, cha
 | Short | 4 — claim needs proof |
 | Notice | 2 — proof/fluff |
 | Try | 3 — mentor say-it-type |
-| Desk tip | 2 — quoting |
+| Desk tip | 2 — quoting (optional) |
 | Build | 4 — hint ladder; one proof |
-| Apply | 5 — full SR + direct-quote gate |
-| Reflect | 1 — one goal |
+| Apply | 5 — full SR + any specific text proof (paraphrase OK; direct quote not required) |
+| Closer | 1 — Path builder: order answer → proof → explain; lights when right; no timer |
 
 **Package B — dense (~35–45 min; three beats)**
 
@@ -131,7 +131,7 @@ This is a pacing/package comparison, not a choice between forest treatments, cha
 | Apply | 8–10 — direct-quote gate |
 | Reflect | 2 |
 
-**Lock notes:** Both packages use a direct quote as the Apply gate. Package A matches the Concept A world; Package B matches the Concept B denser desk. Skip the Package C split. Planning only.
+**Lock notes:** Package A’s Apply gate accepts any specific proof from the text; paraphrase qualifies, and a direct quote is **not required**. Package A closes with the **Path builder** in the order **answer → proof → explain**; it lights when the order is right and has **no timer**. For A, this replaces Reflect-as-closer / any Proof Rush / Spot-the-real wording. Package B may keep its prior direct-quote Apply gate and Reflect beat; the direct-quote reconsideration applies to A only. Package A matches the Concept A world; Package B matches the Concept B denser desk. Skip the Package C split. Planning only.
 
 **Delivery building blocks (available inside either tab):** Shorts for a first/big brand-new Learn; desk coach (voice + taps; optional images/animations; **no video player**) for Notice / Try / Build / mini-Learns / Reflect, plus gate nudges in Apply.
 
@@ -197,8 +197,11 @@ Astra is the home guide voice for Notice / Try / Build / mini-Learns / Reflect /
 | **Try** | Mentor-draft correction + say-it-then-write |
 | **Learn₂ (mini)** | Desk coach — one micro-move before Build (e.g. drop fluff / exact quote) |
 | **Build** | Hint ladder → one proof sentence |
-| **Apply** | Full short response + gate check (needs real proof) |
-| **Reflect** | One goal |
+| **Apply** | Full short response + gate check: any specific proof from the text qualifies; paraphrase OK; direct quote not required for Package A |
+| **Closer (Package A)** | Path builder — order answer → proof → explain; lights when right; no timer |
+| **Reflect (Package B / other lessons)** | One goal |
+
+**Package A note:** The closer is the Path builder, not a Reflect-as-closer, Proof Rush, or Spot-the-real interaction. The Apply gate checks for specific text proof, and does not require a direct quote; quoting may remain an optional desk micro-tip. Package B may retain its direct-quote gate and Reflect beat.
 
 **Valid library swaps for other Evidence/Craft lessons (not rejects):**
 - **Notice** → Fix the fake cite
