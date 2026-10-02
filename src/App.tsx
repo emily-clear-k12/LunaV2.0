@@ -149,54 +149,88 @@ function ConceptPanel({ concept }: { concept: Concept }) {
   )
 }
 
+function TopBar() {
+  return (
+    <header className="topbar">
+      <a className="logo-chip" href="./" title="Astra home">
+        <span className="logo-mark" aria-hidden>
+          ✦
+        </span>
+        <span className="logo-text">
+          <small>CLEAR</small>
+          <b>ASTRA</b>
+        </span>
+      </a>
+
+      <div className="topbar-spacer" />
+
+      <nav className="version-pick" aria-label="Package versions">
+        <span className="lbl">Versions</span>
+        <a className="version-link" href="./package-a-skeleton/">
+          Package A
+        </a>
+        <a className="version-link" href="./package-b-skeleton/">
+          Package B
+        </a>
+      </nav>
+
+      <div className="topbar-spacer" />
+    </header>
+  )
+}
+
 export default function App() {
   const [active, setActive] = useState<ConceptId>('A')
   const concept = concepts.find((c) => c.id === active)!
 
   return (
-    <div className="app">
-      <header className="site-header">
-        <div className="header-inner">
-          <h1>Astra explorations</h1>
-          <p className="subtitle">
-            Week-1 brainstorm for Kennady — design directions only, not the final product.
-            Brand lock: every concept lives in the enchanted forest.
+    <div className="app-shell">
+      <TopBar />
+
+      <div className="app">
+        <header className="site-header">
+          <div className="header-inner">
+            <h1>Astra Writing Adventure</h1>
+            <p className="subtitle">
+              Enchanted-forest writing trails — tap Package A or B in the top bar to enter a
+              student walkthrough. Concept notes below are design directions, not the final product.
+            </p>
+          </div>
+        </header>
+
+        <nav className="tab-bar" aria-label="Concept tabs">
+          {concepts.map((c) => (
+            <button
+              key={c.id}
+              type="button"
+              className={`tab ${active === c.id ? 'active' : ''} theme-${c.theme}`}
+              onClick={() => setActive(c.id)}
+              aria-pressed={active === c.id}
+            >
+              <span className="tab-label">{c.label}</span>
+              <span className="tab-short">{c.shortName}</span>
+            </button>
+          ))}
+        </nav>
+
+        <main className="main">
+          <ConceptPanel concept={concept} />
+        </main>
+
+        <footer className="site-footer">
+          <p>
+            Enchanted forest brand end-to-end · same lesson skill on every tab · edit copy in{' '}
+            <code>src/data/concepts.ts</code>
           </p>
-        </div>
-      </header>
-
-      <nav className="tab-bar" aria-label="Concept tabs">
-        {concepts.map((c) => (
-          <button
-            key={c.id}
-            type="button"
-            className={`tab ${active === c.id ? 'active' : ''} theme-${c.theme}`}
-            onClick={() => setActive(c.id)}
-            aria-pressed={active === c.id}
-          >
-            <span className="tab-label">{c.label}</span>
-            <span className="tab-short">{c.shortName}</span>
-          </button>
-        ))}
-      </nav>
-
-      <main className="main">
-        <ConceptPanel concept={concept} />
-      </main>
-
-      <footer className="site-footer">
-        <p>
-          Enchanted forest brand end-to-end · same lesson skill on every tab · edit copy in{' '}
-          <code>src/data/concepts.ts</code>
-        </p>
-        <p>
-          <a href="./package-a-skeleton/">Package A skeleton</a>
-          {' · '}
-          <a href="./package-b-skeleton/">Package B skeleton</a>
-          {' '}
-          (wireframe student click-throughs · Details and Evidence)
-        </p>
-      </footer>
+          <p>
+            <a href="./package-a-skeleton/">Package A skeleton</a>
+            {' · '}
+            <a href="./package-b-skeleton/">Package B skeleton</a>
+            {' '}
+            (wireframe student click-throughs · Details and Evidence)
+          </p>
+        </footer>
+      </div>
     </div>
   )
 }

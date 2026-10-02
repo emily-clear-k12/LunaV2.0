@@ -43,14 +43,151 @@ code {
   border-radius: 4px;
 }
 
+.app-shell {
+  min-height: 100vh;
+}
+
 .app {
   max-width: 880px;
   margin: 0 auto;
   padding: 1.25rem 1rem 3rem;
 }
 
+/* Kennady-style top bar — forest chrome, not LoneStar navy */
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 30;
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  min-height: 64px;
+  padding: 0 1rem 0 0.85rem;
+  background: rgba(251, 250, 246, 0.92);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  box-shadow: 0 1px 0 #d5e0d2;
+}
+
+.logo-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  margin: 0.5rem 0;
+  padding: 0.35rem 0.75rem 0.35rem 0.45rem;
+  border-radius: 12px;
+  text-decoration: none;
+  color: #f7faf4;
+  background: linear-gradient(150deg, #3a4a2e 0%, #2a3824 55%, #3d4a3a 100%);
+  box-shadow: 0 1px 2px rgba(28, 36, 28, 0.18);
+}
+
+.logo-chip:hover {
+  filter: brightness(1.06);
+}
+
+.logo-mark {
+  display: grid;
+  place-items: center;
+  width: 1.85rem;
+  height: 1.85rem;
+  border-radius: 9px;
+  background: rgba(232, 239, 214, 0.18);
+  color: #e8efd6;
+  font-size: 0.95rem;
+}
+
+.logo-text {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  line-height: 1.05;
+}
+
+.logo-text small {
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(232, 239, 214, 0.78);
+}
+
+.logo-text b {
+  font-size: 0.98rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+}
+
+.topbar-spacer {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.version-pick {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.15rem;
+  padding: 0.2rem;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.92);
+  border: 1px dashed #b8c4a8;
+  box-shadow: 0 2px 8px rgba(42, 56, 36, 0.06);
+}
+
+.version-pick .lbl {
+  font-size: 0.62rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+  padding: 0 0.55rem 0 0.7rem;
+}
+
+.version-link {
+  min-width: 5.5rem;
+  padding: 0.4rem 0.85rem;
+  border-radius: 999px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--muted);
+  text-decoration: none;
+  text-align: center;
+  transition: background 0.15s, color 0.15s;
+}
+
+.version-link:hover {
+  background: #e8efe0;
+  color: #2f3f28;
+}
+
+.version-link:focus-visible {
+  outline: 2px solid #5a7a4a;
+  outline-offset: 1px;
+}
+
 .site-header {
   margin-bottom: 1.25rem;
+}
+
+@media (max-width: 640px) {
+  .topbar {
+    padding: 0 0.65rem 0 0.5rem;
+    gap: 0.45rem;
+  }
+
+  .version-pick .lbl {
+    display: none;
+  }
+
+  .version-link {
+    min-width: 0;
+    padding: 0.4rem 0.65rem;
+    font-size: 0.75rem;
+  }
+
+  .logo-text small {
+    display: none;
+  }
 }
 
 .header-inner h1 {
