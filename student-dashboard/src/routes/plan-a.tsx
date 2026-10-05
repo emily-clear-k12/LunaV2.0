@@ -63,7 +63,7 @@ const modules: Module[] = [
     w: 11,
     h: 28,
     dotX: 25.9,
-    dotY: 70.2,
+    dotY: 68.8,
     accent: "#4aa3ff",
     lessons: [
       { title: "Answer the ask", world: "First crystals", minutes: 20, task: "Write a short answer that restates the question." },
@@ -83,7 +83,7 @@ const modules: Module[] = [
     w: 11,
     h: 28,
     dotX: 38.8,
-    dotY: 70.2,
+    dotY: 68.8,
     accent: "#7cc8ff",
     lessons: [
       { title: "Claim the sky", world: "Docking ring", minutes: 20, task: "Write a clear claim for a longer response." },
@@ -103,7 +103,7 @@ const modules: Module[] = [
     w: 11,
     h: 28,
     dotX: 51.5,
-    dotY: 70.2,
+    dotY: 68.8,
     accent: "#b46bff",
     lessons: [
       { title: "One complete thought", world: "First stones", minutes: 20, task: "Write three sentences that each say one whole idea." },
@@ -123,7 +123,7 @@ const modules: Module[] = [
     w: 11,
     h: 28,
     dotX: 64.5,
-    dotY: 70.2,
+    dotY: 68.8,
     accent: "#ff9a3c",
     lessons: [
       { title: "Read the prompt", world: "White trunks", minutes: 15, task: "Underline what the prompt is asking you to do." },
@@ -143,7 +143,7 @@ const modules: Module[] = [
     w: 11,
     h: 28,
     dotX: 78.1,
-    dotY: 70.2,
+    dotY: 68.8,
     accent: "#2fd6c8",
     lessons: [
       { title: "Name the idea", world: "Lookout", minutes: 15, task: "Say what the draft is really about, in one line." },
@@ -163,7 +163,7 @@ const modules: Module[] = [
     w: 11,
     h: 28,
     dotX: 92.3,
-    dotY: 70.2,
+    dotY: 68.8,
     accent: "#ff6fa8",
     lessons: [
       { title: "Capitals and stops", world: "Fallen leaves", minutes: 15, task: "Fix sentences that start or end the wrong way." },
@@ -180,10 +180,11 @@ const tipDotSpot = { x: 9.5, y: 18 };
 
 /** Four interactive lanterns; any extra lantern in the art stays decorative. */
 const lanterns: Lantern[] = [
-  { id: "goal", label: "My goal", x: 34.5, y: 33.5, w: 5.5, h: 12, signX: 34.4, signY: 40.2, signW: 10, signH: 8 },
-  { id: "progress", label: "My progress", x: 41.5, y: 34, w: 5.5, h: 12, signX: 41.4, signY: 41.7, signW: 10, signH: 8 },
-  { id: "practice", label: "Practice", x: 63.5, y: 37, w: 5.5, h: 12, signX: 62.4, signY: 45.6, signW: 8, signH: 9 },
-  { id: "quick", label: "Quick write", x: 74.5, y: 33.5, w: 5.5, h: 12, signX: 72.7, signY: 39.9, signW: 9, signH: 8 },
+  /* compass/star, crystal, feather=Quick write, leaf=Practice — sign centers = plaque midpoints */
+  { id: "goal", label: "My goal", x: 32.4, y: 33.5, w: 5.5, h: 12, signX: 32.42, signY: 42.53, signW: 0, signH: 0 },
+  { id: "progress", label: "My progress", x: 40.2, y: 34.0, w: 5.5, h: 12, signX: 40.23, signY: 43.04, signW: 0, signH: 0 },
+  { id: "quick", label: "Quick write", x: 64.1, y: 37.0, w: 5.5, h: 12, signX: 64.14, signY: 46.39, signW: 0, signH: 0 },
+  { id: "practice", label: "Practice", x: 75.4, y: 33.5, w: 5.5, h: 12, signX: 75.39, signY: 42.53, signW: 0, signH: 0 },
 ];
 
 const assignments = [
@@ -413,7 +414,7 @@ function StudentHome() {
               <div className="zscene">
                 <div className="zscene-frame">
                   <img
-                    src={asset("portal-hub-z.jpg")}
+                    src={asset("portal-hub-clean.jpg")}
                     alt="Astra beside six magical portals under a lantern treehouse"
                     className="zscene-img"
                   />
