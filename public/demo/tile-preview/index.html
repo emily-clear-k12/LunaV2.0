@@ -132,74 +132,25 @@ body{overflow:hidden}
 .toast.off{opacity:0;pointer-events:none}
 
 /* ---------- narrow screens: one column, page scrolls ---------- */
-
-/* ---------- color toggle in the preview bar ---------- */
-.right{display:flex;align-items:center;gap:8px;flex-wrap:wrap;justify-content:flex-end}
-.swatch{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:6px;vertical-align:0;border:1px solid rgba(255,255,255,.6)}
-.swatch.f{background:#2a2350}.swatch.g{background:#b7c9a8}
-.colors button{all:unset;cursor:pointer;font:700 14px var(--body);color:#fff;padding:6px 12px;border-radius:999px}
-.colors button[aria-pressed="true"]{background:#fff;color:var(--solid-ink)}
-.colors button:focus-visible{outline:3px solid var(--crystal);outline-offset:2px}
-
-/* ================= SAGE variant (?c=sage) ================= */
-.c-sage{--sage-ink:#2f3e2c;--sage-muted:#55664f;--sage-deep:#2f5a2a;--sage-moss:#3e5f35;--sage-amber:#7a4f0c;--sage-gold:#d9a23a}
-.c-sage .tile{background:rgba(200,214,188,.72);border-color:rgba(246,250,240,.7);color:var(--sage-ink);
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.45),0 14px 34px -18px rgba(0,0,0,.6)}
-.c-sage .tile.solid{background:rgba(226,235,217,.98);border-color:rgba(250,252,246,.95);color:#1f2e1d;box-shadow:0 18px 40px -18px rgba(0,0,0,.7)}
-.c-sage .head{text-shadow:none}
-.c-sage .kind{color:#34522c}
-.c-sage .dir{color:var(--sage-ink)}
-.c-sage .where{color:var(--sage-amber)}
-.c-sage .tabs .tag{color:var(--sage-muted)}
-.c-sage .tabs a,.c-sage .colors button{color:var(--sage-ink)}
-.c-sage .tabs a[aria-current="page"],.c-sage .colors button[aria-pressed="true"]{background:var(--sage-moss);color:#f3f6ee}
-.c-sage .swatch{border-color:rgba(47,62,44,.45)}
-/* warm-up */
-.c-sage .wtile label{color:var(--sage-deep)}
-.c-sage .wtile label span{color:var(--sage-muted)}
-.c-sage .wtile textarea::placeholder{color:rgba(47,62,44,.7)}
-.c-sage .wtile .line{background:rgba(47,62,44,.28)}
-.c-sage .wtile.solid label{color:var(--sage-deep)}
-.c-sage .wtile.solid label span{color:#5a6b55}
-.c-sage .wtile.solid textarea::placeholder{color:#8a9884}
-.c-sage .wtile.solid .line{background:rgba(47,90,42,.22)}
-.c-sage .wtile:focus-within{box-shadow:0 0 0 3px var(--sage-gold),0 18px 40px -18px rgba(0,0,0,.7)}
-.c-sage .wtile:focus-within .line{background:var(--sage-gold)}
-.c-sage .wtile .done{background:#4f8a3c}
-/* buttons */
-.c-sage .btn{color:var(--sage-ink)}
-.c-sage .btn:disabled{color:rgba(47,62,44,.58)}
-.c-sage .btn:not(:disabled):hover{background:rgba(226,235,217,.85)}
-.c-sage .btn.ready{background:var(--sage-moss);border-color:var(--sage-moss);color:#f3f6ee}
-.c-sage .btn.ready:hover{background:#4a6f40}
-/* sort */
-.c-sage .chip{text-shadow:none}
-.c-sage .chip.sel{box-shadow:0 0 0 3px var(--sage-gold),0 14px 26px -12px rgba(0,0,0,.75)}
-.c-sage .chip.right{box-shadow:inset 5px 0 0 #4f8a3c,0 10px 22px -14px rgba(0,0,0,.6)}
-.c-sage .chip.wrong{box-shadow:inset 5px 0 0 var(--try),0 10px 22px -14px rgba(0,0,0,.6)}
-.c-sage .ghost{box-shadow:0 0 0 3px var(--sage-gold),0 24px 40px -16px rgba(0,0,0,.8)!important}
-.c-sage .bin .bhead{border-color:rgba(47,62,44,.32)}
-.c-sage .bin .bhead small{color:var(--sage-amber)}
-.c-sage .bin .drop:empty::before{border-color:rgba(47,62,44,.32)}
-.c-sage .bin.ready{border-color:var(--sage-gold);box-shadow:0 0 0 2px rgba(217,162,58,.8),0 14px 34px -18px rgba(0,0,0,.6)}
-.c-sage .bin.ready .drop:empty::before{border-color:rgba(160,110,20,.7)}
-.c-sage .bin.over{background:rgba(226,235,217,.98);color:#1f2e1d;border-color:var(--sage-gold);box-shadow:0 0 0 3px var(--sage-gold),0 18px 40px -18px rgba(0,0,0,.7)}
-.c-sage .bin.solid .bhead,.c-sage .bin.over .bhead{border-color:rgba(47,90,42,.25)}
-.c-sage .bin.solid .bhead small,.c-sage .bin.over .bhead small{color:var(--sage-amber)}
-.c-sage .bin.solid .drop:empty::before,.c-sage .bin.over .drop:empty::before{border-color:rgba(47,90,42,.25)}
-.c-sage .bin.solid .chip.solid{background:#f3f7ee;border-color:rgba(47,90,42,.2);box-shadow:none}
-.c-sage .bin.solid .chip.solid.sel{box-shadow:0 0 0 3px var(--sage-gold)}
-.c-sage .bin.solid .chip.right{background:#e2f0da;box-shadow:inset 5px 0 0 #4f8a3c}
-.c-sage .bin.solid .chip.wrong{background:#fbeadb;box-shadow:inset 5px 0 0 var(--try)}
-.c-sage .fb.tile.good{background:rgba(226,240,218,.98);color:#24501f}
-.c-sage .fb.tile.try{background:rgba(255,246,236,.97);color:#6b3412}
+/* ---------- light sage titles (frosted look) ---------- */
+:root{--sage:#b5cfa8;--sage-soft:rgba(206,224,196,.88);--sage-deep:#4c7442;--sage-deep-soft:#6a7f62}
+.where{color:var(--sage)}
+.head .prompt{color:var(--sage)}
+.wtile label{color:var(--sage)}
+.wtile label span{color:var(--sage-soft)}
+.bin .bhead b{color:var(--sage)}
+.bin .bhead small{color:var(--sage-soft)}
+/* on the opaque (engaged) tiles the light sage would wash out, so titles deepen to the same sage family */
+.wtile.solid label{color:var(--sage-deep)}
+.wtile.solid label span{color:var(--sage-deep-soft)}
+.bin.solid .bhead b,.bin.over .bhead b{color:var(--sage-deep)}
+.bin.solid .bhead small,.bin.over .bhead small{color:var(--sage-deep-soft)}
+.bin.solid .chip.solid{background:#f0f5ec;border-color:rgba(76,116,66,.2)}
 
 @media (max-width:760px){
   .screen{padding:12px 12px 20px}
   .topbar{flex-wrap:wrap}
   .tabs .tag{display:none}
-  .topbar .right{gap:6px}
-  .colors button{padding:6px 9px}
   .prompt{font-size:24px}
   .dir{font-size:15.5px}
   .grid{grid-template-columns:1fr;grid-auto-rows:minmax(138px,auto)}
@@ -224,7 +175,7 @@ body{overflow:hidden}
 <section class="screen" id="warmup" aria-label="Warm-up preview">
   <div class="topbar">
     <div class="pill tile where">The Entrance</div>
-    <div class="right"><div class="tabs tile colors" role="group" aria-label="Tile color"><button type="button" data-c="frosted"><span class="swatch f"></span>Frosted</button><button type="button" data-c="sage"><span class="swatch g"></span>Sage</button></div><nav class="tabs tile" aria-label="Preview screens"><span class="tag">Design preview</span><a href="#warmup" aria-current="page">Warm-up</a><a href="#sort">Sort</a></nav></div>
+    <nav class="tabs tile" aria-label="Preview screens"><span class="tag">Design preview</span><a href="#warmup" aria-current="page">Warm-up</a><a href="#sort">Sort</a></nav>
   </div>
   <div class="head tile">
     <p class="kind">A1 · Practice</p>
@@ -241,7 +192,7 @@ body{overflow:hidden}
 <section class="screen" id="sort" aria-label="Sort preview" hidden>
   <div class="topbar">
     <div class="pill tile where">The Root Tunnel</div>
-    <div class="right"><div class="tabs tile colors" role="group" aria-label="Tile color"><button type="button" data-c="frosted"><span class="swatch f"></span>Frosted</button><button type="button" data-c="sage"><span class="swatch g"></span>Sage</button></div><nav class="tabs tile" aria-label="Preview screens"><span class="tag">Design preview</span><a href="#warmup">Warm-up</a><a href="#sort" aria-current="page">Sort</a></nav></div>
+    <nav class="tabs tile" aria-label="Preview screens"><span class="tag">Design preview</span><a href="#warmup">Warm-up</a><a href="#sort" aria-current="page">Sort</a></nav>
   </div>
   <div class="head tile">
     <p class="kind">A2 · Star Power</p>
@@ -274,13 +225,6 @@ const A2={bins:['MAIN IDEA: The roller coaster ride was amazing.','MAIN IDEA: My
 
 let toastT;
 function toast(msg){const t=$('toast');t.textContent=msg;t.classList.remove('off');clearTimeout(toastT);toastT=setTimeout(()=>t.classList.add('off'),2600);}
-
-/* ---------- color variant: ?c=sage (default) or ?c=frosted ---------- */
-function setColor(c,push){c=c==='frosted'?'frosted':'sage';document.body.classList.toggle('c-sage',c==='sage');
-  document.querySelectorAll('.colors button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.c===c));
-  if(push){const u=new URL(location.href);u.searchParams.set('c',c);history.replaceState(null,'',u);}}
-setColor(new URLSearchParams(location.search).get('c'),false);
-document.querySelectorAll('.colors button').forEach(b=>b.onclick=()=>setColor(b.dataset.c,true));
 
 /* ---------- tabs ---------- */
 function show(){const which=location.hash==='#sort'?'sort':'warmup';
