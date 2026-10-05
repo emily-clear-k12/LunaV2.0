@@ -1202,7 +1202,7 @@
 
   /* ——— Plan A full-bleed cover scene (no leafy banner) ——— */
   .plana-stage {
-    background: #3a2860;
+    background: #2a1840;
   }
 
   .zscene {
@@ -1210,15 +1210,14 @@
     inset: 0;
     overflow: hidden;
     container-type: size;
-    background: #3a2860;
+    background: #2a1840;
   }
 
   /* Cover-fit, top-aligned: keep canopy/sky; crop sides/bottom as needed */
   .zscene-frame {
     position: absolute;
     left: 50%;
-    /* Nudge up: crop dark canopy so sky meets the switcher; keep portals above bar */
-    top: -18%;
+    top: 0;
     translate: -50% 0;
     aspect-ratio: 1280 / 776;
     width: max(100cqw, calc(100cqh * 1280 / 776));
@@ -1257,11 +1256,11 @@
   .z-mastery-pill {
     position: absolute;
     z-index: 8;
-    top: 10px;
-    right: 14px;
+    top: 8px;
+    right: 12px;
     display: flex;
     align-items: center;
-    gap: 6px;
+    gap: 5px;
     padding: 4px 6px;
     border-radius: 16px;
     border: 0;
@@ -1306,7 +1305,7 @@
     gap: 0.4rem;
     border-radius: 999px;
     border: 1.5px solid rgb(255 255 255 / 0.75);
-    background: #fff8eb;
+    background: rgb(255 248 235 / 0.9);
     padding: 0.45rem 1rem;
     font-family: "Baloo 2", "Nunito", var(--font-sans);
     font-size: 0.9rem;
@@ -1370,7 +1369,7 @@
   .z-plate {
     position: absolute;
     left: 50%;
-    bottom: 24%;
+    bottom: 6%;
     z-index: 4;
     display: flex;
     min-width: 6.2rem;
@@ -1425,8 +1424,7 @@
     border-radius: 999px;
     border: 1px solid rgb(255 255 255 / 1);
     background: rgb(255 248 235 / 0.92);
-    min-width: 6.2rem;
-    padding: 0.32rem 0.95rem;
+    padding: 0.42rem 1.05rem;
     font-family: "Baloo 2", "Nunito", var(--font-sans);
     font-size: 15px;
     font-weight: 800;
@@ -1435,23 +1433,22 @@
     text-align: center;
     white-space: nowrap;
     pointer-events: none;
-    box-shadow: 0 4px 12px rgb(40 20 60 / 0.2);
-    backdrop-filter: blur(8px) saturate(1.1);
-    -webkit-backdrop-filter: blur(8px) saturate(1.1);
+    box-shadow: 0 4px 12px rgb(40 20 60 / 0.22);
+    backdrop-filter: blur(10px) saturate(1.1);
+    -webkit-backdrop-filter: blur(10px) saturate(1.1);
   }
 
   .z-dots {
     position: absolute;
-    z-index: 5;
+    z-index: 2;
     display: flex;
     gap: 6px;
     translate: -50% -50%;
     border-radius: 12px;
-    background: rgb(20 15 40 / 0.55);
+    background: rgb(20 15 40 / 0.45);
     padding: 5px 9px;
     backdrop-filter: blur(6px);
     pointer-events: none;
-    box-shadow: 0 4px 12px rgb(10 8 30 / 0.35);
   }
 
   .z-dots i {
@@ -1460,23 +1457,18 @@
     height: 10px;
     transform: rotate(45deg);
     border-radius: 2px;
-    background: rgb(255 255 255 / 0.55);
-    box-shadow: 0 0 5px rgb(255 230 180 / 0.35);
-  }
-
-  .z-dots i.lit {
-    background: #ffe08a;
+    background: rgb(255 255 255 / 0.18);
   }
 
   .z-tip {
     position: absolute;
     z-index: 6;
-    left: 1.2%;
-    top: 11.5%;
-    width: min(228px, 16.8%);
+    left: 1.1%;
+    top: 12%;
+    width: min(230px, 17%);
     border: 1.5px solid rgb(255 255 255 / 0.75);
     border-radius: 18px;
-    background: rgb(255 248 235 / 0.96);
+    background: rgb(255 248 235 / 0.94);
     padding: 9px 13px;
     color: #4a2e1a;
     text-align: left;
@@ -1488,7 +1480,7 @@
   .z-tip::after {
     content: "";
     position: absolute;
-    left: 42px;
+    left: 98px;
     bottom: -9px;
     width: 16px;
     height: 16px;
@@ -1502,7 +1494,7 @@
   .z-tip-k {
     display: block;
     font-family: "Baloo 2", "Nunito", var(--font-sans);
-    font-size: 12px;
+    font-size: 11px;
     font-weight: 800;
     letter-spacing: 0.12em;
     text-transform: uppercase;
@@ -1513,9 +1505,9 @@
     display: block;
     margin-top: 2px;
     font-family: "Baloo 2", "Nunito", var(--font-sans);
-    font-size: 15.5px;
+    font-size: 13px;
     font-weight: 700;
-    line-height: 1.22;
+    line-height: 1.25;
   }
 
   .z-tip-dot {
@@ -1610,30 +1602,3 @@
     font-weight: 700;
     line-height: 1.35;
   }
-
-
-/* Plan A: solid slim switcher, no backdrop smear */
-html.vs-on:has(.plana-stage) .vswitch {
-  box-shadow: none !important;
-  backdrop-filter: none !important;
-  -webkit-backdrop-filter: none !important;
-  background: #120e28 !important;
-  border-bottom: 1px solid rgba(255, 210, 122, 0.28);
-}
-/* No frosted bleed under the switcher — sky/art starts immediately below */
-html.vs-on:has(.plana-stage) body {
-  background: transparent !important;
-}
-html.vs-on:has(.plana-stage) #root > .h-dvh > div {
-  transform-origin: unset;
-}
-
-  .plana-stage .absolute.bottom-2 { bottom: 0.2rem; }
-  .plana-stage .z-assign {
-    border-radius: 14px;
-    padding-top: 0.35rem !important;
-    padding-bottom: 0.35rem !important;
-  }
-  .plana-stage .z-assign .text-base { font-size: 0.95rem; line-height: 1.15; }
-  .plana-stage .z-assign button { min-height: 2.35rem; padding-top: 0.35rem; padding-bottom: 0.35rem; }
-

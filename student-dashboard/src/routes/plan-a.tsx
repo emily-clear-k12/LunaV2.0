@@ -33,11 +33,9 @@ type Lantern = {
   y: number;
   w: number;
   h: number;
-  /** Center of painted wooden sign under the lantern (for frosted label cover). */
+  /** Center of wooden plaque under lantern (image-space %) */
   signX: number;
   signY: number;
-  signW: number;
-  signH: number;
 };
 
 const CLASS_FOCUS = "Today, let's back every answer with evidence from the text!";
@@ -63,7 +61,7 @@ const modules: Module[] = [
     w: 11,
     h: 28,
     dotX: 25.9,
-    dotY: 68.8,
+    dotY: 80.5,
     accent: "#4aa3ff",
     lessons: [
       { title: "Answer the ask", world: "First crystals", minutes: 20, task: "Write a short answer that restates the question." },
@@ -83,7 +81,7 @@ const modules: Module[] = [
     w: 11,
     h: 28,
     dotX: 38.8,
-    dotY: 68.8,
+    dotY: 80.5,
     accent: "#7cc8ff",
     lessons: [
       { title: "Claim the sky", world: "Docking ring", minutes: 20, task: "Write a clear claim for a longer response." },
@@ -103,7 +101,7 @@ const modules: Module[] = [
     w: 11,
     h: 28,
     dotX: 51.5,
-    dotY: 68.8,
+    dotY: 80.5,
     accent: "#b46bff",
     lessons: [
       { title: "One complete thought", world: "First stones", minutes: 20, task: "Write three sentences that each say one whole idea." },
@@ -123,7 +121,7 @@ const modules: Module[] = [
     w: 11,
     h: 28,
     dotX: 64.5,
-    dotY: 68.8,
+    dotY: 80.5,
     accent: "#ff9a3c",
     lessons: [
       { title: "Read the prompt", world: "White trunks", minutes: 15, task: "Underline what the prompt is asking you to do." },
@@ -143,7 +141,7 @@ const modules: Module[] = [
     w: 11,
     h: 28,
     dotX: 78.1,
-    dotY: 68.8,
+    dotY: 80.5,
     accent: "#2fd6c8",
     lessons: [
       { title: "Name the idea", world: "Lookout", minutes: 15, task: "Say what the draft is really about, in one line." },
@@ -163,7 +161,7 @@ const modules: Module[] = [
     w: 11,
     h: 28,
     dotX: 92.3,
-    dotY: 68.8,
+    dotY: 80.5,
     accent: "#ff6fa8",
     lessons: [
       { title: "Capitals and stops", world: "Fallen leaves", minutes: 15, task: "Fix sentences that start or end the wrong way." },
@@ -175,16 +173,15 @@ const modules: Module[] = [
 
 const treehouseSpot = { x: 50, y: 42, w: 13, h: 26 };
 const astraSpot = { x: 9.5, y: 58, w: 13, h: 38 };
-/* lantern signs synced */
-const tipDotSpot = { x: 9.5, y: 18 };
+const tipDotSpot = { x: 12, y: 40 };
 
 /** Four interactive lanterns; any extra lantern in the art stays decorative. */
+/* compass=My goal, crystal=My progress, feather=Quick write (x~63.5), leaf=Practice (x~74.5) */
 const lanterns: Lantern[] = [
-  /* compass/star, crystal, feather=Quick write, leaf=Practice — sign centers = plaque midpoints */
-  { id: "goal", label: "My goal", x: 32.4, y: 33.5, w: 5.5, h: 12, signX: 32.42, signY: 42.53, signW: 0, signH: 0 },
-  { id: "progress", label: "My progress", x: 40.2, y: 34.0, w: 5.5, h: 12, signX: 40.23, signY: 43.04, signW: 0, signH: 0 },
-  { id: "quick", label: "Quick write", x: 64.1, y: 37.0, w: 5.5, h: 12, signX: 64.14, signY: 46.39, signW: 0, signH: 0 },
-  { id: "practice", label: "Practice", x: 75.4, y: 33.5, w: 5.5, h: 12, signX: 75.39, signY: 42.53, signW: 0, signH: 0 },
+  { id: "goal", label: "My goal", x: 34.5, y: 33.5, w: 5.5, h: 12, signX: 32.8, signY: 43.0 },
+  { id: "progress", label: "My progress", x: 41.5, y: 34, w: 5.5, h: 12, signX: 40.8, signY: 43.0 },
+  { id: "quick", label: "Quick write", x: 63.5, y: 37, w: 5.5, h: 12, signX: 63.2, signY: 46.2 },
+  { id: "practice", label: "Practice", x: 74.5, y: 33.5, w: 5.5, h: 12, signX: 74.3, signY: 42.8 },
 ];
 
 const assignments = [
@@ -414,7 +411,7 @@ function StudentHome() {
               <div className="zscene">
                 <div className="zscene-frame">
                   <img
-                    src={asset("portal-hub-clean.jpg")}
+                    src={asset("portal-hub-z.jpg")}
                     alt="Astra beside six magical portals under a lantern treehouse"
                     className="zscene-img"
                   />
@@ -837,7 +834,7 @@ function AssignmentBar({
 }) {
   const today = assignments[0];
   return (
-    <section className="absolute inset-x-0 bottom-0.5 z-10 flex flex-col items-center gap-0.5 px-3">
+    <section className="absolute inset-x-0 bottom-3 z-10 flex flex-col items-center gap-2 px-4">
       {ecrNote ? (
         <p className="z-assign max-w-xl px-4 py-3 text-sm">
           Extended responses are the longer writes. Today’s path is Short Responses.
@@ -847,18 +844,18 @@ function AssignmentBar({
         </p>
       ) : null}
       <div className="z-assign w-full max-w-xl">
-        <div className="flex min-h-8 items-center gap-2 px-2 py-0">
-          <button type="button" onClick={onToggle} className="min-w-0 flex-1 py-1 text-left" aria-expanded={open}>
+        <div className="flex min-h-14 items-center gap-2 px-3">
+          <button type="button" onClick={onToggle} className="min-w-0 flex-1 py-2 text-left" aria-expanded={open}>
             <span className="block text-[11px] font-extrabold tracking-[0.08em] text-[#a0521d]">
               CURRENT ASSIGNMENT
             </span>
-            <span className="block truncate text-[14px] font-bold leading-tight">{today.title}</span>
+            <span className="block truncate text-[17px] font-bold leading-tight">{today.title}</span>
           </button>
           <button
             type="button"
             onClick={() => onOpen(today.moduleId, today.lesson, today.title)}
             className={
-              "start-write inline-flex min-h-8 shrink-0 items-center rounded-full bg-[#8a4a17] px-3.5 text-sm font-extrabold text-white" +
+              "start-write inline-flex min-h-11 shrink-0 items-center rounded-full bg-[#8a4a17] px-5 text-sm font-extrabold text-white" +
               (assignments.length > 1 ? " start-write-glow" : "")
             }
           >
@@ -869,7 +866,7 @@ function AssignmentBar({
             onClick={onToggle}
             aria-label={open ? "Hide assignments" : "Show all assignments"}
             aria-expanded={open}
-            className="assign-chip grid size-9 place-items-center"
+            className="assign-chip grid size-11 place-items-center"
           >
             <img src={asset("crystal.png")} alt="" className="assign-crystal" />
           </button>
