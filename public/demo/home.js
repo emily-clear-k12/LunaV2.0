@@ -1,5 +1,14 @@
 (function () {
   const STORAGE_KEY = "astra-demo-alex-v1";
+  // Resolve thumbs and module links from this script's folder so the same
+  // home works at /demo/ and at the site root.
+  const assetBase = new URL(
+    "./",
+    (document.currentScript && document.currentScript.src) || location.href
+  );
+  function asset(rel) {
+    return new URL(String(rel).replace(/^\.\//, ""), assetBase).href;
+  }
 
   function loadProgress() {
     try {
@@ -77,12 +86,12 @@
     const tag = m.open ? "a" : "div";
     const card = document.createElement(tag);
     card.className = "module-card " + (m.open ? "openable" : "locked") + (m.done ? " done" : "");
-    if (m.open && m.href) card.href = m.href;
+    if (m.open && m.href) card.href = asset(m.href);
 
     const num = document.createElement("div");
     num.className = "module-num";
     num.style.backgroundImage =
-      "linear-gradient(145deg, rgba(47,70,52,0.55), rgba(20,32,24,0.55)), url('" + m.thumb + "')";
+      "linear-gradient(145deg, rgba(47,70,52,0.55), rgba(20,32,24,0.55)), url('" + asset(m.thumb) + "')";
     num.textContent = m.done ? "✓" : String(m.n);
 
     const body = document.createElement("div");

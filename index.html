@@ -2,16 +2,46 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="Astra Writing Adventure — enchanted forest writing trails (Package A / B)" />
+    <title>Astra · Student home</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet" />
-    <title>Astra Writing Adventure</title>
+    <link rel="stylesheet" href="./demo/styles.css" />
   </head>
   <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.tsx"></script>
+    <div class="demo-shell" id="shell" style="background-image: url('./demo/lesson/scene1.jpg')">
+      <header class="demo-topbar">
+        <a class="brand" href="./">
+          <span class="brand-mark" aria-hidden="true">✦</span>
+          <span class="brand-text"><small>CLEAR</small><b>ASTRA</b></span>
+        </a>
+        <div class="student-chip">
+          <strong>Alex · Grade 4</strong>
+          <span>Demo Class · Writing Adventure</span>
+        </div>
+      </header>
+
+      <main class="demo-main">
+        <section class="panel">
+          <span class="eyebrow">Student home</span>
+          <h1>Welcome back, Alex</h1>
+          <p class="lede">
+            Pick a writing module to continue your trail. Open modules light up when you can enter them.
+          </p>
+
+          <div class="zone">
+            <h2 class="zone-title">Zone 1 · Craft</h2>
+            <div class="module-grid" id="zone1"></div>
+          </div>
+
+          <div class="zone">
+            <h2 class="zone-title">Zone 2 · Responses</h2>
+            <div class="module-grid" id="zone2"></div>
+          </div>
+        </section>
+      </main>
+    </div>
+    <script src="./demo/home.js"></script>
   </body>
 </html>
