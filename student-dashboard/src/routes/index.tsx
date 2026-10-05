@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { ArrowLeft, Check, FileText, Lightbulb, Pencil, Search, Star } from "lucide-react";
+import { ArrowLeft, Check } from "lucide-react";
 import { useEffect, useState } from "react";
 
 export const Route = createFileRoute("/")({ component: StudentHome });
@@ -175,12 +175,12 @@ const assignments = [
 ];
 
 const badges = [
-  { id: "scr", label: "SCR", name: "Short responses", moduleId: "short", Icon: FileText },
-  { id: "ecr", label: "ECR", name: "Extended responses", moduleId: "", Icon: FileText },
-  { id: "stellar", label: "Stellar", name: "Sentences", moduleId: "sentences", Icon: Star },
-  { id: "process", label: "Process", name: "Preparing to write", moduleId: "plan", Icon: Lightbulb },
-  { id: "revision", label: "Revision", name: "Revision", moduleId: "revise", Icon: Search },
-  { id: "editing", label: "Editing", name: "Editing", moduleId: "edit", Icon: Pencil },
+  { id: "scr", label: "SCR", name: "Short responses", moduleId: "short" },
+  { id: "ecr", label: "ECR", name: "Extended responses", moduleId: "" },
+  { id: "stellar", label: "Stellar", name: "Sentences", moduleId: "sentences" },
+  { id: "process", label: "Process", name: "Preparing to write", moduleId: "plan" },
+  { id: "revision", label: "Revision", name: "Revision", moduleId: "revise" },
+  { id: "editing", label: "Editing", name: "Editing", moduleId: "edit" },
 ];
 
 const savedAtStart: Writing[] = [
@@ -316,10 +316,8 @@ function StudentHome() {
         style={{ width: STAGE_W, height: STAGE_H, transform: `scale(${scale})` }}
       >
       <header className="title-bar">
-        <img src={asset("leaf-cluster-left.png")} alt="" className="title-leaves title-leaves-left" />
-        <img src={asset("leaf-cluster-right.png")} alt="" className="title-leaves title-leaves-right" />
+        <img src={asset("astra-banner.jpg")} alt="" className="title-banner" />
         <div className="title-left">
-          <img src={asset("crystal.png")} alt="" className="title-crystal" />
           <h1 className="title-heading">Astra’s Writing Adventure</h1>
         </div>
         {focus ? (
@@ -336,7 +334,12 @@ function StudentHome() {
             <span className="mastery-label">Your Mastery</span>
             <div className="mastery-row">
               {badges.map((badge) => {
-                const active = badge.id === "scr";
+                const active =
+                  badge.id === "scr" ||
+                  (badge.moduleId ? mastered(badge.moduleId) : false);
+                const src = asset(
+                  `badges/${badge.id}-${active ? "active" : "inactive"}.png`,
+                );
                 return (
                   <button
                     key={badge.id}
@@ -353,18 +356,7 @@ function StudentHome() {
                     title={badge.name}
                     className={active ? "medal medal-live" : "medal"}
                   >
-                    <span className="medal-disc">
-                      {active ? (
-                        <img src={asset("crystal.png")} alt="" className="medal-crystal" />
-                      ) : (
-                        <badge.Icon className="medal-icon" aria-hidden="true" strokeWidth={2.4} />
-                      )}
-                      {active ? (
-                        <span className="medal-check" aria-hidden="true">
-                          <Check className="size-2.5" strokeWidth={3} />
-                        </span>
-                      ) : null}
-                    </span>
+                    <img src={src} alt="" className="medal-art" />
                     <span className="medal-label">{badge.label}</span>
                   </button>
                 );
