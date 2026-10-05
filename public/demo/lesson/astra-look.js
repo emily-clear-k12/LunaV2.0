@@ -62,7 +62,7 @@
 
   function parkFeedback() {
     if (!foot || !body || syncing) return;
-    body.querySelectorAll('.feedback').forEach((f) => {
+    body.querySelectorAll('.feedback:not(.inline)').forEach((f) => {
       if (!foot.contains(f)) foot.prepend(f);
     });
   }

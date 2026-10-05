@@ -122,3 +122,74 @@
 .astra > .pouch,.astra > .replay-list,.astra > .toast{position:fixed}
 .astra .vscreen .vx{top:8px;right:8px}
 .astra .vframe{max-height:600px}
+
+/* ---------- Part 3: A6-A11 ---------- */
+/* shared reading tiles (The Text, claim, prompts) */
+.astra .rtext{padding:12px 16px 13px;display:flex;flex-direction:column;gap:5px;min-height:0}
+.astra .rtext h4{margin:0;font:800 19px/1.15 var(--display);color:var(--a-cream-ink)}
+.astra .rtext .sub{margin:0;font:700 13px var(--body);color:var(--a-cream-muted)}
+.astra .rtext p{margin:0;font-size:15.5px;line-height:1.55;font-weight:600;color:var(--a-cream-ink)}
+.astra .rtext .tag{margin:0;font:800 11.5px var(--body);letter-spacing:.12em;text-transform:uppercase;color:var(--a-cream-muted)}
+.astra .rclaim{padding:10px 16px 11px;font-weight:800;font-size:16px;line-height:1.4;box-shadow:inset 4px 0 0 #d08a1e,inset 0 1px 0 rgba(255,255,255,.6),0 14px 34px -18px rgba(0,0,0,.7)}
+.astra .rclaim small,.astra .rstem small{display:block;font:800 11px var(--body);letter-spacing:.12em;text-transform:uppercase;color:var(--a-cream-muted);margin-bottom:2px}
+.astra .rstem{margin:0;padding:9px 16px 10px;font-weight:800;font-size:16px;line-height:1.35}
+/* two-column layout: reading on the left, answer on the right */
+.astra .aevi{flex:1;min-height:0;display:grid;grid-template-columns:minmax(0,5fr) minmax(0,6fr);gap:16px;align-items:start}
+.astra .aevi.wide{grid-template-columns:minmax(0,6fr) minmax(0,5fr)}
+.astra .aevi > .acol{gap:10px}
+.astra .aevi .tag-cue{margin:0;font:800 13px var(--body);letter-spacing:.06em;color:#fff;text-shadow:0 1px 3px #000,0 0 10px rgba(0,0,0,.6)}
+/* dark choice tiles (A6 single pick, A8/A9 multi pick): solid near-white + gold ring when chosen */
+.astra .opts{display:flex;flex-direction:column;gap:8px;min-height:0}
+.astra .opts.two{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.astra .opt{appearance:none;-webkit-appearance:none;margin:0;width:100%;text-align:left;cursor:pointer;display:flex;align-items:flex-start;gap:12px;
+  padding:11px 14px;font:700 15.5px/1.4 var(--body);color:#fff;text-shadow:0 1px 2px rgba(0,0,0,.35);border-radius:16px}
+.astra .opts.two .opt{padding:14px 16px;font-size:16.5px;min-height:76px;align-items:center}
+.astra .opt .tick{flex:none;width:22px;height:22px;margin-top:1px;border-radius:7px;border:2px solid rgba(255,255,255,.7);display:grid;place-items:center;
+  font:800 13px var(--body);color:#fff;background:transparent;transition:background .25s,border-color .25s}
+.astra .opt.radio .tick{border-radius:50%}
+.astra .opt:hover:not(:disabled){border-color:rgba(255,255,255,.55)}
+.astra .opt:focus-visible{outline:3px solid var(--crystal);outline-offset:2px}
+.astra .opt[aria-pressed="true"],.astra .opt[aria-checked="true"]{background:var(--a-solid);border-color:#fff;color:var(--a-solid-ink);text-shadow:none;
+  box-shadow:0 0 0 3px rgba(255,210,122,.95),0 18px 40px -18px rgba(0,0,0,.8);backdrop-filter:none;-webkit-backdrop-filter:none}
+.astra .opt[aria-pressed="true"] .tick,.astra .opt[aria-checked="true"] .tick{background:#e9a23b;border-color:#e9a23b}
+.astra .opt.right{box-shadow:inset 5px 0 0 var(--a-good),0 0 0 3px rgba(63,174,115,.85),0 18px 40px -18px rgba(0,0,0,.8)!important}
+.astra .opt.right .tick{background:var(--a-good)!important;border-color:var(--a-good)!important}
+.astra .opt.wrong{box-shadow:inset 5px 0 0 var(--a-try),0 0 0 3px rgba(232,128,63,.85),0 18px 40px -18px rgba(0,0,0,.8)!important}
+.astra .opt.wrong .tick{background:var(--a-try)!important;border-color:var(--a-try)!important}
+.astra .opt:disabled{cursor:default}
+/* A7: tappable passage on cream, gold highlight */
+.astra .rtext.passage p{font-size:16.5px;line-height:1.75}
+.astra .rtext.passage .s{cursor:pointer;border-radius:6px;padding:2px 3px;transition:background .2s,box-shadow .2s}
+.astra .rtext.passage .s:hover{background:rgba(233,162,59,.18)}
+.astra .rtext.passage .s[aria-pressed="true"]{background:#ffd27a;box-shadow:0 0 0 2px #e9a23b;color:#2a1e08}
+.astra .rtext.passage .s.right{background:rgba(63,174,115,.32);box-shadow:0 0 0 2px var(--a-good)}
+.astra .rtext.passage .s.wrong{background:rgba(232,128,63,.3);box-shadow:0 0 0 2px var(--a-try)}
+.astra .rtext.passage .s:focus-visible{outline:3px solid #2e66a8;outline-offset:1px}
+.astra .tapcue{display:flex;align-items:center;gap:10px;margin:0;align-self:flex-start;padding:7px 14px;border-radius:999px;font:800 14.5px var(--body);color:#fff}
+.astra .tapcue b{font:800 16px var(--display);color:var(--gold)}
+.astra .tapcue .dots{display:flex;gap:5px}
+.astra .tapcue .dots i{width:11px;height:11px;border-radius:50%;border:2px solid rgba(255,255,255,.7)}
+.astra .tapcue .dots i.on{background:var(--gold);border-color:var(--gold)}
+.astra .rtext .bp2{padding:5px 10px 6px;margin:0 -10px;border-radius:10px;background:rgba(233,162,59,.2);box-shadow:inset 3px 0 0 #d08a1e}
+.astra .rtext .bp2 small{display:block;font:800 10.5px var(--body);letter-spacing:.12em;text-transform:uppercase;color:#a8551b}
+/* A9: essay on cream with the highlighted sentence */
+.astra .rtext.essay p{font-size:14.5px;line-height:1.55}
+.astra .rtext .hl{background:#ffd27a;box-shadow:0 0 0 2px #e9a23b;border-radius:4px;padding:1px 3px;color:#2a1e08;box-decoration-break:clone;-webkit-box-decoration-break:clone}
+/* inline feedback under an answer (A10, A11) */
+.astra .feedback.inline{margin:0;max-width:none;padding:7px 12px;font-size:14px;line-height:1.4;border-radius:12px}
+.astra .feedback.inline ul{margin:2px 0 0;padding-left:18px}
+.astra .feedback.inline b + ul{margin-top:2px}
+/* A10/A11: answer tiles */
+.astra .wtile.ans{padding:10px 14px 9px}
+.astra .wtile.ans label{font-size:17px}
+.astra .wtile.ans textarea{min-height:0;margin-top:4px;font-size:16.5px;line-height:1.45}
+.astra .qpairs{flex:1;min-height:0;display:flex;flex-direction:column;gap:14px}
+.astra .qpair{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,6fr);gap:16px;align-items:start}
+.astra .qpair .rtext p{font-size:15.5px}
+.astra .qpair .acol{gap:6px}
+@media (max-width:860px){
+  .astra .aevi,.astra .aevi.wide,.astra .qpair,.astra .opts.two{grid-template-columns:1fr}
+}
+.astra .wtile.ans .done{display:none} /* a filled answer is not a correct answer */
+.astra .feedback.inline.try{box-shadow:inset 4px 0 0 var(--a-try),0 10px 22px -14px rgba(0,0,0,.6)}
+.astra .feedback.inline.good{box-shadow:inset 4px 0 0 var(--a-good),0 10px 22px -14px rgba(0,0,0,.6)}

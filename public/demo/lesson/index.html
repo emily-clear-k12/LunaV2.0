@@ -453,10 +453,10 @@ document.addEventListener('pointerdown',audio,{once:true});
 /* ---------- card helpers ---------- */
 const esc=s=>String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;');
 let canGo=false;
-function setFoot(html){foot.innerHTML=html;}
+function setFoot(html){foot.innerHTML=html;canGo=false;}
 function goBtn(label,enabled,fn){setFoot(`<button class="go" id="go"${enabled?'':' disabled'}>${label}</button>`);$('go').onclick=fn||advance;canGo=enabled;}
 function enableGo(){const g=$('go');if(g){g.disabled=false;}canGo=true;}
-function fb(cls,html){let f=foot.querySelector('.feedback')||body.querySelector('.feedback');if(!f){f=document.createElement('p');foot.appendChild(f);}f.className='feedback '+cls;f.innerHTML=html;}
+function fb(cls,html){let f=foot.querySelector('.feedback')||body.querySelector('.feedback:not(.inline)');if(!f){f=document.createElement('p');foot.appendChild(f);}f.className='feedback '+cls;f.innerHTML=html;}
 function head(s){return `<div class="L head-L" style="display:flex;flex-direction:column;gap:8px"><p class="kind">${esc(s.code)} · ${s.scored===false?'Practice':'Star Power'}</p><p class="prompt">${esc(s.title.replace('Star Power: ',''))}</p><p class="dir">${esc(s.dir)}</p></div>`;}
 function scoreFirst(ok){if(!(si in attempted)){attempted[si]=ok;graded++;if(ok)firstTry++;}}
 function correct(){lightCrystal();yay();reward();}
@@ -511,36 +511,39 @@ function renderSort(s){
     if(!wrong){fb('good','Every sentence is in the right place!');correct();enableGo();}
     else{fb('try',`${wrong} ${wrong===1?'sentence is':'sentences are'} back at the top. Read ${wrong===1?'it':'them'} again and try another box.`);nope();}}});
 }
-function textBox(s){return `<div class="box L"><h4>${esc(s.textTitle)}</h4>${s.textSub?`<p style="color:var(--muted);font-size:13px">${esc(s.textSub)}</p>`:''}<p>${s.sentences.map((t,i)=>`(${i+1}) ${esc(t)}`).join(' ')}</p></div>`;}
+function textBox(s){return `<div class="tile cream rtext"><h4>${esc(s.textTitle)}</h4>${s.textSub?`<p class="sub">${esc(s.textSub)}</p>`:''}<p>${s.sentences.map((t,i)=>`(${i+1}) ${esc(t)}`).join(' ')}</p></div>`;}
+const claimTile=s=>`<div class="tile cream rclaim"><small>Student’s Claim</small>${esc(s.claim)}</div>`;
+function optTile(o,i,radio){return `<button type="button" class="tile opt${radio?' radio':''}" ${radio?'role="radio" aria-checked="false"':'aria-pressed="false"'} data-i="${i}"><span class="tick" aria-hidden="true"></span><span>${esc(o)}</span></button>`;}
 function renderDropdown(s){
-  body.innerHTML=head(s)+textBox(s)+`<div class="claim"><small>Student’s Claim</small>${esc(s.claim)}</div>
-    <div class="field"><label for="dd${si}">Evidence:</label><p style="margin:0 0 6px;font-weight:700">${esc(s.stem)}</p>
-    <select id="dd${si}"><option value="">Choose the evidence…</option>${s.sentences.map((t,i)=>`<option value="${i}">${DQ}${esc(t)}${CQ}</option>`).join('')}</select></div>`;
+  body.innerHTML=head(s)+`<div class="aevi"><div class="acol">${textBox(s)}${claimTile(s)}</div><div class="acol"><p class="tile cream rstem"><small>Evidence:</small>${esc(s.stem)}</p>
+    <div class="opts" role="radiogroup" aria-label="Choose the evidence">${s.sentences.map((t,i)=>optTile(DQ+t+CQ,i,true)).join('')}</div></div></div>`;
   setFoot('<button class="check" id="chk" disabled>Check</button><button class="go" id="go" disabled>Continue</button>');$('go').onclick=advance;
-  const dd=$('dd'+si);dd.onchange=()=>{$('chk').disabled=dd.value==='';};
-  $('chk').onclick=()=>{const ok=+dd.value===s.answer;scoreFirst(ok);
-    if(ok){dd.disabled=true;$('chk').remove();fb('good',`That sentence proves the claim. The mission changed the space program by leading to many more missions.`);correct();enableGo();}
-    else{fb('try','That is from the text, but does it show how the space program <b>changed</b>? Try another sentence.');nope();}};
+  const ops=[...body.querySelectorAll('.opt')];let val='';
+  ops.forEach(o=>o.onclick=()=>{if(o.disabled)return;val=o.dataset.i;ops.forEach(x=>{const on=x===o;x.setAttribute('aria-checked',on);x.querySelector('.tick').textContent=on?'✓':'';x.classList.remove('wrong');});$('chk').disabled=false;});
+  $('chk').onclick=()=>{const ok=val!==''&&+val===s.answer;scoreFirst(ok);const o=ops[+val];
+    if(ok){ops.forEach(x=>x.disabled=true);o.classList.add('right');$('chk').remove();fb('good',`That sentence proves the claim. The mission changed the space program by leading to many more missions.`);correct();enableGo();}
+    else{if(o)o.classList.add('wrong');fb('try','That is from the text, but does it show how the space program <b>changed</b>? Try another sentence.');nope();}};
 }
 function renderTap(s){
-  body.innerHTML=head(s)+`<div class="box passage L"><h4>${esc(s.textTitle)}</h4><p>${s.sentences.map((t,i)=>`<span class="s" role="button" tabindex="0" aria-pressed="false" data-i="${i}">(${i+1}) ${esc(t)}</span>`).join(' ')}</p></div>
-    <div class="box"><h4>Main idea outline</h4>${s.outline.map(o=>`<p${o.startsWith('Body Paragraph 2')?' class="mark"':''}>${esc(o)}</p>`).join('')}</div>`;
+  body.innerHTML=head(s)+`<div class="aevi wide"><div class="acol"><p class="tapcue glass">Tap <b>${s.pick}</b> sentences <span class="dots" aria-hidden="true">${'<i></i>'.repeat(s.pick)}</span></p>
+    <div class="tile cream rtext passage"><h4>${esc(s.textTitle)}</h4><p>${s.sentences.map((t,i)=>`<span class="s" role="button" tabindex="0" aria-pressed="false" data-i="${i}">(${i+1}) ${esc(t)}</span>`).join(' ')}</p></div></div>
+    <div class="acol"><div class="tile cream rtext"><h4>Main idea outline</h4>${s.outline.map(o=>`<p${o.startsWith('Body Paragraph 2')?' class="bp2"':''}>${ctxLine(o)}</p>`).join('')}</div></div></div>`;
   setFoot('<button class="check" id="chk" disabled>Check</button><button class="go" id="go" disabled>Continue</button>');$('go').onclick=advance;
-  const spans=[...body.querySelectorAll('.s')];
-  const toggle=el=>{if(canGo)return;const on=el.getAttribute('aria-pressed')!=='true';if(on&&spans.filter(x=>x.getAttribute('aria-pressed')==='true').length>=s.pick)return;el.setAttribute('aria-pressed',on);el.classList.remove('wrong');$('chk').disabled=spans.filter(x=>x.getAttribute('aria-pressed')==='true').length!==s.pick;};
+  const spans=[...body.querySelectorAll('.s')],dots=[...body.querySelectorAll('.tapcue i')];
+  const cnt=()=>spans.filter(x=>x.getAttribute('aria-pressed')==='true').length,cue=()=>{const n=cnt();dots.forEach((d,k)=>d.classList.toggle('on',k<n));};
+  const toggle=el=>{if(canGo)return;const on=el.getAttribute('aria-pressed')!=='true';if(on&&cnt()>=s.pick)return;el.setAttribute('aria-pressed',on);el.classList.remove('wrong');$('chk').disabled=cnt()!==s.pick;cue();};
   spans.forEach(el=>{el.onclick=()=>toggle(el);el.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();toggle(el);}};});
   $('chk').onclick=()=>{const picked=spans.filter(x=>x.getAttribute('aria-pressed')==='true').map(x=>+x.dataset.i);const ok=s.answer.every(a=>picked.includes(a));scoreFirst(ok);
     picked.forEach(i=>spans[i].classList.add(s.answer.includes(i)?'right':'wrong'));
     if(ok){$('chk').remove();spans.forEach(x=>{x.tabIndex=-1;x.style.cursor='default';});fb('good','Both sentences show discoveries Goodall made about chimpanzees.');correct();enableGo();}
     else{fb('try','Body paragraph 2 is about her <b>discoveries about chimpanzees</b>. Tap a highlighted sentence to unselect it and try again.');nope();
-      picked.filter(i=>!s.answer.includes(i)).forEach(i=>{spans[i].setAttribute('aria-pressed','false');setTimeout(()=>spans[i].classList.remove('wrong'),1400);});$('chk').disabled=true;}};
+      picked.filter(i=>!s.answer.includes(i)).forEach(i=>{spans[i].setAttribute('aria-pressed','false');setTimeout(()=>spans[i].classList.remove('wrong'),1400);});$('chk').disabled=true;cue();}};
 }
 function renderMulti(s){
-  let ctx='';
-  if(s.essay){ctx=`<div class="box L"><p>${esc(s.essay[0])}</p><p>${esc(s.essay[1][0])}<span class="mark">${esc(s.essay[1][1])}</span>${esc(s.essay[1][2])}</p></div>`;}
-  body.innerHTML=head(s)+ctx+`<div class="choices">${s.options.map((o,i)=>`<button class="choice" aria-pressed="false" data-i="${i}"><span class="tick" aria-hidden="true"></span><span>${esc(o)}</span></button>`).join('')}</div>`;
+  const opts=`<div class="opts${s.essay?'':' two'}">${s.options.map((o,i)=>optTile(o,i)).join('')}</div>`;
+  body.innerHTML=head(s)+(s.essay?`<div class="aevi wide"><div class="tile cream rtext essay"><p>${esc(s.essay[0])}</p><p>${esc(s.essay[1][0])}<span class="hl">${esc(s.essay[1][1])}</span>${esc(s.essay[1][2])}</p></div>${opts}</div>`:opts);
   setFoot('<button class="check" id="chk" disabled>Check</button><button class="go" id="go" disabled>Continue</button>');$('go').onclick=advance;
-  const ch=[...body.querySelectorAll('.choice')];
+  const ch=[...body.querySelectorAll('.opt')];
   ch.forEach(c=>c.onclick=()=>{const on=c.getAttribute('aria-pressed')!=='true';c.setAttribute('aria-pressed',on);c.querySelector('.tick').textContent=on?'✓':'';c.classList.remove('wrong','right');$('chk').disabled=!ch.some(x=>x.getAttribute('aria-pressed')==='true');});
   $('chk').onclick=()=>{const picked=ch.filter(x=>x.getAttribute('aria-pressed')==='true').map(x=>+x.dataset.i);
     const ok=picked.length===s.answer.length&&s.answer.every(a=>picked.includes(a));scoreFirst(ok);
@@ -563,26 +566,26 @@ function quoteHints(v,sentence){
   return h;
 }
 function renderQuote(s){
-  body.innerHTML=head(s)+s.items.map((it,i)=>`<div class="box"><p><b>Use the sentence starter:</b> ${esc(it.starter)}</p><p><b>Quote this Sentence:</b> ${esc(it.sentence)}</p>
-    <input type="text" id="q${si}_${i}" autocomplete="off" aria-label="Your evidence sentence ${i+1}" value="${esc(it.starter)} "></div>`).join('');
+  body.innerHTML=head(s)+`<div class="qpairs">${s.items.map((it,i)=>`<div class="qpair"><div class="tile cream rtext"><p><b>Use the sentence starter:</b> ${esc(it.starter)}</p><p><b>Quote this Sentence:</b> ${esc(it.sentence)}</p></div>
+    <div class="acol"><div class="tile wtile ans"><span class="done" aria-hidden="true">✓</span><label for="q${si}_${i}">Sentence ${i+1}</label><textarea id="q${si}_${i}" rows="2" autocomplete="off" spellcheck="false" aria-label="Your evidence sentence ${i+1}">${esc(it.starter)} </textarea><div class="line"></div></div><div class="feedback inline" id="qf${si}_${i}" hidden></div></div></div>`).join('')}</div>`;
   setFoot('<button class="check" id="chk">Check</button><button class="go" id="go" disabled>Continue</button>');$('go').onclick=()=>{toastMsg('Saved for your teacher');advance();};
-  $('chk').onclick=()=>{const all=[];s.items.forEach((it,i)=>{const h=quoteHints($('q'+si+'_'+i).value,it.sentence);if(h.length)all.push(`<b>Sentence ${i+1}:</b><ul>${h.map(x=>`<li>${x}</li>`).join('')}</ul>`);});
-    scoreFirst(all.length===0);
-    if(!all.length){fb('good','Both evidence sentences are quoted like a pro!');correct();$('chk').remove();enableGo();}
-    else{fb('try',all.join(''));nope();enableGo();}};
+  $('chk').onclick=()=>{let bad=0;s.items.forEach((it,i)=>{const h=quoteHints($('q'+si+'_'+i).value,it.sentence),f=$('qf'+si+'_'+i);
+      if(h.length){bad++;f.className='feedback inline try';f.innerHTML=`<ul>${h.map(x=>`<li>${x}</li>`).join('')}</ul>`;f.hidden=false;}else{f.hidden=true;f.innerHTML='';}});
+    scoreFirst(bad===0);
+    if(!bad){fb('good','Both evidence sentences are quoted like a pro!');correct();$('chk').remove();enableGo();}
+    else{const g=foot.querySelector('.feedback');if(g)g.remove();nope();enableGo();}};
 }
 function renderEvidence(s){
-  body.innerHTML=head(s)+textBox(s)+`<div class="claim"><small>Student’s Claim</small>${esc(s.claim)}</div>
-    <div class="field"><label for="ev${si}">Evidence:</label><textarea id="ev${si}" rows="3"></textarea></div>`;
+  body.innerHTML=head(s)+`<div class="aevi"><div class="acol">${textBox(s)}${claimTile(s)}</div><div class="acol"><div class="tile wtile ans ev"><span class="done" aria-hidden="true">✓</span><label for="ev${si}">Evidence:</label><textarea id="ev${si}" rows="3" placeholder="Tap to write…"></textarea><div class="line"></div></div><div class="feedback inline" id="evf${si}" hidden></div></div></div>`;
   setFoot('<button class="check" id="chk" disabled>Check</button><button class="go" id="go" disabled>Submit</button>');$('go').onclick=()=>{done[si]=true;toastMsg('Saved for your teacher');advance();};
   const ta=$('ev'+si);ta.oninput=()=>{$('chk').disabled=ta.value.trim().length<10;};
   $('chk').onclick=()=>{const t=normQ(ta.value),q=(t.match(/"([^"]*)"/)||[])[1]||'';
     const src=s.sentences.find(x=>normQ(q).replace(/[.!?]$/,'')===normQ(x).replace(/\.$/,''));
     const h=src?quoteHints(ta.value,src):(q?['Quote one sentence from the text exactly, word for word.']:quoteHints(ta.value,'x'));
     if(!/dangerous chemicals|diaz/i.test(t))h.unshift('Use a sentence starter that tells where the quote came from, like the title or the author.');
-    scoreFirst(h.length===0);
-    if(!h.length){fb('good','Clear, specific, and quoted correctly. Submit it when you’re ready.');correct();}
-    else{fb('try',`<ul>${h.map(x=>`<li>${x}</li>`).join('')}</ul>`);nope();}
+    scoreFirst(h.length===0);const f=$('evf'+si);f.hidden=false;
+    if(!h.length){f.className='feedback inline good';f.textContent='Clear, specific, and quoted correctly. Submit it when you’re ready.';correct();}
+    else{f.className='feedback inline try';f.innerHTML=`<ul>${h.map(x=>`<li>${x}</li>`).join('')}</ul>`;nope();}
     enableGo();};
 }
 function renderEnd(){
