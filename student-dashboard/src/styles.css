@@ -111,14 +111,7 @@
     background: var(--color-lantern);
   }
 
-  .gem-badge {
-    display: flex;
-    min-width: 3.1rem;
-    flex-direction: column;
-    align-items: center;
-    gap: 0.15rem;
-    color: var(--color-fog);
-  }
+  /* mastery medals replace gem-badge */
 
   .pane-break {
     width: 0.7rem;
@@ -130,41 +123,202 @@
   }
 
   .title-bar {
+    position: relative;
     display: flex;
-    height: 4.75rem;
+    height: 5.5rem;
     flex-shrink: 0;
     align-items: center;
     justify-content: space-between;
-    gap: 1rem;
-    padding: 0 1.25rem;
-    background: #101c18;
-    border-bottom: 1px solid rgb(140 210 255 / 0.2);
+    gap: 0.85rem;
+    padding: 0 1.1rem 0 0.85rem;
+    overflow: hidden;
+    background:
+      linear-gradient(180deg, rgb(255 255 255 / 0.07), transparent 40%),
+      linear-gradient(90deg, #143226 0%, #1c4634 22%, #256344 50%, #1c4634 78%, #143226 100%);
+    border-bottom: 2px solid rgb(90 160 90 / 0.4);
+    box-shadow:
+      inset 0 1px 0 rgb(180 230 170 / 0.2),
+      inset 0 -1px 0 rgb(8 24 16 / 0.45),
+      0 4px 14px rgb(8 20 14 / 0.35);
   }
 
-  .gem {
+  .title-bar::before,
+  .title-bar::after {
+    content: "";
+    position: absolute;
+    left: 6.5rem;
+    right: 6.5rem;
+    height: 0.55rem;
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0.7;
+    background-image: radial-gradient(ellipse 0.55rem 0.28rem at 50% 50%, #6fa85a 55%, transparent 58%);
+    background-size: 1.35rem 100%;
+    background-repeat: repeat-x;
+  }
+
+  .title-bar::before {
+    top: 0.2rem;
+  }
+
+  .title-bar::after {
+    bottom: 0.15rem;
+  }
+
+  .title-vine {
+    position: absolute;
+    top: 0;
+    height: 100%;
+    width: 8.25rem;
+    pointer-events: none;
+    opacity: 0.95;
+    z-index: 0;
+  }
+
+  .title-vine-left {
+    left: 0;
+  }
+
+  .title-vine-right {
+    right: 0;
+  }
+
+  .title-left {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    min-width: 0;
+    align-items: center;
+    gap: 0.55rem;
+  }
+
+  .title-crystal {
+    height: 3.35rem;
+    width: auto;
+    flex-shrink: 0;
+    filter: drop-shadow(0 0 10px rgb(90 210 255 / 1));
+    animation: crystal-pulse 2.4s ease-in-out infinite;
+  }
+
+  .title-heading {
+    margin: 0;
+    min-width: 0;
+    font-family: "Manrope", var(--font-sans);
+    font-size: 1.85rem;
+    font-weight: 800;
+    letter-spacing: -0.01em;
+    line-height: 1.1;
+    color: #fff;
+    text-shadow:
+      0 2px 0 rgb(8 24 16 / 0.55),
+      0 3px 10px rgb(8 20 14 / 0.45);
+    white-space: nowrap;
+  }
+
+  .mastery {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-shrink: 0;
+    align-items: center;
+    gap: 0.65rem;
+  }
+
+  .mastery-label {
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: #fff;
+    white-space: nowrap;
+    text-shadow: 0 1px 2px rgb(8 20 14 / 0.55);
+  }
+
+  .mastery-row {
+    display: flex;
+    align-items: flex-end;
+    gap: 0.45rem;
+  }
+
+  .medal {
+    display: flex;
+    width: 3.15rem;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.18rem;
+    color: #fff;
+    background: transparent;
+    border: 0;
+    padding: 0;
+  }
+
+  .medal-disc {
+    position: relative;
     display: grid;
     width: 2.65rem;
     height: 2.65rem;
     place-items: center;
-    color: var(--color-fog);
-    background: linear-gradient(180deg, rgb(48 86 110 / 0.95), rgb(14 28 36 / 0.98));
-    clip-path: polygon(50% 0%, 93% 25%, 93% 75%, 50% 100%, 7% 75%, 7% 25%);
-    filter: drop-shadow(0 0 5px rgb(70 160 220 / 0.45));
+    border-radius: 999px;
+    background:
+      radial-gradient(circle at 35% 28%, #fffaf0 0%, #f3e6c8 40%, #e6d2a4 100%);
+    box-shadow:
+      0 0 0 2px #f0d78a,
+      0 0 0 3.5px #c9a04a,
+      0 0 0 5px #7a5818,
+      inset 0 1px 0 rgb(255 255 255 / 0.8),
+      inset 0 -2px 3px rgb(120 90 30 / 0.2),
+      0 2px 5px rgb(8 20 14 / 0.4);
   }
 
-  .gem.live {
-    width: auto;
-    height: auto;
-    background: transparent;
-    clip-path: none;
-    filter: none;
+  .medal-icon {
+    width: 1.15rem;
+    height: 1.15rem;
+    color: #1f4a36;
   }
 
-  .gem-crystal {
-    height: 3.15rem;
+  .medal-crystal {
+    height: 1.85rem;
     width: auto;
-    filter: drop-shadow(0 0 8px rgb(90 210 255 / 1));
-    animation: crystal-pulse 2.4s ease-in-out infinite;
+    filter: drop-shadow(0 0 6px rgb(90 210 255 / 1));
+  }
+
+  .medal-live .medal-disc {
+    background:
+      radial-gradient(circle at 40% 35%, #e8f9ff 0%, #9ad8f5 45%, #3f94c0 100%);
+    box-shadow:
+      0 0 0 2px #f0d78a,
+      0 0 0 3.5px #d4b05a,
+      0 0 0 5px #7a5818,
+      0 0 14px 4px rgb(90 210 255 / 0.85),
+      0 0 26px 8px rgb(120 220 255 / 0.5),
+      inset 0 1px 0 rgb(255 255 255 / 0.7);
+  }
+
+  .medal-live .medal-crystal {
+    animation: crystal-pulse 2.2s ease-in-out infinite;
+  }
+
+  .medal-check {
+    position: absolute;
+    right: -0.15rem;
+    bottom: -0.1rem;
+    display: grid;
+    width: 0.95rem;
+    height: 0.95rem;
+    place-items: center;
+    border-radius: 999px;
+    background: #3aa0d8;
+    color: #fff;
+    box-shadow:
+      0 0 0 1.5px #fff,
+      0 0 6px rgb(90 200 255 / 0.9);
+  }
+
+  .medal-label {
+    font-size: 0.68rem;
+    font-weight: 800;
+    letter-spacing: 0.01em;
+    line-height: 1;
+    color: #fff;
+    text-shadow: 0 1px 2px rgb(8 20 14 / 0.65);
   }
 
   .assign-chip {

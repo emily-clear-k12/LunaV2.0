@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { ArrowLeft, Check, Feather, Lightbulb, Pencil, ScrollText, Search, Star } from "lucide-react";
+import { ArrowLeft, Check, FileText, Lightbulb, Pencil, Search, Star } from "lucide-react";
 import { useEffect, useState } from "react";
 
 export const Route = createFileRoute("/")({ component: StudentHome });
@@ -175,8 +175,8 @@ const assignments = [
 ];
 
 const badges = [
-  { id: "scr", label: "SCR", name: "Short responses", moduleId: "short", Icon: Feather },
-  { id: "ecr", label: "ECR", name: "Extended responses", moduleId: "", Icon: ScrollText },
+  { id: "scr", label: "SCR", name: "Short responses", moduleId: "short", Icon: FileText },
+  { id: "ecr", label: "ECR", name: "Extended responses", moduleId: "", Icon: FileText },
   { id: "stellar", label: "Stellar", name: "Sentences", moduleId: "sentences", Icon: Star },
   { id: "process", label: "Process", name: "Preparing to write", moduleId: "plan", Icon: Lightbulb },
   { id: "revision", label: "Revision", name: "Revision", moduleId: "revise", Icon: Search },
@@ -316,9 +316,50 @@ function StudentHome() {
         style={{ width: STAGE_W, height: STAGE_H, transform: `scale(${scale})` }}
       >
       <header className="title-bar">
-        <h1 className="font-display min-w-0 truncate text-xl text-fog sm:text-2xl">
-          Astra’s Writing Adventure
-        </h1>
+        <svg className="title-vine title-vine-left" viewBox="0 0 120 72" aria-hidden="true">
+          <g fill="none" stroke="#5a8f4a" strokeWidth="1.6" strokeLinecap="round">
+            <path d="M8 64 C 18 52, 22 36, 20 18" />
+            <path d="M20 40 C 28 34, 40 30, 52 28" />
+            <path d="M18 28 C 30 22, 44 14, 58 10" />
+            <path d="M22 52 C 34 48, 48 46, 62 48" />
+          </g>
+          <g fill="#6fa85a">
+            <ellipse transform="rotate(-35 26 22)" cx="26" cy="22" rx="7" ry="3.4" />
+            <ellipse transform="rotate(20 34 34)" cx="34" cy="34" rx="6.5" ry="3" />
+            <ellipse transform="rotate(-50 42 16)" cx="42" cy="16" rx="6" ry="2.8" />
+            <ellipse transform="rotate(10 48 42)" cx="48" cy="42" rx="6.2" ry="2.9" />
+            <ellipse transform="rotate(-25 56 24)" cx="56" cy="24" rx="5.5" ry="2.6" />
+            <ellipse transform="rotate(35 30 50)" cx="30" cy="50" rx="5.8" ry="2.7" />
+          </g>
+          <g fill="#8bc46a" opacity="0.85">
+            <ellipse transform="rotate(-15 38 28)" cx="38" cy="28" rx="4.2" ry="2" />
+            <ellipse transform="rotate(40 50 18)" cx="50" cy="18" rx="4" ry="1.9" />
+          </g>
+        </svg>
+        <svg className="title-vine title-vine-right" viewBox="0 0 120 72" aria-hidden="true">
+          <g fill="none" stroke="#5a8f4a" strokeWidth="1.6" strokeLinecap="round">
+            <path d="M112 64 C 102 52, 98 36, 100 18" />
+            <path d="M100 40 C 92 34, 80 30, 68 28" />
+            <path d="M102 28 C 90 22, 76 14, 62 10" />
+            <path d="M98 52 C 86 48, 72 46, 58 48" />
+          </g>
+          <g fill="#6fa85a">
+            <ellipse transform="rotate(35 94 22)" cx="94" cy="22" rx="7" ry="3.4" />
+            <ellipse transform="rotate(-20 86 34)" cx="86" cy="34" rx="6.5" ry="3" />
+            <ellipse transform="rotate(50 78 16)" cx="78" cy="16" rx="6" ry="2.8" />
+            <ellipse transform="rotate(-10 72 42)" cx="72" cy="42" rx="6.2" ry="2.9" />
+            <ellipse transform="rotate(25 64 24)" cx="64" cy="24" rx="5.5" ry="2.6" />
+            <ellipse transform="rotate(-35 90 50)" cx="90" cy="50" rx="5.8" ry="2.7" />
+          </g>
+          <g fill="#8bc46a" opacity="0.85">
+            <ellipse transform="rotate(15 82 28)" cx="82" cy="28" rx="4.2" ry="2" />
+            <ellipse transform="rotate(-40 70 18)" cx="70" cy="18" rx="4" ry="1.9" />
+          </g>
+        </svg>
+        <div className="title-left">
+          <img src={asset("crystal.png")} alt="" className="title-crystal" />
+          <h1 className="title-heading">Astra’s Writing Adventure</h1>
+        </div>
         {focus ? (
           <button
             type="button"
@@ -329,33 +370,44 @@ function StudentHome() {
             Back to map
           </button>
         ) : (
-          <div className="flex shrink-0 items-end gap-1.5 overflow-x-auto">
-            {badges.map((badge) => (
-              <button
-                key={badge.id}
-                type="button"
-                onClick={() => {
-                  if (badge.moduleId) {
-                    setEcrNote(false);
-                    openModule(badge.moduleId);
-                  } else {
-                    setEcrNote(true);
-                  }
-                }}
-                aria-current={badge.id === "scr" ? "true" : undefined}
-                title={badge.name}
-                className="gem-badge"
-              >
-                <span className={badge.id === "scr" ? "gem live" : "gem"}>
-                  {badge.id === "scr" ? (
-                    <img src={asset("crystal.png")} alt="" className="gem-crystal" />
-                  ) : (
-                    <badge.Icon className="size-4" aria-hidden="true" />
-                  )}
-                </span>
-                <span className="text-xs font-bold tracking-wide">{badge.label}</span>
-              </button>
-            ))}
+          <div className="mastery">
+            <span className="mastery-label">Your Mastery</span>
+            <div className="mastery-row">
+              {badges.map((badge) => {
+                const active = badge.id === "scr";
+                return (
+                  <button
+                    key={badge.id}
+                    type="button"
+                    onClick={() => {
+                      if (badge.moduleId) {
+                        setEcrNote(false);
+                        openModule(badge.moduleId);
+                      } else {
+                        setEcrNote(true);
+                      }
+                    }}
+                    aria-current={active ? "true" : undefined}
+                    title={badge.name}
+                    className={active ? "medal medal-live" : "medal"}
+                  >
+                    <span className="medal-disc">
+                      {active ? (
+                        <img src={asset("crystal.png")} alt="" className="medal-crystal" />
+                      ) : (
+                        <badge.Icon className="medal-icon" aria-hidden="true" strokeWidth={2.4} />
+                      )}
+                      {active ? (
+                        <span className="medal-check" aria-hidden="true">
+                          <Check className="size-2.5" strokeWidth={3} />
+                        </span>
+                      ) : null}
+                    </span>
+                    <span className="medal-label">{badge.label}</span>
+                  </button>
+                );
+              })}
+            </div>
           </div>
         )}
       </header>
