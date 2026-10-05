@@ -132,20 +132,11 @@ body{overflow:hidden}
 .toast.off{opacity:0;pointer-events:none}
 
 /* ---------- narrow screens: one column, page scrolls ---------- */
-/* ---------- light sage titles (frosted look) ---------- */
-:root{--sage:#b5cfa8;--sage-soft:rgba(206,224,196,.88);--sage-deep:#4c7442;--sage-deep-soft:#6a7f62}
-.where{color:var(--sage)}
-.head .prompt{color:var(--sage)}
-.wtile label{color:var(--sage)}
-.wtile label span{color:var(--sage-soft)}
-.bin .bhead b{color:var(--sage)}
-.bin .bhead small{color:var(--sage-soft)}
-/* on the opaque (engaged) tiles the light sage would wash out, so titles deepen to the same sage family */
-.wtile.solid label{color:var(--sage-deep)}
-.wtile.solid label span{color:var(--sage-deep-soft)}
-.bin.solid .bhead b,.bin.over .bhead b{color:var(--sage-deep)}
-.bin.solid .bhead small,.bin.over .bhead small{color:var(--sage-deep-soft)}
-.bin.solid .chip.solid{background:#f0f5ec;border-color:rgba(76,116,66,.2)}
+/* ---------- activity heading: frosted light sage glass (text keeps its original colors) ---------- */
+.head.tile{background:linear-gradient(rgba(181,207,168,.40),rgba(160,190,146,.40)),rgba(20,28,18,.18);border-color:rgba(205,225,194,.6);
+  box-shadow:inset 0 1px 0 rgba(235,246,228,.35),0 14px 34px -18px rgba(0,0,0,.75)}
+.head .prompt,.head .dir{text-shadow:0 1px 2px rgba(0,0,0,.45),0 0 10px rgba(20,30,18,.35)}
+.head .kind{text-shadow:0 1px 2px rgba(0,0,0,.5)}
 
 @media (max-width:760px){
   .screen{padding:12px 12px 20px}
