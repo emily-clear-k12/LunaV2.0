@@ -138,10 +138,34 @@ body{overflow:hidden}
 .head .prompt,.head .dir{text-shadow:0 1px 2px rgba(0,0,0,.45),0 0 10px rgba(20,30,18,.35)}
 .head .kind{text-shadow:0 1px 2px rgba(0,0,0,.5)}
 
+/* ---------- brainstorm + write details: read-only context tile beside the writing tiles ---------- */
+.split{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,6fr);gap:16px;align-items:stretch}
+.ctx{padding:14px 18px;text-shadow:0 1px 2px rgba(0,0,0,.35);display:flex;flex-direction:column;gap:7px}
+.ctx .tag{margin:0;font:800 11.5px var(--body);letter-spacing:.12em;text-transform:uppercase;color:var(--frost-muted)}
+.ctx h4{margin:0;font:800 20px/1.15 var(--display);color:#fff}
+.ctx p{margin:0;font-size:15.5px;line-height:1.5;font-weight:600}
+.ctx p b{font-weight:800}
+.ctx .bp2{padding:5px 10px 6px;margin:0 -10px;border-radius:10px;background:rgba(255,210,122,.16);box-shadow:inset 3px 0 0 var(--gold)}
+.col{display:flex;flex-direction:column;gap:10px;min-width:0}
+.given{padding:9px 14px;font-weight:700;font-size:15.5px;border-radius:14px;text-shadow:0 1px 2px rgba(0,0,0,.35)}
+.given small{display:block;font:800 11px var(--body);letter-spacing:.12em;text-transform:uppercase;color:var(--frost-muted);margin-bottom:1px}
+.wtile.big{min-height:380px}
+.wtile.big textarea{min-height:290px;background:repeating-linear-gradient(transparent 0 30px,rgba(255,255,255,.14) 30px 31px);background-attachment:local;line-height:31px}
+.wtile.big.solid textarea{background:repeating-linear-gradient(transparent 0 30px,rgba(90,63,176,.12) 30px 31px);background-attachment:local}
+.wtile.slim{padding:9px 14px 8px}
+.wtile.slim label{font-size:17px}
+.wtile.slim textarea{min-height:42px;margin-top:3px;font-size:16.5px}
+#details .split{align-items:start}
+#details .col{gap:8px}
+
 @media (max-width:760px){
   .screen{padding:12px 12px 20px}
   .topbar{flex-wrap:wrap}
   .tabs .tag{display:none}
+  .tabs a{padding:6px 10px;font-size:13.5px}
+  .split{grid-template-columns:1fr}
+  .wtile.big{min-height:300px}
+  .wtile.big textarea{min-height:220px}
   .prompt{font-size:24px}
   .dir{font-size:15.5px}
   .grid{grid-template-columns:1fr;grid-auto-rows:minmax(138px,auto)}
@@ -166,7 +190,7 @@ body{overflow:hidden}
 <section class="screen" id="warmup" aria-label="Warm-up preview">
   <div class="topbar">
     <div class="pill tile where">The Entrance</div>
-    <nav class="tabs tile" aria-label="Preview screens"><span class="tag">Design preview</span><a href="#warmup" aria-current="page">Warm-up</a><a href="#sort">Sort</a></nav>
+    <nav class="tabs tile" aria-label="Preview screens"><span class="tag">Design preview</span><a href="#warmup">Warm-up</a><a href="#sort">Sort</a><a href="#brainstorm">Brainstorm</a><a href="#details">Write details</a></nav>
   </div>
   <div class="head tile">
     <p class="kind">A1 · Practice</p>
@@ -183,7 +207,7 @@ body{overflow:hidden}
 <section class="screen" id="sort" aria-label="Sort preview" hidden>
   <div class="topbar">
     <div class="pill tile where">The Root Tunnel</div>
-    <nav class="tabs tile" aria-label="Preview screens"><span class="tag">Design preview</span><a href="#warmup">Warm-up</a><a href="#sort" aria-current="page">Sort</a></nav>
+    <nav class="tabs tile" aria-label="Preview screens"><span class="tag">Design preview</span><a href="#warmup">Warm-up</a><a href="#sort">Sort</a><a href="#brainstorm">Brainstorm</a><a href="#details">Write details</a></nav>
   </div>
   <div class="head tile">
     <p class="kind">A2 · Star Power</p>
@@ -195,6 +219,46 @@ body{overflow:hidden}
     <div class="pool" id="pool"></div>
     <div class="bins" id="bins"></div>
     <div class="foot" id="sfoot"><button class="btn tile" id="chk" disabled>Check</button><button class="btn tile" id="sgo" disabled>Continue</button></div>
+  </div>
+</section>
+
+<!-- ============ Detail Brainstorm (A3) on The Root Tunnel ============ -->
+<section class="screen" id="brainstorm" aria-label="Brainstorm preview" hidden>
+  <div class="topbar">
+    <div class="pill tile where">The Root Tunnel</div>
+    <nav class="tabs tile" aria-label="Preview screens"><span class="tag">Design preview</span><a href="#warmup">Warm-up</a><a href="#sort">Sort</a><a href="#brainstorm">Brainstorm</a><a href="#details">Write details</a></nav>
+  </div>
+  <div class="head tile">
+    <p class="kind">A3 · Practice</p>
+    <p class="prompt">Detail Brainstorm</p>
+    <p class="dir">Using the essay outline, brainstorm a list of details that could be added to body paragraph 2.</p>
+  </div>
+  <div class="main">
+    <div class="split">
+      <div class="tile ctx" id="bctx"></div>
+      <div class="col" id="bcol"></div>
+    </div>
+    <div class="foot" id="bfoot"><button class="btn tile" id="bgo" disabled>Continue</button></div>
+  </div>
+</section>
+
+<!-- ============ Write the Details (A4) on The Root Tunnel ============ -->
+<section class="screen" id="details" aria-label="Write details preview" hidden>
+  <div class="topbar">
+    <div class="pill tile where">The Root Tunnel</div>
+    <nav class="tabs tile" aria-label="Preview screens"><span class="tag">Design preview</span><a href="#warmup">Warm-up</a><a href="#sort">Sort</a><a href="#brainstorm">Brainstorm</a><a href="#details">Write details</a></nav>
+  </div>
+  <div class="head tile">
+    <p class="kind">A4 · Star Power</p>
+    <p class="prompt">Write the Details</p>
+    <p class="dir">A student is writing an essay about their favorite memory. Below is the introduction and first body paragraph.  The first body paragraph needs three detail sentences about swimming in the ocean.  Be creative and add those three detail sentences.</p>
+  </div>
+  <div class="main">
+    <div class="split">
+      <div class="tile ctx" id="dctx"></div>
+      <div class="col" id="dcol"></div>
+    </div>
+    <div class="foot" id="dfoot"><button class="btn tile" id="dgo" disabled>Submit</button></div>
   </div>
 </section>
 
@@ -214,14 +278,23 @@ const A2={bins:['MAIN IDEA: The roller coaster ride was amazing.','MAIN IDEA: My
          ['I laughed so hard my cheeks hurt by the end of the ride.',0],['I stayed home and played video games all day.',2],
          ['The wind whipped my hair back, and people screamed all around me.',0]]};
 
+/* A3 and A4, copied from the lesson STEPS array. */
+const A3={dir:'Using the essay outline, brainstorm a list of details that could be added to body paragraph 2.',
+  context:['My Favorite Hobby:',['Introduction: My favorite hobby is playing basketball.','Body Paragraph 1: First, I like basketball because it keeps me active and healthy.','Body Paragraph 2: In addition to this, basketball is my favorite hobby because I get to spend time with my friends.','Body Paragraph 3: Furthermore, I like basketball because it helps me improve my skills.','Conclusion: In conclusion, basketball is my favorite hobby because it keeps me active, lets me spend time with my friends, and helps me get better at the sport.']],
+  fields:[['POSSIBLE DETAIL SENTENCES','BODY PARAGRAPH 2:',8]]};
+const A4={context:['',['The best memory I have is the day my family went to the beach last summer. It was a hot day, and the sand was warm under my feet as soon as we arrived. I could hear the waves crashing, and I was so excited to spend the whole day outside. We packed snacks, games, and even a kite to fly. That trip to the beach is my favorite memory because I had fun swimming, building sandcastles, and spending time with my family.']],
+  before:'First, swimming in the ocean made the day unforgettable.',after:'But the fun didn’t stop there.',
+  fields:[['Detail sentence 1','',2],['Detail sentence 2','',2],['Detail sentence 3','',2]]};
+
 let toastT;
 function toast(msg){const t=$('toast');t.textContent=msg;t.classList.remove('off');clearTimeout(toastT);toastT=setTimeout(()=>t.classList.add('off'),2600);}
 
 /* ---------- tabs ---------- */
-function show(){const which=location.hash==='#sort'?'sort':'warmup';
-  $('warmup').hidden=which!=='warmup';$('sort').hidden=which!=='sort';
-  $('scene').className='scene '+(which==='sort'?'s2':'s1');
-  document.title=(which==='sort'?'Sort':'Warm-up')+' · Tile preview';
+function show(){const ids=['warmup','sort','brainstorm','details'],h=location.hash.slice(1),which=ids.includes(h)?h:'warmup';
+  ids.forEach(id=>$(id).hidden=id!==which);
+  $('scene').className='scene '+(which==='warmup'?'s1':'s2');
+  document.querySelectorAll('.tabs a').forEach(a=>{if(a.getAttribute('href')==='#'+which)a.setAttribute('aria-current','page');else a.removeAttribute('aria-current');});
+  document.title={warmup:'Warm-up',sort:'Sort',brainstorm:'Brainstorm',details:'Write details'}[which]+' · Tile preview';
   if(which==='sort')requestAnimationFrame(lockPool);}
 addEventListener('hashchange',show);
 
@@ -306,6 +379,31 @@ chk.onclick=()=>{let wrong=0;
     chk.disabled=true;chk.classList.remove('ready');
     sfb('try',`${wrong} ${wrong===1?'sentence is':'sentences are'} back at the top. Read ${wrong===1?'it':'them'} again and try another box.`);}};
 sgo.onclick=()=>toast('Preview only. In the lesson, the trail moves on here.');
+
+/* ---------- shared: writing tile that turns solid on tap and stays solid ---------- */
+function writeTile(id,f,cls){return `<div class="tile wtile ${cls||''}"><span class="done" aria-hidden="true">✓</span>
+  <label for="${id}">${esc(f[0])}${f[1]?` <span>${esc(f[1])}</span>`:''}</label>
+  <textarea id="${id}" rows="${f[2]||2}" placeholder="Tap to write…" aria-label="${esc((f[0]+' '+f[1]).trim())}"></textarea><div class="line"></div></div>`;}
+function wireTiles(root,go){const ts=[...root.querySelectorAll('.wtile')],ins=ts.map(t=>t.querySelector('textarea'));
+  ts.forEach((t,i)=>{t.addEventListener('pointerdown',e=>{if(e.target!==ins[i]){e.preventDefault();ins[i].focus();}});
+    ins[i].addEventListener('focus',()=>t.classList.add('solid','touched'));
+    ins[i].addEventListener('input',()=>{t.classList.toggle('filled',ins[i].value.trim().length>2);
+      const ok=ins.every(x=>x.value.trim().length>2);go.disabled=!ok;go.classList.toggle('ready',ok);});});
+  return ins;}
+const ctxLine=t=>{const m=t.match(/^([^:]+:)\s*(.*)$/);return m?`<b>${esc(m[1])}</b> ${esc(m[2])}`:esc(t);};
+
+/* ---------- brainstorm (A3) ---------- */
+$('bctx').innerHTML=`<p class="tag">Essay outline</p><h4>${esc(A3.context[0])}</h4>`+A3.context[1].map(t=>`<p${t.startsWith('Body Paragraph 2')?' class="bp2"':''}>${ctxLine(t)}</p>`).join('');
+$('bcol').innerHTML=writeTile('b0',A3.fields[0],'big');
+wireTiles($('bcol'),$('bgo'));
+$('bgo').onclick=()=>toast('Preview only. In the lesson, the trail moves on here.');
+
+/* ---------- write the details (A4) ---------- */
+$('dctx').innerHTML=`<p class="tag">Introduction</p>`+A4.context[1].map(t=>`<p>${esc(t)}</p>`).join('');
+$('dcol').innerHTML=`<p class="tile given"><small>Body paragraph 1</small>${esc(A4.before)}</p>`+
+  A4.fields.map((f,i)=>writeTile('d'+i,f,'slim')).join('')+`<p class="tile given">${esc(A4.after)}</p>`;
+wireTiles($('dcol'),$('dgo'));
+$('dgo').onclick=()=>toast('Saved for your teacher (preview only).');
 
 show();
 })();
