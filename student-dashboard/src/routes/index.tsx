@@ -316,46 +316,8 @@ function StudentHome() {
         style={{ width: STAGE_W, height: STAGE_H, transform: `scale(${scale})` }}
       >
       <header className="title-bar">
-        <svg className="title-vine title-vine-left" viewBox="0 0 120 72" aria-hidden="true">
-          <g fill="none" stroke="#5a8f4a" strokeWidth="1.6" strokeLinecap="round">
-            <path d="M8 64 C 18 52, 22 36, 20 18" />
-            <path d="M20 40 C 28 34, 40 30, 52 28" />
-            <path d="M18 28 C 30 22, 44 14, 58 10" />
-            <path d="M22 52 C 34 48, 48 46, 62 48" />
-          </g>
-          <g fill="#6fa85a">
-            <ellipse transform="rotate(-35 26 22)" cx="26" cy="22" rx="7" ry="3.4" />
-            <ellipse transform="rotate(20 34 34)" cx="34" cy="34" rx="6.5" ry="3" />
-            <ellipse transform="rotate(-50 42 16)" cx="42" cy="16" rx="6" ry="2.8" />
-            <ellipse transform="rotate(10 48 42)" cx="48" cy="42" rx="6.2" ry="2.9" />
-            <ellipse transform="rotate(-25 56 24)" cx="56" cy="24" rx="5.5" ry="2.6" />
-            <ellipse transform="rotate(35 30 50)" cx="30" cy="50" rx="5.8" ry="2.7" />
-          </g>
-          <g fill="#8bc46a" opacity="0.85">
-            <ellipse transform="rotate(-15 38 28)" cx="38" cy="28" rx="4.2" ry="2" />
-            <ellipse transform="rotate(40 50 18)" cx="50" cy="18" rx="4" ry="1.9" />
-          </g>
-        </svg>
-        <svg className="title-vine title-vine-right" viewBox="0 0 120 72" aria-hidden="true">
-          <g fill="none" stroke="#5a8f4a" strokeWidth="1.6" strokeLinecap="round">
-            <path d="M112 64 C 102 52, 98 36, 100 18" />
-            <path d="M100 40 C 92 34, 80 30, 68 28" />
-            <path d="M102 28 C 90 22, 76 14, 62 10" />
-            <path d="M98 52 C 86 48, 72 46, 58 48" />
-          </g>
-          <g fill="#6fa85a">
-            <ellipse transform="rotate(35 94 22)" cx="94" cy="22" rx="7" ry="3.4" />
-            <ellipse transform="rotate(-20 86 34)" cx="86" cy="34" rx="6.5" ry="3" />
-            <ellipse transform="rotate(50 78 16)" cx="78" cy="16" rx="6" ry="2.8" />
-            <ellipse transform="rotate(-10 72 42)" cx="72" cy="42" rx="6.2" ry="2.9" />
-            <ellipse transform="rotate(25 64 24)" cx="64" cy="24" rx="5.5" ry="2.6" />
-            <ellipse transform="rotate(-35 90 50)" cx="90" cy="50" rx="5.8" ry="2.7" />
-          </g>
-          <g fill="#8bc46a" opacity="0.85">
-            <ellipse transform="rotate(15 82 28)" cx="82" cy="28" rx="4.2" ry="2" />
-            <ellipse transform="rotate(-40 70 18)" cx="70" cy="18" rx="4" ry="1.9" />
-          </g>
-        </svg>
+        <img src={asset("leaf-cluster-left.png")} alt="" className="title-leaves title-leaves-left" />
+        <img src={asset("leaf-cluster-right.png")} alt="" className="title-leaves title-leaves-right" />
         <div className="title-left">
           <img src={asset("crystal.png")} alt="" className="title-crystal" />
           <h1 className="title-heading">Astra’s Writing Adventure</h1>
