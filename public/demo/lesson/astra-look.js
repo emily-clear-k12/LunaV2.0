@@ -75,3 +75,23 @@
   if (foot) mo.observe(foot, { childList: true });
   syncHead();
 })();
+
+/* Writing tiles: tap anywhere on the tile to write; solid on focus and it stays solid; tick when filled. */
+(function () {
+  const app = document.getElementById('app');
+  if (!app) return;
+  app.addEventListener('pointerdown', (e) => {
+    const t = e.target.closest('.wtile');
+    if (!t) return;
+    const ta = t.querySelector('textarea,input');
+    if (ta && e.target !== ta) { e.preventDefault(); ta.focus(); }
+  });
+  app.addEventListener('focusin', (e) => {
+    const t = e.target.closest && e.target.closest('.wtile');
+    if (t) t.classList.add('solid', 'touched');
+  });
+  app.addEventListener('input', (e) => {
+    const t = e.target.closest && e.target.closest('.wtile');
+    if (t) t.classList.toggle('filled', e.target.value.trim().length > 2);
+  });
+})();
