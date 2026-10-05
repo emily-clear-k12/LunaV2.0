@@ -201,6 +201,9 @@ const savedAtStart: Writing[] = [
   },
 ];
 
+// Public images live under the site's base path (/LunaV2.0/dashboard/ on GitHub Pages).
+const asset = (file: string) => `${import.meta.env.BASE_URL}${file}`;
+
 const STAGE_W = 1366;
 const STAGE_H = 768;
 
@@ -208,7 +211,9 @@ function useStageScale() {
   const [scale, setScale] = useState(1);
   useEffect(() => {
     const fit = () => {
-      setScale(Math.min(window.innerWidth / STAGE_W, window.innerHeight / STAGE_H));
+      // Leave room for the view switcher bar when it is shown above the stage.
+      const bar = document.querySelector<HTMLElement>(".vswitch")?.offsetHeight ?? 0;
+      setScale(Math.min(window.innerWidth / STAGE_W, (window.innerHeight - bar) / STAGE_H));
     };
     fit();
     window.addEventListener("resize", fit);
@@ -333,7 +338,7 @@ function StudentHome() {
               >
                 <span className={badge.id === "scr" ? "gem live" : "gem"}>
                   {badge.id === "scr" ? (
-                    <img src="/crystal.png" alt="" className="gem-crystal" />
+                    <img src={asset("crystal.png")} alt="" className="gem-crystal" />
                   ) : (
                     <badge.Icon className="size-4" aria-hidden="true" />
                   )}
@@ -354,7 +359,7 @@ function StudentHome() {
             transform: focus ? "scale(2.35)" : "scale(1)",
           }}
         >
-          <img src="/forest-map.jpg?v=6" alt="" className="h-full w-full object-fill" />
+          <img src={asset("forest-map.jpg?v=6")} alt="" className="h-full w-full object-fill" />
           <svg
             className="pointer-events-none absolute inset-0 h-full w-full"
             viewBox="0 0 100 100"
@@ -385,7 +390,7 @@ function StudentHome() {
               style={{ left: `${mod.x - 1.2}%`, top: `${mod.y + 2}%` }}
             >
               <img
-                src="/crystal.png"
+                src={asset("crystal.png")}
                 alt=""
                 className="crystal-mark"
                 style={{ height: `${(mod.gem / 100) * STAGE_H}px` }}
@@ -585,7 +590,7 @@ function QuickWrite({ onStart }: { onStart: () => void }) {
     <aside className="flex w-80 shrink-0 flex-col bg-cream px-3 pt-3 pb-4 text-ink">
       <div className="relative min-h-0 flex-1 overflow-hidden rounded-3xl shadow-md">
         <img
-          src="/astra-treehouse.jpg"
+          src={asset("astra-treehouse.jpg")}
           alt="Astra leaning against the trunk of his treehouse"
           className="absolute inset-0 h-full w-full object-cover"
         />

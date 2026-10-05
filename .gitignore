@@ -22,3 +22,6 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# student-dashboard installs its own deps; never commit its lockfile
+student-dashboard/package-lock.json
