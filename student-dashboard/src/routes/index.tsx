@@ -10,11 +10,14 @@ type Module = {
   id: string;
   n: number;
   name: string;
+  short: string;
   world: string;
   blurb: string;
   x: number;
   y: number;
-  gem: number;
+  w: number;
+  h: number;
+  labelAbove?: boolean;
   lessons: Lesson[];
 };
 
@@ -22,121 +25,115 @@ type Writing = { title: string; from: string; body: string };
 
 const modules: Module[] = [
   {
-    id: "sentences",
+    id: "scr",
     n: 1,
-    name: "Stellar Writers",
-    world: "Redwood path",
-    blurb: "Sentences that hold one clear idea.",
-    x: 8.3,
-    y: 71.3,
-    gem: 7.4,
+    name: "SCR",
+    short: "SCR",
+    world: "Fairy Hollow",
+    blurb: "Short constructed responses with clear evidence.",
+    x: 21.1,
+    y: 38.5,
+    w: 5.5,
+    h: 9,
     lessons: [
-      { title: "One complete thought", world: "First stones", minutes: 20, task: "Write three sentences that each say one whole idea." },
-      { title: "Who did what", world: "Root bridge", minutes: 20, task: "Mark the who and the what in each sentence." },
-      { title: "Join two ideas", world: "Twin trunks", minutes: 20, task: "Combine two short sentences without losing either idea." },
+      { title: "Answer the ask", world: "Mushroom lane", minutes: 20, task: "Write a short answer that restates the question." },
+      { title: "Evidence", world: "Glow caps", minutes: 23, task: "Use two pieces of proof from the passage." },
+      { title: "Details", world: "Spore bridge", minutes: 20, task: "Write detail sentences a reader can picture." },
+    ],
+  },
+  {
+    id: "ecr",
+    n: 2,
+    name: "ECR",
+    short: "ECR",
+    world: "Dwarven Stonehold",
+    blurb: "Extended responses that build a full argument.",
+    x: 41.1,
+    y: 31.7,
+    w: 5.5,
+    h: 9,
+    lessons: [
+      { title: "Claim the fort", world: "Gate stones", minutes: 20, task: "Write a clear claim for a longer response." },
+      { title: "Stack reasons", world: "Hall of proofs", minutes: 25, task: "Order three reasons that support your claim." },
+      { title: "Land the ending", world: "Deep vault", minutes: 20, task: "Close with a conclusion that ties the reasons together." },
+    ],
+  },
+  {
+    id: "sentences",
+    n: 3,
+    name: "Stellar Writers",
+    short: "Stellar",
+    world: "Elven Starspire",
+    blurb: "Sentences that hold one clear idea.",
+    x: 65.0,
+    y: 31.7,
+    w: 5.5,
+    h: 9,
+    lessons: [
+      { title: "One complete thought", world: "First spires", minutes: 20, task: "Write three sentences that each say one whole idea." },
+      { title: "Who did what", world: "Star bridge", minutes: 20, task: "Mark the who and the what in each sentence." },
+      { title: "Join two ideas", world: "Twin towers", minutes: 20, task: "Combine two short sentences without losing either idea." },
     ],
   },
   {
     id: "plan",
-    n: 2,
-    name: "Preparing to Write",
-    world: "Birch grove",
-    blurb: "Read the prompt, take notes, make a plan.",
-    x: 22.4,
-    y: 37.6,
-    gem: 5.5,
-    lessons: [
-      { title: "Read the prompt", world: "White trunks", minutes: 15, task: "Underline what the prompt is asking you to do." },
-      { title: "Gather notes", world: "Lantern circle", minutes: 20, task: "List the facts you will use before you draft." },
-      { title: "Order the plan", world: "Grove gate", minutes: 20, task: "Put your notes in the order a reader needs." },
-    ],
-  },
-  {
-    id: "draft",
-    n: 3,
-    name: "Writing a Draft",
-    world: "Great tree",
-    blurb: "Shape a paragraph, then a whole draft.",
-    x: 48.7,
-    y: 23.1,
-    gem: 4.5,
-    lessons: [
-      { title: "Lead with the idea", world: "Tree door", minutes: 20, task: "Write the sentence that tells your main idea." },
-      { title: "Build a paragraph", world: "Inner rings", minutes: 20, task: "Add reasons under that idea, in order." },
-      { title: "Hold the draft", world: "High branches", minutes: 25, task: "Write the beginning, middle, and end." },
-    ],
-  },
-  {
-    id: "short",
     n: 4,
-    name: "Short Responses",
-    world: "Fern clearing",
-    blurb: "Answer the question, then prove it.",
-    x: 42.3,
-    y: 58,
-    gem: 6.2,
+    name: "The Writing Process",
+    short: "Process",
+    world: "Gnome Gearworks",
+    blurb: "Read the prompt, take notes, make a plan.",
+    x: 77.4,
+    y: 51.2,
+    w: 5.5,
+    h: 9,
     lessons: [
-      { title: "Details", world: "Canopy marks", minutes: 20, task: "Write detail sentences a reader can picture." },
-      { title: "Evidence", world: "High proof", minutes: 23, task: "Use two pieces of proof from the passage." },
-      { title: "Quoting", world: "Exact words", minutes: 20, task: "Put the author’s exact words in your answer." },
+      { title: "Read the prompt", world: "Windmill gate", minutes: 15, task: "Underline what the prompt is asking you to do." },
+      { title: "Gather notes", world: "Gear loft", minutes: 20, task: "List the facts you will use before you draft." },
+      { title: "Order the plan", world: "Clockwork yard", minutes: 20, task: "Put your notes in the order a reader needs." },
     ],
   },
   {
     id: "revise",
     n: 5,
     name: "Revision",
-    world: "Stone ridge",
+    short: "Revision",
+    world: "Merfolk Lagoon",
     blurb: "Make the draft clearer and stronger.",
-    x: 76.4,
-    y: 41.7,
-    gem: 6,
+    x: 73.9,
+    y: 81.2,
+    w: 5.5,
+    h: 9,
+    labelAbove: true,
     lessons: [
-      { title: "Name the idea", world: "Lookout", minutes: 15, task: "Say what the draft is really about, in one line." },
-      { title: "Add what’s missing", world: "Switchback", minutes: 20, task: "Find a claim with no support and add it." },
-      { title: "Cut what wanders", world: "Cliff path", minutes: 20, task: "Remove a sentence that does not help the idea." },
+      { title: "Name the idea", world: "Dock lights", minutes: 15, task: "Say what the draft is really about, in one line." },
+      { title: "Add what’s missing", world: "Tide shelves", minutes: 20, task: "Find a claim with no support and add it." },
+      { title: "Cut what wanders", world: "Reef path", minutes: 20, task: "Remove a sentence that does not help the idea." },
     ],
   },
   {
     id: "edit",
     n: 6,
-    name: "Editing",
-    world: "Autumn wood",
-    blurb: "Fix conventions after the ideas are set.",
-    x: 84.7,
-    y: 69.5,
-    gem: 7,
+    name: "Edit",
+    short: "Edit",
+    world: "Dragon’s Roost",
+    blurb: "Polish conventions until the writing is clear.",
+    x: 16.5,
+    y: 81.5,
+    w: 5.5,
+    h: 9,
+    labelAbove: true,
     lessons: [
-      { title: "Capitals and stops", world: "Fallen leaves", minutes: 15, task: "Fix sentences that start or end the wrong way." },
-      { title: "Spelling that counts", world: "Red maples", minutes: 20, task: "Correct the words a reader would stumble on." },
-      { title: "Read it through", world: "Last lantern", minutes: 15, task: "Read aloud and mark anything that still snags." },
+      { title: "Capitals and stops", world: "Cliff stairs", minutes: 15, task: "Fix sentences that start or end the wrong way." },
+      { title: "Spelling that counts", world: "Aerie wall", minutes: 20, task: "Correct the words a reader would stumble on." },
+      { title: "Read it through", world: "Lookout torch", minutes: 15, task: "Read aloud and mark anything that still snags." },
     ],
   },
 ];
 
-const treehouseSpot = { x: 88.5, y: 19.5 };
-
-const trails = [
-  "M 8.3 71.3 C 12 55, 16 45, 22.4 37.6",
-  "M 22.4 37.6 C 32 31, 40 26, 48.7 23.1",
-  "M 48.7 23.1 C 48 38, 44 50, 42.3 58",
-  "M 42.3 58 C 55 55, 68 48, 76.4 41.7",
-  "M 76.4 41.7 C 78 54, 82 62, 84.7 69.5",
-];
-
-const fireflies = [
-  [26, 52, 0],
-  [34, 42, 1.4],
-  [40, 58, 2.2],
-  [57, 44, 0.6],
-  [63, 36, 3],
-  [70, 58, 1.1],
-  [32, 68, 2.6],
-  [74, 30, 0.3],
-  [16, 48, 1.8],
-  [54, 34, 2.8],
-  [42, 72, 0.9],
-  [78, 62, 1.6],
-];
+/** Crystal at the foot of the great tree */
+const treehouseSpot = { x: 50.3, y: 64.5, w: 6, h: 10, labelAbove: true };
+/** Broader hotspot over the tree canopy / observatory */
+const treeCanopySpot = { x: 50.0, y: 38.0, w: 14, h: 28 };
 
 const assignments = [
   {
@@ -146,7 +143,7 @@ const assignments = [
     teacher: "Mr. Verret",
     due: "Due tomorrow",
     action: "Begin",
-    moduleId: "short",
+    moduleId: "scr",
     lesson: "Evidence",
     current: true,
   },
@@ -157,7 +154,7 @@ const assignments = [
     teacher: "Mr. Nowitski",
     due: "Due Jul 4",
     action: "Continue",
-    moduleId: "short",
+    moduleId: "scr",
     lesson: "Evidence",
     current: false,
   },
@@ -168,14 +165,14 @@ const assignments = [
     teacher: "Mr. Prescott",
     due: "Due Jul 6",
     action: "Begin",
-    moduleId: "short",
+    moduleId: "scr",
     lesson: "Details",
     current: false,
   },
 ];
 
 const badges = [
-  { id: "scr", label: "SCR", name: "Short responses", moduleId: "short" },
+  { id: "scr", label: "SCR", name: "Short responses", moduleId: "scr" },
   { id: "ecr", label: "ECR", name: "Extended responses", moduleId: "" },
   { id: "stellar", label: "Stellar", name: "Sentences", moduleId: "sentences" },
   { id: "process", label: "Process", name: "Preparing to write", moduleId: "plan" },
@@ -362,62 +359,77 @@ function StudentHome() {
             transform: focus ? "scale(2.35)" : "scale(1)",
           }}
         >
-          <img src={asset("forest-map.jpg?v=6")} alt="" className="h-full w-full object-fill" />
-          <svg
-            className="pointer-events-none absolute inset-0 h-full w-full"
-            viewBox="0 0 100 100"
-            preserveAspectRatio="none"
-            aria-hidden="true"
-          >
-            {trails.map((d, index) => (
-              <path key={d} d={d} className={mastered(modules[index].id) ? "trail lit" : "trail"} />
-            ))}
-          </svg>
-          {fireflies.map(([x, y, delay]) => (
-            <span
-              key={`${x}-${y}`}
-              className="firefly pointer-events-none absolute"
-              style={{ left: `${x}%`, top: `${y}%`, animationDelay: `${delay}s` }}
-            />
-          ))}
-          {modules.map((mod) => (
-            <button
-              key={mod.id}
-              type="button"
-              onClick={() => openModule(mod.id)}
-              aria-label={`Module ${mod.n}, ${mod.name}`}
-              className={
-                "absolute -translate-x-1/2 -translate-y-1/2 " +
-                (focus ? "pointer-events-none opacity-0" : "")
-              }
-              style={{ left: `${mod.x - 1.2}%`, top: `${mod.y + 2}%` }}
-            >
+          <div className="kingdom-scene">
+            <div className="kingdom-scene-frame">
               <img
-                src={asset("crystal.png")}
-                alt=""
-                className="crystal-mark"
-                style={{ height: `${(mod.gem / 100) * STAGE_H}px` }}
+                src={asset("kingdom-map.jpg")}
+                alt="Storybook kingdom map with six module crystals and the Treehouse"
+                className="kingdom-scene-img"
               />
-              <span className="map-label absolute top-full left-1/2 mt-1 -translate-x-1/2">
-                Module {mod.n}
-              </span>
-            </button>
-          ))}
-          <button
-            type="button"
-            onClick={openTreehouse}
-            aria-label="Treehouse, your writing space"
-            className={
-              "absolute flex size-11 -translate-x-1/2 -translate-y-1/2 items-center justify-center " +
-              (focus ? "pointer-events-none opacity-0" : "")
-            }
-            style={{ left: `${treehouseSpot.x}%`, top: `${treehouseSpot.y}%` }}
-          >
-            <span className="treehouse-glow" aria-hidden="true" />
-            <span className="map-label absolute top-full left-1/2 mt-0.5 -translate-x-1/2">
-              Treehouse
-            </span>
-          </button>
+              {modules.map((mod) => (
+                <button
+                  key={mod.id}
+                  type="button"
+                  onClick={() => openModule(mod.id)}
+                  aria-label={`Module ${mod.n}, ${mod.name}, ${mod.world}`}
+                  className={
+                    "kingdom-hotspot absolute -translate-x-1/2 -translate-y-1/2 " +
+                    (focus ? "pointer-events-none opacity-0" : "")
+                  }
+                  style={{
+                    left: `${mod.x}%`,
+                    top: `${mod.y}%`,
+                    width: `${mod.w}%`,
+                    height: `${mod.h}%`,
+                  }}
+                >
+                  <span className="kingdom-ring" aria-hidden="true" />
+                  <span className={"kingdom-plate" + (mod.labelAbove ? " above" : "")}>
+                    <span className="kingdom-plate-mod">M{mod.n} · {mod.short}</span>
+                    <span className="kingdom-plate-world">{mod.world}</span>
+                  </span>
+                </button>
+              ))}
+              <button
+                type="button"
+                onClick={openTreehouse}
+                aria-label="Treehouse, your writing space"
+                className={
+                  "kingdom-hotspot tree-canopy-hotspot absolute -translate-x-1/2 -translate-y-1/2 " +
+                  (focus ? "pointer-events-none opacity-0" : "")
+                }
+                style={{
+                  left: `${treeCanopySpot.x}%`,
+                  top: `${treeCanopySpot.y}%`,
+                  width: `${treeCanopySpot.w}%`,
+                  height: `${treeCanopySpot.h}%`,
+                }}
+              >
+                <span className="kingdom-ring soft" aria-hidden="true" />
+              </button>
+              <button
+                type="button"
+                onClick={openTreehouse}
+                aria-label="Treehouse crystal, your writing space"
+                className={
+                  "kingdom-hotspot absolute -translate-x-1/2 -translate-y-1/2 " +
+                  (focus ? "pointer-events-none opacity-0" : "")
+                }
+                style={{
+                  left: `${treehouseSpot.x}%`,
+                  top: `${treehouseSpot.y}%`,
+                  width: `${treehouseSpot.w}%`,
+                  height: `${treehouseSpot.h}%`,
+                }}
+              >
+                <span className="kingdom-ring" aria-hidden="true" />
+                <span className={"kingdom-plate" + (treehouseSpot.labelAbove ? " above" : "")}>
+                  <span className="kingdom-plate-mod">Your space</span>
+                  <span className="kingdom-plate-world">Treehouse</span>
+                </span>
+              </button>
+            </div>
+          </div>
         </div>
         </div>
 
@@ -639,7 +651,7 @@ function AssignmentShelf({
 }) {
   const today = assignments[0];
   return (
-    <section className="absolute inset-x-0 bottom-4 flex flex-col items-center gap-2 px-4">
+    <section className="absolute inset-x-0 bottom-3 flex flex-col items-center gap-2 px-4">
       {ecrNote ? (
         <p className="max-w-xl rounded-2xl bg-cream/95 px-4 py-3 text-sm text-ink">
           Extended responses are the longer writes. Today’s path is Short Responses.

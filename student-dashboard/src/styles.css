@@ -985,3 +985,131 @@
   .guide-sheet-row.lit .guide-sheet-status {
     color: #1a7fc4;
   }
+
+
+  /* ——— Plan B: kingdom map hotspots ——— */
+  .kingdom-scene {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    container-type: size;
+    padding: 0.6% 0.8% 1.4%;
+    box-sizing: border-box;
+    background:
+      radial-gradient(ellipse at 50% 20%, rgb(120 90 140 / 0.35), transparent 55%),
+      linear-gradient(180deg, #2a2038 0%, #1a1828 50%, #14201c 100%);
+  }
+
+  .kingdom-scene-frame {
+    position: relative;
+    aspect-ratio: 16 / 9;
+    width: min(100cqw, calc(100cqh * 16 / 9));
+    height: auto;
+    max-width: 100%;
+    max-height: 100%;
+  }
+
+  .kingdom-scene-img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: fill;
+    pointer-events: none;
+  }
+
+  .kingdom-hotspot {
+    z-index: 2;
+    border: 0;
+    background: transparent;
+    padding: 0;
+    border-radius: 50%;
+  }
+
+  .tree-canopy-hotspot {
+    z-index: 1;
+    border-radius: 45% 45% 40% 40%;
+  }
+
+  .kingdom-ring {
+    position: absolute;
+    inset: 8%;
+    border-radius: 50%;
+    background: transparent;
+    transition:
+      box-shadow 0.2s ease,
+      background 0.2s ease,
+      transform 0.2s ease;
+  }
+
+  .kingdom-ring.soft {
+    inset: 12%;
+    border-radius: 46% 46% 40% 40%;
+  }
+
+  .kingdom-hotspot:hover .kingdom-ring,
+  .kingdom-hotspot:focus-visible .kingdom-ring {
+    background: rgb(140 220 255 / 0.2);
+    box-shadow:
+      0 0 0 2px rgb(180 240 255 / 0.95),
+      0 0 22px 6px rgb(90 200 255 / 0.55);
+    transform: scale(1.08);
+  }
+
+  .kingdom-hotspot:focus-visible {
+    outline: none;
+  }
+
+  .kingdom-plate {
+    position: absolute;
+    left: 50%;
+    bottom: -0.1rem;
+    z-index: 3;
+    display: flex;
+    min-width: 6.4rem;
+    max-width: 8.6rem;
+    translate: -50% 100%;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.05rem;
+    border-radius: 0.65rem;
+    border: 1px solid rgb(255 236 200 / 0.55);
+    background: rgb(16 28 24 / 0.78);
+    padding: 0.22rem 0.45rem 0.28rem;
+    box-shadow: 0 6px 14px rgb(8 16 14 / 0.35);
+    backdrop-filter: blur(6px);
+    pointer-events: none;
+  }
+
+  .kingdom-plate.above {
+    bottom: auto;
+    top: 0.15rem;
+    translate: -50% -100%;
+  }
+
+  .kingdom-plate-mod {
+    font-family: "Baloo 2", "Nunito", var(--font-sans);
+    font-size: 0.58rem;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    line-height: 1.1;
+    color: rgb(255 236 200 / 0.9);
+    white-space: nowrap;
+  }
+
+  .kingdom-plate-world {
+    font-family: "Baloo 2", "Nunito", var(--font-sans);
+    font-size: 0.72rem;
+    font-weight: 800;
+    line-height: 1.15;
+    color: #fff;
+    text-align: center;
+    text-shadow: 0 1px 2px rgb(0 0 0 / 0.45);
+    white-space: nowrap;
+  }
+
+  .kingdom-hotspot:hover .kingdom-plate,
+  .kingdom-hotspot:focus-visible .kingdom-plate {
+    border-color: rgb(255 246 220 / 0.95);
+    background: rgb(20 32 28 / 0.9);
+  }
