@@ -176,10 +176,26 @@ body{overflow:hidden}
 .ctx h4{color:var(--cream-ink)}
 .ctx .bp2{background:rgba(233,162,59,.2);box-shadow:inset 3px 0 0 #d08a1e}
 
+/* ---------- scene 3 + video message + dense sort ---------- */
+.scene.s3{background-image:url(scene3.jpg)}
+.vwrap{display:flex;justify-content:center}
+.vframe{position:relative;padding:8px;border-radius:24px}
+.vframe video{display:block;height:min(calc(100vh - 290px),540px);aspect-ratio:9/16;max-width:100%;border-radius:17px;background:#0c0a1e;object-fit:cover}
+.vplay{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);cursor:pointer;border:0;display:flex;align-items:center;gap:10px;white-space:nowrap;
+  font:800 18px/1 var(--display);padding:14px 22px 12px;border-radius:999px;background:var(--gold);color:var(--night);box-shadow:0 14px 30px -10px rgba(0,0,0,.8)}
+.vplay svg{flex:none}
+.vplay:focus-visible{outline:3px solid var(--crystal);outline-offset:3px}
+.vnote{margin:0 auto 0 0;font-weight:700;font-size:14px;color:rgba(255,255,255,.85);text-shadow:0 1px 3px #000}
+.dense .chip{font-size:14px;padding:8px 11px;line-height:1.33}
+.dense .bin{min-height:190px}
+.dense .bin .bhead b{font-size:16.5px}
+
 @media (max-width:760px){
   .screen{padding:12px 12px 20px}
   .topbar{flex-wrap:wrap}
   .tabs .tag{display:none}
+  .tabs{flex-wrap:wrap;border-radius:18px}
+  .vframe video{height:auto;width:min(100%,320px)}
   .tabs a{padding:6px 10px;font-size:13.5px}
   .split{grid-template-columns:1fr}
   .wtile.big{min-height:300px}
@@ -208,7 +224,7 @@ body{overflow:hidden}
 <section class="screen" id="warmup" aria-label="Warm-up preview">
   <div class="topbar">
     <div class="pill tile where">The Entrance</div>
-    <nav class="tabs tile" aria-label="Preview screens"><span class="tag">Design preview</span><a href="#warmup">Warm-up</a><a href="#sort">Sort</a><a href="#brainstorm">Brainstorm</a><a href="#details">Write details</a></nav>
+    <nav class="tabs tile" aria-label="Preview screens"><span class="tag">Design preview</span><a href="#warmup">Warm-up</a><a href="#sort">Sort</a><a href="#brainstorm">Brainstorm</a><a href="#details">Write details</a><a href="#video">Video</a><a href="#evidence">Evidence</a></nav>
   </div>
   <div class="head tile">
     <p class="kind">A1 · Practice</p>
@@ -225,7 +241,7 @@ body{overflow:hidden}
 <section class="screen" id="sort" aria-label="Sort preview" hidden>
   <div class="topbar">
     <div class="pill tile where">The Root Tunnel</div>
-    <nav class="tabs tile" aria-label="Preview screens"><span class="tag">Design preview</span><a href="#warmup">Warm-up</a><a href="#sort">Sort</a><a href="#brainstorm">Brainstorm</a><a href="#details">Write details</a></nav>
+    <nav class="tabs tile" aria-label="Preview screens"><span class="tag">Design preview</span><a href="#warmup">Warm-up</a><a href="#sort">Sort</a><a href="#brainstorm">Brainstorm</a><a href="#details">Write details</a><a href="#video">Video</a><a href="#evidence">Evidence</a></nav>
   </div>
   <div class="head tile">
     <p class="kind">A2 · Star Power</p>
@@ -236,7 +252,7 @@ body{overflow:hidden}
     <p class="hint">Drag a sentence into a box, or tap a sentence and then tap a box.</p>
     <div class="pool" id="pool"></div>
     <div class="bins" id="bins"></div>
-    <div class="foot" id="sfoot"><button class="btn tile" id="chk" disabled>Check</button><button class="btn tile" id="sgo" disabled>Continue</button></div>
+    <div class="foot" id="sfoot"><button class="btn tile chk" id="chk" disabled>Check</button><button class="btn tile go" id="sgo" disabled>Continue</button></div>
   </div>
 </section>
 
@@ -244,7 +260,7 @@ body{overflow:hidden}
 <section class="screen" id="brainstorm" aria-label="Brainstorm preview" hidden>
   <div class="topbar">
     <div class="pill tile where">The Root Tunnel</div>
-    <nav class="tabs tile" aria-label="Preview screens"><span class="tag">Design preview</span><a href="#warmup">Warm-up</a><a href="#sort">Sort</a><a href="#brainstorm">Brainstorm</a><a href="#details">Write details</a></nav>
+    <nav class="tabs tile" aria-label="Preview screens"><span class="tag">Design preview</span><a href="#warmup">Warm-up</a><a href="#sort">Sort</a><a href="#brainstorm">Brainstorm</a><a href="#details">Write details</a><a href="#video">Video</a><a href="#evidence">Evidence</a></nav>
   </div>
   <div class="head tile">
     <p class="kind">A3 · Practice</p>
@@ -264,7 +280,7 @@ body{overflow:hidden}
 <section class="screen" id="details" aria-label="Write details preview" hidden>
   <div class="topbar">
     <div class="pill tile where">The Root Tunnel</div>
-    <nav class="tabs tile" aria-label="Preview screens"><span class="tag">Design preview</span><a href="#warmup">Warm-up</a><a href="#sort">Sort</a><a href="#brainstorm">Brainstorm</a><a href="#details">Write details</a></nav>
+    <nav class="tabs tile" aria-label="Preview screens"><span class="tag">Design preview</span><a href="#warmup">Warm-up</a><a href="#sort">Sort</a><a href="#brainstorm">Brainstorm</a><a href="#details">Write details</a><a href="#video">Video</a><a href="#evidence">Evidence</a></nav>
   </div>
   <div class="head tile">
     <p class="kind">A4 · Star Power</p>
@@ -277,6 +293,44 @@ body{overflow:hidden}
       <div class="col" id="dcol"></div>
     </div>
     <div class="foot" id="dfoot"><button class="btn tile" id="dgo" disabled>Submit</button></div>
+  </div>
+</section>
+
+<!-- ============ Video message (V3) in Marlow's Study ============ -->
+<section class="screen" id="video" aria-label="Video preview" hidden>
+  <div class="topbar">
+    <div class="pill tile where">Marlow's Study</div>
+    <nav class="tabs tile" aria-label="Preview screens"><span class="tag">Design preview</span><a href="#warmup">Warm-up</a><a href="#sort">Sort</a><a href="#brainstorm">Brainstorm</a><a href="#details">Write details</a><a href="#video">Video</a><a href="#evidence">Evidence</a></nav>
+  </div>
+  <div class="head tile">
+    <p class="kind">V3 · Marlow</p>
+    <p class="prompt">Meet Marlow: choosing strong evidence</p>
+  </div>
+  <div class="main">
+    <div class="vwrap"><div class="tile vframe">
+      <video id="vclip" playsinline preload="metadata" src="v3_evidence.mp4#t=0.6"></video>
+      <button class="vplay" id="vplay" type="button"><svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 4.5v15l12-7.5z" fill="currentColor"/></svg>Play message</button>
+    </div></div>
+    <div class="foot" id="vfoot"><p class="vnote" id="vnote">Watch the whole message to keep going.</p><button class="btn tile" id="vgo" disabled>Continue</button></div>
+  </div>
+</section>
+
+<!-- ============ Sort the Evidence (A5) in Marlow's Study ============ -->
+<section class="screen dense" id="evidence" aria-label="Evidence sort preview" hidden>
+  <div class="topbar">
+    <div class="pill tile where">Marlow's Study</div>
+    <nav class="tabs tile" aria-label="Preview screens"><span class="tag">Design preview</span><a href="#warmup">Warm-up</a><a href="#sort">Sort</a><a href="#brainstorm">Brainstorm</a><a href="#details">Write details</a><a href="#video">Video</a><a href="#evidence">Evidence</a></nav>
+  </div>
+  <div class="head tile">
+    <p class="kind">A5 · Star Power</p>
+    <p class="prompt">Sort the Evidence</p>
+    <p class="dir">Read each piece of evidence and drag and drop it to the correct category.</p>
+  </div>
+  <div class="main">
+    <p class="hint">Drag a sentence into a box, or tap a sentence and then tap a box.</p>
+    <div class="pool"></div>
+    <div class="bins"></div>
+    <div class="foot"><button class="btn tile chk" disabled>Check</button><button class="btn tile go" disabled>Continue</button></div>
   </div>
 </section>
 
@@ -304,16 +358,27 @@ const A4={context:['',['The best memory I have is the day my family went to the 
   before:'First, swimming in the ocean made the day unforgettable.',after:'But the fun didn’t stop there.',
   fields:[['Detail sentence 1','',2],['Detail sentence 2','',2],['Detail sentence 3','',2]]};
 
+/* A5 and V3, copied from the lesson STEPS array. */
+const DQ='“',CQ='”';
+const A5={bins:['CLAIM: Thomas Jefferson helped shape American democracy.','CLAIM: Martin Luther King Jr. was an important leader in the Civil Rights Movement.','WEAK EVIDENCE'],
+  items:[[`The author of Leaders writes, ${DQ}Jefferson wanted a government that listened to the people.${CQ}`,0],
+         [`In Building a Nation, Diaz says, ${DQ}Jefferson believed schools were important so citizens could protect liberty.${CQ}`,0],
+         [`Martin Luther King himself said, ${DQ}Injustice anywhere is a threat to justice everywhere.${CQ}`,1],
+         [`The author of Change Leaders states, ${DQ}King helped lead the Montgomery Bus Boycott to fight unfair laws.${CQ}`,1],
+         [`In Yummy Foods, Johnson says, ${DQ}Thomas Jefferson loved ice cream and served it at the White House.${CQ}`,2],
+         [`In Fun Facts About Leaders it says, ${DQ}Martin Luther King Jr. enjoyed playing pool with his friends.${CQ}`,2]]};
+
 let toastT;
 function toast(msg){const t=$('toast');t.textContent=msg;t.classList.remove('off');clearTimeout(toastT);toastT=setTimeout(()=>t.classList.add('off'),2600);}
 
 /* ---------- tabs ---------- */
-function show(){const ids=['warmup','sort','brainstorm','details'],h=location.hash.slice(1),which=ids.includes(h)?h:'warmup';
+function show(){const ids=['warmup','sort','brainstorm','details','video','evidence'],h=location.hash.slice(1),which=ids.includes(h)?h:'warmup';
   ids.forEach(id=>$(id).hidden=id!==which);
-  $('scene').className='scene '+(which==='warmup'?'s1':'s2');
+  $('scene').className='scene '+({warmup:'s1',video:'s3',evidence:'s3'}[which]||'s2');
   document.querySelectorAll('.tabs a').forEach(a=>{if(a.getAttribute('href')==='#'+which)a.setAttribute('aria-current','page');else a.removeAttribute('aria-current');});
-  document.title={warmup:'Warm-up',sort:'Sort',brainstorm:'Brainstorm',details:'Write details'}[which]+' · Tile preview';
-  if(which==='sort')requestAnimationFrame(lockPool);}
+  document.title={warmup:'Warm-up',sort:'Sort',brainstorm:'Brainstorm',details:'Write details',video:'Video',evidence:'Evidence'}[which]+' · Tile preview';
+  if(which!=='video'){const v=$('vclip');if(v&&!v.paused)v.pause();}
+  if(SORTS[which])requestAnimationFrame(SORTS[which].lockPool);}
 addEventListener('hashchange',show);
 
 /* ---------- warm-up ---------- */
@@ -335,68 +400,78 @@ wgo.onclick=()=>{
     f.innerHTML=`Remember to use the word <b>${A1.word.toUpperCase()}</b> in every sentence. Fix them, or press Continue again to keep going.`;return;}
   toast('Preview only. In the lesson, the trail moves on here.');};
 
-/* ---------- sort ---------- */
-const pool=$('pool'),bins=$('bins'),chk=$('chk'),sgo=$('sgo'),sfoot=$('sfoot');
-const order=A2.items.map((_,i)=>i).sort(()=>Math.random()-.5);
-pool.innerHTML=order.map(i=>`<button class="tile chip" data-i="${i}">${esc(A2.items[i][0])}</button>`).join('');
-bins.innerHTML=A2.bins.map((b,i)=>{const m=b.match(/^(MAIN IDEA:)\s*(.*)$/);
-  return `<div class="tile bin" data-b="${i}" tabindex="0" role="button" aria-label="${esc(b)}"><div class="bhead">${m?`<small>${esc(m[1])}</small><b>${esc(m[2])}</b>`:`<b>${esc(b)}</b>`}</div><div class="drop"></div></div>`;}).join('');
-const binEls=[...bins.querySelectorAll('.bin')];
-let sel=null,locked=false,poolLocked=false;
-function lockPool(){if(poolLocked||!pool.offsetHeight)return;if(innerWidth>760){pool.style.minHeight=pool.offsetHeight+'px';}poolLocked=true;}
-function lockPoolNow(){pool.style.minHeight='';requestAnimationFrame(lockPool);}
-function ready(on){binEls.forEach(b=>b.classList.toggle('ready',on));}
-function select(c){pool.parentNode.querySelectorAll('.chip.sel').forEach(x=>x.classList.remove('sel'));
-  sel=c;if(c){c.classList.add('sel','solid');}ready(!!c);
-  pool.querySelectorAll('.chip').forEach(x=>{if(x!==c&&!x.closest('.bin'))x.classList.remove('solid');});}
-function place(c,target){c.classList.remove('sel','right','wrong');
-  if(target===pool){pool.appendChild(c);c.classList.remove('solid');}
-  else{target.querySelector('.drop').appendChild(c);target.classList.add('solid');c.classList.add('solid');}
-  sel=null;ready(false);const empty=!pool.querySelector('.chip');pool.classList.toggle('empty',empty);if(empty)pool.style.minHeight='';
-  chk.disabled=!!pool.querySelector('.chip');chk.classList.toggle('ready',!chk.disabled);
-  const f=sfoot.querySelector('.fb');if(f&&f.classList.contains('try'))f.remove();}
-function chipTap(c){if(locked)return;const inBin=c.closest('.bin');
-  if(sel&&sel!==c&&inBin){place(sel,inBin);return;}
-  if(sel===c){c.classList.remove('sel');if(!inBin)c.classList.remove('solid');sel=null;ready(false);return;}
-  select(c);}
-binEls.forEach(b=>{
-  b.addEventListener('click',e=>{if(e.target.closest('.chip'))return;if(sel)place(sel,b);});
-  b.addEventListener('keydown',e=>{if((e.key==='Enter'||e.key===' ')&&sel){e.preventDefault();place(sel,b);}});
-});
-pool.addEventListener('click',e=>{if(!e.target.closest('.chip')&&sel&&sel.closest('.bin'))place(sel,pool);});
+/* ---------- sort (shared by A2 and A5) ---------- */
+const SORTS={};
+function makeSort(root,D){
+  const pool=root.querySelector('.pool'),bins=root.querySelector('.bins'),chk=root.querySelector('.chk'),go=root.querySelector('.go'),foot=root.querySelector('.foot');
+  const order=D.items.map((_,i)=>i).sort(()=>Math.random()-.5);
+  pool.innerHTML=order.map(i=>`<button class="tile chip" data-i="${i}">${esc(D.items[i][0])}</button>`).join('');
+  bins.innerHTML=D.bins.map((b,i)=>{const m=b.match(/^(MAIN IDEA:|CLAIM:)\s*(.*)$/);
+    return `<div class="tile bin" data-b="${i}" tabindex="0" role="button" aria-label="${esc(b)}"><div class="bhead">${m?`<small>${esc(m[1])}</small><b>${esc(m[2])}</b>`:`<b>${esc(b)}</b>`}</div><div class="drop"></div></div>`;}).join('');
+  const binEls=[...bins.querySelectorAll('.bin')];
+  const S={sel:null,locked:false,poolLocked:false,pool,binEls};
+  S.lockPool=()=>{if(S.poolLocked||!pool.offsetHeight)return;if(innerWidth>760){pool.style.minHeight=pool.offsetHeight+'px';}S.poolLocked=true;};
+  const ready=on=>binEls.forEach(b=>b.classList.toggle('ready',on));
+  S.select=c=>{root.querySelectorAll('.chip.sel').forEach(x=>x.classList.remove('sel'));
+    S.sel=c;if(c){c.classList.add('sel','solid');}ready(!!c);
+    pool.querySelectorAll('.chip').forEach(x=>{if(x!==c&&!x.closest('.bin'))x.classList.remove('solid');});};
+  S.place=(c,target)=>{c.classList.remove('sel','right','wrong');
+    if(target===pool){pool.appendChild(c);c.classList.remove('solid');}
+    else{target.querySelector('.drop').appendChild(c);target.classList.add('solid');c.classList.add('solid');}
+    S.sel=null;ready(false);const empty=!pool.querySelector('.chip');pool.classList.toggle('empty',empty);if(empty)pool.style.minHeight='';
+    chk.disabled=!!pool.querySelector('.chip');chk.classList.toggle('ready',!chk.disabled);
+    const f=foot.querySelector('.fb');if(f&&f.classList.contains('try'))f.remove();};
+  S.chipTap=c=>{if(S.locked)return;const inBin=c.closest('.bin');
+    if(S.sel&&S.sel!==c&&inBin){S.place(S.sel,inBin);return;}
+    if(S.sel===c){c.classList.remove('sel');if(!inBin)c.classList.remove('solid');S.sel=null;ready(false);return;}
+    S.select(c);};
+  binEls.forEach(b=>{
+    b.addEventListener('click',e=>{if(e.target.closest('.chip'))return;if(S.sel)S.place(S.sel,b);});
+    b.addEventListener('keydown',e=>{if((e.key==='Enter'||e.key===' ')&&S.sel){e.preventDefault();S.place(S.sel,b);}});});
+  pool.addEventListener('click',e=>{e.preventDefault();if(!e.target.closest('.chip')&&S.sel&&S.sel.closest('.bin'))S.place(S.sel,pool);});
+  const fbk=(cls,html)=>{let f=foot.querySelector('.fb');if(!f){f=document.createElement('p');foot.prepend(f);}f.className='fb tile solid '+cls;f.innerHTML=html;};
+  chk.onclick=()=>{let wrong=0;
+    bins.querySelectorAll('.chip').forEach(c=>{const ok=D.items[+c.dataset.i][1]===+c.closest('.bin').dataset.b;c.classList.toggle('right',ok);c.classList.toggle('wrong',!ok);if(!ok)wrong++;});
+    if(!wrong){S.locked=true;bins.querySelectorAll('.chip').forEach(c=>c.setAttribute('aria-disabled','true'));chk.remove();pool.classList.add('done');fbk('good','Every sentence is in the right place!');go.disabled=false;go.classList.add('ready');}
+    else{setTimeout(()=>{bins.querySelectorAll('.chip.wrong').forEach(c=>{pool.appendChild(c);c.classList.remove('solid');});pool.classList.remove('empty');},900);
+      S.poolLocked=false;setTimeout(()=>{pool.style.minHeight='';requestAnimationFrame(S.lockPool);},950);
+      chk.disabled=true;chk.classList.remove('ready');
+      fbk('try',`${wrong} ${wrong===1?'sentence is':'sentences are'} back at the top. Read ${wrong===1?'it':'them'} again and try another box.`);}};
+  go.onclick=()=>toast('Preview only. In the lesson, the trail moves on here.');
+  return S;}
+SORTS.sort=makeSort($('sort'),A2);
+SORTS.evidence=makeSort($('evidence'),A5);
+const sortOf=c=>SORTS[c.closest('.screen').id];
 
 /* pointer drag (mouse, pen, and touch on wide screens); a short press without movement is a tap */
 let drag=null;
-document.addEventListener('pointerdown',e=>{const c=e.target.closest('.chip');if(!c||locked||e.button>0)return;
-  drag={c,x:e.clientX,y:e.clientY,id:e.pointerId,moved:false,ghost:null,ox:0,oy:0};});
+document.addEventListener('pointerdown',e=>{const c=e.target.closest('.chip');if(!c||e.button>0)return;const S=sortOf(c);if(!S||S.locked)return;
+  drag={S,c,x:e.clientX,y:e.clientY,id:e.pointerId,moved:false,ghost:null,ox:0,oy:0};});
 document.addEventListener('pointermove',e=>{if(!drag||e.pointerId!==drag.id)return;
   const dx=e.clientX-drag.x,dy=e.clientY-drag.y;
   if(!drag.moved){if(Math.hypot(dx,dy)<7)return;if(e.pointerType==='touch'&&innerWidth<=760){drag=null;return;}
     drag.moved=true;const r=drag.c.getBoundingClientRect();drag.ox=drag.x-r.left;drag.oy=drag.y-r.top;
     const g=drag.c.cloneNode(true);g.classList.add('ghost','solid');g.classList.remove('sel','right','wrong');g.style.width=r.width+'px';document.body.appendChild(g);drag.ghost=g;
-    drag.c.classList.add('lifting');select(drag.c);}
+    drag.c.classList.add('lifting');drag.S.select(drag.c);}
   e.preventDefault();drag.ghost.style.left=(e.clientX-drag.ox)+'px';drag.ghost.style.top=(e.clientY-drag.oy)+'px';
   const under=document.elementFromPoint(e.clientX,e.clientY),b=under&&under.closest('.bin');
-  binEls.forEach(x=>x.classList.toggle('over',x===b));});
-function endDrag(e,cancel){if(!drag||e.pointerId!==drag.id)return;const d=drag;drag=null;
-  if(!d.moved){if(!cancel)chipTap(d.c);return;}
-  d.ghost.remove();d.c.classList.remove('lifting');binEls.forEach(x=>x.classList.remove('over'));
+  drag.S.binEls.forEach(x=>x.classList.toggle('over',x===b));});
+function endDrag(e,cancel){if(!drag||e.pointerId!==drag.id)return;const d=drag,S=d.S;drag=null;
+  if(!d.moved){if(!cancel)S.chipTap(d.c);return;}
+  d.ghost.remove();d.c.classList.remove('lifting');S.binEls.forEach(x=>x.classList.remove('over'));
   const under=cancel?null:document.elementFromPoint(e.clientX,e.clientY);
   const b=under&&under.closest('.bin'),p=under&&under.closest('.pool');
-  if(b)place(d.c,b);else if(p&&d.c.closest('.bin'))place(d.c,pool);else select(null);}
+  if(b&&S.binEls.includes(b))S.place(d.c,b);else if(p===S.pool&&d.c.closest('.bin'))S.place(d.c,S.pool);else S.select(null);}
 document.addEventListener('pointerup',e=>endDrag(e,false));
 document.addEventListener('pointercancel',e=>endDrag(e,true));
-pool.addEventListener('click',e=>e.preventDefault());
-document.addEventListener('keydown',e=>{const c=e.target.closest&&e.target.closest('.chip');if(c&&(e.key==='Enter'||e.key===' ')){e.preventDefault();chipTap(c);}});
+document.addEventListener('keydown',e=>{const c=e.target.closest&&e.target.closest('.chip');if(c&&(e.key==='Enter'||e.key===' ')){e.preventDefault();const S=sortOf(c);if(S)S.chipTap(c);}});
 
-function sfb(cls,html){let f=sfoot.querySelector('.fb');if(!f){f=document.createElement('p');sfoot.prepend(f);}f.className='fb tile solid '+cls;f.innerHTML=html;}
-chk.onclick=()=>{let wrong=0;
-  bins.querySelectorAll('.chip').forEach(c=>{const ok=A2.items[+c.dataset.i][1]===+c.closest('.bin').dataset.b;c.classList.toggle('right',ok);c.classList.toggle('wrong',!ok);if(!ok)wrong++;});
-  if(!wrong){locked=true;bins.querySelectorAll('.chip').forEach(c=>c.setAttribute('aria-disabled','true'));chk.remove();pool.classList.add('done');sfb('good','Every sentence is in the right place!');sgo.disabled=false;sgo.classList.add('ready');}
-  else{setTimeout(()=>{bins.querySelectorAll('.chip.wrong').forEach(c=>{pool.appendChild(c);c.classList.remove('solid');});pool.classList.remove('empty');},900);poolLocked=false;setTimeout(lockPoolNow,950);
-    chk.disabled=true;chk.classList.remove('ready');
-    sfb('try',`${wrong} ${wrong===1?'sentence is':'sentences are'} back at the top. Read ${wrong===1?'it':'them'} again and try another box.`);}};
-sgo.onclick=()=>toast('Preview only. In the lesson, the trail moves on here.');
+/* ---------- video message (V3) ---------- */
+const vclip=$('vclip'),vplay=$('vplay'),vgo=$('vgo');
+vplay.onclick=()=>{vplay.hidden=true;vclip.controls=true;vclip.currentTime=0;const pr=vclip.play();if(pr&&pr.catch)pr.catch(()=>{vclip.muted=true;vclip.play().catch(()=>{});});};
+vclip.addEventListener('ended',()=>{vgo.disabled=false;vgo.classList.add('ready');$('vnote').hidden=true;toast('Message saved to your pouch');});
+vgo.onclick=()=>toast('Preview only. In the lesson, the trail moves on here.');
+
 
 /* ---------- shared: writing tile that turns solid on tap and stays solid ---------- */
 function writeTile(id,f,cls){return `<div class="tile wtile ${cls||''}"><span class="done" aria-hidden="true">✓</span>
