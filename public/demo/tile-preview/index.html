@@ -179,13 +179,25 @@ body{overflow:hidden}
 /* ---------- scene 3 + video message + dense sort ---------- */
 .scene.s3{background-image:url(scene3.jpg)}
 .vwrap{display:flex;justify-content:center}
-.vframe{position:relative;padding:8px;border-radius:24px}
-.vframe video{display:block;height:min(calc(100vh - 290px),540px);aspect-ratio:9/16;max-width:100%;border-radius:17px;background:#0c0a1e;object-fit:cover}
+.vframe{position:relative;padding:8px;border-radius:24px;width:min(72vw,1000px,calc((100vh - 268px) * 16 / 9));box-sizing:border-box}
+.vbox{position:relative;width:100%;aspect-ratio:16/9;border-radius:17px;overflow:hidden;background:#0c0a1e;isolation:isolate}
+.vbox video{display:block;position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:50% 24%;background:transparent}
+.vbg{position:absolute;inset:0;width:100%;height:100%;display:none;transform:scale(1.15);filter:blur(16px) brightness(.58) saturate(1.15)}
+/* blurred sides: full portrait video at full height, sides filled by a blurred copy of the same frames */
+.vblur .vbg{display:block}
+.vblur .vbox video{left:50%;right:auto;width:auto;aspect-ratio:9/16;transform:translateX(-50%);object-fit:contain;
+  -webkit-mask-image:linear-gradient(90deg,transparent 0,#000 5%,#000 95%,transparent 100%);mask-image:linear-gradient(90deg,transparent 0,#000 5%,#000 95%,transparent 100%)}
+.vlook{display:inline-flex;align-items:center;gap:4px;margin:0;padding:4px;border-radius:999px}
+.vlook span{font:800 11px var(--body);letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.7);padding:0 8px 0 10px}
+.vlook button{appearance:none;border:0;cursor:pointer;font:700 13.5px var(--body);color:#fff;background:transparent;padding:6px 12px;border-radius:999px}
+.vlook button[aria-pressed="true"]{background:#fff;color:var(--night)}
+.vlook button:focus-visible{outline:3px solid var(--crystal);outline-offset:2px}
+#vfoot .vnote{margin:0 0 0 auto}
 .vplay{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);cursor:pointer;border:0;display:flex;align-items:center;gap:10px;white-space:nowrap;
   font:800 18px/1 var(--display);padding:14px 22px 12px;border-radius:999px;background:var(--gold);color:var(--night);box-shadow:0 14px 30px -10px rgba(0,0,0,.8)}
 .vplay svg{flex:none}
 .vplay:focus-visible{outline:3px solid var(--crystal);outline-offset:3px}
-.vnote{margin:0 auto 0 0;font-weight:700;font-size:14px;color:rgba(255,255,255,.85);text-shadow:0 1px 3px #000}
+.vnote{margin:0;font-weight:700;font-size:14px;color:rgba(255,255,255,.85);text-shadow:0 1px 3px #000}
 .dense .chip{font-size:14px;padding:8px 11px;line-height:1.33}
 .dense .bin{min-height:190px}
 .dense .bin .bhead b{font-size:16.5px}
@@ -195,7 +207,8 @@ body{overflow:hidden}
   .topbar{flex-wrap:wrap}
   .tabs .tag{display:none}
   .tabs{flex-wrap:wrap;border-radius:18px}
-  .vframe video{height:auto;width:min(100%,320px)}
+  .vframe{width:100%}
+  #vfoot{flex-wrap:wrap}
   .tabs a{padding:6px 10px;font-size:13.5px}
   .split{grid-template-columns:1fr}
   .wtile.big{min-height:300px}
@@ -307,11 +320,12 @@ body{overflow:hidden}
     <p class="prompt">Meet Marlow: choosing strong evidence</p>
   </div>
   <div class="main">
-    <div class="vwrap"><div class="tile vframe">
-      <video id="vclip" playsinline preload="metadata" src="v3_evidence.mp4#t=0.6"></video>
+    <div class="vwrap"><div class="tile vframe" id="vframe">
+      <div class="vbox"><canvas class="vbg" id="vbg" width="96" height="54" aria-hidden="true"></canvas>
+      <video id="vclip" playsinline preload="auto" src="v3_evidence.mp4#t=0.6"></video></div>
       <button class="vplay" id="vplay" type="button"><svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 4.5v15l12-7.5z" fill="currentColor"/></svg>Play message</button>
     </div></div>
-    <div class="foot" id="vfoot"><p class="vnote" id="vnote">Watch the whole message to keep going.</p><button class="btn tile" id="vgo" disabled>Continue</button></div>
+    <div class="foot" id="vfoot"><div class="vlook tile" role="group" aria-label="Video look (preview only)"><span>Look</span><button type="button" data-v="crop">Crop wide</button><button type="button" data-v="blur">Blurred sides</button></div><p class="vnote" id="vnote">Watch the whole message to keep going.</p><button class="btn tile" id="vgo" disabled>Continue</button></div>
   </div>
 </section>
 
@@ -471,6 +485,19 @@ const vclip=$('vclip'),vplay=$('vplay'),vgo=$('vgo');
 vplay.onclick=()=>{vplay.hidden=true;vclip.controls=true;vclip.currentTime=0;const pr=vclip.play();if(pr&&pr.catch)pr.catch(()=>{vclip.muted=true;vclip.play().catch(()=>{});});};
 vclip.addEventListener('ended',()=>{vgo.disabled=false;vgo.classList.add('ready');$('vnote').hidden=true;toast('Message saved to your pouch');});
 vgo.onclick=()=>toast('Preview only. In the lesson, the trail moves on here.');
+/* temporary look toggle: ?v=crop (default) or ?v=blur */
+const vframe=$('vframe'),vbg=$('vbg'),bgc=vbg.getContext('2d');
+function drawBg(){if(vclip.readyState<2||!vframe.classList.contains('vblur'))return;
+  const vw=vclip.videoWidth,vh=vclip.videoHeight,cw=vbg.width,ch=vbg.height,sc=Math.max(cw/vw,ch/vh),w=vw*sc,h=vh*sc;
+  bgc.drawImage(vclip,(cw-w)/2,(ch-h)*.35,w,h);}
+let bgRaf=0;function bgLoop(){drawBg();bgRaf=(!vclip.paused&&!vclip.ended)?requestAnimationFrame(bgLoop):0;}
+['play','playing'].forEach(ev=>vclip.addEventListener(ev,()=>{if(!bgRaf)bgLoop();}));
+['loadeddata','seeked','pause','timeupdate'].forEach(ev=>vclip.addEventListener(ev,drawBg));
+function setLook(v,push){v=v==='blur'?'blur':'crop';vframe.classList.toggle('vblur',v==='blur');
+  document.querySelectorAll('.vlook button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.v===v));
+  if(push){const u=new URL(location.href);u.searchParams.set('v',v);history.replaceState(null,'',u);}drawBg();}
+document.querySelectorAll('.vlook button').forEach(b=>b.onclick=()=>setLook(b.dataset.v,true));
+setLook(new URLSearchParams(location.search).get('v'),false);
 
 
 /* ---------- shared: writing tile that turns solid on tap and stays solid ---------- */
