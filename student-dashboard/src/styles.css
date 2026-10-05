@@ -372,3 +372,365 @@
     }
   }
 }
+
+  /* ——— Plan A: portal hub + Astra’s Guide ——— */
+
+  .portal-hotspot,
+  .treehouse-hotspot {
+    z-index: 2;
+    border: 0;
+    background: transparent;
+    padding: 0;
+    border-radius: 50% / 46%;
+  }
+
+  .portal-ring,
+  .treehouse-ring {
+    position: absolute;
+    inset: 4%;
+    border-radius: 50% / 46%;
+    box-shadow: none;
+    background: transparent;
+    transition:
+      box-shadow 0.2s ease,
+      background 0.2s ease,
+      transform 0.2s ease;
+  }
+
+  .portal-hotspot:hover .portal-ring,
+  .portal-hotspot:focus-visible .portal-ring {
+    background: color-mix(in srgb, var(--portal-accent, #ffe8a0) 18%, transparent);
+    box-shadow:
+      0 0 0 2px color-mix(in srgb, var(--portal-accent, #ffe8a0) 85%, white),
+      0 0 22px 6px color-mix(in srgb, var(--portal-accent, #ffe8a0) 55%, transparent);
+    transform: scale(1.04);
+  }
+
+  .portal-hotspot:focus-visible,
+  .treehouse-hotspot:focus-visible {
+    outline: none;
+  }
+
+  .treehouse-hotspot:hover .treehouse-ring,
+  .treehouse-hotspot:focus-visible .treehouse-ring {
+    background: rgb(255 220 140 / 0.18);
+    box-shadow:
+      0 0 0 2px rgb(255 214 150 / 0.95),
+      0 0 28px 8px rgb(255 196 100 / 0.55);
+    transform: scale(1.05);
+  }
+
+  .portal-plate {
+    position: absolute;
+    left: 50%;
+    bottom: -0.15rem;
+    z-index: 3;
+    display: flex;
+    min-width: 7.2rem;
+    max-width: 9.5rem;
+    translate: -50% 100%;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.05rem;
+    border-radius: 0.7rem;
+    border: 1px solid rgb(255 236 200 / 0.55);
+    background: rgb(16 28 24 / 0.78);
+    padding: 0.28rem 0.55rem 0.32rem;
+    box-shadow: 0 6px 14px rgb(8 16 14 / 0.35);
+    backdrop-filter: blur(6px);
+    pointer-events: none;
+  }
+
+  .treehouse-plate {
+    bottom: 8%;
+    translate: -50% 0;
+    border-color: rgb(255 214 150 / 0.7);
+    background: rgb(28 22 12 / 0.78);
+  }
+
+  .portal-plate-mod {
+    font-family: "Baloo 2", "Nunito", var(--font-sans);
+    font-size: 0.62rem;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    line-height: 1.1;
+    color: rgb(255 236 200 / 0.9);
+    white-space: nowrap;
+  }
+
+  .portal-plate-world {
+    font-family: "Baloo 2", "Nunito", var(--font-sans);
+    font-size: 0.78rem;
+    font-weight: 800;
+    line-height: 1.15;
+    color: #fff;
+    text-align: center;
+    text-shadow: 0 1px 2px rgb(0 0 0 / 0.45);
+    white-space: nowrap;
+  }
+
+  .portal-hotspot:hover .portal-plate,
+  .portal-hotspot:focus-visible .portal-plate,
+  .treehouse-hotspot:hover .portal-plate,
+  .treehouse-hotspot:focus-visible .portal-plate {
+    border-color: rgb(255 246 220 / 0.95);
+    background: rgb(20 32 28 / 0.9);
+  }
+
+  .astra-guide {
+    overflow: hidden;
+  }
+
+  .guide-astra {
+    display: flex;
+    align-items: flex-end;
+    gap: 0.45rem;
+  }
+
+  .guide-astra-img {
+    width: 4.4rem;
+    height: 4.4rem;
+    flex-shrink: 0;
+    border-radius: 1.1rem;
+    object-fit: cover;
+    object-position: center 18%;
+    box-shadow: 0 4px 10px rgb(28 40 34 / 0.18);
+    border: 2px solid rgb(231 201 138 / 0.85);
+  }
+
+  .guide-bubble {
+    position: relative;
+    min-width: 0;
+    flex: 1;
+    border-radius: 1rem;
+    background: #fffdf8;
+    border: 1px solid var(--color-line);
+    padding: 0.45rem 0.55rem 0.5rem;
+    box-shadow: 0 4px 12px rgb(28 40 34 / 0.08);
+  }
+
+  .guide-bubble::before {
+    content: "";
+    position: absolute;
+    left: -0.35rem;
+    bottom: 1rem;
+    width: 0.55rem;
+    height: 0.55rem;
+    background: #fffdf8;
+    border-left: 1px solid var(--color-line);
+    border-bottom: 1px solid var(--color-line);
+    transform: rotate(45deg);
+  }
+
+  .guide-bubble-label {
+    margin: 0;
+    font-family: "Baloo 2", "Nunito", var(--font-sans);
+    font-size: 0.62rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #6b8fb8;
+  }
+
+  .guide-bubble-text {
+    margin: 0.15rem 0 0;
+    font-family: "Baloo 2", "Nunito", var(--font-sans);
+    font-size: 0.82rem;
+    font-weight: 700;
+    line-height: 1.25;
+    color: var(--color-ink);
+  }
+
+  .goal-compass {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.55rem;
+    border-radius: 1rem;
+    border: 1px solid rgb(231 201 138 / 0.85);
+    background:
+      linear-gradient(180deg, #fff8e8 0%, #f3e6c8 100%);
+    padding: 0.55rem 0.65rem;
+    box-shadow:
+      0 0 0 1px rgb(255 248 230 / 0.7) inset,
+      0 0 14px rgb(255 214 150 / 0.35);
+  }
+
+  .goal-compass-icon {
+    display: grid;
+    place-items: center;
+    width: 2rem;
+    height: 2rem;
+    flex-shrink: 0;
+    border-radius: 999px;
+    background: #fffdf8;
+    color: var(--color-lantern);
+    box-shadow: 0 1px 4px rgb(143 77 22 / 0.18);
+  }
+
+  .goal-compass-label {
+    margin: 0;
+    font-family: "Baloo 2", "Nunito", var(--font-sans);
+    font-size: 0.62rem;
+    font-weight: 800;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: #6b8fb8;
+  }
+
+  .goal-compass-text {
+    margin: 0.1rem 0 0;
+    font-family: "Baloo 2", "Nunito", var(--font-sans);
+    font-size: 0.84rem;
+    font-weight: 700;
+    line-height: 1.25;
+    color: var(--color-ink);
+  }
+
+  .today-quest {
+    display: flex;
+    flex: 1;
+    min-height: 0;
+    flex-direction: column;
+    border-radius: 1.15rem;
+    background: #fffdf8;
+    border: 1px solid var(--color-line);
+    padding: 0.65rem 0.7rem 0.75rem;
+    box-shadow: 0 6px 16px rgb(28 40 34 / 0.08);
+  }
+
+  .today-quest-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    margin: 0;
+    font-family: "Baloo 2", "Nunito", var(--font-sans);
+    font-size: 0.68rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--color-lantern);
+  }
+
+  .today-quest-title {
+    margin: 0.35rem 0 0;
+    font-family: "Baloo 2", "Nunito", var(--font-sans);
+    font-size: 1.15rem;
+    font-weight: 800;
+    line-height: 1.2;
+    color: var(--color-ink);
+  }
+
+  .today-quest-meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.4rem;
+    margin: 0.4rem 0 0;
+    font-size: 0.72rem;
+  }
+
+  .quest-start {
+    margin-top: auto;
+    display: inline-flex;
+    min-height: 2.75rem;
+    width: 100%;
+    align-items: center;
+    justify-content: center;
+    border: 0;
+    border-radius: 999px;
+    background: var(--color-lantern);
+    padding: 0 1rem;
+    font-family: "Baloo 2", "Nunito", var(--font-sans);
+    font-size: 0.95rem;
+    font-weight: 800;
+    color: var(--color-cream);
+    box-shadow:
+      0 0 0 2px rgb(255 214 150 / 0.55),
+      0 0 16px 2px rgb(150 210 255 / 0.4),
+      0 0 24px 4px rgb(196 122 42 / 0.35);
+  }
+
+  .quest-start:hover {
+    filter: brightness(1.06);
+  }
+
+  .quest-start:focus-visible {
+    outline: 2px solid #ffd27a;
+    outline-offset: 2px;
+  }
+
+  .treehouse-tile {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    border-radius: 1rem;
+    border: 1px solid var(--color-line);
+    background: var(--color-cream-deep);
+    padding: 0.45rem;
+  }
+
+  .treehouse-tile-main {
+    display: flex;
+    width: 100%;
+    align-items: center;
+    gap: 0.5rem;
+    border: 0;
+    background: transparent;
+    padding: 0.2rem 0.25rem;
+    color: inherit;
+    text-align: left;
+    border-radius: 0.75rem;
+  }
+
+  .treehouse-tile-main:hover {
+    background: rgb(255 253 248 / 0.7);
+  }
+
+  .treehouse-tile-art {
+    display: grid;
+    place-items: center;
+    width: 2.2rem;
+    height: 2.2rem;
+    flex-shrink: 0;
+    border-radius: 0.7rem;
+    background: #fffdf8;
+    color: var(--color-moss);
+    box-shadow: 0 1px 4px rgb(28 40 34 / 0.1);
+  }
+
+  .treehouse-tile-label {
+    display: block;
+    font-family: "Baloo 2", "Nunito", var(--font-sans);
+    font-size: 0.95rem;
+    font-weight: 800;
+    line-height: 1.1;
+  }
+
+  .treehouse-tile-sub {
+    display: block;
+    margin-top: 0.1rem;
+    font-size: 0.68rem;
+    font-weight: 700;
+    color: var(--color-muted);
+  }
+
+  .treehouse-tile-quick {
+    display: inline-flex;
+    min-height: 2rem;
+    width: 100%;
+    align-items: center;
+    justify-content: center;
+    gap: 0.3rem;
+    border: 0;
+    border-radius: 999px;
+    background: var(--color-moss);
+    padding: 0 0.7rem;
+    font-family: "Baloo 2", "Nunito", var(--font-sans);
+    font-size: 0.78rem;
+    font-weight: 800;
+    color: var(--color-cream);
+  }
+
+  .treehouse-tile-quick:hover {
+    filter: brightness(1.06);
+  }

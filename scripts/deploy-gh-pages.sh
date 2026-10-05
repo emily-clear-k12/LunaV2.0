@@ -3,8 +3,12 @@ set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 cd "$ROOT"
 npm run build
-# Astra student dashboard (student-dashboard/) → dist/dashboard/
-( cd student-dashboard && { [ -d node_modules ] || npm install --no-audit --no-fund; } && npm run build )
+# Astra student dashboards (Plan B → dist/dashboard/, Plan A → dist/dashboard-a/)
+( cd student-dashboard && { [ -d node_modules ] || npm install --no-audit --no-fund; } && npm run build && npm run build:a && \
+  if [ -f ../dist/dashboard-a/index-a.html ] && [ ! -f ../dist/dashboard-a/index.html ]; then
+    mv ../dist/dashboard-a/index-a.html ../dist/dashboard-a/index.html
+  fi
+)
 touch dist/.nojekyll
 TMP="$(mktemp -d)"
 cp -a dist/. "$TMP/"
