@@ -158,53 +158,28 @@ body{overflow:hidden}
 #details .split{align-items:start}
 #details .col{gap:8px}
 
-/* ================= TEMPORARY frost comparison: ?f=cream (default) / ?f=more ================= */
-.right{display:flex;align-items:center;gap:8px;flex-wrap:wrap;justify-content:flex-end}
-.frost button{all:unset;cursor:pointer;font:700 14px var(--body);color:#fff;padding:6px 12px;border-radius:999px}
-.frost button[aria-pressed="true"]{background:#fff;color:var(--solid-ink)}
-.frost button:focus-visible{outline:3px solid var(--crystal);outline-offset:2px}
-
-/* --- More frost: heavier blur, darker more opaque glass; white text unchanged --- */
-.f-more .tile:not(.head):not(.solid){background:rgba(16,12,38,.66);border-color:rgba(255,255,255,.24);
+/* ================= Final mix: typing tiles = deep frost, reading tiles = cream frost ================= */
+/* Deep frost: every interactive tile, top bar and buttons (heading box and solid tiles excluded) */
+.tile:not(.head):not(.solid){background:rgba(16,12,38,.66);border-color:rgba(255,255,255,.24);
   backdrop-filter:blur(22px) saturate(120%);-webkit-backdrop-filter:blur(22px) saturate(120%)}
-.f-more .tile.bin.over{background:var(--solid-bg);color:var(--solid-ink)}
-.f-more .tile.btn.ready{background:var(--gold);border-color:var(--gold);color:var(--night)}
-.f-more .tile.bin.ready,.f-cream .tile.bin.ready{border-color:var(--gold)}
-
-/* --- Cream frost: warm cream glass, dark warm ink; tapped tiles still go near-white --- */
-.f-cream{--cream-ink:#3a2a1c;--cream-muted:#6c5642;--cream-amber:#9a4f16;--cream-accent:#55399f}
-.f-cream .tile:not(.head):not(.solid){background:rgba(250,243,228,.8);border-color:rgba(255,250,238,.85);color:var(--cream-ink);text-shadow:none;
+.tile.bin.over{background:var(--solid-bg);color:var(--solid-ink)}
+.tile.btn.ready{background:var(--gold);border-color:var(--gold);color:var(--night)}
+.tile.btn.ready:hover{background:#ffdd94}
+.tile.btn:not(.solid):not(.ready):not(:disabled):hover{background:rgba(40,32,80,.75)}
+.tile.bin.ready{border-color:var(--gold)}
+/* Cream frost: read-only reading tiles (outline, passage, given sentences) */
+:root{--cream-ink:#3a2a1c;--cream-muted:#6c5642}
+.tile.ctx:not(.head):not(.solid),.tile.given:not(.head):not(.solid){background:rgba(250,243,228,.8);border-color:rgba(255,250,238,.85);color:var(--cream-ink);text-shadow:none;
   backdrop-filter:blur(14px) saturate(115%);-webkit-backdrop-filter:blur(14px) saturate(115%);
   box-shadow:inset 0 1px 0 rgba(255,255,255,.6),0 14px 34px -18px rgba(0,0,0,.7)}
-.f-cream .where{color:var(--cream-amber)}
-.f-cream .tabs .tag{color:var(--cream-muted)}
-.f-cream .tabs a,.f-cream .frost button{color:var(--cream-ink)}
-.f-cream .tabs a[aria-current="page"],.f-cream .frost button[aria-pressed="true"]{background:var(--cream-ink);color:#fffaf0}
-.f-cream .tile.btn:not(.head):not(.solid):disabled{color:rgba(58,42,28,.42)}
-.f-cream .tile.btn:not(.solid):not(:disabled):hover{background:rgba(255,252,244,.9)}
-.f-cream .tile.btn.ready{background:var(--gold);border-color:var(--gold);color:var(--night)}
-.f-cream .wtile:not(.solid) label{color:var(--cream-accent)}
-.f-cream .wtile:not(.solid) label span{color:var(--cream-muted)}
-.f-cream .wtile:not(.solid) textarea::placeholder{color:rgba(58,42,28,.55)}
-.f-cream .wtile:not(.solid) .line{background:rgba(58,42,28,.22)}
-.f-cream .wtile.big:not(.solid) textarea{background:repeating-linear-gradient(transparent 0 30px,rgba(58,42,28,.1) 30px 31px);background-attachment:local}
-.f-cream .ctx,.f-cream .given{text-shadow:none}
-.f-cream .ctx .tag,.f-cream .given small{color:var(--cream-muted)}
-.f-cream .ctx h4{color:var(--cream-ink)}
-.f-cream .ctx .bp2{background:rgba(233,162,59,.2);box-shadow:inset 3px 0 0 #d08a1e}
-.f-cream .chip{text-shadow:none}
-.f-cream .bin:not(.solid) .bhead{border-color:rgba(58,42,28,.28)}
-.f-cream .bin:not(.solid) .bhead small{color:var(--cream-amber)}
-.f-cream .bin:not(.solid) .drop:empty::before{border-color:rgba(58,42,28,.28)}
-.f-cream .bin.ready .drop:empty::before{border-color:rgba(200,130,20,.8)}
-.f-cream .tile.bin.over{background:#fffefb;color:var(--solid-ink)}
+.ctx .tag,.given small{color:var(--cream-muted)}
+.ctx h4{color:var(--cream-ink)}
+.ctx .bp2{background:rgba(233,162,59,.2);box-shadow:inset 3px 0 0 #d08a1e}
 
 @media (max-width:760px){
   .screen{padding:12px 12px 20px}
   .topbar{flex-wrap:wrap}
   .tabs .tag{display:none}
-  .topbar .right{gap:6px}
-  .frost button{padding:6px 9px;font-size:13.5px}
   .tabs a{padding:6px 10px;font-size:13.5px}
   .split{grid-template-columns:1fr}
   .wtile.big{min-height:300px}
@@ -233,7 +208,7 @@ body{overflow:hidden}
 <section class="screen" id="warmup" aria-label="Warm-up preview">
   <div class="topbar">
     <div class="pill tile where">The Entrance</div>
-    <div class="right"><div class="tabs tile frost" role="group" aria-label="Frost comparison"><button type="button" data-f="more">More frost</button><button type="button" data-f="cream">Cream frost</button></div><nav class="tabs tile" aria-label="Preview screens"><span class="tag">Design preview</span><a href="#warmup">Warm-up</a><a href="#sort">Sort</a><a href="#brainstorm">Brainstorm</a><a href="#details">Write details</a></nav></div>
+    <nav class="tabs tile" aria-label="Preview screens"><span class="tag">Design preview</span><a href="#warmup">Warm-up</a><a href="#sort">Sort</a><a href="#brainstorm">Brainstorm</a><a href="#details">Write details</a></nav>
   </div>
   <div class="head tile">
     <p class="kind">A1 · Practice</p>
@@ -250,7 +225,7 @@ body{overflow:hidden}
 <section class="screen" id="sort" aria-label="Sort preview" hidden>
   <div class="topbar">
     <div class="pill tile where">The Root Tunnel</div>
-    <div class="right"><div class="tabs tile frost" role="group" aria-label="Frost comparison"><button type="button" data-f="more">More frost</button><button type="button" data-f="cream">Cream frost</button></div><nav class="tabs tile" aria-label="Preview screens"><span class="tag">Design preview</span><a href="#warmup">Warm-up</a><a href="#sort">Sort</a><a href="#brainstorm">Brainstorm</a><a href="#details">Write details</a></nav></div>
+    <nav class="tabs tile" aria-label="Preview screens"><span class="tag">Design preview</span><a href="#warmup">Warm-up</a><a href="#sort">Sort</a><a href="#brainstorm">Brainstorm</a><a href="#details">Write details</a></nav>
   </div>
   <div class="head tile">
     <p class="kind">A2 · Star Power</p>
@@ -269,7 +244,7 @@ body{overflow:hidden}
 <section class="screen" id="brainstorm" aria-label="Brainstorm preview" hidden>
   <div class="topbar">
     <div class="pill tile where">The Root Tunnel</div>
-    <div class="right"><div class="tabs tile frost" role="group" aria-label="Frost comparison"><button type="button" data-f="more">More frost</button><button type="button" data-f="cream">Cream frost</button></div><nav class="tabs tile" aria-label="Preview screens"><span class="tag">Design preview</span><a href="#warmup">Warm-up</a><a href="#sort">Sort</a><a href="#brainstorm">Brainstorm</a><a href="#details">Write details</a></nav></div>
+    <nav class="tabs tile" aria-label="Preview screens"><span class="tag">Design preview</span><a href="#warmup">Warm-up</a><a href="#sort">Sort</a><a href="#brainstorm">Brainstorm</a><a href="#details">Write details</a></nav>
   </div>
   <div class="head tile">
     <p class="kind">A3 · Practice</p>
@@ -289,7 +264,7 @@ body{overflow:hidden}
 <section class="screen" id="details" aria-label="Write details preview" hidden>
   <div class="topbar">
     <div class="pill tile where">The Root Tunnel</div>
-    <div class="right"><div class="tabs tile frost" role="group" aria-label="Frost comparison"><button type="button" data-f="more">More frost</button><button type="button" data-f="cream">Cream frost</button></div><nav class="tabs tile" aria-label="Preview screens"><span class="tag">Design preview</span><a href="#warmup">Warm-up</a><a href="#sort">Sort</a><a href="#brainstorm">Brainstorm</a><a href="#details">Write details</a></nav></div>
+    <nav class="tabs tile" aria-label="Preview screens"><span class="tag">Design preview</span><a href="#warmup">Warm-up</a><a href="#sort">Sort</a><a href="#brainstorm">Brainstorm</a><a href="#details">Write details</a></nav>
   </div>
   <div class="head tile">
     <p class="kind">A4 · Star Power</p>
@@ -331,13 +306,6 @@ const A4={context:['',['The best memory I have is the day my family went to the 
 
 let toastT;
 function toast(msg){const t=$('toast');t.textContent=msg;t.classList.remove('off');clearTimeout(toastT);toastT=setTimeout(()=>t.classList.add('off'),2600);}
-
-/* ---------- TEMPORARY frost comparison: ?f=cream (default) or ?f=more ---------- */
-function setFrost(f,push){f=f==='more'?'more':'cream';document.body.classList.toggle('f-more',f==='more');document.body.classList.toggle('f-cream',f==='cream');
-  document.querySelectorAll('.frost button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.f===f));
-  if(push){const u=new URL(location.href);u.searchParams.set('f',f);history.replaceState(null,'',u);}}
-setFrost(new URLSearchParams(location.search).get('f'),false);
-document.querySelectorAll('.frost button').forEach(b=>b.onclick=()=>setFrost(b.dataset.f,true));
 
 /* ---------- tabs ---------- */
 function show(){const ids=['warmup','sort','brainstorm','details'],h=location.hash.slice(1),which=ids.includes(h)?h:'warmup';
