@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { ArrowLeft, Check } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 export const Route = createFileRoute("/")({ component: StudentHome });
 
@@ -206,26 +206,8 @@ const asset = (file: string) => `${import.meta.env.BASE_URL}${file}`;
 
 const STAGE_W = 1366;
 const STAGE_H = 768;
-const HEADER_H = 90;
-const BODY_H = STAGE_H - HEADER_H;
-/** Cream frame above and below the map/panel (matches the gap under the banner). */
+/** Cream frame on all four sides around the map + panel. */
 const FRAME_GAP = 18;
-
-function useStageScale() {
-  const [scale, setScale] = useState(1);
-  useEffect(() => {
-    const fit = () => {
-      // Leave room for the view switcher, full-bleed header, and equal cream frame gaps.
-      const bar = document.querySelector<HTMLElement>(".vswitch")?.offsetHeight ?? 0;
-      const availH = window.innerHeight - bar - HEADER_H - FRAME_GAP * 2;
-      setScale(Math.min(window.innerWidth / STAGE_W, availH / BODY_H));
-    };
-    fit();
-    window.addEventListener("resize", fit);
-    return () => window.removeEventListener("resize", fit);
-  }, []);
-  return scale;
-}
 
 function StudentHome() {
   const [moduleId, setModuleId] = useState<string | null>(null);
@@ -312,8 +294,6 @@ function StudentHome() {
     });
   }
 
-  const scale = useStageScale();
-
   return (
     <div className="flex h-dvh w-full flex-col overflow-hidden bg-cream">
       <header className="title-bar">
@@ -369,21 +349,11 @@ function StudentHome() {
         </div>
       </header>
       <div
-        className="grid min-h-0 flex-1 place-items-center overflow-hidden bg-cream"
-        style={{ paddingTop: FRAME_GAP, paddingBottom: FRAME_GAP }}
+        className="flex min-h-0 w-full min-w-0 flex-1 overflow-hidden bg-cream"
+        style={{ padding: FRAME_GAP }}
       >
-      <div style={{ width: STAGE_W * scale, height: BODY_H * scale, position: "relative" }}>
-      <div
-        className="relative flex overflow-hidden bg-dusk"
-        style={{
-          width: STAGE_W,
-          height: BODY_H,
-          transform: `scale(${scale})`,
-          transformOrigin: "top left",
-        }}
-      >
-      <div className="flex min-h-0 flex-1">
-      <div className="relative min-w-0 flex-1">
+      <div className="flex h-full min-h-0 w-full min-w-0 overflow-hidden bg-dusk">
+      <div className="relative min-h-0 min-w-0 flex-1">
       <div className="absolute inset-0 overflow-hidden">
         <div
           className="absolute inset-0 transition-transform duration-700 ease-out"
@@ -622,8 +592,6 @@ function StudentHome() {
       </div>
       <div className="pane-break" aria-hidden="true" />
       <QuickWrite onStart={startQuickWrite} />
-      </div>
-      </div>
       </div>
       </div>
     </div>
