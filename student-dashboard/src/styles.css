@@ -1204,21 +1204,20 @@
   .zscene {
     position: absolute;
     inset: 0;
-    display: grid;
-    place-items: center;
+    overflow: hidden;
     container-type: size;
-    background:
-      radial-gradient(ellipse at 50% 8%, rgb(90 55 120 / 0.55), transparent 50%),
-      linear-gradient(180deg, #2a1840 0%, #1a1428 45%, #14201c 100%);
+    background: #3a2848;
   }
 
+  /* Wide extended art (~2.2:1) fills Chromebook stage edge-to-edge */
   .zscene-frame {
-    position: relative;
-    aspect-ratio: 1280 / 776;
-    width: min(100cqw, calc(100cqh * 1280 / 776));
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    translate: -50% -50%;
+    aspect-ratio: 1920 / 860;
+    width: max(100cqw, calc(100cqh * 1920 / 860));
     height: auto;
-    max-width: 100%;
-    max-height: 100%;
   }
 
   .zscene-img {
@@ -1378,9 +1377,9 @@
   .z-tip {
     position: absolute;
     z-index: 6;
-    left: 1.8%;
-    top: 2.2%;
-    width: min(290px, 24%);
+    left: 24%;
+    top: 5%;
+    width: min(290px, 16%);
     border: 1.5px solid rgb(255 255 255 / 0.75);
     border-radius: 20px;
     background: rgb(255 248 235 / 0.82);
