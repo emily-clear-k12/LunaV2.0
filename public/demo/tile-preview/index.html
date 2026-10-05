@@ -178,22 +178,36 @@ body{overflow:hidden}
 
 /* ---------- scene 3 + video message + dense sort ---------- */
 .scene.s3{background-image:url(scene3.jpg)}
-.vwrap{display:flex;justify-content:center}
-.vframe{position:relative;padding:8px;border-radius:24px;width:min(72vw,1000px,calc((100vh - 268px) * 16 / 9));box-sizing:border-box}
-.vbox{position:relative;width:100%;aspect-ratio:16/9;border-radius:17px;overflow:hidden;background:#0c0a1e;isolation:isolate}
-.vbox video{display:block;position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:50% 24%;background:transparent}
-.vbg{position:absolute;inset:0;width:100%;height:100%;display:none;transform:scale(1.15);filter:blur(16px) brightness(.58) saturate(1.15)}
-/* blurred sides: full portrait video at full height, sides filled by a blurred copy of the same frames */
-.vblur .vbg{display:block}
-.vblur .vbox video{left:50%;right:auto;width:auto;aspect-ratio:9/16;transform:translateX(-50%);object-fit:contain;
-  -webkit-mask-image:linear-gradient(90deg,transparent 0,#000 5%,#000 95%,transparent 100%);mask-image:linear-gradient(90deg,transparent 0,#000 5%,#000 95%,transparent 100%)}
 .vlook{display:inline-flex;align-items:center;gap:4px;margin:0;padding:4px;border-radius:999px}
 .vlook span{font:800 11px var(--body);letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.7);padding:0 8px 0 10px}
 .vlook button{appearance:none;border:0;cursor:pointer;font:700 13.5px var(--body);color:#fff;background:transparent;padding:6px 12px;border-radius:999px}
 .vlook button[aria-pressed="true"]{background:#fff;color:var(--night)}
 .vlook button:focus-visible{outline:3px solid var(--crystal);outline-offset:2px}
+/* portrait video, full and uncropped, in an on-theme frame drawn in SVG (temporary look toggle ?v=wood|mirror) */
+#video{overflow-x:hidden}
+#video .main{flex:1 1 0;min-height:0}
+.vstage{height:100%;display:flex;justify-content:center;align-items:flex-start}
+.vframe{position:relative;flex:none;height:min(100%,720px);aspect-ratio:632/1052}
+.vframe.mirror{aspect-ratio:620/1110}
+.vf{position:absolute;inset:0;width:100%;height:100%;overflow:visible;pointer-events:none}
+.vf-mirror,.vframe.mirror .vf-wood{display:none}
+.vframe.mirror .vf-mirror{display:block}
+.vf-back{filter:drop-shadow(0 22px 26px rgba(0,0,0,.55)) drop-shadow(0 3px 6px rgba(0,0,0,.45))}
+.vf-mirror.vf-back{filter:drop-shadow(0 0 16px rgba(134,214,255,.3)) drop-shadow(0 22px 26px rgba(0,0,0,.55)) drop-shadow(0 3px 6px rgba(0,0,0,.45))}
+.vscreen{position:absolute;left:calc(46 / 632 * 100%);top:calc(46 / 1052 * 100%);width:calc(540 / 632 * 100%);height:calc(960 / 1052 * 100%);
+  border-radius:5px;overflow:hidden;background:#0c0a1e;isolation:isolate}
+.vframe.mirror .vscreen{left:calc(40 / 620 * 100%);top:calc(110 / 1110 * 100%);width:calc(540 / 620 * 100%);height:calc(960 / 1110 * 100%);border-radius:0 0 4px 4px}
+.vscreen::after{content:"";position:absolute;inset:0;pointer-events:none;box-shadow:inset 0 0 0 1px rgba(0,0,0,.5),inset 0 4px 10px rgba(0,0,0,.45)}
+.vscreen video{display:block;width:100%;height:100%;object-fit:contain;background:#0c0a1e}
+#vfoot{position:absolute;left:22px;right:22px;bottom:22px}
 #vfoot .vnote{margin:0 0 0 auto}
-.vplay{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);cursor:pointer;border:0;display:flex;align-items:center;gap:10px;white-space:nowrap;
+@keyframes vflick{0%,100%{opacity:.82}35%{opacity:1}52%{opacity:.74}70%{opacity:.94}}
+@keyframes vglow{0%,100%{opacity:.5}50%{opacity:.95}}
+@keyframes vshine{0%{transform:translateY(-420px)}50%,100%{transform:translateY(1650px)}}
+.lglow{animation:vflick 3.4s ease-in-out infinite}
+.mglow{animation:vglow 5s ease-in-out infinite}
+.mshine{animation:vshine 8s cubic-bezier(.45,0,.55,1) infinite}
+.vplay{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);z-index:2;cursor:pointer;border:0;display:flex;align-items:center;gap:10px;white-space:nowrap;
   font:800 18px/1 var(--display);padding:14px 22px 12px;border-radius:999px;background:var(--gold);color:var(--night);box-shadow:0 14px 30px -10px rgba(0,0,0,.8)}
 .vplay svg{flex:none}
 .vplay:focus-visible{outline:3px solid var(--crystal);outline-offset:3px}
@@ -207,8 +221,10 @@ body{overflow:hidden}
   .topbar{flex-wrap:wrap}
   .tabs .tag{display:none}
   .tabs{flex-wrap:wrap;border-radius:18px}
-  .vframe{width:100%}
-  #vfoot{flex-wrap:wrap}
+  #video .main{flex:none}
+  .vstage{height:auto}
+  .vframe{height:auto;width:min(78vw,340px)}
+  #vfoot{position:static;flex-wrap:wrap}
   .tabs a{padding:6px 10px;font-size:13.5px}
   .split{grid-template-columns:1fr}
   .wtile.big{min-height:300px}
@@ -227,7 +243,7 @@ body{overflow:hidden}
   .wtile textarea{font-size:16.5px}
   .prompt{font-size:24px}
 }
-@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}.lglow,.mglow,.mshine{animation:none!important}.mshine{display:none}}
 </style>
 </head>
 <body>
@@ -320,12 +336,110 @@ body{overflow:hidden}
     <p class="prompt">Meet Marlow: choosing strong evidence</p>
   </div>
   <div class="main">
-    <div class="vwrap"><div class="tile vframe" id="vframe">
-      <div class="vbox"><canvas class="vbg" id="vbg" width="96" height="54" aria-hidden="true"></canvas>
-      <video id="vclip" playsinline preload="auto" src="v3_evidence.mp4#t=0.6"></video></div>
-      <button class="vplay" id="vplay" type="button"><svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 4.5v15l12-7.5z" fill="currentColor"/></svg>Play message</button>
+    <div class="vstage"><div class="vframe" id="vframe">
+      <svg class="vf vf-back vf-wood" viewBox="0 0 632 1052" aria-hidden="true"><defs>
+ <clipPath id="wOut"><rect width="632" height="1052" rx="30"/></clipPath>
+ <clipPath id="wSides"><polygon points="0,0 46,46 46,1006 0,1052"/><polygon points="632,0 586,46 586,1006 632,1052"/></clipPath>
+ <clipPath id="wRails"><polygon points="0,0 632,0 586,46 46,46"/><polygon points="0,1052 632,1052 586,1006 46,1006"/></clipPath>
+ <linearGradient id="wL" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="46" y2="0"><stop offset="0" stop-color="#24130a"/><stop offset="0.08" stop-color="#5a3417"/><stop offset="0.24" stop-color="#9a6431"/><stop offset="0.34" stop-color="#c38d52"/><stop offset="0.46" stop-color="#8d5a2b"/><stop offset="0.6" stop-color="#6a3f1c"/><stop offset="0.68" stop-color="#341c0c"/><stop offset="0.74" stop-color="#7a4b23"/><stop offset="0.84" stop-color="#b17a43"/><stop offset="0.93" stop-color="#6c411d"/><stop offset="1" stop-color="#21110a"/></linearGradient>
+ <linearGradient id="wR" gradientUnits="userSpaceOnUse" x1="632" y1="0" x2="586" y2="0"><stop offset="0" stop-color="#24130a"/><stop offset="0.08" stop-color="#5a3417"/><stop offset="0.24" stop-color="#9a6431"/><stop offset="0.34" stop-color="#c38d52"/><stop offset="0.46" stop-color="#8d5a2b"/><stop offset="0.6" stop-color="#6a3f1c"/><stop offset="0.68" stop-color="#341c0c"/><stop offset="0.74" stop-color="#7a4b23"/><stop offset="0.84" stop-color="#b17a43"/><stop offset="0.93" stop-color="#6c411d"/><stop offset="1" stop-color="#21110a"/></linearGradient>
+ <linearGradient id="wT" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="0" y2="46"><stop offset="0" stop-color="#24130a"/><stop offset="0.08" stop-color="#5a3417"/><stop offset="0.24" stop-color="#9a6431"/><stop offset="0.34" stop-color="#c38d52"/><stop offset="0.46" stop-color="#8d5a2b"/><stop offset="0.6" stop-color="#6a3f1c"/><stop offset="0.68" stop-color="#341c0c"/><stop offset="0.74" stop-color="#7a4b23"/><stop offset="0.84" stop-color="#b17a43"/><stop offset="0.93" stop-color="#6c411d"/><stop offset="1" stop-color="#21110a"/></linearGradient>
+ <linearGradient id="wB" gradientUnits="userSpaceOnUse" x1="0" y1="1052" x2="0" y2="1006"><stop offset="0" stop-color="#24130a"/><stop offset="0.08" stop-color="#5a3417"/><stop offset="0.24" stop-color="#9a6431"/><stop offset="0.34" stop-color="#c38d52"/><stop offset="0.46" stop-color="#8d5a2b"/><stop offset="0.6" stop-color="#6a3f1c"/><stop offset="0.68" stop-color="#341c0c"/><stop offset="0.74" stop-color="#7a4b23"/><stop offset="0.84" stop-color="#b17a43"/><stop offset="0.93" stop-color="#6c411d"/><stop offset="1" stop-color="#21110a"/></linearGradient>
+ <linearGradient id="wLight" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="rgba(255,214,150,.22)"/><stop offset="0.45" stop-color="rgba(255,214,150,0)"/><stop offset="1" stop-color="rgba(0,0,0,.28)"/></linearGradient>
+ <filter id="wGrV" filterUnits="userSpaceOnUse" x="0" y="0" width="632" height="1052"><feTurbulence type="fractalNoise" baseFrequency="0.16 0.006" numOctaves="4" seed="7"/><feColorMatrix values="0 0 0 0 .13 0 0 0 0 .06 0 0 0 0 .02 2 0 0 0 -.78"/></filter>
+ <filter id="wGrH" filterUnits="userSpaceOnUse" x="0" y="0" width="632" height="1052"><feTurbulence type="fractalNoise" baseFrequency="0.006 0.16" numOctaves="4" seed="3"/><feColorMatrix values="0 0 0 0 .13 0 0 0 0 .06 0 0 0 0 .02 2 0 0 0 -.78"/></filter>
+ <radialGradient id="wRoseG" cx=".4" cy=".35" r=".72"><stop offset="0" stop-color="#e0aa6c"/><stop offset="0.5" stop-color="#94602f"/><stop offset="1" stop-color="#3e220e"/></radialGradient>
+ <g id="wRose"><circle r="20.5" fill="url(#wRoseG)" stroke="#1e0f06" stroke-width="1.4"/><circle r="16.2" fill="none" stroke="#f6cf98" stroke-opacity=".35" stroke-width="1.1"/><circle r="15" fill="none" stroke="#2a160a" stroke-opacity=".55" stroke-width="1"/>
+  <g fill="#472810" fill-opacity=".85"><path id="wPet" d="M0-12.5C4.4-8.4 4.4-3.8 0 0C-4.4-3.8-4.4-8.4 0-12.5Z"/><use href="#wPet" transform="rotate(90)"/><use href="#wPet" transform="rotate(180)"/><use href="#wPet" transform="rotate(270)"/></g>
+  <g fill="#f0c387" fill-opacity=".6" transform="rotate(45) scale(.6)"><use href="#wPet"/><use href="#wPet" transform="rotate(90)"/><use href="#wPet" transform="rotate(180)"/><use href="#wPet" transform="rotate(270)"/></g>
+  <circle r="3.2" fill="#ecbd80" stroke="#3a2010" stroke-width=".9"/></g>
+</defs>
+<g clip-path="url(#wOut)">
+ <polygon points="0,0 46,46 46,1006 0,1052" fill="url(#wL)"/><polygon points="632,0 586,46 586,1006 632,1052" fill="url(#wR)"/>
+ <polygon points="0,0 632,0 586,46 46,46" fill="url(#wT)"/><polygon points="0,1052 632,1052 586,1006 46,1006" fill="url(#wB)"/>
+ <g clip-path="url(#wSides)"><rect width="632" height="1052" filter="url(#wGrV)"/></g>
+ <g clip-path="url(#wRails)"><rect width="632" height="1052" filter="url(#wGrH)"/></g>
+ <rect width="632" height="1052" fill="url(#wLight)"/>
+ <path d="M0 0L46 46M632 0L586 46M0 1052L46 1006M632 1052L586 1006" stroke="#1a0c05" stroke-opacity=".7" stroke-width="1.4"/>
+</g>
+<rect x="1.4" y="1.4" width="629.2" height="1049.2" rx="28.6" fill="none" stroke="#f3c890" stroke-opacity=".4" stroke-width="1.4"/>
+<rect x=".5" y=".5" width="631" height="1051" rx="29.5" fill="none" stroke="#160a04" stroke-width="1"/>
+<rect x="40.5" y="40.5" width="551" height="971" rx="8" fill="#170c05" stroke="#eabd80" stroke-opacity=".5" stroke-width="1.2"/>
+<use href="#wRose" x="23" y="23"/><use href="#wRose" x="609" y="23"/><use href="#wRose" x="23" y="1029"/><use href="#wRose" x="609" y="1029"/>
+</svg>
+      <svg class="vf vf-back vf-mirror" viewBox="0 0 620 1110" aria-hidden="true"><defs>
+ <linearGradient id="mLight" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="rgba(255,248,220,.35)"/><stop offset="0.4" stop-color="rgba(255,248,220,0)"/><stop offset="0.75" stop-color="rgba(40,24,0,.1)"/><stop offset="1" stop-color="rgba(30,18,0,.35)"/></linearGradient>
+ <filter id="mPat" filterUnits="userSpaceOnUse" x="0" y="0" width="620" height="1110"><feTurbulence type="fractalNoise" baseFrequency=".05" numOctaves="3" seed="11"/><feColorMatrix values="0 0 0 0 .2 0 0 0 0 .15 0 0 0 0 .05 1.2 0 0 0 -.56"/></filter>
+ <clipPath id="mRingC"><path d="M0 1086L0 110A310.0 110 0 0 1 620 110L620 1086Q620 1110 596 1110L24 1110Q0 1110 0 1086ZM40 1070L40 110A270.0 70 0 0 1 580 110L580 1070L40 1070Z" clip-rule="evenodd"/></clipPath>
+ <linearGradient id="mGl" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#0b1230"/><stop offset="1" stop-color="#1d3060"/></linearGradient>
+ <radialGradient id="mGlR" cx=".5" cy=".75" r=".6"><stop offset="0" stop-color="rgba(134,214,255,.35)"/><stop offset="1" stop-color="rgba(134,214,255,0)"/></radialGradient>
+ <linearGradient id="mGem" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#e2f7ff"/><stop offset="0.4" stop-color="#86d6ff"/><stop offset="1" stop-color="#2366b4"/></linearGradient>
+ <radialGradient id="mCab" cx=".38" cy=".32" r=".7"><stop offset="0" stop-color="#e6f8ff"/><stop offset="0.45" stop-color="#7fcff8"/><stop offset="1" stop-color="#1f5aa0"/></radialGradient>
+</defs>
+<path d="M0 1086L0 110A310.0 110 0 0 1 620 110L620 1086Q620 1110 596 1110L24 1110Q0 1110 0 1086ZM40 1070L40 110A270.0 70 0 0 1 580 110L580 1070L40 1070Z" fill="#5c4219" fill-rule="evenodd"/>
+<g clip-path="url(#mRingC)">
+ <path d="M13 1086L13 110A297.0 97 0 0 1 607 110L607 1086Q607 1097 596 1097L24 1097Q13 1097 13 1086Z" fill="none" stroke="#7c5c25" stroke-opacity="1" stroke-width="24"/><path d="M13 1086L13 110A297.0 97 0 0 1 607 110L607 1086Q607 1097 596 1097L24 1097Q13 1097 13 1086Z" fill="none" stroke="#b38c3f" stroke-opacity="1" stroke-width="18"/><path d="M13 1086L13 110A297.0 97 0 0 1 607 110L607 1086Q607 1097 596 1097L24 1097Q13 1097 13 1086Z" fill="none" stroke="#dcbd70" stroke-opacity="1" stroke-width="11"/><path d="M13 1086L13 110A297.0 97 0 0 1 607 110L607 1086Q607 1097 596 1097L24 1097Q13 1097 13 1086Z" fill="none" stroke="#f7e6b0" stroke-opacity="1" stroke-width="4.5"/><path d="M13 1086L13 110A297.0 97 0 0 1 607 110L607 1086Q607 1097 596 1097L24 1097Q13 1097 13 1086Z" fill="none" stroke="#fffbe8" stroke-opacity="0.8" stroke-width="1.4"/>
+ <path d="M28 1082L28 110A282.0 82 0 0 1 592 110L592 1082L28 1082Z" fill="none" stroke="#3d2b0d" stroke-opacity="0.8" stroke-width="3"/>
+ <path d="M34 1076L34 110A276.0 76 0 0 1 586 110L586 1076L34 1076Z" fill="none" stroke="#8e6c2c" stroke-opacity="1" stroke-width="10"/><path d="M34 1076L34 110A276.0 76 0 0 1 586 110L586 1076L34 1076Z" fill="none" stroke="#d0ae60" stroke-opacity="1" stroke-width="6"/><path d="M34 1076L34 110A276.0 76 0 0 1 586 110L586 1076L34 1076Z" fill="none" stroke="#fbedc0" stroke-opacity="0.85" stroke-width="2"/>
+ <rect width="620" height="1110" filter="url(#mPat)"/>
+ <rect width="620" height="1110" fill="url(#mLight)"/>
+</g>
+<path d="M0 1086L0 110A310.0 110 0 0 1 620 110L620 1086Q620 1110 596 1110L24 1110Q0 1110 0 1086Z" fill="none" stroke="#33240a" stroke-width="1.6"/>
+<path d="M40 110A270.0 70 0 0 1 580 110Z" fill="url(#mGl)"/>
+<path d="M40 110A270.0 70 0 0 1 580 110Z" fill="url(#mGlR)"/>
+<path d="M120 110L196 58L226 52L152 110Z" fill="#cfeaff" fill-opacity=".07"/>
+<g fill="#dff4ff"><circle cx="186" cy="88" r="1.3" opacity=".7"/><circle cx="430" cy="74" r="1.1" opacity=".6"/><circle cx="468" cy="96" r="1.5" opacity=".75"/><circle cx="152" cy="100" r="1" opacity=".5"/></g>
+<g stroke="#e3c47a" stroke-width="2" fill="none" stroke-linecap="round"><path d="M293 80C276 80 270 69 256 71C246 73 245 85 255 86"/><path d="M327 80C344 80 350 69 364 71C374 73 375 85 365 86"/></g>
+<polygon points="310,54 325,79 310,104 295,79" fill="url(#mGem)" stroke="#d9b866" stroke-width="1.6"/>
+<path d="M295 79H325M310 54L304 79L310 104M310 54L316 79L310 104" fill="none" stroke="#ffffff" stroke-opacity=".45" stroke-width=".8"/>
+<path d="M40 1070L40 110A270.0 70 0 0 1 580 110L580 1070L40 1070Z" fill="none" stroke="#2e2008" stroke-width="2.4"/>
+<path d="M40 110H580" stroke="#e0c070" stroke-opacity=".8" stroke-width="1.6"/>
+<circle cx="310" cy="13" r="9" fill="url(#mCab)" stroke="#f0d898" stroke-width="2.2"/>
+<circle cx="310" cy="1097" r="8" fill="url(#mCab)" stroke="#f0d898" stroke-width="2.2"/>
+<g fill="url(#mCab)" stroke="#f0d898" stroke-width="1.6"><circle cx="13" cy="110" r="5.5"/><circle cx="607" cy="110" r="5.5"/></g>
+</svg>
+      <div class="vscreen"><video id="vclip" playsinline preload="auto" src="v3_evidence.mp4#t=0.6"></video>
+      <button class="vplay" id="vplay" type="button"><svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 4.5v15l12-7.5z" fill="currentColor"/></svg>Play message</button></div>
+      <svg class="vf vf-front vf-wood" viewBox="0 0 632 1052" aria-hidden="true"><defs>
+ <linearGradient id="lfA" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#a9cf72"/><stop offset="0.55" stop-color="#5a8a39"/><stop offset="1" stop-color="#2f5424"/></linearGradient>
+ <linearGradient id="lfB" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#c9dea0"/><stop offset="0.6" stop-color="#7aa152"/><stop offset="1" stop-color="#466b30"/></linearGradient>
+ <linearGradient id="lfC" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#86b35a"/><stop offset="0.6" stop-color="#3f6e2c"/><stop offset="1" stop-color="#22421b"/></linearGradient>
+ <path id="leaf" d="M0 0C7-9 22-12 34-2C24 9 9 9 0 0Z"/><path id="rib" d="M2 0Q17-3 31-2"/>
+ <g id="bloom"><g fill="#fff4e2"><circle cy="-3.4" r="2.6"/><circle cy="-3.4" r="2.6" transform="rotate(72)"/><circle cy="-3.4" r="2.6" transform="rotate(144)"/><circle cy="-3.4" r="2.6" transform="rotate(216)"/><circle cy="-3.4" r="2.6" transform="rotate(288)"/></g><circle r="1.7" fill="#f2b84b"/></g>
+ <filter id="vSh" x="-20%" y="-20%" width="140%" height="140%"><feDropShadow dx="0" dy="2.5" stdDeviation="2.2" flood-color="#000" flood-opacity=".55"/></filter>
+ <radialGradient id="lnGlow"><stop offset="0" stop-color="rgba(255,214,140,.7)"/><stop offset="0.3" stop-color="rgba(255,184,90,.32)"/><stop offset="1" stop-color="rgba(255,170,70,0)"/></radialGradient>
+ <linearGradient id="lnGlass" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff6cf"/><stop offset="0.55" stop-color="#ffcf6e"/><stop offset="1" stop-color="#f29a3a"/></linearGradient>
+</defs>
+<circle class="lglow" cx="686" cy="166" r="120" fill="url(#lnGlow)"/>
+<g filter="url(#vSh)">
+ <g id="tlVine"><g transform="scale(1.2)"><path d="M2 252C20 206 2 160 16 116C26 82 6 48 24 24C46 -2 96 22 140 13C166 8 182 -4 204 6" fill="none" stroke="#2f461c" stroke-width="5" stroke-linecap="round"/><path d="M2 252C20 206 2 160 16 116C26 82 6 48 24 24C46 -2 96 22 140 13C166 8 182 -4 204 6" fill="none" stroke="#8fb162" stroke-opacity=".65" stroke-width="1.5" stroke-linecap="round"/><path d="M6 238C14 202 10 172 20 142C30 112 2 82 15 52C23 32 40 14 70 16C100 18 120 8 152 18" fill="none" stroke="#45652a" stroke-width="2.2" stroke-linecap="round"/><path d="M204 6c11 5 10 19-1 18c-8-1-7-11 1-10" fill="none" stroke="#4a6a2c" stroke-width="2" stroke-linecap="round"/><path d="M16 116c-13-3-21 8-14 15c5 5 12 0 8-5" fill="none" stroke="#4a6a2c" stroke-width="2" stroke-linecap="round"/><path d="M24 24C12 10 2 4-10 8" fill="none" stroke="#2f461c" stroke-width="3.4" stroke-linecap="round"/><g transform="translate(10 236) rotate(200) scale(1.0)"><use href="#leaf" fill="url(#lfA)"/><use href="#rib" fill="none" stroke="#223c17" stroke-opacity=".55" stroke-width="1.1"/></g><g transform="translate(16 204) rotate(-22) scale(0.78)"><use href="#leaf" fill="url(#lfB)"/><use href="#rib" fill="none" stroke="#223c17" stroke-opacity=".55" stroke-width="1.1"/></g><g transform="translate(6 172) rotate(192) scale(1.1)"><use href="#leaf" fill="url(#lfC)"/><use href="#rib" fill="none" stroke="#223c17" stroke-opacity=".55" stroke-width="1.1"/></g><g transform="translate(14 142) rotate(158) scale(0.9)"><use href="#leaf" fill="url(#lfA)"/><use href="#rib" fill="none" stroke="#223c17" stroke-opacity=".55" stroke-width="1.1"/></g><g transform="translate(18 118) rotate(-32) scale(0.72)"><use href="#leaf" fill="url(#lfB)"/><use href="#rib" fill="none" stroke="#223c17" stroke-opacity=".55" stroke-width="1.1"/></g><g transform="translate(10 86) rotate(200) scale(1.02)"><use href="#leaf" fill="url(#lfA)"/><use href="#rib" fill="none" stroke="#223c17" stroke-opacity=".55" stroke-width="1.1"/></g><g transform="translate(22 62) rotate(148) scale(0.86)"><use href="#leaf" fill="url(#lfC)"/><use href="#rib" fill="none" stroke="#223c17" stroke-opacity=".55" stroke-width="1.1"/></g><g transform="translate(24 24) rotate(-136) scale(1.45)"><use href="#leaf" fill="url(#lfA)"/><use href="#rib" fill="none" stroke="#223c17" stroke-opacity=".55" stroke-width="1.1"/></g><g transform="translate(22 22) rotate(-176) scale(1.22)"><use href="#leaf" fill="url(#lfC)"/><use href="#rib" fill="none" stroke="#223c17" stroke-opacity=".55" stroke-width="1.1"/></g><g transform="translate(28 22) rotate(-94) scale(1.2)"><use href="#leaf" fill="url(#lfB)"/><use href="#rib" fill="none" stroke="#223c17" stroke-opacity=".55" stroke-width="1.1"/></g><g transform="translate(24 28) rotate(136) scale(0.95)"><use href="#leaf" fill="url(#lfA)"/><use href="#rib" fill="none" stroke="#223c17" stroke-opacity=".55" stroke-width="1.1"/></g><g transform="translate(60 12) rotate(-116) scale(1.0)"><use href="#leaf" fill="url(#lfB)"/><use href="#rib" fill="none" stroke="#223c17" stroke-opacity=".55" stroke-width="1.1"/></g><g transform="translate(84 14) rotate(-60) scale(0.9)"><use href="#leaf" fill="url(#lfA)"/><use href="#rib" fill="none" stroke="#223c17" stroke-opacity=".55" stroke-width="1.1"/></g><g transform="translate(112 18) rotate(-126) scale(0.86)"><use href="#leaf" fill="url(#lfC)"/><use href="#rib" fill="none" stroke="#223c17" stroke-opacity=".55" stroke-width="1.1"/></g><g transform="translate(138 14) rotate(-50) scale(0.8)"><use href="#leaf" fill="url(#lfA)"/><use href="#rib" fill="none" stroke="#223c17" stroke-opacity=".55" stroke-width="1.1"/></g><g transform="translate(164 8) rotate(-112) scale(0.72)"><use href="#leaf" fill="url(#lfB)"/><use href="#rib" fill="none" stroke="#223c17" stroke-opacity=".55" stroke-width="1.1"/></g><g transform="translate(190 2) rotate(-40) scale(0.62)"><use href="#leaf" fill="url(#lfA)"/><use href="#rib" fill="none" stroke="#223c17" stroke-opacity=".55" stroke-width="1.1"/></g><use href="#bloom" x="44" y="9"/><use href="#bloom" x="5" y="104" transform="rotate(20 5 104)"/><use href="#bloom" x="150" y="8"/></g></g>
+ <use href="#tlVine" transform="translate(632 1052) rotate(180) scale(.78)"/>
+ <g transform="translate(686 104) scale(2.2)" stroke-linejoin="round">
+  <path d="M-31 -6H-4Q0-6 0-2V4" fill="none" stroke="#2a1d12" stroke-width="2.4" stroke-linecap="round"/>
+  <path d="M-30 4C-20 4-12 0-8-5" fill="none" stroke="#2a1d12" stroke-width="1.5" stroke-linecap="round"/>
+  <circle cx="0" cy="6" r="2.2" fill="none" stroke="#3a2a18" stroke-width="1.3"/>
+  <path d="M-8 16L-5 9H5L8 16Z" fill="#3b2b1a" stroke="#1d130a" stroke-width=".8"/>
+  <rect x="-7" y="16" width="14" height="20" rx="1.5" fill="url(#lnGlass)" stroke="#2a1d12" stroke-width="1.4"/>
+  <path d="M-2.4 16V36M2.4 16V36" stroke="#3a2a18" stroke-opacity=".8" stroke-width=".9"/>
+  <ellipse cx="0" cy="27" rx="2.1" ry="3.6" fill="#fffbe6"/>
+  <path d="M-9 36H9L7 39.5H-7Z" fill="#3b2b1a" stroke="#1d130a" stroke-width=".8"/>
+  <path d="M-2 39.5L0 43L2 39.5Z" fill="#3b2b1a"/>
+ </g>
+</g>
+</svg>
+      <svg class="vf vf-front vf-mirror" viewBox="0 0 620 1110" aria-hidden="true"><defs>
+ <filter id="mBlur" x="-10%" y="-10%" width="120%" height="120%"><feGaussianBlur stdDeviation="5"/></filter>
+ <filter id="mBlur2" x="-10%" y="-10%" width="120%" height="120%"><feGaussianBlur stdDeviation="10"/></filter>
+ <clipPath id="mRingF"><path d="M0 1086L0 110A310.0 110 0 0 1 620 110L620 1086Q620 1110 596 1110L24 1110Q0 1110 0 1086ZM40 1070L40 110A270.0 70 0 0 1 580 110L580 1070L40 1070Z" clip-rule="evenodd"/></clipPath>
+ <linearGradient id="mShG" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="rgba(255,248,220,0)"/><stop offset="0.5" stop-color="rgba(255,252,236,.7)"/><stop offset="1" stop-color="rgba(255,248,220,0)"/></linearGradient>
+</defs>
+<path class="mglow" d="M0 1086L0 110A310.0 110 0 0 1 620 110L620 1086Q620 1110 596 1110L24 1110Q0 1110 0 1086Z" fill="none" stroke="#86d6ff" stroke-opacity=".5" stroke-width="7" filter="url(#mBlur2)"/>
+<g class="mglow"><path d="M40 1070L40 110A270.0 70 0 0 1 580 110L580 1070L40 1070Z" fill="none" stroke="#7fd2ff" stroke-width="8" filter="url(#mBlur)"/>
+<path d="M41.5 1068.5L41.5 110M578.5 110L578.5 1068.5M41.5 1068.5H578.5" fill="none" stroke="#c4ecff" stroke-opacity=".85" stroke-width="1.4"/></g>
+<g clip-path="url(#mRingF)"><g transform="rotate(-28 310 555)"><rect class="mshine" x="-300" y="-160" width="1200" height="110" fill="url(#mShG)"/></g></g>
+</svg>
     </div></div>
-    <div class="foot" id="vfoot"><div class="vlook tile" role="group" aria-label="Video look (preview only)"><span>Look</span><button type="button" data-v="crop">Crop wide</button><button type="button" data-v="blur">Blurred sides</button></div><p class="vnote" id="vnote">Watch the whole message to keep going.</p><button class="btn tile" id="vgo" disabled>Continue</button></div>
+    <div class="foot" id="vfoot"><div class="vlook tile" role="group" aria-label="Video frame (preview only)"><span>Frame</span><button type="button" data-v="wood">Wood + vines</button><button type="button" data-v="mirror">Magic mirror</button></div><p class="vnote" id="vnote">Watch the whole message to keep going.</p><button class="btn tile" id="vgo" disabled>Continue</button></div>
   </div>
 </section>
 
@@ -485,20 +599,13 @@ const vclip=$('vclip'),vplay=$('vplay'),vgo=$('vgo');
 vplay.onclick=()=>{vplay.hidden=true;vclip.controls=true;vclip.currentTime=0;const pr=vclip.play();if(pr&&pr.catch)pr.catch(()=>{vclip.muted=true;vclip.play().catch(()=>{});});};
 vclip.addEventListener('ended',()=>{vgo.disabled=false;vgo.classList.add('ready');$('vnote').hidden=true;toast('Message saved to your pouch');});
 vgo.onclick=()=>toast('Preview only. In the lesson, the trail moves on here.');
-/* temporary look toggle: ?v=crop (default) or ?v=blur */
-const vframe=$('vframe'),vbg=$('vbg'),bgc=vbg.getContext('2d');
-function drawBg(){if(vclip.readyState<2||!vframe.classList.contains('vblur'))return;
-  const vw=vclip.videoWidth,vh=vclip.videoHeight,cw=vbg.width,ch=vbg.height,sc=Math.max(cw/vw,ch/vh),w=vw*sc,h=vh*sc;
-  bgc.drawImage(vclip,(cw-w)/2,(ch-h)*.35,w,h);}
-let bgRaf=0;function bgLoop(){drawBg();bgRaf=(!vclip.paused&&!vclip.ended)?requestAnimationFrame(bgLoop):0;}
-['play','playing'].forEach(ev=>vclip.addEventListener(ev,()=>{if(!bgRaf)bgLoop();}));
-['loadeddata','seeked','pause','timeupdate'].forEach(ev=>vclip.addEventListener(ev,drawBg));
-function setLook(v,push){v=v==='blur'?'blur':'crop';vframe.classList.toggle('vblur',v==='blur');
+/* temporary frame toggle: ?v=wood (default) or ?v=mirror */
+const vframe=$('vframe');
+function setLook(v,push){v=v==='mirror'?'mirror':'wood';vframe.classList.toggle('mirror',v==='mirror');vframe.classList.toggle('wood',v==='wood');
   document.querySelectorAll('.vlook button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.v===v));
-  if(push){const u=new URL(location.href);u.searchParams.set('v',v);history.replaceState(null,'',u);}drawBg();}
+  if(push){const u=new URL(location.href);u.searchParams.set('v',v);history.replaceState(null,'',u);}}
 document.querySelectorAll('.vlook button').forEach(b=>b.onclick=()=>setLook(b.dataset.v,true));
 setLook(new URLSearchParams(location.search).get('v'),false);
-
 
 /* ---------- shared: writing tile that turns solid on tap and stays solid ---------- */
 function writeTile(id,f,cls){return `<div class="tile wtile ${cls||''}"><span class="done" aria-hidden="true">✓</span>
