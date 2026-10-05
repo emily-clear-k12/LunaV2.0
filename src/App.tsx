@@ -172,6 +172,9 @@ function TopBar() {
         <a className="version-link" href="./package-b-skeleton/">
           Package B
         </a>
+        <a className="version-link" href="./demo/">
+          Student demo
+        </a>
       </nav>
 
       <div className="topbar-spacer" />
@@ -226,8 +229,10 @@ export default function App() {
             <a href="./package-a-skeleton/">Package A skeleton</a>
             {' · '}
             <a href="./package-b-skeleton/">Package B skeleton</a>
+            {' · '}
+            <a href="./demo/">Student demo</a>
             {' '}
-            (wireframe student click-throughs · Details and Evidence)
+            (wireframe click-throughs, plus the live Details and Evidence trail)
           </p>
         </footer>
       </div>
