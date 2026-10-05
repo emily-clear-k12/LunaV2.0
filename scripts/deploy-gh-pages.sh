@@ -3,6 +3,8 @@ set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 cd "$ROOT"
 npm run build
+# Astra student dashboard (student-dashboard/) → dist/dashboard/
+( cd student-dashboard && { [ -d node_modules ] || npm install --no-audit --no-fund; } && npm run build )
 touch dist/.nojekyll
 TMP="$(mktemp -d)"
 cp -a dist/. "$TMP/"
