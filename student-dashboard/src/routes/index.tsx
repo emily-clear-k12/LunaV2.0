@@ -208,16 +208,17 @@ const STAGE_W = 1366;
 const STAGE_H = 768;
 const HEADER_H = 90;
 const BODY_H = STAGE_H - HEADER_H;
+/** Cream frame above and below the map/panel (matches the gap under the banner). */
+const FRAME_GAP = 18;
 
 function useStageScale() {
   const [scale, setScale] = useState(1);
   useEffect(() => {
     const fit = () => {
-      // Leave room for the view switcher and the full-bleed header outside the scaled body.
+      // Leave room for the view switcher, full-bleed header, and equal cream frame gaps.
       const bar = document.querySelector<HTMLElement>(".vswitch")?.offsetHeight ?? 0;
-      setScale(
-        Math.min(window.innerWidth / STAGE_W, (window.innerHeight - bar - HEADER_H) / BODY_H),
-      );
+      const availH = window.innerHeight - bar - HEADER_H - FRAME_GAP * 2;
+      setScale(Math.min(window.innerWidth / STAGE_W, availH / BODY_H));
     };
     fit();
     window.addEventListener("resize", fit);
@@ -367,10 +368,19 @@ function StudentHome() {
           )}
         </div>
       </header>
-      <div className="grid min-h-0 flex-1 place-items-center overflow-hidden">
+      <div
+        className="grid min-h-0 flex-1 place-items-center overflow-hidden bg-cream"
+        style={{ paddingTop: FRAME_GAP, paddingBottom: FRAME_GAP }}
+      >
+      <div style={{ width: STAGE_W * scale, height: BODY_H * scale, position: "relative" }}>
       <div
         className="relative flex overflow-hidden bg-dusk"
-        style={{ width: STAGE_W, height: BODY_H, transform: `scale(${scale})` }}
+        style={{
+          width: STAGE_W,
+          height: BODY_H,
+          transform: `scale(${scale})`,
+          transformOrigin: "top left",
+        }}
       >
       <div className="flex min-h-0 flex-1">
       <div className="relative min-w-0 flex-1">
@@ -615,6 +625,7 @@ function StudentHome() {
       </div>
       </div>
       </div>
+      </div>
     </div>
   );
 }
@@ -626,7 +637,7 @@ function QuickWrite({ onStart }: { onStart: () => void }) {
         <img
           src={asset("astra-treehouse.jpg")}
           alt="Astra the wolf waving from the stairs of his treehouse"
-          className="absolute inset-0 h-full w-full object-cover object-[30%_center]"
+          className="absolute inset-0 h-full w-full object-cover object-center"
         />
       </div>
       <div className="pt-3">
