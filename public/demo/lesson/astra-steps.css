@@ -55,3 +55,42 @@
 .astra .end-stats .stat b{display:block;font:800 40px/1.05 var(--display);color:#a8551b;font-variant-numeric:tabular-nums}
 .astra .end-stats .stat span{font-size:15px;font-weight:700;color:var(--a-cream-muted)}
 .astra .end-note{margin:0;font-weight:700;font-size:15px;color:#fff;text-shadow:0 1px 3px #000,0 0 10px rgba(0,0,0,.6)}
+
+/* ---------- sorts (A2, A5): pool of chips + bins, all dark tiles ---------- */
+.astra .asort{flex:1;min-height:0;display:flex;flex-direction:column;gap:12px}
+.astra .asort .hint{margin:0;font-weight:700;font-size:14.5px;color:#fff!important;text-shadow:0 1px 3px #000,0 0 10px rgba(0,0,0,.6);text-align:center}
+.astra .asort .pool{flex:none;display:grid;grid-template-columns:repeat(3,1fr);gap:10px;align-content:start}
+.astra .asort .pool.empty::after{content:"All sorted. Press Check.";grid-column:1/-1;align-self:center;text-align:center;font-weight:700;color:rgba(255,255,255,.85);text-shadow:0 1px 3px #000}
+.astra .asort .pool.done{display:none}
+.astra .asort .chip{appearance:none;-webkit-appearance:none;margin:0;text-align:left;width:100%;display:block;border-radius:14px;padding:10px 13px;
+  font:700 15px/1.35 var(--body);cursor:grab;user-select:none;-webkit-user-select:none;touch-action:none;text-shadow:0 1px 2px rgba(0,0,0,.35);color:#fff}
+.astra .asort .chip::before{display:none}
+.astra .asort .chip.solid{text-shadow:none;color:var(--a-solid-ink)}
+.astra .asort .chip:focus-visible{outline:3px solid var(--crystal);outline-offset:2px}
+.astra .asort .chip.sel{box-shadow:0 0 0 3px var(--gold),0 14px 26px -12px rgba(0,0,0,.85);transform:translateY(-2px)}
+.astra .asort .chip.right{box-shadow:inset 5px 0 0 var(--a-good),0 10px 22px -14px rgba(0,0,0,.8)}
+.astra .asort .chip.wrong{box-shadow:inset 5px 0 0 var(--a-try),0 10px 22px -14px rgba(0,0,0,.8)}
+.astra .asort .chip[aria-disabled="true"]{cursor:default}
+.astra .asort .chip.lifting{opacity:.35}
+.astra .chip.ghost{position:fixed;z-index:50;pointer-events:none;transform:rotate(-1.5deg);margin:0;border-radius:14px;padding:10px 13px;
+  font:700 15px/1.35 var(--body);text-align:left;box-shadow:0 0 0 3px var(--gold),0 24px 40px -16px rgba(0,0,0,.9)!important}
+.astra .asort .bins{flex:1;min-height:0;display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.astra .asort .bin{display:flex;flex-direction:column;gap:8px;padding:12px;cursor:pointer;min-height:0;border-style:solid;border-width:1px;overflow:auto;scrollbar-width:thin}
+.astra .asort .bin .bhead{flex:none;padding:2px 4px 8px;border-bottom:1.5px dashed rgba(255,255,255,.45)}
+.astra .asort .bin .bhead small{display:block;font:800 11.5px var(--body);letter-spacing:.12em;color:var(--gold)}
+.astra .asort .bin .bhead b{display:block;font:800 18px/1.15 var(--display);color:inherit;text-transform:none;letter-spacing:0}
+.astra .asort .bin .drop{flex:1;display:flex;flex-direction:column;gap:8px;border-radius:12px;min-height:50px}
+.astra .asort .bin .drop:empty::before{content:"";flex:1;border:2px dashed rgba(255,255,255,.35);border-radius:12px}
+.astra .asort .bin.ready{border-color:var(--gold);box-shadow:0 0 0 2px rgba(255,210,122,.7),0 14px 34px -18px rgba(0,0,0,.75)}
+.astra .asort .bin.ready .drop:empty::before{border-color:rgba(255,210,122,.85)}
+.astra .asort .bin.over{background:var(--a-solid);color:var(--a-solid-ink);border-color:var(--gold);box-shadow:0 0 0 3px var(--gold),0 18px 40px -18px rgba(0,0,0,.8)}
+.astra .asort .bin.solid .bhead,.astra .asort .bin.over .bhead{border-color:rgba(90,63,176,.25)}
+.astra .asort .bin.solid .bhead small,.astra .asort .bin.over .bhead small{color:#a8551b}
+.astra .asort .bin.solid .drop:empty::before,.astra .asort .bin.over .drop:empty::before{border-color:rgba(90,63,176,.25)}
+.astra .asort .bin.solid .chip.solid{background:#f2eefc;border-color:rgba(90,63,176,.18);box-shadow:none}
+.astra .asort .bin.solid .chip.solid.sel{box-shadow:0 0 0 3px var(--gold)}
+.astra .asort .bin.solid .chip.right{background:#e6f6ec;box-shadow:inset 5px 0 0 var(--a-good)}
+.astra .asort .bin.solid .chip.wrong{background:#fff0e6;box-shadow:inset 5px 0 0 var(--a-try)}
+.astra .asort.dense .chip{font-size:14px;padding:8px 11px;line-height:1.33}
+.astra .asort.dense .bin .bhead b{font-size:16.5px}
+.astra .asort .bin .chip{font-size:14px;padding:8px 11px}

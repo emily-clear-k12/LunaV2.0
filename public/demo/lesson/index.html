@@ -307,6 +307,7 @@ select.jump{width:auto;padding:6px 8px}
   </div>
 </div>
 
+<script src="astra-sort.js"></script>
 <script>
 (function(){
 const TAU=Math.PI*2,$=id=>document.getElementById(id);
@@ -502,31 +503,12 @@ function renderWrite(s){
   inputs.forEach(i=>i.addEventListener('input',chk));
 }
 function renderSort(s){
-  const order=s.items.map((_,i)=>i).sort(()=>Math.random()-.5);
-  body.innerHTML=head(s)+`<div class="pool L" id="pool">${order.map(i=>`<button class="chip" draggable="true" data-i="${i}">${esc(s.items[i][0])}</button>`).join('')}</div>
-    <p class="hint L" style="margin:0;color:var(--muted);font-size:13px">Drag a sentence into a box, or tap a sentence and then tap a box.</p>
-    <div class="bins">${s.bins.map((b,i)=>`<div class="bin" data-b="${i}" tabindex="0" role="button" aria-label="${esc(b)}"><b>${esc(b)}</b></div>`).join('')}</div>`;
+  const dense=s.items.some(it=>it[0].length>90);
+  body.innerHTML=head(s)+`<div class="asort${dense?' dense':''}"><p class="hint">Drag a sentence into a box, or tap a sentence and then tap a box.</p><div class="pool"></div><div class="bins"></div></div>`;
   setFoot('<button class="check" id="chk" disabled>Check</button><button class="go" id="go" disabled>Continue</button>');$('go').onclick=advance;
-  const pool=$('pool');let sel=null;
-  const place=(chip,bin)=>{chip.classList.remove('sel','wrong','right');bin.appendChild(chip);sel=null;body.querySelectorAll('.bin').forEach(b=>b.classList.remove('ready'));$('chk').disabled=pool.querySelectorAll('.chip').length>0;};
-  body.querySelectorAll('.chip').forEach(c=>{
-    c.onclick=e=>{e.stopPropagation();if(c.disabled)return;const inBin=c.closest('.bin');if(sel&&sel!==c&&inBin){place(sel,inBin);return;}if(sel===c){c.classList.remove('sel');sel=null;body.querySelectorAll('.bin').forEach(b=>b.classList.remove('ready'));return;}
-      body.querySelectorAll('.chip').forEach(x=>x.classList.remove('sel'));c.classList.add('sel');sel=c;body.querySelectorAll('.bin').forEach(b=>b.classList.add('ready'));};
-    c.ondragstart=e=>{e.dataTransfer.setData('text/plain',c.dataset.i);sel=c;};
-  });
-  body.querySelectorAll('.bin').forEach(b=>{
-    b.onclick=()=>{if(sel)place(sel,b);};
-    b.onkeydown=e=>{if((e.key==='Enter'||e.key===' ')&&sel){e.preventDefault();place(sel,b);}};
-    b.ondragover=e=>{e.preventDefault();b.classList.add('over');};b.ondragleave=()=>b.classList.remove('over');
-    b.ondrop=e=>{e.preventDefault();b.classList.remove('over');const c=body.querySelector(`.chip[data-i="${e.dataTransfer.getData('text/plain')}"]`);if(c)place(c,b);};
-  });
-  pool.ondragover=e=>e.preventDefault();pool.ondrop=e=>{e.preventDefault();const c=body.querySelector(`.chip[data-i="${e.dataTransfer.getData('text/plain')}"]`);if(c)place(c,pool);};
-  $('chk').onclick=()=>{let wrong=0;
-    body.querySelectorAll('.bin .chip').forEach(c=>{const ok=s.items[+c.dataset.i][1]===+c.closest('.bin').dataset.b;c.classList.toggle('right',ok);c.classList.toggle('wrong',!ok);if(!ok)wrong++;});
-    scoreFirst(wrong===0);
-    if(!wrong){body.querySelectorAll('.chip').forEach(c=>{c.disabled=true;c.draggable=false;});$('chk').remove();fb('good','Every sentence is in the right place!');correct();enableGo();}
-    else{body.querySelectorAll('.chip.wrong').forEach(c=>pool.appendChild(c));$('chk').disabled=true;fb('try',`${wrong} ${wrong===1?'sentence is':'sentences are'} back at the top. Read ${wrong===1?'it':'them'} again and try another box.`);nope();}
-  };
+  AstraSort.mount(body.querySelector('.asort'),s,{esc,onCheck:wrong=>{scoreFirst(wrong===0);
+    if(!wrong){fb('good','Every sentence is in the right place!');correct();enableGo();}
+    else{fb('try',`${wrong} ${wrong===1?'sentence is':'sentences are'} back at the top. Read ${wrong===1?'it':'them'} again and try another box.`);nope();}}});
 }
 function textBox(s){return `<div class="box L"><h4>${esc(s.textTitle)}</h4>${s.textSub?`<p style="color:var(--muted);font-size:13px">${esc(s.textSub)}</p>`:''}<p>${s.sentences.map((t,i)=>`(${i+1}) ${esc(t)}`).join(' ')}</p></div>`;}
 function renderDropdown(s){
