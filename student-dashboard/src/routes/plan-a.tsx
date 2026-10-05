@@ -170,7 +170,7 @@ const modules: Module[] = [
 
 const treehouseSpot = { x: 50, y: 42, w: 13, h: 26 };
 const astraSpot = { x: 9.5, y: 58, w: 13, h: 38 };
-const tipDotSpot = { x: 12.5, y: 36 };
+const tipDotSpot = { x: 14, y: 44 };
 
 /** Four interactive lanterns; any extra lantern in the art stays decorative. */
 const lanterns: Lantern[] = [
@@ -239,7 +239,6 @@ const savedAtStart: Writing[] = [
 ];
 
 const asset = (file: string) => `${import.meta.env.BASE_URL}${file}`;
-const FRAME_GAP = 18;
 
 function StudentHome() {
   const [moduleId, setModuleId] = useState<string | null>(null);
@@ -352,63 +351,47 @@ function StudentHome() {
   }
 
   return (
-    <div className="flex h-dvh w-full flex-col overflow-hidden bg-cream">
-      <header className="title-bar">
-        <img src={asset("astra-banner.jpg")} alt="" className="title-banner" />
-        <div className="title-bar-inner">
-          <div className="title-left">
-            <h1 className="title-heading">Astra’s Writing Adventure</h1>
-          </div>
+    <div className="plana-stage flex h-dvh w-full flex-col overflow-hidden">
+      <div className="relative min-h-0 w-full min-w-0 flex-1 overflow-hidden">
+          <h1 className="z-sky-title">✦ Astra’s Writing Adventure ✦</h1>
           {overlayOpen ? (
             <button
               type="button"
               onClick={backToHub}
-              className="inline-flex min-h-11 shrink-0 items-center gap-2 rounded-full bg-cream px-4 text-sm font-bold text-ink"
+              className="z-back-btn"
             >
               <ArrowLeft className="size-4" aria-hidden="true" />
               Back to portals
             </button>
           ) : (
-            <div className="mastery">
-              <span className="mastery-label">Your Mastery</span>
-              <div className="mastery-row">
-                {badges.map((badge) => {
-                  const active =
-                    badge.id === "scr" ||
-                    (badge.moduleId ? mastered(badge.moduleId) : false);
-                  const src = asset(`badges/${badge.id}-${active ? "active" : "inactive"}.png`);
-                  return (
-                    <button
-                      key={badge.id}
-                      type="button"
-                      onClick={() => {
-                        if (badge.moduleId) {
-                          setEcrNote(false);
-                          openModule(badge.moduleId);
-                        } else {
-                          setEcrNote(true);
-                        }
-                      }}
-                      aria-current={active ? "true" : undefined}
-                      title={badge.name}
-                      className={active ? "medal medal-live" : "medal"}
-                    >
-                      <img src={src} alt="" className="medal-art" />
-                      <span className="medal-label">{badge.label}</span>
-                    </button>
-                  );
-                })}
-              </div>
+            <div className="z-mastery-pill" aria-label="Your mastery">
+              {badges.map((badge) => {
+                const active =
+                  badge.id === "scr" ||
+                  (badge.moduleId ? mastered(badge.moduleId) : false);
+                const src = asset(`badges/${badge.id}-${active ? "active" : "inactive"}.png`);
+                return (
+                  <button
+                    key={badge.id}
+                    type="button"
+                    onClick={() => {
+                      if (badge.moduleId) {
+                        setEcrNote(false);
+                        openModule(badge.moduleId);
+                      } else {
+                        setEcrNote(true);
+                      }
+                    }}
+                    aria-current={active ? "true" : undefined}
+                    title={badge.name}
+                    className="z-mastery-btn"
+                  >
+                    <img src={src} alt="" />
+                  </button>
+                );
+              })}
             </div>
           )}
-        </div>
-      </header>
-
-      <div
-        className="flex min-h-0 w-full min-w-0 flex-1 overflow-hidden bg-cream"
-        style={{ padding: FRAME_GAP }}
-      >
-        <div className="relative h-full min-h-0 w-full min-w-0 overflow-hidden bg-dusk">
           <div className="absolute inset-0 overflow-hidden">
             <div
               className="absolute inset-0 transition-transform duration-700 ease-out"
@@ -787,7 +770,6 @@ function StudentHome() {
               onCloseEcr={() => setEcrNote(false)}
             />
           ) : null}
-        </div>
       </div>
     </div>
   );

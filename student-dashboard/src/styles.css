@@ -1200,25 +1200,28 @@
   }
 
 
-  /* ——— Plan A zbar full-bleed scene ——— */
+  /* ——— Plan A full-bleed cover scene (no leafy banner) ——— */
+  .plana-stage {
+    background: #2a1840;
+  }
+
   .zscene {
     position: absolute;
     inset: 0;
-    display: grid;
-    place-items: center;
+    overflow: hidden;
     container-type: size;
-    background:
-      radial-gradient(ellipse at 50% 8%, rgb(90 55 120 / 0.55), transparent 50%),
-      linear-gradient(180deg, #2a1840 0%, #1a1428 45%, #14201c 100%);
+    background: #2a1840;
   }
 
+  /* Cover-fit, top-aligned: keep canopy/sky; crop sides/bottom as needed */
   .zscene-frame {
-    position: relative;
+    position: absolute;
+    left: 50%;
+    top: 0;
+    translate: -50% 0;
     aspect-ratio: 1280 / 776;
-    width: min(100cqw, calc(100cqh * 1280 / 776));
+    width: max(100cqw, calc(100cqh * 1280 / 776));
     height: auto;
-    max-width: 100%;
-    max-height: 100%;
   }
 
   .zscene-img {
@@ -1227,6 +1230,88 @@
     height: 100%;
     object-fit: fill;
     pointer-events: none;
+  }
+
+  .z-sky-title {
+    position: absolute;
+    z-index: 8;
+    left: 16px;
+    top: 10px;
+    max-width: min(480px, 40%);
+    margin: 0;
+    font-family: "Baloo 2", "Nunito", var(--font-sans);
+    font-size: clamp(1.35rem, 2.55vw, 2.15rem);
+    font-weight: 800;
+    line-height: 1.15;
+    letter-spacing: 0.4px;
+    color: #ffd77a;
+    text-shadow:
+      0 0 18px rgb(255 190 90 / 0.75),
+      0 3px 0 #7a4a12,
+      0 6px 16px rgb(20 10 40 / 0.7);
+    pointer-events: none;
+  }
+
+  .z-mastery-pill {
+    position: absolute;
+    z-index: 8;
+    top: 10px;
+    right: 14px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 10px;
+    border-radius: 16px;
+    border: 1.5px solid rgb(255 255 255 / 0.25);
+    background: rgb(30 22 60 / 0.45);
+    box-shadow: 0 8px 22px rgb(20 10 40 / 0.35);
+    backdrop-filter: blur(10px) saturate(1.15);
+  }
+
+  .z-mastery-btn {
+    display: grid;
+    place-items: center;
+    width: 32px;
+    height: 32px;
+    padding: 0;
+    border: 0;
+    border-radius: 999px;
+    background: transparent;
+    cursor: pointer;
+  }
+
+  .z-mastery-btn img {
+    width: 30px;
+    height: 30px;
+    display: block;
+    object-fit: contain;
+  }
+
+  .z-mastery-btn:focus-visible {
+    outline: 2px solid #ffd27a;
+    outline-offset: 2px;
+  }
+
+  .z-back-btn {
+    position: absolute;
+    z-index: 8;
+    top: 10px;
+    right: 14px;
+    display: inline-flex;
+    min-height: 2.75rem;
+    align-items: center;
+    gap: 0.4rem;
+    border-radius: 999px;
+    border: 1.5px solid rgb(255 255 255 / 0.75);
+    background: rgb(255 248 235 / 0.9);
+    padding: 0.45rem 1rem;
+    font-family: "Baloo 2", "Nunito", var(--font-sans);
+    font-size: 0.9rem;
+    font-weight: 800;
+    color: #4a2e1a;
+    box-shadow: 0 8px 22px rgb(40 20 60 / 0.3);
+    backdrop-filter: blur(10px);
+    cursor: pointer;
   }
 
   .z-hotspot {
@@ -1333,24 +1418,20 @@
     left: 50%;
     top: 100%;
     z-index: 4;
-    translate: -50% 0.15rem;
-    border-radius: 0.45rem;
-    border: 1px solid rgb(255 220 150 / 0.55);
-    background: rgb(28 18 10 / 0.78);
-    padding: 0.15rem 0.4rem;
+    translate: -50% 0.2rem;
+    border-radius: 0.7rem;
+    border: 1.5px solid rgb(255 255 255 / 0.75);
+    background: rgb(255 248 235 / 0.82);
+    padding: 0.28rem 0.55rem;
     font-family: "Baloo 2", "Nunito", var(--font-sans);
-    font-size: 0.62rem;
+    font-size: 0.92rem;
     font-weight: 800;
-    color: #ffe8b8;
+    line-height: 1.1;
+    color: #4a2e1a;
     white-space: nowrap;
     pointer-events: none;
-    opacity: 0;
-    transition: opacity 0.15s ease;
-  }
-
-  .z-lantern:hover .z-lantern-tag,
-  .z-lantern:focus-visible .z-lantern-tag {
-    opacity: 1;
+    box-shadow: 0 6px 16px rgb(40 20 60 / 0.28);
+    backdrop-filter: blur(12px) saturate(1.15);
   }
 
   .z-dots {
@@ -1378,9 +1459,9 @@
   .z-tip {
     position: absolute;
     z-index: 6;
-    left: 1.8%;
-    top: 2.2%;
-    width: min(290px, 24%);
+    left: 2.2%;
+    top: 38%;
+    width: min(280px, 22%);
     border: 1.5px solid rgb(255 255 255 / 0.75);
     border-radius: 20px;
     background: rgb(255 248 235 / 0.82);
