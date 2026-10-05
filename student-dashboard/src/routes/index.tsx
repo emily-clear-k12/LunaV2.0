@@ -591,8 +591,8 @@ function QuickWrite({ onStart }: { onStart: () => void }) {
       <div className="relative min-h-0 flex-1 overflow-hidden rounded-3xl shadow-md">
         <img
           src={asset("astra-treehouse.jpg")}
-          alt="Astra leaning against the trunk of his treehouse"
-          className="absolute inset-0 h-full w-full object-cover"
+          alt="Astra the wolf waving from the stairs of his treehouse"
+          className="absolute inset-0 h-full w-full object-cover object-[30%_center]"
         />
       </div>
       <div className="pt-3">
