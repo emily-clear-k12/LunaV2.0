@@ -70,11 +70,11 @@ const modules: Module[] = [
     id: "short",
     n: 4,
     name: "Short Responses",
-    world: "Treehouse canopy",
+    world: "Fern clearing",
     blurb: "Answer the question, then prove it.",
-    x: 90.1,
-    y: 16.9,
-    gem: 4.7,
+    x: 42.3,
+    y: 58,
+    gem: 6.2,
     lessons: [
       { title: "Details", world: "Canopy marks", minutes: 20, task: "Write detail sentences a reader can picture." },
       { title: "Evidence", world: "High proof", minutes: 23, task: "Use two pieces of proof from the passage." },
@@ -113,13 +113,13 @@ const modules: Module[] = [
   },
 ];
 
-const journalSpot = { x: 42.3, y: 58 };
+const treehouseSpot = { x: 88.5, y: 19.5 };
 
 const trails = [
   "M 8.3 71.3 C 12 55, 16 45, 22.4 37.6",
   "M 22.4 37.6 C 32 31, 40 26, 48.7 23.1",
-  "M 48.7 23.1 C 64 15, 80 14, 90.1 16.9",
-  "M 90.1 16.9 C 88 28, 82 35, 76.4 41.7",
+  "M 48.7 23.1 C 48 38, 44 50, 42.3 58",
+  "M 42.3 58 C 55 55, 68 48, 76.4 41.7",
   "M 76.4 41.7 C 78 54, 82 62, 84.7 69.5",
 ];
 
@@ -232,14 +232,14 @@ function StudentHome() {
   const [writeTitle, setWriteTitle] = useState<string | null>(null);
   const [ecrNote, setEcrNote] = useState(false);
   const [quick, setQuick] = useState(false);
-  const [journal, setJournal] = useState(false);
+  const [treehouse, setTreehouse] = useState(false);
   const [entryTitle, setEntryTitle] = useState<string | null>(null);
   const [writings, setWritings] = useState<Writing[]>(savedAtStart);
 
   const focused = modules.find((mod) => mod.id === moduleId) ?? null;
   const lesson = focused?.lessons.find((item) => item.title === lessonTitle) ?? null;
   const entry = writings.find((item) => item.title === entryTitle) ?? null;
-  const focus = journal ? journalSpot : focused;
+  const focus = treehouse ? treehouseSpot : focused;
 
   function mastered(id: string) {
     const mod = modules.find((item) => item.id === id);
@@ -249,7 +249,7 @@ function StudentHome() {
   }
 
   function openModule(id: string, lessonName?: string, assignmentTitle?: string) {
-    setJournal(false);
+    setTreehouse(false);
     setEntryTitle(null);
     setModuleId(id || null);
     setLessonTitle(lessonName ?? null);
@@ -258,12 +258,22 @@ function StudentHome() {
     setShelfOpen(false);
   }
 
-  function openJournal() {
+  function openTreehouse() {
     setModuleId(null);
     setLessonTitle(null);
     setWriteTitle(null);
     setQuick(false);
-    setJournal(true);
+    setTreehouse(true);
+    setEntryTitle(null);
+    setShelfOpen(false);
+  }
+
+  function startQuickWrite() {
+    setModuleId(null);
+    setLessonTitle(null);
+    setWriteTitle(null);
+    setTreehouse(true);
+    setQuick(true);
     setEntryTitle(null);
     setShelfOpen(false);
   }
@@ -273,7 +283,7 @@ function StudentHome() {
     setLessonTitle(null);
     setWriteTitle(null);
     setQuick(false);
-    setJournal(false);
+    setTreehouse(false);
     setEntryTitle(null);
   }
 
@@ -290,7 +300,7 @@ function StudentHome() {
         {
           title,
           from: mod ? mod.name : "Astra",
-          body: "Saved to your journal in the clearing.",
+          body: "Saved in your Treehouse.",
         },
         ...current,
       ];
@@ -402,17 +412,17 @@ function StudentHome() {
           ))}
           <button
             type="button"
-            onClick={openJournal}
-            aria-label="Journal, your saved writing"
+            onClick={openTreehouse}
+            aria-label="Treehouse, your writing space"
             className={
               "absolute flex size-11 -translate-x-1/2 -translate-y-1/2 items-center justify-center " +
               (focus ? "pointer-events-none opacity-0" : "")
             }
-            style={{ left: `${journalSpot.x}%`, top: `${journalSpot.y}%` }}
+            style={{ left: `${treehouseSpot.x}%`, top: `${treehouseSpot.y}%` }}
           >
-            <span className="journal-glow" aria-hidden="true" />
+            <span className="treehouse-glow" aria-hidden="true" />
             <span className="map-label absolute top-full left-1/2 mt-0.5 -translate-x-1/2">
-              Journal
+              Treehouse
             </span>
           </button>
         </div>
@@ -465,7 +475,7 @@ function StudentHome() {
               {(done[focused.id] ?? []).includes(lesson.title) ? (
                 <span className="inline-flex min-h-11 items-center gap-2 text-sm font-bold text-moss">
                   <Check className="size-4" aria-hidden="true" />
-                  Saved to journal
+                  Saved to Treehouse
                 </span>
               ) : (
                 <button
@@ -473,7 +483,7 @@ function StudentHome() {
                   onClick={() => markDone(focused.id, lesson.title)}
                   className="inline-flex min-h-11 items-center rounded-full bg-moss px-4 text-sm font-bold text-cream"
                 >
-                  Save to journal
+                  Save to Treehouse
                 </button>
               )}
               <button
@@ -489,12 +499,19 @@ function StudentHome() {
         </section>
       ) : null}
 
-      {journal && !entry ? (
+      {treehouse && !entry && !quick ? (
         <section className="absolute inset-x-0 bottom-0 px-3 pb-3 sm:px-6 sm:pb-5">
           <div className="mx-auto max-w-xl rounded-3xl bg-cream/95 p-4 text-ink shadow-2xl sm:p-5">
-            <p className="text-sm font-bold text-lantern">Fern heart · Your space</p>
-            <h2 className="font-display text-2xl">Journal</h2>
-            <p className="mt-1 text-sm text-muted">Writing you finish is kept here.</p>
+            <p className="text-sm font-bold text-lantern">Treehouse · Your space</p>
+            <h2 className="font-display text-2xl">Treehouse</h2>
+            <p className="mt-1 text-sm text-muted">Quick writes and finished work live here with Astra.</p>
+            <button
+              type="button"
+              onClick={startQuickWrite}
+              className="mt-3 inline-flex min-h-11 w-full items-center justify-center rounded-full bg-lantern px-4 text-sm font-bold text-cream"
+            >
+              Start Quick write
+            </button>
             <ul className="mt-3 grid gap-2">
               {writings.map((item) => (
                 <li key={item.title}>
@@ -513,7 +530,7 @@ function StudentHome() {
         </section>
       ) : null}
 
-      {journal && entry ? (
+      {treehouse && entry ? (
         <section className="absolute inset-x-0 bottom-0 px-3 pb-3 sm:px-6 sm:pb-5">
           <div className="mx-auto max-w-xl rounded-3xl bg-cream p-5 text-ink shadow-2xl">
             <p className="text-sm font-bold text-lantern">{entry.from}</p>
@@ -559,18 +576,21 @@ function StudentHome() {
                     ...current.filter((item) => item.title !== "Robot at School"),
                   ]);
                   setQuick(false);
-                  openJournal();
+                  openTreehouse();
                 }}
                 className="inline-flex min-h-11 items-center rounded-full bg-moss px-4 text-sm font-bold text-cream"
               >
-                Save to journal
+                Save to Treehouse
               </button>
               <button
                 type="button"
-                onClick={() => setQuick(false)}
+                onClick={() => {
+                  setQuick(false);
+                  setTreehouse(true);
+                }}
                 className="inline-flex min-h-11 items-center text-sm font-bold text-lantern"
               >
-                Back to map
+                Back to Treehouse
               </button>
             </div>
           </div>
@@ -578,7 +598,7 @@ function StudentHome() {
       ) : null}
       </div>
       <div className="pane-break" aria-hidden="true" />
-      <QuickWrite onStart={() => { setQuick(true); setShelfOpen(false); }} />
+      <QuickWrite onStart={startQuickWrite} />
       </div>
       </div>
     </div>
@@ -596,7 +616,7 @@ function QuickWrite({ onStart }: { onStart: () => void }) {
         />
       </div>
       <div className="pt-3">
-        <p className="text-xs font-bold tracking-wide text-lantern">Quick write</p>
+        <p className="text-xs font-bold tracking-wide text-lantern">Treehouse</p>
         <h2 className="mt-1 font-display text-3xl leading-tight">Robot at School</h2>
         <p className="mt-2 text-sm">A robot joins your class. What happens during the day?</p>
         <button
