@@ -180,10 +180,10 @@ const tipDotSpot = { x: 9.5, y: 18 };
 
 /** Four interactive lanterns; any extra lantern in the art stays decorative. */
 const lanterns: Lantern[] = [
-  { id: "goal", label: "My goal", x: 34.5, y: 33.5, w: 5.5, h: 12, signX: 35.0, signY: 39.8, signW: 10, signH: 8 },
-  { id: "progress", label: "My progress", x: 41.5, y: 34, w: 5.5, h: 12, signX: 41.4, signY: 41.8, signW: 10, signH: 8 },
-  { id: "practice", label: "Practice", x: 63.5, y: 37, w: 5.5, h: 12, signX: 62.0, signY: 45.6, signW: 8, signH: 9 },
-  { id: "quick", label: "Quick write", x: 74.5, y: 33.5, w: 5.5, h: 12, signX: 73.0, signY: 42.3, signW: 9, signH: 8 },
+  { id: "goal", label: "My goal", x: 34.5, y: 33.5, w: 5.5, h: 12, signX: 34.4, signY: 40.2, signW: 10, signH: 8 },
+  { id: "progress", label: "My progress", x: 41.5, y: 34, w: 5.5, h: 12, signX: 41.4, signY: 41.7, signW: 10, signH: 8 },
+  { id: "practice", label: "Practice", x: 63.5, y: 37, w: 5.5, h: 12, signX: 62.4, signY: 45.6, signW: 8, signH: 9 },
+  { id: "quick", label: "Quick write", x: 74.5, y: 33.5, w: 5.5, h: 12, signX: 72.7, signY: 39.9, signW: 9, signH: 8 },
 ];
 
 const assignments = [
