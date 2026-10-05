@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { ArrowLeft, Check } from "lucide-react";
+import { ArrowLeft, Check, Compass, Feather } from "lucide-react";
 import { useState } from "react";
 
 export const Route = createFileRoute("/")({ component: StudentHome });
@@ -199,6 +199,9 @@ const savedAtStart: Writing[] = [
 ];
 
 // Public images live under the site's base path (/LunaV2.0/dashboard/ on GitHub Pages).
+const CLASS_FOCUS = "Today, let's back every answer with evidence from the text!";
+const MY_GOAL = "Back up my opinion with strong, specific reasons.";
+
 const asset = (file: string) => `${import.meta.env.BASE_URL}${file}`;
 
 const STAGE_W = 1366;
@@ -602,7 +605,6 @@ function StudentHome() {
         </section>
       ) : null}
       </div>
-      <div className="pane-break" aria-hidden="true" />
       <QuickWrite onStart={startQuickWrite} />
       </div>
       </div>
@@ -612,24 +614,38 @@ function StudentHome() {
 
 function QuickWrite({ onStart }: { onStart: () => void }) {
   return (
-    <aside className="flex w-80 shrink-0 flex-col bg-cream px-3 pt-3 pb-4 text-ink">
-      <div className="relative min-h-0 flex-1 overflow-hidden rounded-3xl shadow-md">
+    <aside className="planb-guide flex w-[17.5rem] shrink-0 flex-col gap-2 bg-cream px-2.5 pt-2.5 pb-3 text-ink">
+      <div className="planb-astra relative min-h-0 flex-[1.15] overflow-hidden rounded-2xl shadow-md">
         <img
           src={asset("astra-treehouse.jpg")}
           alt="Astra the wolf waving from the stairs of his treehouse"
-          className="absolute inset-0 h-full w-full object-cover object-center"
+          className="absolute inset-0 h-full w-full object-cover object-[center_18%]"
         />
+        <div className="planb-tip-bubble">
+          <p className="planb-tip-label">Astra’s tip</p>
+          <p className="planb-tip-text">{CLASS_FOCUS}</p>
+        </div>
       </div>
-      <div className="pt-3">
-        <p className="text-xs font-bold tracking-wide text-lantern">Treehouse</p>
-        <h2 className="mt-1 font-display text-3xl leading-tight">Robot at School</h2>
-        <p className="mt-2 text-sm">A robot joins your class. What happens during the day?</p>
-        <button
-          type="button"
-          onClick={onStart}
-          className="mt-3 inline-flex min-h-11 w-full items-center justify-center rounded-full bg-lantern text-sm font-bold text-cream"
-        >
-          Start writing
+
+      <div className="goal-compass">
+        <div className="goal-compass-icon" aria-hidden="true">
+          <Compass className="size-5" strokeWidth={2.4} />
+        </div>
+        <div className="min-w-0">
+          <p className="goal-compass-label">My goal</p>
+          <p className="goal-compass-text">{MY_GOAL}</p>
+        </div>
+      </div>
+
+      <div className="planb-quest">
+        <p className="planb-quest-label">Treehouse</p>
+        <h2 className="planb-quest-title">Robot at School</h2>
+        <p className="planb-quest-body">A robot joins your class. What happens during the day?</p>
+        <button type="button" onClick={onStart} className="crystal-btn mt-2">
+          <span className="crystal-btn-icon" aria-hidden="true">
+            <Feather className="size-3.5" strokeWidth={2.5} />
+          </span>
+          Quick write
         </button>
       </div>
     </aside>
