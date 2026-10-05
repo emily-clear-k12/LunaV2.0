@@ -167,19 +167,41 @@
     animation: crystal-pulse 2.4s ease-in-out infinite;
   }
 
-  .more-work {
-    background: #0b4f86;
-    color: #e8f7ff;
-    animation: more-glow 1.35s ease-in-out infinite;
+  .assign-chip {
+    border-radius: 999px;
+    background: transparent;
   }
 
-  @keyframes more-glow {
+  .assign-crystal {
+    height: 2.35rem;
+    width: auto;
+    display: block;
+    filter: drop-shadow(0 0 6px rgb(90 200 255 / 0.85));
+  }
+
+  .assign-chip-pulse .assign-crystal {
+    animation: crystal-pulse 1.6s ease-in-out infinite;
+    filter: drop-shadow(0 0 10px rgb(140 225 255 / 1));
+  }
+
+  .start-write-glow {
+    position: relative;
+    animation: write-ring 2s ease-in-out infinite;
+  }
+
+  @keyframes write-ring {
     0%,
     100% {
-      box-shadow: 0 0 8px 2px rgb(70 180 255 / 0.85);
+      box-shadow:
+        0 0 0 2px rgb(255 214 150 / 0.55),
+        0 0 12px 2px rgb(150 210 255 / 0.45),
+        0 0 22px 4px rgb(196 122 42 / 0.35);
     }
     50% {
-      box-shadow: 0 0 22px 8px rgb(150 225 255 / 1);
+      box-shadow:
+        0 0 0 4px rgb(255 226 170 / 0.9),
+        0 0 20px 6px rgb(160 230 255 / 0.75),
+        0 0 32px 8px rgb(255 186 90 / 0.5);
     }
   }
   .crystal-mark {

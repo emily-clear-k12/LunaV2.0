@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { ArrowLeft, Check, ChevronDown, ChevronUp, Feather, Lightbulb, Pencil, ScrollText, Search, Star } from "lucide-react";
+import { ArrowLeft, Check, Feather, Lightbulb, Pencil, ScrollText, Search, Star } from "lucide-react";
 import { useEffect, useState } from "react";
 
 export const Route = createFileRoute("/")({ component: StudentHome });
@@ -669,7 +669,10 @@ function AssignmentShelf({
           <button
             type="button"
             onClick={() => onOpen(today.moduleId, today.lesson, today.title)}
-            className="inline-flex min-h-11 shrink-0 items-center rounded-full bg-lantern px-4 text-sm font-bold text-cream"
+            className={
+              "start-write inline-flex min-h-11 shrink-0 items-center rounded-full bg-lantern px-4 text-sm font-bold text-cream" +
+              (assignments.length > 1 ? " start-write-glow" : "")
+            }
           >
             Start writing
           </button>
@@ -677,16 +680,13 @@ function AssignmentShelf({
             type="button"
             onClick={onToggle}
             aria-label={open ? "Hide assignments" : "Show all assignments"}
+            aria-expanded={open}
             className={
-              "grid size-12 place-items-center rounded-full " +
-              (assignments.length > 1 ? "more-work" : "")
+              "assign-chip grid size-12 place-items-center " +
+              (assignments.length > 1 && !open ? "assign-chip-pulse" : "")
             }
           >
-            {open ? (
-              <ChevronDown className="size-4" aria-hidden="true" />
-            ) : (
-              <ChevronUp className="size-4" aria-hidden="true" />
-            )}
+            <img src={asset("crystal.png")} alt="" className="assign-crystal" />
           </button>
         </div>
         {open ? (
