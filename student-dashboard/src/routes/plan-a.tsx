@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { ArrowLeft, Check, Compass, Feather } from "lucide-react";
+import { ArrowLeft, Check, Compass, Feather, Sparkles, X } from "lucide-react";
 import { useState } from "react";
 
 export const Route = createFileRoute("/")({ component: StudentHome });
@@ -621,17 +621,37 @@ function StudentHome() {
               </section>
             ) : null}
           </div>
-          <AstraGuide onQuickWrite={startQuickWrite} />
+          <AstraGuide
+            onQuickWrite={startQuickWrite}
+            worlds={modules.map((mod) => ({
+              id: mod.id,
+              n: mod.n,
+              short: mod.short,
+              world: mod.world,
+              accent: mod.accent,
+              lit: mod.id === "scr" || mastered(mod.id),
+            }))}
+          />
         </div>
       </div>
     </div>
   );
 }
 
-function AstraGuide({ onQuickWrite }: { onQuickWrite: () => void }) {
+function AstraGuide({
+  onQuickWrite,
+  worlds,
+}: {
+  onQuickWrite: () => void;
+  worlds: { id: string; n: number; short: string; world: string; accent: string; lit: boolean }[];
+}) {
+  const [practiceOpen, setPracticeOpen] = useState(false);
+  const [progressOpen, setProgressOpen] = useState(false);
+  const litCount = worlds.filter((w) => w.lit).length;
+
   return (
-    <aside className="astra-guide flex w-[17.5rem] shrink-0 flex-col gap-2.5 bg-cream px-2.5 pt-2.5 pb-3 text-ink">
-      {/* Hero tip card — ~half the panel */}
+    <aside className="astra-guide flex w-[17.5rem] shrink-0 flex-col gap-2 bg-cream px-2.5 pt-2.5 pb-3 text-ink">
+      {/* Hero tip card */}
       <div className="tip-hero">
         <div className="tip-hero-sparkles" aria-hidden="true" />
         <img
@@ -656,15 +676,110 @@ function AstraGuide({ onQuickWrite }: { onQuickWrite: () => void }) {
         </div>
       </div>
 
-      <div className="guide-spacer" aria-hidden="true" />
-
-      {/* Magical Quick write — opens Treehouse quick write */}
-      <button type="button" onClick={onQuickWrite} className="quick-write-btn">
-        <span className="quick-write-icon" aria-hidden="true">
-          <Feather className="size-4" strokeWidth={2.5} />
-        </span>
-        Quick write
+      {/* My progress — fills the middle gap */}
+      <button
+        type="button"
+        className="progress-card"
+        onClick={() => setProgressOpen(true)}
+        aria-label={`My progress, ${litCount} of 6 worlds explored`}
+      >
+        <div className="progress-card-top">
+          <p className="progress-card-label">My progress</p>
+          <p className="progress-card-count">
+            {litCount} of 6 worlds explored
+          </p>
+        </div>
+        <div className="progress-gems" aria-hidden="true">
+          {worlds.map((w) => (
+            <span
+              key={w.id}
+              className={w.lit ? "progress-gem lit" : "progress-gem"}
+              style={{ ["--gem" as string]: w.accent }}
+              title={`M${w.n} · ${w.short}`}
+            >
+              <span className="progress-gem-facet" />
+            </span>
+          ))}
+        </div>
+        <div className="progress-gem-labels" aria-hidden="true">
+          {worlds.map((w) => (
+            <span key={w.id} className={w.lit ? "progress-gem-cap lit" : "progress-gem-cap"}>
+              {w.short}
+            </span>
+          ))}
+        </div>
       </button>
+
+      {/* Crystal-blue action stack */}
+      <div className="guide-actions">
+        <button
+          type="button"
+          onClick={() => setPracticeOpen(true)}
+          className="crystal-btn"
+        >
+          <span className="crystal-btn-icon" aria-hidden="true">
+            <Sparkles className="size-3.5" strokeWidth={2.5} />
+          </span>
+          Practice
+        </button>
+        <button type="button" onClick={onQuickWrite} className="crystal-btn">
+          <span className="crystal-btn-icon" aria-hidden="true">
+            <Feather className="size-3.5" strokeWidth={2.5} />
+          </span>
+          Quick write
+        </button>
+      </div>
+
+      {practiceOpen ? (
+        <div className="guide-toast" role="status">
+          <p className="guide-toast-title">Practice pages</p>
+          <p className="guide-toast-body">Practice pages coming soon — Astra is still packing the crystal drills!</p>
+          <button type="button" className="guide-toast-close" onClick={() => setPracticeOpen(false)}>
+            <X className="size-3.5" aria-hidden="true" />
+            Got it
+          </button>
+        </div>
+      ) : null}
+
+      {progressOpen ? (
+        <div className="guide-sheet" role="dialog" aria-label="My progress">
+          <div className="guide-sheet-head">
+            <div>
+              <p className="guide-sheet-label">Data & goals</p>
+              <h2 className="guide-sheet-title">My progress</h2>
+            </div>
+            <button
+              type="button"
+              className="guide-sheet-x"
+              aria-label="Close progress"
+              onClick={() => setProgressOpen(false)}
+            >
+              <X className="size-4" />
+            </button>
+          </div>
+          <p className="guide-sheet-summary">
+            {litCount} of 6 worlds explored · Goal: {MY_GOAL}
+          </p>
+          <ul className="guide-sheet-list">
+            {worlds.map((w) => (
+              <li key={w.id} className={w.lit ? "guide-sheet-row lit" : "guide-sheet-row"}>
+                <span
+                  className={w.lit ? "progress-gem lit" : "progress-gem"}
+                  style={{ ["--gem" as string]: w.accent }}
+                  aria-hidden="true"
+                >
+                  <span className="progress-gem-facet" />
+                </span>
+                <span className="min-w-0 flex-1 text-left">
+                  <span className="guide-sheet-mod">M{w.n} · {w.short}</span>
+                  <span className="guide-sheet-world">{w.world}</span>
+                </span>
+                <span className="guide-sheet-status">{w.lit ? "Lit" : "Ahead"}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      ) : null}
     </aside>
   );
 }
