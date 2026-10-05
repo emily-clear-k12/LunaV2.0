@@ -53,12 +53,12 @@ const modules: Module[] = [
     short: "SCR",
     world: "Crystal Caverns",
     blurb: "Short constructed responses with clear evidence.",
-    x: 32.92,
-    y: 61.68,
-    w: 7.79,
-    h: 26.82,
-    dotX: 32.92,
-    dotY: 81.32,
+    x: 25.9,
+    y: 60,
+    w: 11,
+    h: 28,
+    dotX: 25.9,
+    dotY: 80.5,
     accent: "#4aa3ff",
     lessons: [
       { title: "Answer the ask", world: "First crystals", minutes: 20, task: "Write a short answer that restates the question." },
@@ -73,12 +73,12 @@ const modules: Module[] = [
     short: "ECR",
     world: "Sky Harbor",
     blurb: "Extended responses that build a full argument.",
-    x: 42.05,
-    y: 61.68,
-    w: 7.79,
-    h: 26.82,
-    dotX: 42.05,
-    dotY: 81.32,
+    x: 38.8,
+    y: 60,
+    w: 11,
+    h: 28,
+    dotX: 38.8,
+    dotY: 80.5,
     accent: "#7cc8ff",
     lessons: [
       { title: "Claim the sky", world: "Docking ring", minutes: 20, task: "Write a clear claim for a longer response." },
@@ -93,12 +93,12 @@ const modules: Module[] = [
     short: "Stellar",
     world: "Starfall Meadow",
     blurb: "Sentences that hold one clear idea.",
-    x: 51.04,
-    y: 61.68,
-    w: 7.79,
-    h: 26.82,
-    dotX: 51.04,
-    dotY: 81.32,
+    x: 51.5,
+    y: 60,
+    w: 11,
+    h: 28,
+    dotX: 51.5,
+    dotY: 80.5,
     accent: "#b46bff",
     lessons: [
       { title: "One complete thought", world: "First stones", minutes: 20, task: "Write three sentences that each say one whole idea." },
@@ -113,12 +113,12 @@ const modules: Module[] = [
     short: "Process",
     world: "Ember Forge",
     blurb: "Read the prompt, take notes, make a plan.",
-    x: 60.24,
-    y: 61.68,
-    w: 7.79,
-    h: 26.82,
-    dotX: 60.24,
-    dotY: 81.32,
+    x: 64.5,
+    y: 60,
+    w: 11,
+    h: 28,
+    dotX: 64.5,
+    dotY: 80.5,
     accent: "#ff9a3c",
     lessons: [
       { title: "Read the prompt", world: "White trunks", minutes: 15, task: "Underline what the prompt is asking you to do." },
@@ -133,12 +133,12 @@ const modules: Module[] = [
     short: "Revision",
     world: "Sunken Library",
     blurb: "Make the draft clearer and stronger.",
-    x: 69.86,
-    y: 61.68,
-    w: 7.79,
-    h: 26.82,
-    dotX: 69.86,
-    dotY: 81.32,
+    x: 78.1,
+    y: 60,
+    w: 11,
+    h: 28,
+    dotX: 78.1,
+    dotY: 80.5,
     accent: "#2fd6c8",
     lessons: [
       { title: "Name the idea", world: "Lookout", minutes: 15, task: "Say what the draft is really about, in one line." },
@@ -153,12 +153,12 @@ const modules: Module[] = [
     short: "Edit",
     world: "Coral Cove",
     blurb: "Polish conventions until the writing is clear.",
-    x: 79.92,
-    y: 61.68,
-    w: 7.79,
-    h: 26.82,
-    dotX: 79.92,
-    dotY: 81.32,
+    x: 92.3,
+    y: 60,
+    w: 11,
+    h: 28,
+    dotX: 92.3,
+    dotY: 80.5,
     accent: "#ff6fa8",
     lessons: [
       { title: "Capitals and stops", world: "Fallen leaves", minutes: 15, task: "Fix sentences that start or end the wrong way." },
@@ -168,16 +168,16 @@ const modules: Module[] = [
   },
 ];
 
-const treehouseSpot = { x: 49.97, y: 44.43, w: 9.2, h: 24.91 };
-const astraSpot = { x: 21.31, y: 59.76, w: 9.2, h: 36.4 };
-const tipDotSpot = { x: 23.43, y: 38.69 };
+const treehouseSpot = { x: 50, y: 42, w: 13, h: 26 };
+const astraSpot = { x: 9.5, y: 58, w: 13, h: 38 };
+const tipDotSpot = { x: 12.5, y: 36 };
 
 /** Four interactive lanterns; any extra lantern in the art stays decorative. */
 const lanterns: Lantern[] = [
-  { id: "goal", label: "My goal", x: 39.0, y: 36.29, w: 3.89, h: 11.5 },
-  { id: "progress", label: "My progress", x: 43.96, y: 36.77, w: 3.89, h: 11.5 },
-  { id: "practice", label: "Practice", x: 59.53, y: 39.64, w: 3.89, h: 11.5 },
-  { id: "quick", label: "Quick write", x: 67.32, y: 36.29, w: 3.89, h: 11.5 },
+  { id: "goal", label: "My goal", x: 34.5, y: 33.5, w: 5.5, h: 12 },
+  { id: "progress", label: "My progress", x: 41.5, y: 34, w: 5.5, h: 12 },
+  { id: "practice", label: "Practice", x: 63.5, y: 37, w: 5.5, h: 12 },
+  { id: "quick", label: "Quick write", x: 74.5, y: 33.5, w: 5.5, h: 12 },
 ];
 
 const assignments = [
