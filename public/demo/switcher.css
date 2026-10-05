@@ -1,5 +1,5 @@
 /* Version switcher: slim dark-glass bar fixed at the very top of the student dashboard and the lesson.
-   Shared by /, /demo/ and /demo/lesson/. switcher.js injects the bar and sets html.vs-on. */
+   Shared by /dashboard/, /demo/ and /demo/lesson/. switcher.js injects the bar and sets html.vs-on. */
 :root{--vs-h:36px}
 .vswitch{position:fixed;z-index:1000;top:0;left:0;right:0;height:var(--vs-h);box-sizing:border-box;
   display:flex;align-items:center;justify-content:center;gap:10px;padding:0 14px;
@@ -18,6 +18,9 @@
 html.vs-on body{padding-top:var(--vs-h)}
 html.vs-on .demo-topbar{top:var(--vs-h)}
 html.vs-on .demo-shell{min-height:calc(100vh - var(--vs-h))}
+/* Astra dashboard (/dashboard/): its full-screen stage fills the space under the bar */
+html.vs-on #root > .h-dvh{height:calc(100dvh - var(--vs-h));align-items:start}
+html.vs-on #root > .h-dvh > div{transform-origin:50% 0}
 
 /* Lesson: shift the fixed layers down; the top bar tucks 8px under the switcher (was 12px from the top) */
 html.vs-on .astra .stage{top:var(--vs-h)}
