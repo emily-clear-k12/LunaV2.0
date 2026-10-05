@@ -1,0 +1,308 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Tile preview · Details and Evidence</title>
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Nunito+Sans:opsz,wght@6..12,400;6..12,600;6..12,700;6..12,800&display=swap" rel="stylesheet">
+<style>
+/* Design preview: student work as separate frosted tiles over the lesson's own scene art.
+   A tile is frosted until the student engages it; then it turns solid and stays solid. */
+:root{
+  --night:#120f2a; --gold:#ffd27a; --crystal:#86d6ff; --violet:#c7a6ff; --good:#3fae73; --try:#e8803f;
+  --display:"Baloo 2","Trebuchet MS",system-ui,sans-serif;
+  --body:"Nunito Sans",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  /* frosted */
+  --frost-bg:rgba(24,19,56,.36); --frost-line:rgba(255,255,255,.34); --frost-ink:#fff; --frost-muted:rgba(255,255,255,.78);
+  /* opaque (engaged) */
+  --solid-bg:rgba(255,253,248,.97); --solid-line:rgba(255,255,255,.95); --solid-ink:#1d1838; --solid-muted:#5b5478; --solid-accent:#5a3fb0;
+  --r:20px;
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html,body{margin:0;height:100%;background:var(--night);color:var(--frost-ink);font:16px/1.5 var(--body)}
+body{overflow:hidden}
+
+/* full-bleed scene: the same plates the lesson uses */
+.scene{position:fixed;inset:0;background:var(--night) center/cover no-repeat;transition:opacity .5s ease}
+.scene::after{content:"";position:absolute;inset:0;pointer-events:none;
+  background:linear-gradient(180deg,rgba(10,8,28,.55) 0%,rgba(10,8,28,.12) 26%,rgba(10,8,28,.08) 62%,rgba(10,8,28,.45) 100%)}
+.scene.s1{background-image:url(scene1.jpg)}
+.scene.s2{background-image:url(scene2.jpg)}
+
+.screen{position:fixed;inset:0;overflow:auto;padding:16px 22px 22px;display:flex;flex-direction:column;gap:14px}
+
+/* ---------- shared frosted tile ---------- */
+.tile{position:relative;border-radius:var(--r);background:var(--frost-bg);border:1px solid var(--frost-line);
+  backdrop-filter:blur(9px) saturate(135%);-webkit-backdrop-filter:blur(9px) saturate(135%);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.22),0 14px 34px -18px rgba(0,0,0,.75);
+  color:var(--frost-ink);transition:background .35s ease,border-color .35s ease,color .35s ease,box-shadow .35s ease,transform .2s ease}
+.tile.solid{background:var(--solid-bg);border-color:var(--solid-line);color:var(--solid-ink);
+  box-shadow:0 18px 40px -18px rgba(0,0,0,.8)}
+
+/* ---------- top bar ---------- */
+.topbar{display:flex;align-items:center;justify-content:space-between;gap:12px;flex:none}
+.pill{border-radius:999px;padding:6px 14px;font:800 12px var(--body);letter-spacing:.1em;text-transform:uppercase}
+.where{color:var(--gold)}
+.tabs{display:flex;align-items:center;gap:4px;padding:4px;border-radius:999px}
+.tabs .tag{font:800 11px var(--body);letter-spacing:.12em;text-transform:uppercase;color:var(--frost-muted);padding:0 8px 0 10px}
+.tabs a{font:700 14px var(--body);color:#fff;text-decoration:none;padding:6px 14px;border-radius:999px}
+.tabs a[aria-current="page"]{background:#fff;color:var(--solid-ink)}
+.tabs a:focus-visible{outline:3px solid var(--crystal);outline-offset:2px}
+
+/* ---------- activity heading (read-only tile) ---------- */
+.head{max-width:980px;width:100%;margin:0 auto;padding:12px 20px 14px;flex:none;text-shadow:0 1px 2px rgba(0,0,0,.35)}
+.kind{margin:0;font:800 12px var(--body);letter-spacing:.12em;text-transform:uppercase;color:var(--crystal)}
+.prompt{margin:0;font:800 28px/1.1 var(--display)}
+.dir{margin:4px 0 0;font-weight:700;font-size:16.5px;color:rgba(255,255,255,.95)}
+
+.main{max-width:980px;width:100%;margin:0 auto;display:flex;flex-direction:column;gap:14px;flex:none}
+
+/* ---------- warm-up: 2x2 writing tiles ---------- */
+.grid{display:grid;grid-template-columns:1fr 1fr;grid-auto-rows:minmax(176px,auto);gap:16px}
+.wtile{display:flex;flex-direction:column;padding:14px 16px 12px;cursor:text}
+.wtile label{display:flex;align-items:baseline;gap:8px;font:800 21px/1.1 var(--display);cursor:text}
+.wtile label span{font:700 14px var(--body);color:var(--frost-muted);transition:color .35s}
+.wtile textarea{flex:1;width:100%;min-height:72px;margin-top:8px;resize:none;border:0;outline:0;background:transparent;
+  color:inherit;font:600 18px/1.5 var(--body);padding:2px 0}
+.wtile textarea::placeholder{color:rgba(255,255,255,.72);font-weight:600;transition:color .35s}
+.wtile .line{height:2px;border-radius:2px;background:rgba(255,255,255,.35);transition:background .35s}
+.wtile.solid label span{color:var(--solid-muted)}
+.wtile.solid label{color:var(--solid-accent)}
+.wtile.solid textarea::placeholder{color:#9a94b4}
+.wtile.solid .line{background:rgba(90,63,176,.22)}
+.wtile:focus-within{box-shadow:0 0 0 3px rgba(255,210,122,.9),0 18px 40px -18px rgba(0,0,0,.8);transform:translateY(-2px)}
+.wtile:focus-within .line{background:#e9a23b}
+.wtile .done{position:absolute;top:12px;right:14px;width:22px;height:22px;border-radius:50%;background:var(--good);color:#fff;
+  display:grid;place-items:center;font:800 13px var(--body);opacity:0;transform:scale(.6);transition:opacity .25s,transform .25s}
+.wtile.filled .done{opacity:1;transform:none}
+
+/* ---------- footer row ---------- */
+.foot{display:flex;align-items:center;justify-content:flex-end;gap:10px;flex:none}
+.foot .note{margin:0 auto 0 0;font-weight:700;font-size:14px;padding:8px 14px;border-radius:14px}
+.btn{font:800 17px/1 var(--display);padding:11px 22px 9px;border-radius:999px;cursor:pointer;color:#fff}
+.btn:disabled{cursor:not-allowed;color:rgba(255,255,255,.55)}
+.btn:not(:disabled):hover{background:rgba(255,255,255,.2)}
+.btn.ready{background:var(--gold);border-color:var(--gold);color:var(--night)}
+.btn.ready:hover{background:#ffdd94}
+.btn:focus-visible{outline:3px solid var(--crystal);outline-offset:2px}
+.fb{margin:0 auto 0 0;padding:9px 14px;border-radius:14px;font-weight:700;font-size:14.5px;max-width:60ch}
+.fb.try{background:rgba(255,246,236,.97);color:#6b3412;border-color:#fff}
+.fb.good{background:rgba(236,250,241,.97);color:#185c37;border-color:#fff}
+
+/* ---------- sort ---------- */
+.hint{margin:0;font-weight:700;font-size:14.5px;text-shadow:0 1px 3px #000,0 0 10px rgba(0,0,0,.6);text-align:center}
+.pool{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;align-content:start;flex:none}
+.pool.empty{min-height:0}
+.pool.done{display:none}
+.pool.empty::after{content:"All sorted. Press Check.";grid-column:1/-1;align-self:center;text-align:center;font-weight:700;color:rgba(255,255,255,.8);text-shadow:0 1px 3px #000}
+.chip{appearance:none;-webkit-appearance:none;margin:0;text-align:left;width:100%;box-sizing:border-box;display:block;border-radius:14px;padding:10px 13px;font:700 15px/1.35 var(--body);cursor:grab;user-select:none;-webkit-user-select:none;touch-action:none;text-shadow:0 1px 2px rgba(0,0,0,.35)}
+.chip.solid{text-shadow:none}
+.chip:focus-visible{outline:3px solid var(--crystal);outline-offset:2px}
+.chip.sel{box-shadow:0 0 0 3px var(--gold),0 14px 26px -12px rgba(0,0,0,.85);transform:translateY(-2px)}
+.chip.right{box-shadow:inset 5px 0 0 var(--good),0 10px 22px -14px rgba(0,0,0,.8)}
+.chip.wrong{box-shadow:inset 5px 0 0 var(--try),0 10px 22px -14px rgba(0,0,0,.8)}
+.chip:disabled,.chip[aria-disabled="true"]{cursor:default}
+.chip.lifting{opacity:.35}
+.ghost{position:fixed;z-index:50;pointer-events:none;transform:rotate(-1.5deg);box-shadow:0 0 0 3px var(--gold),0 24px 40px -16px rgba(0,0,0,.9)!important}
+.bins{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.bin{display:flex;flex-direction:column;gap:8px;padding:12px;cursor:pointer;min-height:210px}
+.bin .bhead{padding:2px 4px 8px;border-bottom:1.5px dashed rgba(255,255,255,.45);transition:border-color .35s}
+.bin .bhead small{display:block;font:800 11.5px var(--body);letter-spacing:.12em;color:var(--gold);transition:color .35s}
+.bin .bhead b{display:block;font:800 18px/1.15 var(--display)}
+.bin .drop{flex:1;display:flex;flex-direction:column;gap:8px;border-radius:12px;min-height:60px}
+.bin .drop:empty::before{content:"";flex:1;border:2px dashed rgba(255,255,255,.35);border-radius:12px;transition:border-color .2s}
+.bin.ready{border-color:var(--gold);box-shadow:0 0 0 2px rgba(255,210,122,.7),0 14px 34px -18px rgba(0,0,0,.75)}
+.bin.ready .drop:empty::before{border-color:rgba(255,210,122,.85)}
+.bin.over{background:var(--solid-bg);color:var(--solid-ink);border-color:var(--gold);box-shadow:0 0 0 3px var(--gold),0 18px 40px -18px rgba(0,0,0,.8)}
+.bin.solid .bhead,.bin.over .bhead{border-color:rgba(90,63,176,.25)}
+.bin.solid .bhead small,.bin.over .bhead small{color:#a8551b}
+.bin.solid .drop:empty::before,.bin.over .drop:empty::before{border-color:rgba(90,63,176,.25)}
+.bin:focus-visible{outline:3px solid var(--crystal);outline-offset:2px}
+/* placed chips inside an opaque bin read as cards on paper */
+.bin.solid .chip.solid{background:#f2eefc;border-color:rgba(90,63,176,.18);box-shadow:none}
+.bin.solid .chip.solid.sel{box-shadow:0 0 0 3px var(--gold)}
+.bin.solid .chip.right{background:#e6f6ec;box-shadow:inset 5px 0 0 var(--good)}
+.bin.solid .chip.wrong{background:#fff0e6;box-shadow:inset 5px 0 0 var(--try)}
+
+.toast{position:fixed;left:50%;bottom:22px;transform:translateX(-50%);z-index:60;padding:9px 18px;border-radius:999px;font-weight:700;font-size:14px;white-space:nowrap;transition:opacity .3s}
+.toast.off{opacity:0;pointer-events:none}
+
+/* ---------- narrow screens: one column, page scrolls ---------- */
+@media (max-width:760px){
+  .screen{padding:12px 12px 20px}
+  .topbar{flex-wrap:wrap}
+  .tabs .tag{display:none}
+  .prompt{font-size:24px}
+  .dir{font-size:15.5px}
+  .grid{grid-template-columns:1fr;grid-auto-rows:minmax(138px,auto)}
+  .pool{grid-template-columns:1fr}
+  .bins{grid-template-columns:1fr}
+  .bin{min-height:150px}
+  .chip{touch-action:manipulation}
+  .foot{flex-wrap:wrap}
+  .foot .fb{flex-basis:100%}
+}
+@media (max-height:700px) and (min-width:761px){
+  .wtile textarea{font-size:16.5px}
+  .prompt{font-size:24px}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<div class="scene s1" id="scene" aria-hidden="true"></div>
+
+<!-- ============ Warm-up (A1) on The Entrance ============ -->
+<section class="screen" id="warmup" aria-label="Warm-up preview">
+  <div class="topbar">
+    <div class="pill tile where">The Entrance</div>
+    <nav class="tabs tile" aria-label="Preview screens"><span class="tag">Design preview</span><a href="#warmup" aria-current="page">Warm-up</a><a href="#sort">Sort</a></nav>
+  </div>
+  <div class="head tile">
+    <p class="kind">A1 · Practice</p>
+    <p class="prompt">Sentence Type Fun</p>
+    <p class="dir">Write a creative and entertaining sentence for each type using the word: OVERPOWERED.</p>
+  </div>
+  <div class="main">
+    <div class="grid" id="wgrid"></div>
+    <div class="foot" id="wfoot"><button class="btn tile" id="wgo" disabled>Continue</button></div>
+  </div>
+</section>
+
+<!-- ============ Sort (A2) on The Root Tunnel ============ -->
+<section class="screen" id="sort" aria-label="Sort preview" hidden>
+  <div class="topbar">
+    <div class="pill tile where">The Root Tunnel</div>
+    <nav class="tabs tile" aria-label="Preview screens"><span class="tag">Design preview</span><a href="#warmup">Warm-up</a><a href="#sort" aria-current="page">Sort</a></nav>
+  </div>
+  <div class="head tile">
+    <p class="kind">A2 · Star Power</p>
+    <p class="prompt">Sort the Evidence</p>
+    <p class="dir">Read each detail and drag and drop it to the correct category.</p>
+  </div>
+  <div class="main">
+    <p class="hint">Drag a sentence into a box, or tap a sentence and then tap a box.</p>
+    <div class="pool" id="pool"></div>
+    <div class="bins" id="bins"></div>
+    <div class="foot" id="sfoot"><button class="btn tile" id="chk" disabled>Check</button><button class="btn tile" id="sgo" disabled>Continue</button></div>
+  </div>
+</section>
+
+<div class="toast tile solid off" id="toast"></div>
+
+<script>
+(function(){
+const $=id=>document.getElementById(id);
+const esc=s=>String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;');
+
+/* Wording copied from the lesson STEPS array (A1 and A2). */
+const A1={dir:'Write a creative and entertaining sentence for each type using the word: OVERPOWERED.',
+  fields:[['Declarative:','(statement)'],['Imperative:','(command)'],['Interrogative:','(question)'],['Exclamatory:','(exclamation)']],word:'overpowered'};
+const A2={bins:['MAIN IDEA: The roller coaster ride was amazing.','MAIN IDEA: My first day of middle school was a rush of emotions.','WEAK DETAILS'],
+  items:[['My teacher smiled and told us about all the fun projects we would do.',1],['My stomach dropped as we zoomed down the steep hill.',0],
+         ['At lunch, I sat with new friends, and we traded snacks.',1],['My sister always takes my clothes, and it drives me crazy.',2],
+         ['I laughed so hard my cheeks hurt by the end of the ride.',0],['I stayed home and played video games all day.',2],
+         ['The wind whipped my hair back, and people screamed all around me.',0]]};
+
+let toastT;
+function toast(msg){const t=$('toast');t.textContent=msg;t.classList.remove('off');clearTimeout(toastT);toastT=setTimeout(()=>t.classList.add('off'),2600);}
+
+/* ---------- tabs ---------- */
+function show(){const which=location.hash==='#sort'?'sort':'warmup';
+  $('warmup').hidden=which!=='warmup';$('sort').hidden=which!=='sort';
+  $('scene').className='scene '+(which==='sort'?'s2':'s1');
+  document.title=(which==='sort'?'Sort':'Warm-up')+' · Tile preview';
+  if(which==='sort')requestAnimationFrame(lockPool);}
+addEventListener('hashchange',show);
+
+/* ---------- warm-up ---------- */
+const grid=$('wgrid'),wgo=$('wgo'),wfoot=$('wfoot');
+grid.innerHTML=A1.fields.map((f,i)=>`<div class="tile wtile" data-i="${i}"><span class="done" aria-hidden="true">✓</span>
+  <label for="w${i}">${esc(f[0].replace(/:$/,''))} <span>${esc(f[1])}</span></label>
+  <textarea id="w${i}" rows="2" placeholder="Tap to write…" aria-label="${esc(f[0]+' '+f[1])}"></textarea><div class="line"></div></div>`).join('');
+const wtiles=[...grid.querySelectorAll('.wtile')],inputs=wtiles.map(t=>t.querySelector('textarea'));
+wtiles.forEach((t,i)=>{
+  t.addEventListener('pointerdown',e=>{if(e.target!==inputs[i]){e.preventDefault();inputs[i].focus();}});
+  inputs[i].addEventListener('focus',()=>t.classList.add('solid','touched'));   // solid on focus, and it stays solid
+  inputs[i].addEventListener('input',()=>{t.classList.toggle('filled',inputs[i].value.trim().length>2);
+    const ok=inputs.every(x=>x.value.trim().length>2);wgo.disabled=!ok;wgo.classList.toggle('ready',ok);});
+});
+let nudged=false;
+wgo.onclick=()=>{
+  const miss=inputs.filter(x=>!x.value.toLowerCase().includes(A1.word));
+  if(miss.length&&!nudged){nudged=true;let f=wfoot.querySelector('.fb');if(!f){f=document.createElement('p');f.className='fb tile solid try';wfoot.prepend(f);}
+    f.innerHTML=`Remember to use the word <b>${A1.word.toUpperCase()}</b> in every sentence. Fix them, or press Continue again to keep going.`;return;}
+  toast('Preview only. In the lesson, the trail moves on here.');};
+
+/* ---------- sort ---------- */
+const pool=$('pool'),bins=$('bins'),chk=$('chk'),sgo=$('sgo'),sfoot=$('sfoot');
+const order=A2.items.map((_,i)=>i).sort(()=>Math.random()-.5);
+pool.innerHTML=order.map(i=>`<button class="tile chip" data-i="${i}">${esc(A2.items[i][0])}</button>`).join('');
+bins.innerHTML=A2.bins.map((b,i)=>{const m=b.match(/^(MAIN IDEA:)\s*(.*)$/);
+  return `<div class="tile bin" data-b="${i}" tabindex="0" role="button" aria-label="${esc(b)}"><div class="bhead">${m?`<small>${esc(m[1])}</small><b>${esc(m[2])}</b>`:`<b>${esc(b)}</b>`}</div><div class="drop"></div></div>`;}).join('');
+const binEls=[...bins.querySelectorAll('.bin')];
+let sel=null,locked=false,poolLocked=false;
+function lockPool(){if(poolLocked||!pool.offsetHeight)return;if(innerWidth>760){pool.style.minHeight=pool.offsetHeight+'px';}poolLocked=true;}
+function lockPoolNow(){pool.style.minHeight='';requestAnimationFrame(lockPool);}
+function ready(on){binEls.forEach(b=>b.classList.toggle('ready',on));}
+function select(c){pool.parentNode.querySelectorAll('.chip.sel').forEach(x=>x.classList.remove('sel'));
+  sel=c;if(c){c.classList.add('sel','solid');}ready(!!c);
+  pool.querySelectorAll('.chip').forEach(x=>{if(x!==c&&!x.closest('.bin'))x.classList.remove('solid');});}
+function place(c,target){c.classList.remove('sel','right','wrong');
+  if(target===pool){pool.appendChild(c);c.classList.remove('solid');}
+  else{target.querySelector('.drop').appendChild(c);target.classList.add('solid');c.classList.add('solid');}
+  sel=null;ready(false);const empty=!pool.querySelector('.chip');pool.classList.toggle('empty',empty);if(empty)pool.style.minHeight='';
+  chk.disabled=!!pool.querySelector('.chip');chk.classList.toggle('ready',!chk.disabled);
+  const f=sfoot.querySelector('.fb');if(f&&f.classList.contains('try'))f.remove();}
+function chipTap(c){if(locked)return;const inBin=c.closest('.bin');
+  if(sel&&sel!==c&&inBin){place(sel,inBin);return;}
+  if(sel===c){c.classList.remove('sel');if(!inBin)c.classList.remove('solid');sel=null;ready(false);return;}
+  select(c);}
+binEls.forEach(b=>{
+  b.addEventListener('click',e=>{if(e.target.closest('.chip'))return;if(sel)place(sel,b);});
+  b.addEventListener('keydown',e=>{if((e.key==='Enter'||e.key===' ')&&sel){e.preventDefault();place(sel,b);}});
+});
+pool.addEventListener('click',e=>{if(!e.target.closest('.chip')&&sel&&sel.closest('.bin'))place(sel,pool);});
+
+/* pointer drag (mouse, pen, and touch on wide screens); a short press without movement is a tap */
+let drag=null;
+document.addEventListener('pointerdown',e=>{const c=e.target.closest('.chip');if(!c||locked||e.button>0)return;
+  drag={c,x:e.clientX,y:e.clientY,id:e.pointerId,moved:false,ghost:null,ox:0,oy:0};});
+document.addEventListener('pointermove',e=>{if(!drag||e.pointerId!==drag.id)return;
+  const dx=e.clientX-drag.x,dy=e.clientY-drag.y;
+  if(!drag.moved){if(Math.hypot(dx,dy)<7)return;if(e.pointerType==='touch'&&innerWidth<=760){drag=null;return;}
+    drag.moved=true;const r=drag.c.getBoundingClientRect();drag.ox=drag.x-r.left;drag.oy=drag.y-r.top;
+    const g=drag.c.cloneNode(true);g.classList.add('ghost','solid');g.classList.remove('sel','right','wrong');g.style.width=r.width+'px';document.body.appendChild(g);drag.ghost=g;
+    drag.c.classList.add('lifting');select(drag.c);}
+  e.preventDefault();drag.ghost.style.left=(e.clientX-drag.ox)+'px';drag.ghost.style.top=(e.clientY-drag.oy)+'px';
+  const under=document.elementFromPoint(e.clientX,e.clientY),b=under&&under.closest('.bin');
+  binEls.forEach(x=>x.classList.toggle('over',x===b));});
+function endDrag(e,cancel){if(!drag||e.pointerId!==drag.id)return;const d=drag;drag=null;
+  if(!d.moved){if(!cancel)chipTap(d.c);return;}
+  d.ghost.remove();d.c.classList.remove('lifting');binEls.forEach(x=>x.classList.remove('over'));
+  const under=cancel?null:document.elementFromPoint(e.clientX,e.clientY);
+  const b=under&&under.closest('.bin'),p=under&&under.closest('.pool');
+  if(b)place(d.c,b);else if(p&&d.c.closest('.bin'))place(d.c,pool);else select(null);}
+document.addEventListener('pointerup',e=>endDrag(e,false));
+document.addEventListener('pointercancel',e=>endDrag(e,true));
+pool.addEventListener('click',e=>e.preventDefault());
+document.addEventListener('keydown',e=>{const c=e.target.closest&&e.target.closest('.chip');if(c&&(e.key==='Enter'||e.key===' ')){e.preventDefault();chipTap(c);}});
+
+function sfb(cls,html){let f=sfoot.querySelector('.fb');if(!f){f=document.createElement('p');sfoot.prepend(f);}f.className='fb tile solid '+cls;f.innerHTML=html;}
+chk.onclick=()=>{let wrong=0;
+  bins.querySelectorAll('.chip').forEach(c=>{const ok=A2.items[+c.dataset.i][1]===+c.closest('.bin').dataset.b;c.classList.toggle('right',ok);c.classList.toggle('wrong',!ok);if(!ok)wrong++;});
+  if(!wrong){locked=true;bins.querySelectorAll('.chip').forEach(c=>c.setAttribute('aria-disabled','true'));chk.remove();pool.classList.add('done');sfb('good','Every sentence is in the right place!');sgo.disabled=false;sgo.classList.add('ready');}
+  else{setTimeout(()=>{bins.querySelectorAll('.chip.wrong').forEach(c=>{pool.appendChild(c);c.classList.remove('solid');});pool.classList.remove('empty');},900);poolLocked=false;setTimeout(lockPoolNow,950);
+    chk.disabled=true;chk.classList.remove('ready');
+    sfb('try',`${wrong} ${wrong===1?'sentence is':'sentences are'} back at the top. Read ${wrong===1?'it':'them'} again and try another box.`);}};
+sgo.onclick=()=>toast('Preview only. In the lesson, the trail moves on here.');
+
+show();
+})();
+</script>
+</body>
+</html>
