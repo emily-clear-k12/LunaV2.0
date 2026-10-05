@@ -3,6 +3,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Nunito+Sans:opsz,wght@6..12,400;6..12,600;6..12,700;6..12,800&family=Patrick+Hand&family=Special+Elite&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="astra-look.css">
 <style>
 /* Layout: the Proof Hollow fills the stage and moves as the lesson moves; the lesson card floats over its right side
    (stacks under the stage on narrow screens). One twilight world, dark in every theme. */
@@ -250,17 +251,24 @@ select.jump{width:auto;padding:6px 8px}
 .reduced .pouch.bump{animation:none}
 </style>
 
-<div class="wrap" id="app">
+<div class="wrap astra" id="app">
   <header>
     <p class="eyebrow">Astra's Writing Adventure · Module 3 · Lesson 3 · <a href="../" style="color:var(--gold);text-decoration:none">Student home</a></p>
     <h1>Details and Evidence</h1>
     <p class="lede">One full lesson on one trail through the Proof Hollow. Every activity moves the traveller deeper in. The Glimmers mark each message from Astra or Marlow, and the trail ends at the treehouse.</p>
   </header>
 
+  <div class="topbar glass" id="topbar">
+    <div class="where" id="where">The Entrance</div>
+    <div class="lesson-name"><b>Details and Evidence</b><span id="stopLabel"></span></div>
+    <ol class="trail" id="trail"><div class="fill" id="fill"></div></ol>
+    <a class="home" href="../">Student home</a>
+    <button type="button" class="revbtn" id="revToggle" aria-expanded="false" aria-controls="reviewer">Reviewer</button>
+  </div>
+
   <div class="stage-wrap">
     <div class="stage" id="stage">
       <canvas id="scene" aria-hidden="true"></canvas>
-      <div class="where" id="where">The Entrance</div>
       <div class="portal" id="portal" aria-hidden="true">
         <div class="rim"></div>
         <div class="inner"><video id="clip" playsinline preload="metadata"></video></div>
@@ -278,18 +286,16 @@ select.jump{width:auto;padding:6px 8px}
     </div>
 
     <section class="card" id="card" aria-live="polite">
-      <div class="card-head">
-        <div class="lesson-name"><b>Details and Evidence</b><span id="stopLabel"></span></div>
-        <ol class="trail" id="trail"><div class="fill" id="fill"></div></ol>
-      </div>
+      <div class="card-head" hidden></div>
       <div class="book" id="book">
+        <div class="head-box" id="headBox" hidden></div>
         <div class="card-body" id="body"></div>
         <div class="card-foot" id="foot"></div>
       </div>
     </section>
   </div>
 
-  <div class="controls">
+  <div class="controls glass" id="reviewer" hidden>
     <span class="tag">Reviewer</span>
     <button class="ghost" id="restart">Restart lesson</button>
     <button class="ghost" id="skip" disabled>Skip to end of message</button>
@@ -448,7 +454,7 @@ let canGo=false;
 function setFoot(html){foot.innerHTML=html;}
 function goBtn(label,enabled,fn){setFoot(`<button class="go" id="go"${enabled?'':' disabled'}>${label}</button>`);$('go').onclick=fn||advance;canGo=enabled;}
 function enableGo(){const g=$('go');if(g){g.disabled=false;}canGo=true;}
-function fb(cls,html){let f=body.querySelector('.feedback');if(!f){f=document.createElement('p');(body.querySelector('.pageR')&&STEPS[si].book!=='cork'?body.querySelector('.pageR'):body.querySelector('.pageL')||body).appendChild(f);}f.className='feedback '+cls;f.innerHTML=html;f.scrollIntoView({block:'nearest'});}
+function fb(cls,html){let f=foot.querySelector('.feedback')||body.querySelector('.feedback');if(!f){f=document.createElement('p');foot.appendChild(f);}f.className='feedback '+cls;f.innerHTML=html;}
 function head(s){return `<div class="L head-L" style="display:flex;flex-direction:column;gap:8px"><p class="kind">${esc(s.code)} · ${s.scored===false?'Practice':'Star Power'}</p><p class="prompt">${esc(s.title.replace('Star Power: ',''))}</p><p class="dir">${esc(s.dir)}</p></div>`;}
 function scoreFirst(ok){if(!(si in attempted)){attempted[si]=ok;graded++;if(ok)firstTry++;}}
 function correct(){lightCrystal();yay();reward();}
@@ -755,4 +761,5 @@ makeSwarm();buildTrail();render();requestAnimationFrame(loop);
 })();
 </script>
 
+<script src="astra-look.js"></script>
 </body></html>

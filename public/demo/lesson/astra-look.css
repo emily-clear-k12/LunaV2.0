@@ -1,0 +1,223 @@
+/* Astra look (locked design): full-bleed scene, dark-glass top bar with trail, frosted sage heading,
+   content area, footer with dark-glass / gold buttons. Loaded after the lesson's own styles.
+   Sized for a 1366x768 Chromebook with no page scrolling. Everything is scoped under .astra. */
+:root{
+  --a-frost:rgba(16,12,38,.66); --a-frost-line:rgba(255,255,255,.24);
+  --a-solid:rgba(255,253,248,.97); --a-solid-ink:#1d1838; --a-solid-muted:#5b5478; --a-solid-accent:#5a3fb0;
+  --a-cream:rgba(250,243,228,.8); --a-cream-line:rgba(255,250,238,.85); --a-cream-ink:#3a2a1c; --a-cream-muted:#6c5642;
+  --a-good:#3fae73; --a-try:#e8803f; --a-r:20px; --a-w:1080px; --a-top:72px;
+}
+html,body{height:100%;overflow:hidden}
+body{padding:0!important;margin:0}
+.astra.wrap{max-width:none;margin:0;display:block;gap:0}
+
+/* ---------- full-bleed scene ---------- */
+.astra .stage{position:fixed;inset:0;width:auto;aspect-ratio:auto;min-height:0;border-radius:0;box-shadow:none;z-index:0}
+.astra .stage::after{content:"";position:absolute;inset:0;z-index:2;pointer-events:none;
+  background:linear-gradient(180deg,rgba(10,8,28,.55) 0%,rgba(10,8,28,.12) 24%,rgba(10,8,28,.08) 62%,rgba(10,8,28,.45) 100%)}
+.astra .portal{top:calc(50% + 34px);height:calc(100% - 104px)}
+
+/* ---------- shared glass ---------- */
+.astra .glass{background:var(--a-frost);border:1px solid var(--a-frost-line);
+  backdrop-filter:blur(22px) saturate(120%);-webkit-backdrop-filter:blur(22px) saturate(120%);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.18),0 14px 34px -18px rgba(0,0,0,.75);color:#fff}
+
+/* ---------- top bar: location pill, lesson name, slim trail, home + reviewer ---------- */
+.astra .topbar{position:fixed;z-index:10;top:12px;left:18px;right:18px;height:48px;display:flex;align-items:center;gap:14px;
+  padding:0 8px 0 7px;border-radius:999px}
+.astra .topbar .where{position:static;flex:none;background:rgba(255,210,122,.12);border:1px solid rgba(255,210,122,.45);border-radius:999px;
+  padding:6px 14px;font:800 12px var(--body);letter-spacing:.1em;text-transform:uppercase;color:var(--gold);backdrop-filter:none;-webkit-backdrop-filter:none;white-space:nowrap}
+.astra .topbar .lesson-name{flex:none;display:flex;align-items:baseline;gap:10px;white-space:nowrap}
+.astra .topbar .lesson-name b{font:800 17px/1 var(--display);color:#fff}
+.astra .topbar .lesson-name span{font:700 13px var(--body);color:rgba(255,255,255,.72);font-variant-numeric:tabular-nums;min-width:86px}
+.astra .trail{flex:1;min-width:200px;margin:0 6px}
+.astra .trail::before{height:2px;background:rgba(255,255,255,.22)}
+.astra .trail .fill{height:2px;background:linear-gradient(90deg,rgba(255,210,122,.65),var(--gold))}
+.astra .trail li{width:10px;height:10px;border:1.5px solid rgba(255,255,255,.45);background:rgba(16,12,38,.9);color:rgba(255,255,255,.7);transition:background .4s,border-color .4s,box-shadow .4s,transform .4s}
+.astra .trail li.g{width:16px;height:16px}
+.astra .trail li.g svg{width:8px;height:8px}
+.astra .trail li.done{background:#d9b469;border-color:#d9b469;color:#2a1e08}
+.astra .trail li.now{background:var(--gold);border-color:#fff3d0;color:var(--night);transform:scale(1.25);box-shadow:0 0 0 4px rgba(255,210,122,.28),0 0 14px rgba(255,210,122,.7)}
+.astra .topbar .home{flex:none;color:#fff;text-decoration:none;font:700 14px var(--body);padding:6px 12px;border-radius:999px}
+.astra .topbar .home:hover{background:rgba(255,255,255,.12)}
+.astra .revbtn{flex:none;border:1px solid rgba(255,255,255,.28);background:transparent;color:rgba(255,255,255,.8);font:800 11px var(--body);letter-spacing:.12em;text-transform:uppercase;
+  padding:7px 12px;border-radius:999px;cursor:pointer}
+.astra .revbtn[aria-expanded="true"],.astra .revbtn:hover{background:#fff;color:var(--a-solid-ink)}
+.astra .topbar a:focus-visible,.astra .revbtn:focus-visible{outline:3px solid var(--crystal);outline-offset:2px}
+
+/* ---------- reviewer controls: dark-glass popover under the top bar ---------- */
+.astra .controls{position:fixed;z-index:11;top:68px;right:18px;width:min(440px,calc(100vw - 36px));padding:14px 16px;border-radius:18px;
+  display:flex;flex-wrap:wrap;gap:10px 14px;border-top:1px solid var(--a-frost-line)}
+.astra .controls .tag{flex-basis:100%;color:rgba(255,255,255,.7)}
+.astra .controls .ghost{background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.28);color:#fff}
+.astra .controls .toggle{color:rgba(255,255,255,.85)}
+.astra .controls select.jump{background:#2a2357;color:#fff;max-width:250px}
+.astra .controls .note{color:rgba(255,255,255,.7)}
+
+/* ---------- activity card: full-bleed overlay (no half-width panel) ---------- */
+.astra .stage-wrap{position:static}
+.astra .card{position:fixed;z-index:5;top:var(--a-top);left:0;right:0;bottom:0;width:auto;max-width:none;
+  background:transparent;border:0;border-radius:0;backdrop-filter:none;-webkit-backdrop-filter:none;box-shadow:none;
+  display:flex;flex-direction:column;padding:0 22px 18px;pointer-events:none;transition:opacity .45s ease,transform .45s ease}
+.astra .card > *{pointer-events:auto}
+.astra .card.away{opacity:0;transform:translateY(18px);pointer-events:none}
+.astra .card-head{display:none} /* trail + title live in .topbar now */
+.astra .book{flex:1;min-height:0;display:flex;flex-direction:column;max-width:var(--a-w);width:100%;margin:0 auto;gap:12px}
+.astra .card.open-book{top:var(--a-top);right:0;bottom:0;left:0;width:auto;background:none;border:0;box-shadow:none}
+.astra .card.open-book .card-head{display:none}
+.astra .card.open-book .book{position:static;transform:none;flex:1;width:auto!important;height:auto!important;filter:none;background-image:none!important}
+.astra .book::before{display:none!important}
+.astra .book.paper{--ink:#fff;--muted:rgba(255,255,255,.78);--line:rgba(255,255,255,.28);--gold:#ffd27a;--crystal:#86d6ff;--violet:#c7a6ff;--good:var(--a-good);--try:var(--a-try);color:#fff;font-size:15.5px}
+.astra .book.paper .card-body{position:static;inset:auto;padding:0;overflow:auto;display:flex;flex-direction:column;gap:12px;min-height:0}
+.astra .page{position:static!important;width:auto!important;height:auto!important;left:auto!important;top:auto!important;overflow:visible;padding:0;display:contents}
+.astra .book.paper .card-foot{position:static;width:auto!important;left:auto!important;top:auto!important;margin:0;padding:0}
+.astra .cork .pageL{display:contents!important}
+.astra .cork .head-L{display:contents!important}
+.astra .cork .head-L .prompt{white-space:normal}
+.astra .cork .bins{flex-direction:column}
+.astra .stage.dim #scene{filter:brightness(.72) saturate(.95)} /* keep scene readable under frosted tiles */
+
+/* ---------- frosted light-sage heading ---------- */
+.astra .head-box{flex:none;padding:10px 20px 12px;border-radius:var(--a-r);
+  background:linear-gradient(rgba(181,207,168,.40),rgba(160,190,146,.40)),rgba(20,28,18,.18);
+  border:1px solid rgba(205,225,194,.6);
+  box-shadow:inset 0 1px 0 rgba(235,246,228,.35),0 14px 34px -18px rgba(0,0,0,.75)}
+.astra .head-box .kind{margin:0;font:800 12px var(--body);letter-spacing:.12em;text-transform:uppercase;color:var(--crystal);text-shadow:0 1px 2px rgba(0,0,0,.5)}
+.astra .head-box .prompt{margin:0;font:800 26px/1.1 var(--display);color:#fff;text-shadow:0 1px 2px rgba(0,0,0,.45),0 0 10px rgba(20,30,18,.35)}
+.astra .head-box .dir{margin:4px 0 0;font-weight:700;font-size:15.5px;color:rgba(255,255,255,.95);text-shadow:0 1px 2px rgba(0,0,0,.45)}
+.astra .L.head-L{display:none!important} /* old head lives in .head-box via JS */
+
+/* ---------- content + footer ---------- */
+.astra .card-body{flex:1;overflow:auto;padding:0;gap:12px;min-height:0;scrollbar-width:thin;scrollbar-color:rgba(255,255,255,.35) transparent}
+.astra .card-foot{flex:none;padding:0;display:flex;gap:10px;align-items:center;justify-content:flex-end;margin-top:4px}
+.astra .go,.astra .check{appearance:none;-webkit-appearance:none;border:1px solid var(--a-frost-line);background:var(--a-frost);color:#fff;
+  font:800 17px/1 var(--display);padding:12px 22px 10px;border-radius:999px;cursor:pointer;
+  backdrop-filter:blur(22px) saturate(120%);-webkit-backdrop-filter:blur(22px) saturate(120%);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.18),0 10px 22px -14px rgba(0,0,0,.7)}
+.astra .go{flex:0 0 auto}
+.astra .go:disabled,.astra .check:disabled{background:rgba(16,12,38,.45);color:rgba(255,255,255,.5);cursor:not-allowed;box-shadow:none;opacity:1}
+.astra .go:not(:disabled),.astra .check:not(:disabled){background:var(--gold);border-color:var(--gold);color:var(--night)}
+.astra .go:not(:disabled):hover,.astra .check:not(:disabled):hover{background:#ffdd94}
+.astra .feedback{margin:0 auto 0 0;padding:9px 14px;border-radius:14px;font-weight:700;font-size:14.5px;max-width:60ch;
+  background:rgba(255,253,248,.97)!important;color:#1d1838!important;border:1px solid #fff;box-shadow:0 10px 22px -14px rgba(0,0,0,.6);
+  font-family:var(--body)!important;transform:none!important}
+.astra .feedback.good{background:rgba(236,250,241,.97)!important;color:#185c37!important}
+.astra .feedback.try{background:rgba(255,246,236,.97)!important;color:#6b3412!important}
+.astra .feedback.note{background:rgba(230,244,255,.97)!important;color:#1a4a6b!important}
+.astra .card-foot .feedback{order:-1}
+
+/* ---------- shared tiles (cream reading / dark typing) ---------- */
+.astra .tile{position:relative;border-radius:var(--a-r);background:var(--a-frost);border:1px solid var(--a-frost-line);
+  backdrop-filter:blur(22px) saturate(120%);-webkit-backdrop-filter:blur(22px) saturate(120%);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.18),0 14px 34px -18px rgba(0,0,0,.75);color:#fff;
+  transition:background .35s ease,border-color .35s ease,color .35s ease,box-shadow .35s ease}
+.astra .tile.cream{background:var(--a-cream);border-color:var(--a-cream-line);color:var(--a-cream-ink);text-shadow:none;
+  backdrop-filter:blur(14px) saturate(115%);-webkit-backdrop-filter:blur(14px) saturate(115%);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.6),0 14px 34px -18px rgba(0,0,0,.7)}
+.astra .tile.cream h4,.astra .tile.cream .tag{color:var(--a-cream-ink)}
+.astra .tile.cream .tag,.astra .tile.cream small{color:var(--a-cream-muted)}
+.astra .tile.solid{background:var(--a-solid);border-color:rgba(255,255,255,.95);color:var(--a-solid-ink);
+  box-shadow:0 18px 40px -18px rgba(0,0,0,.8);backdrop-filter:none;-webkit-backdrop-filter:none}
+.astra .tile.solid label{color:var(--a-solid-accent)}
+.astra .tile.solid label span{color:var(--a-solid-muted)}
+.astra .tile.focus,.astra .tile:focus-within{box-shadow:0 0 0 3px rgba(255,210,122,.9),0 18px 40px -18px rgba(0,0,0,.8)}
+
+/* Keep existing .box / .claim / .field usable inside the new frame (Part 1: light restyle only) */
+.astra .box{background:var(--a-cream);border:1px solid var(--a-cream-line);border-radius:var(--a-r);color:var(--a-cream-ink);
+  backdrop-filter:blur(14px) saturate(115%);-webkit-backdrop-filter:blur(14px) saturate(115%);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.6),0 10px 22px -14px rgba(0,0,0,.55);padding:12px 16px}
+.astra .box h4{color:var(--a-cream-ink);font:800 18px/1.15 var(--display)}
+.astra .box p{color:var(--a-cream-ink)}
+.astra .claim{background:rgba(255,210,122,.16);border:1px solid rgba(255,210,122,.55);border-radius:14px;color:#fff;padding:10px 14px}
+.astra .field{background:var(--a-frost);border:1px solid var(--a-frost-line);border-radius:var(--a-r);padding:12px 14px 10px;
+  backdrop-filter:blur(22px) saturate(120%);-webkit-backdrop-filter:blur(22px) saturate(120%)}
+.astra .field label{color:#fff}
+.astra .field label span{color:rgba(255,255,255,.72)}
+.astra textarea,.astra input[type=text]{background:transparent;border:0;border-bottom:2px solid rgba(255,255,255,.35);border-radius:0;color:#fff;padding:6px 2px;font:600 16px/1.45 var(--body)}
+.astra textarea:focus,.astra input[type=text]:focus{outline:0;border-bottom-color:var(--gold)}
+.astra .field:focus-within{background:var(--a-solid);border-color:#fff;color:var(--a-solid-ink);box-shadow:0 0 0 3px rgba(255,210,122,.9),0 18px 40px -18px rgba(0,0,0,.8)}
+.astra .field:focus-within label{color:var(--a-solid-accent)}
+.astra .field:focus-within label span{color:var(--a-solid-muted)}
+.astra .field:focus-within textarea,.astra .field:focus-within input[type=text]{color:var(--a-solid-ink);border-bottom-color:rgba(90,63,176,.22)}
+.astra select{background:rgba(255,255,255,.1);border-color:rgba(255,255,255,.3);color:#fff}
+.astra .choice,.astra .chip{background:var(--a-frost);border-color:var(--a-frost-line);color:#fff;
+  backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px)}
+.astra .bin{background:var(--a-frost);border-color:rgba(255,255,255,.35);color:#fff}
+.astra .bin > b{color:var(--gold)}
+.astra .kind,.astra .prompt,.astra .dir{text-shadow:0 1px 2px rgba(0,0,0,.4)}
+.astra .prompt{font-size:24px}
+
+/* ---------- saved-messages pouch: round dark-glass button + gold badge ---------- */
+.astra .pouch{left:18px;bottom:18px;z-index:9;width:52px;height:52px;padding:0;border-radius:50%;display:grid;place-items:center;
+  background:var(--a-frost);border:1px solid var(--a-frost-line);gap:0;
+  backdrop-filter:blur(22px) saturate(120%);-webkit-backdrop-filter:blur(22px) saturate(120%);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.18),0 14px 28px -14px rgba(0,0,0,.75)}
+.astra .pouch .label{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0)}
+.astra .pouch .bag{width:28px;height:28px;background:transparent;border-radius:0}
+.astra .pouch .count{position:absolute;top:-4px;right:-4px;min-width:22px;height:22px;padding:0 6px;border-radius:999px;
+  background:var(--gold);color:var(--night);font-weight:800;font-size:12px;display:grid;place-items:center;box-shadow:0 4px 10px -4px #000}
+.astra .pouch[data-ready="1"]{border-color:rgba(255,210,122,.7);cursor:pointer}
+.astra .pouch[data-ready="1"]:hover{background:rgba(40,32,80,.8)}
+.astra .replay-list{left:18px;bottom:80px;z-index:12;min-width:240px;padding:8px;border-radius:18px;
+  background:var(--a-frost);border:1px solid var(--a-frost-line);
+  backdrop-filter:blur(22px) saturate(120%);-webkit-backdrop-filter:blur(22px) saturate(120%);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.18),0 18px 40px -18px rgba(0,0,0,.8)}
+.astra .replay-list button{color:#fff;border-radius:10px;padding:10px 12px}
+.astra .replay-list button:hover{background:rgba(255,255,255,.1)}
+
+/* ---------- toast as solid footer tile ---------- */
+.astra .toast{left:50%;top:auto;bottom:22px;transform:translateX(-50%);z-index:13;padding:9px 18px;border-radius:999px;
+  background:var(--a-solid);border:1px solid #fff;color:var(--a-solid-ink);font-weight:700;font-size:14px;
+  box-shadow:0 14px 28px -14px rgba(0,0,0,.7)}
+
+/* ---------- page chrome: hide the old page header (eyebrow/h1/lede) ---------- */
+.astra > header{display:none}
+
+/* ---------- ornamental mirror for video portal (Part 1: frame only; play logic unchanged) ---------- */
+.astra .portal .rim{background:transparent;animation:none;inset:0}
+.astra .portal .inner{inset:calc(200 / 1260 * 100%) calc(120 / 780 * 100%) calc(100 / 1260 * 100%);clip-path:none!important;
+  border-radius:0 0 4px 4px;overflow:hidden;background:#0c0a1e}
+.astra .portal.open .rim,.astra .portal.open .inner{clip-path:none!important}
+.astra .portal .rim::before{content:"";position:absolute;inset:0;background:url(mirror-frame.svg) center/contain no-repeat;
+  filter:drop-shadow(0 0 16px rgba(134,214,255,.25)) drop-shadow(0 22px 26px rgba(0,0,0,.55));pointer-events:none}
+.astra .portal{aspect-ratio:780/1260;max-width:min(42vh,340px)}
+.astra .portal .x{top:calc(200 / 1260 * 100% + 8px);right:calc(120 / 780 * 100% + 6px)}
+.astra .portal .sound{bottom:calc(100 / 1260 * 100% + 14px)}
+
+/* ---------- Chromebook 1366x768: keep everything on one screen ---------- */
+@media (min-width:1200px) and (max-height:800px){
+  .astra .head-box{padding:8px 18px 9px}
+  .astra .head-box .prompt{font-size:22px}
+  .astra .head-box .dir{font-size:14.5px}
+  .astra .book{gap:10px}
+  .astra .card{padding:0 20px 14px}
+  .astra .box,.astra .field{padding:10px 14px}
+  .astra .go,.astra .check{padding:10px 20px 8px;font-size:16px}
+}
+@media (max-width:860px){
+  html,body{overflow:auto;height:auto}
+  .astra .stage{position:relative;inset:auto;aspect-ratio:16/10;min-height:280px}
+  .astra .card{position:static;padding:12px;pointer-events:auto}
+  .astra .topbar{position:sticky;top:0;border-radius:0 0 18px 18px;flex-wrap:wrap;height:auto;padding:8px;gap:8px}
+  .astra .trail{order:10;flex-basis:100%;min-width:0}
+  .astra .controls{position:fixed;top:auto;bottom:12px;right:12px;left:12px;width:auto}
+  .astra .pouch{position:fixed}
+}
+@media (prefers-reduced-motion:reduce){
+  .astra .portal .rim::before{filter:drop-shadow(0 14px 20px rgba(0,0,0,.55))}
+}
+
+/* Beat the old journal/casefile paper theme so the sage heading stays white */
+.astra .book.paper .head-box .kind{color:var(--crystal)!important;font:800 12px var(--body)!important;letter-spacing:.12em!important;text-transform:uppercase!important}
+.astra .book.paper .head-box .prompt{color:#fff!important;font:800 26px/1.1 var(--display)!important}
+.astra .book.paper .head-box .dir{color:rgba(255,255,255,.95)!important;font:700 15.5px/1.45 var(--body)!important}
+.astra .book.paper .field label{font:800 16px var(--body);color:#fff}
+.astra .book.paper textarea,.astra .book.paper input[type=text]{background:transparent;border:0;border-bottom:2px solid rgba(255,255,255,.35);border-radius:0;padding:6px 2px;font:600 16px/1.45 var(--body);color:#fff;min-height:0}
+.astra .book.paper .field:focus-within label{color:var(--a-solid-accent)}
+.astra .book.paper .field:focus-within textarea,.astra .book.paper .field:focus-within input[type=text]{color:var(--a-solid-ink);border-bottom-color:rgba(90,63,176,.22)}
+.astra .book.paper .box{background:var(--a-cream);border:1px solid var(--a-cream-line);color:var(--a-cream-ink);box-shadow:inset 0 1px 0 rgba(255,255,255,.6),0 10px 22px -14px rgba(0,0,0,.55)}
+.astra .book.paper .box h4{color:var(--a-cream-ink);font:800 18px/1.15 var(--display)}
+.astra .book.paper .feedback{font-family:var(--body)!important;font-size:14.5px!important;font-weight:700!important;transform:none!important}
+.astra .book.paper .go,.astra .book.paper .check{background:var(--a-frost);border:1px solid var(--a-frost-line);color:#fff;border-radius:999px;box-shadow:inset 0 1px 0 rgba(255,255,255,.18),0 10px 22px -14px rgba(0,0,0,.7)}
+.astra .book.paper .go:disabled,.astra .book.paper .check:disabled{background:rgba(16,12,38,.45);color:rgba(255,255,255,.55);box-shadow:none}
+.astra .book.paper .go:not(:disabled),.astra .book.paper .check:not(:disabled){background:var(--gold);border-color:var(--gold);color:var(--night)}
