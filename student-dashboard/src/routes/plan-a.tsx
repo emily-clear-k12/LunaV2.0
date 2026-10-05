@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { ArrowLeft, Check, Compass, BookOpen, Feather, Sparkles } from "lucide-react";
+import { ArrowLeft, Check, Compass, Feather } from "lucide-react";
 import { useState } from "react";
 
 export const Route = createFileRoute("/")({ component: StudentHome });
@@ -278,10 +278,6 @@ function StudentHome() {
     setShelfOpen(false);
   }
 
-  function startTodayQuest() {
-    const today = assignments[0];
-    openModule(today.moduleId, today.lesson, today.title);
-  }
 
   function backToHub() {
     setModuleId(null);
@@ -387,11 +383,13 @@ function StudentHome() {
                   transform: focus ? "scale(2.1)" : "scale(1)",
                 }}
               >
-                <img
-                  src={asset("portal-hub.jpg")}
-                  alt="Six magical portals around Astra’s glowing treehouse in an enchanted forest"
-                  className="h-full w-full object-cover object-[center_42%]"
-                />
+                <div className="portal-scene">
+                  <div className="portal-scene-frame">
+                  <img
+                    src={asset("portal-hub.jpg")}
+                    alt="Six magical portals around Astra’s glowing treehouse in an enchanted forest"
+                    className="portal-scene-img"
+                  />
                 {fireflies.map(([x, y, delay]) => (
                   <span
                     key={`${x}-${y}`}
@@ -449,6 +447,8 @@ function StudentHome() {
                     <span className="portal-plate-world">Treehouse</span>
                   </span>
                 </button>
+                  </div>
+                </div>
               </div>
             </div>
 
@@ -621,48 +621,27 @@ function StudentHome() {
               </section>
             ) : null}
           </div>
-          <div className="pane-break" aria-hidden="true" />
-          <AstraGuide
-            onStartQuest={startTodayQuest}
-            onOpenTreehouse={openTreehouse}
-            onQuickWrite={startQuickWrite}
-            questTitle={assignments[0].title}
-            questKind={assignments[0].kind}
-            questDue={assignments[0].due}
-          />
+          <AstraGuide onQuickWrite={startQuickWrite} />
         </div>
       </div>
     </div>
   );
 }
 
-function AstraGuide({
-  onStartQuest,
-  onOpenTreehouse,
-  onQuickWrite,
-  questTitle,
-  questKind,
-  questDue,
-}: {
-  onStartQuest: () => void;
-  onOpenTreehouse: () => void;
-  onQuickWrite: () => void;
-  questTitle: string;
-  questKind: string;
-  questDue: string;
-}) {
+function AstraGuide({ onQuickWrite }: { onQuickWrite: () => void }) {
   return (
     <aside className="astra-guide flex w-[17.5rem] shrink-0 flex-col gap-2.5 bg-cream px-2.5 pt-2.5 pb-3 text-ink">
-      {/* Astra tip = class focus */}
-      <div className="guide-astra">
+      {/* Hero tip card — ~half the panel */}
+      <div className="tip-hero">
+        <div className="tip-hero-sparkles" aria-hidden="true" />
         <img
           src={asset("astra-guide.jpg")}
-          alt="Astra the wolf in a navy hoodie, holding a book"
-          className="guide-astra-img"
+          alt="Astra the wolf waving from his treehouse, holding a book"
+          className="tip-hero-img"
         />
-        <div className="guide-bubble">
-          <p className="guide-bubble-label">Astra’s tip</p>
-          <p className="guide-bubble-text">{CLASS_FOCUS}</p>
+        <div className="tip-hero-bubble">
+          <p className="tip-hero-label">Astra’s tip</p>
+          <p className="tip-hero-text">{CLASS_FOCUS}</p>
         </div>
       </div>
 
@@ -677,38 +656,15 @@ function AstraGuide({
         </div>
       </div>
 
-      {/* Today’s quest — the ONE primary Start button */}
-      <div className="today-quest">
-        <p className="today-quest-label">
-          <Sparkles className="size-3.5" aria-hidden="true" />
-          Today’s quest
-        </p>
-        <h2 className="today-quest-title">{questTitle}</h2>
-        <p className="today-quest-meta">
-          <span className="rounded-full bg-moss-soft px-2 py-0.5 font-bold text-moss">{questKind}</span>
-          <span className="font-bold text-lantern">{questDue}</span>
-        </p>
-        <button type="button" onClick={onStartQuest} className="quest-start">
-          Start writing
-        </button>
-      </div>
+      <div className="guide-spacer" aria-hidden="true" />
 
-      {/* Treehouse tile */}
-      <div className="treehouse-tile">
-        <button type="button" onClick={onOpenTreehouse} className="treehouse-tile-main">
-          <span className="treehouse-tile-art" aria-hidden="true">
-            <BookOpen className="size-5" />
-          </span>
-          <span className="min-w-0 flex-1 text-left">
-            <span className="treehouse-tile-label">Treehouse</span>
-            <span className="treehouse-tile-sub">Saved work · journal · keepsakes</span>
-          </span>
-        </button>
-        <button type="button" onClick={onQuickWrite} className="treehouse-tile-quick">
-          <Feather className="size-3.5" aria-hidden="true" />
-          Quick write
-        </button>
-      </div>
+      {/* Magical Quick write — opens Treehouse quick write */}
+      <button type="button" onClick={onQuickWrite} className="quick-write-btn">
+        <span className="quick-write-icon" aria-hidden="true">
+          <Feather className="size-4" strokeWidth={2.5} />
+        </span>
+        Quick write
+      </button>
     </aside>
   );
 }
@@ -748,13 +704,15 @@ function AssignmentShelf({
             <span className="block text-xs font-bold text-lantern">Current assignment</span>
             <span className="block truncate font-bold">{today.title}</span>
           </button>
-          {/* Tonéd secondary — primary Start lives in Astra’s Guide */}
           <button
             type="button"
             onClick={() => onOpen(today.moduleId, today.lesson, today.title)}
-            className="inline-flex min-h-11 shrink-0 items-center rounded-full bg-ink px-4 text-sm font-bold text-cream"
+            className={
+              "start-write inline-flex min-h-11 shrink-0 items-center rounded-full bg-lantern px-4 text-sm font-bold text-cream" +
+              (assignments.length > 1 ? " start-write-glow" : "")
+            }
           >
-            Open
+            Start writing
           </button>
           <button
             type="button"
