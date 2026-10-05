@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { ArrowLeft, Check, Compass, Feather, Sparkles, X } from "lucide-react";
-import { useState } from "react";
+import { ArrowLeft, Check, X } from "lucide-react";
+import { useEffect, useState, type ReactNode } from "react";
 
 export const Route = createFileRoute("/")({ component: StudentHome });
 
@@ -13,17 +13,37 @@ type Module = {
   short: string;
   world: string;
   blurb: string;
-  /** Portal hotspot center as % of the hub image */
   x: number;
   y: number;
-  /** Portal oval size as % of the hub image */
   w: number;
   h: number;
+  /** Lesson-dot pill center under the portal */
+  dotX: number;
+  dotY: number;
   accent: string;
   lessons: Lesson[];
 };
 
 type Writing = { title: string; from: string; body: string };
+
+type Lantern = {
+  id: string;
+  label: string;
+  x: number;
+  y: number;
+  w: number;
+  h: number;
+};
+
+const CLASS_FOCUS = "Today, let's back every answer with evidence from the text!";
+const MY_GOAL = "Back up my opinion with strong, specific reasons.";
+
+/** Demo mastery seeds — not live student data. */
+const DEMO_DONE: Record<string, string[]> = {
+  scr: ["Answer the ask", "Cite the text", "Explain the link"],
+  ecr: ["Claim the sky"],
+  sentences: ["One complete thought", "Who did what"],
+};
 
 const modules: Module[] = [
   {
@@ -33,11 +53,13 @@ const modules: Module[] = [
     short: "SCR",
     world: "Crystal Caverns",
     blurb: "Short constructed responses with clear evidence.",
-    x: 10.5,
-    y: 64,
-    w: 14,
-    h: 34,
-    accent: "#5ec8ff",
+    x: 25.9,
+    y: 60,
+    w: 11,
+    h: 28,
+    dotX: 25.9,
+    dotY: 80.5,
+    accent: "#4aa3ff",
     lessons: [
       { title: "Answer the ask", world: "First crystals", minutes: 20, task: "Write a short answer that restates the question." },
       { title: "Cite the text", world: "Glow caves", minutes: 20, task: "Add one piece of evidence from the passage." },
@@ -51,11 +73,13 @@ const modules: Module[] = [
     short: "ECR",
     world: "Sky Harbor",
     blurb: "Extended responses that build a full argument.",
-    x: 26.2,
-    y: 65,
-    w: 14,
-    h: 32,
-    accent: "#7ad7ff",
+    x: 38.8,
+    y: 60,
+    w: 11,
+    h: 28,
+    dotX: 38.8,
+    dotY: 80.5,
+    accent: "#7cc8ff",
     lessons: [
       { title: "Claim the sky", world: "Docking ring", minutes: 20, task: "Write a clear claim for a longer response." },
       { title: "Stack reasons", world: "Airship deck", minutes: 25, task: "Order three reasons that support your claim." },
@@ -69,11 +93,13 @@ const modules: Module[] = [
     short: "Stellar",
     world: "Starfall Meadow",
     blurb: "Sentences that hold one clear idea.",
-    x: 42,
-    y: 66,
-    w: 13.5,
-    h: 30,
-    accent: "#c084fc",
+    x: 51.5,
+    y: 60,
+    w: 11,
+    h: 28,
+    dotX: 51.5,
+    dotY: 80.5,
+    accent: "#b46bff",
     lessons: [
       { title: "One complete thought", world: "First stones", minutes: 20, task: "Write three sentences that each say one whole idea." },
       { title: "Who did what", world: "Root bridge", minutes: 20, task: "Mark the who and the what in each sentence." },
@@ -87,11 +113,13 @@ const modules: Module[] = [
     short: "Process",
     world: "Ember Forge",
     blurb: "Read the prompt, take notes, make a plan.",
-    x: 58,
-    y: 66,
-    w: 13.5,
-    h: 30,
-    accent: "#fb923c",
+    x: 64.5,
+    y: 60,
+    w: 11,
+    h: 28,
+    dotX: 64.5,
+    dotY: 80.5,
+    accent: "#ff9a3c",
     lessons: [
       { title: "Read the prompt", world: "White trunks", minutes: 15, task: "Underline what the prompt is asking you to do." },
       { title: "Gather notes", world: "Lantern circle", minutes: 20, task: "List the facts you will use before you draft." },
@@ -105,11 +133,13 @@ const modules: Module[] = [
     short: "Revision",
     world: "Sunken Library",
     blurb: "Make the draft clearer and stronger.",
-    x: 74,
-    y: 65,
-    w: 14,
-    h: 32,
-    accent: "#2dd4bf",
+    x: 78.1,
+    y: 60,
+    w: 11,
+    h: 28,
+    dotX: 78.1,
+    dotY: 80.5,
+    accent: "#2fd6c8",
     lessons: [
       { title: "Name the idea", world: "Lookout", minutes: 15, task: "Say what the draft is really about, in one line." },
       { title: "Add what’s missing", world: "Switchback", minutes: 20, task: "Find a claim with no support and add it." },
@@ -123,11 +153,13 @@ const modules: Module[] = [
     short: "Edit",
     world: "Coral Cove",
     blurb: "Polish conventions until the writing is clear.",
-    x: 89.5,
-    y: 64,
-    w: 14,
-    h: 34,
-    accent: "#f472b6",
+    x: 92.3,
+    y: 60,
+    w: 11,
+    h: 28,
+    dotX: 92.3,
+    dotY: 80.5,
+    accent: "#ff6fa8",
     lessons: [
       { title: "Capitals and stops", world: "Fallen leaves", minutes: 15, task: "Fix sentences that start or end the wrong way." },
       { title: "Spelling that counts", world: "Red maples", minutes: 20, task: "Correct the words a reader would stumble on." },
@@ -136,20 +168,16 @@ const modules: Module[] = [
   },
 ];
 
-/** Tree / observatory hotspot — clickable Treehouse */
-const treehouseSpot = { x: 50, y: 30, w: 16, h: 28 };
+const treehouseSpot = { x: 50, y: 42, w: 13, h: 26 };
+const astraSpot = { x: 9.5, y: 58, w: 13, h: 38 };
+const tipDotSpot = { x: 12.5, y: 36 };
 
-const fireflies = [
-  [18, 42, 0],
-  [28, 38, 1.4],
-  [38, 48, 2.2],
-  [48, 36, 0.6],
-  [62, 40, 3],
-  [72, 46, 1.1],
-  [22, 58, 2.6],
-  [80, 38, 0.3],
-  [55, 52, 1.8],
-  [35, 55, 2.8],
+/** Four interactive lanterns; any extra lantern in the art stays decorative. */
+const lanterns: Lantern[] = [
+  { id: "goal", label: "My goal", x: 34.5, y: 33.5, w: 5.5, h: 12 },
+  { id: "progress", label: "My progress", x: 41.5, y: 34, w: 5.5, h: 12 },
+  { id: "practice", label: "Practice", x: 63.5, y: 37, w: 5.5, h: 12 },
+  { id: "quick", label: "Quick write", x: 74.5, y: 33.5, w: 5.5, h: 12 },
 ];
 
 const assignments = [
@@ -191,10 +219,10 @@ const assignments = [
 const badges = [
   { id: "scr", label: "SCR", name: "Short responses", moduleId: "scr" },
   { id: "ecr", label: "ECR", name: "Extended responses", moduleId: "ecr" },
-  { id: "stellar", label: "Stellar", name: "Sentences", moduleId: "sentences" },
+  { id: "stellar", label: "Stellar", name: "Stellar Writers", moduleId: "sentences" },
   { id: "process", label: "Process", name: "The writing process", moduleId: "plan" },
   { id: "revision", label: "Revision", name: "Revision", moduleId: "revise" },
-  { id: "editing", label: "Editing", name: "Editing", moduleId: "edit" },
+  { id: "editing", label: "Editing", name: "Edit", moduleId: "edit" },
 ];
 
 const savedAtStart: Writing[] = [
@@ -208,26 +236,15 @@ const savedAtStart: Writing[] = [
     from: "Stellar Writers",
     body: "A sentence holds one idea. The fox waited on the stone until the lantern was lit.",
   },
-  {
-    title: "Who did what",
-    from: "Stellar Writers",
-    body: "The writer followed the path. The crystal marked the turn.",
-  },
 ];
 
-const CLASS_FOCUS = "Today, let's back every answer with evidence from the text!";
-const MY_GOAL = "Back up my opinion with strong, specific reasons.";
-
 const asset = (file: string) => `${import.meta.env.BASE_URL}${file}`;
-
 const FRAME_GAP = 18;
 
 function StudentHome() {
   const [moduleId, setModuleId] = useState<string | null>(null);
   const [lessonTitle, setLessonTitle] = useState<string | null>(null);
-  const [done, setDone] = useState<Record<string, string[]>>({
-    sentences: modules[2].lessons.map((lesson) => lesson.title),
-  });
+  const [done, setDone] = useState<Record<string, string[]>>(DEMO_DONE);
   const [shelfOpen, setShelfOpen] = useState(false);
   const [writeTitle, setWriteTitle] = useState<string | null>(null);
   const [ecrNote, setEcrNote] = useState(false);
@@ -235,11 +252,20 @@ function StudentHome() {
   const [treehouse, setTreehouse] = useState(false);
   const [entryTitle, setEntryTitle] = useState<string | null>(null);
   const [writings, setWritings] = useState<Writing[]>(savedAtStart);
+  const [tipOpen, setTipOpen] = useState(true);
+  const [sheet, setSheet] = useState<"goal" | "progress" | "practice" | null>(null);
 
   const focused = modules.find((mod) => mod.id === moduleId) ?? null;
   const lesson = focused?.lessons.find((item) => item.title === lessonTitle) ?? null;
   const entry = writings.find((item) => item.title === entryTitle) ?? null;
   const focus = treehouse || focused;
+  const overlayOpen = Boolean(focus || quick || sheet);
+
+  useEffect(() => {
+    if (!tipOpen) return;
+    const id = window.setTimeout(() => setTipOpen(false), 6000);
+    return () => window.clearTimeout(id);
+  }, [tipOpen]);
 
   function mastered(id: string) {
     const mod = modules.find((item) => item.id === id);
@@ -248,9 +274,14 @@ function StudentHome() {
     return mod.lessons.every((item) => finished.includes(item.title));
   }
 
+  function lessonDone(modId: string, title: string) {
+    return (done[modId] ?? []).includes(title);
+  }
+
   function openModule(id: string, lessonName?: string, assignmentTitle?: string) {
     setTreehouse(false);
     setEntryTitle(null);
+    setSheet(null);
     setModuleId(id || null);
     setLessonTitle(lessonName ?? null);
     setWriteTitle(assignmentTitle ?? null);
@@ -263,6 +294,7 @@ function StudentHome() {
     setLessonTitle(null);
     setWriteTitle(null);
     setQuick(false);
+    setSheet(null);
     setTreehouse(true);
     setEntryTitle(null);
     setShelfOpen(false);
@@ -272,12 +304,12 @@ function StudentHome() {
     setModuleId(null);
     setLessonTitle(null);
     setWriteTitle(null);
+    setSheet(null);
     setTreehouse(true);
     setQuick(true);
     setEntryTitle(null);
     setShelfOpen(false);
   }
-
 
   function backToHub() {
     setModuleId(null);
@@ -286,6 +318,7 @@ function StudentHome() {
     setQuick(false);
     setTreehouse(false);
     setEntryTitle(null);
+    setSheet(null);
   }
 
   function markDone(moduleKey: string, title: string) {
@@ -297,15 +330,25 @@ function StudentHome() {
     setWritings((current) => {
       if (current.some((item) => item.title === title)) return current;
       const mod = modules.find((item) => item.id === moduleKey);
-      return [
-        {
-          title,
-          from: mod ? mod.name : "Astra",
-          body: "Saved in your Treehouse.",
-        },
-        ...current,
-      ];
+      return [{ title, from: mod ? mod.name : "Astra", body: "Saved in your Treehouse." }, ...current];
     });
+  }
+
+  function onLantern(id: string) {
+    if (id === "quick") {
+      startQuickWrite();
+      return;
+    }
+    if (id === "goal") setSheet("goal");
+    if (id === "progress") setSheet("progress");
+    if (id === "practice") setSheet("practice");
+    setModuleId(null);
+    setLessonTitle(null);
+    setWriteTitle(null);
+    setQuick(false);
+    setTreehouse(false);
+    setEntryTitle(null);
+    setShelfOpen(false);
   }
 
   return (
@@ -316,7 +359,7 @@ function StudentHome() {
           <div className="title-left">
             <h1 className="title-heading">Astra’s Writing Adventure</h1>
           </div>
-          {focus ? (
+          {overlayOpen ? (
             <button
               type="button"
               onClick={backToHub}
@@ -333,9 +376,7 @@ function StudentHome() {
                   const active =
                     badge.id === "scr" ||
                     (badge.moduleId ? mastered(badge.moduleId) : false);
-                  const src = asset(
-                    `badges/${badge.id}-${active ? "active" : "inactive"}.png`,
-                  );
+                  const src = asset(`badges/${badge.id}-${active ? "active" : "inactive"}.png`);
                   return (
                     <button
                       key={badge.id}
@@ -362,429 +403,426 @@ function StudentHome() {
           )}
         </div>
       </header>
+
       <div
         className="flex min-h-0 w-full min-w-0 flex-1 overflow-hidden bg-cream"
         style={{ padding: FRAME_GAP }}
       >
-        <div className="flex h-full min-h-0 w-full min-w-0 overflow-hidden bg-dusk">
-          <div className="relative min-h-0 min-w-0 flex-1">
-            <div className="absolute inset-0 overflow-hidden">
-              <div
-                className={
-                  "absolute inset-0 transition-transform duration-700 ease-out " +
-                  (focus ? "portal-zoom" : "")
-                }
-                style={{
-                  transformOrigin: focused
-                    ? `${focused.x}% ${focused.y}%`
-                    : treehouse
-                      ? `${treehouseSpot.x}% ${treehouseSpot.y}%`
-                      : "50% 40%",
-                  transform: focus ? "scale(2.1)" : "scale(1)",
-                }}
-              >
-                <div className="portal-scene">
-                  <div className="portal-scene-frame">
+        <div className="relative h-full min-h-0 w-full min-w-0 overflow-hidden bg-dusk">
+          <div className="absolute inset-0 overflow-hidden">
+            <div
+              className="absolute inset-0 transition-transform duration-700 ease-out"
+              style={{
+                transformOrigin: focused
+                  ? `${focused.x}% ${focused.y}%`
+                  : treehouse
+                    ? `${treehouseSpot.x}% ${treehouseSpot.y}%`
+                    : "50% 45%",
+                transform: focus ? "scale(1.85)" : "scale(1)",
+              }}
+            >
+              <div className="zscene">
+                <div className="zscene-frame">
                   <img
-                    src={asset("portal-hub.jpg")}
-                    alt="Six magical portals around Astra’s glowing treehouse in an enchanted forest"
-                    className="portal-scene-img"
+                    src={asset("portal-hub-z.jpg")}
+                    alt="Astra beside six magical portals under a lantern treehouse"
+                    className="zscene-img"
                   />
-                {fireflies.map(([x, y, delay]) => (
-                  <span
-                    key={`${x}-${y}`}
-                    className="firefly pointer-events-none absolute"
-                    style={{ left: `${x}%`, top: `${y}%`, animationDelay: `${delay}s` }}
-                  />
-                ))}
 
-                {/* Portal hotspots — hover/focus glow only, no pulse */}
-                {modules.map((mod) => (
+                  {/* Astra tip bubble / collapsed tip dot */}
+                  {tipOpen ? (
+                    <button
+                      type="button"
+                      className="z-tip"
+                      onClick={() => setTipOpen(false)}
+                      aria-label="Astra’s tip. Tap to dismiss."
+                    >
+                      <span className="z-tip-k">✦ Astra’s tip</span>
+                      <span className="z-tip-t">{CLASS_FOCUS}</span>
+                    </button>
+                  ) : (
+                    <button
+                      type="button"
+                      className="z-tip-dot"
+                      style={{ left: `${tipDotSpot.x}%`, top: `${tipDotSpot.y}%` }}
+                      onClick={() => setTipOpen(true)}
+                      aria-label="Show Astra’s tip"
+                    />
+                  )}
+
                   <button
-                    key={mod.id}
                     type="button"
-                    onClick={() => openModule(mod.id)}
-                    aria-label={`Module ${mod.n}, ${mod.name}, ${mod.world}`}
                     className={
-                      "portal-hotspot absolute -translate-x-1/2 -translate-y-1/2 " +
+                      "z-hotspot z-astra absolute -translate-x-1/2 -translate-y-1/2 " +
                       (focus ? "pointer-events-none opacity-0" : "")
                     }
                     style={{
-                      left: `${mod.x}%`,
-                      top: `${mod.y}%`,
-                      width: `${mod.w}%`,
-                      height: `${mod.h}%`,
-                      ["--portal-accent" as string]: mod.accent,
+                      left: `${astraSpot.x}%`,
+                      top: `${astraSpot.y}%`,
+                      width: `${astraSpot.w}%`,
+                      height: `${astraSpot.h}%`,
+                    }}
+                    onClick={() => setTipOpen(true)}
+                    aria-label="Astra, show tip"
+                  />
+
+                  {modules.map((mod) => (
+                    <button
+                      key={mod.id}
+                      type="button"
+                      onClick={() => openModule(mod.id)}
+                      aria-label={`Module ${mod.n}, ${mod.name}, ${mod.world}`}
+                      className={
+                        "z-hotspot z-portal absolute -translate-x-1/2 -translate-y-1/2 " +
+                        (focus ? "pointer-events-none opacity-0" : "")
+                      }
+                      style={{
+                        left: `${mod.x}%`,
+                        top: `${mod.y}%`,
+                        width: `${mod.w}%`,
+                        height: `${mod.h}%`,
+                        ["--z-accent" as string]: mod.accent,
+                      }}
+                    >
+                      <span className="z-ring" aria-hidden="true" />
+                      <span className="z-plate under">
+                        <span className="z-plate-mod">M{mod.n} · {mod.short}</span>
+                        <span className="z-plate-world">{mod.world}</span>
+                      </span>
+                    </button>
+                  ))}
+
+                  {/* Lesson crystal dots — demo mastery via DEMO_DONE */}
+                  {!focus
+                    ? modules.map((mod) => (
+                        <div
+                          key={`dots-${mod.id}`}
+                          className="z-dots"
+                          style={{ left: `${mod.dotX}%`, top: `${mod.dotY}%` }}
+                          aria-hidden="true"
+                        >
+                          {mod.lessons.map((item) => {
+                            const lit = lessonDone(mod.id, item.title);
+                            return (
+                              <i
+                                key={item.title}
+                                className={lit ? "lit" : undefined}
+                                style={
+                                  lit
+                                    ? {
+                                        background: mod.accent,
+                                        boxShadow: `0 0 8px ${mod.accent}`,
+                                      }
+                                    : undefined
+                                }
+                              />
+                            );
+                          })}
+                        </div>
+                      ))
+                    : null}
+
+                  {lanterns.map((lan) => (
+                    <button
+                      key={lan.id}
+                      type="button"
+                      onClick={() => onLantern(lan.id)}
+                      aria-label={lan.label}
+                      className={
+                        "z-hotspot z-lantern absolute -translate-x-1/2 -translate-y-1/2 " +
+                        (focus ? "pointer-events-none opacity-0" : "")
+                      }
+                      style={{
+                        left: `${lan.x}%`,
+                        top: `${lan.y}%`,
+                        width: `${lan.w}%`,
+                        height: `${lan.h}%`,
+                      }}
+                    >
+                      <span className="z-ring warm" aria-hidden="true" />
+                      <span className="z-lantern-tag">{lan.label}</span>
+                    </button>
+                  ))}
+
+                  <button
+                    type="button"
+                    onClick={openTreehouse}
+                    aria-label="Treehouse, your writing space"
+                    className={
+                      "z-hotspot z-tree absolute -translate-x-1/2 -translate-y-1/2 " +
+                      (focus ? "pointer-events-none opacity-0" : "")
+                    }
+                    style={{
+                      left: `${treehouseSpot.x}%`,
+                      top: `${treehouseSpot.y}%`,
+                      width: `${treehouseSpot.w}%`,
+                      height: `${treehouseSpot.h}%`,
                     }}
                   >
-                    <span className="portal-ring" aria-hidden="true" />
-                    <span className="portal-plate">
-                      <span className="portal-plate-mod">M{mod.n} · {mod.short}</span>
-                      <span className="portal-plate-world">{mod.world}</span>
+                    <span className="z-ring warm" aria-hidden="true" />
+                    <span className="z-plate tree">
+                      <span className="z-plate-mod">Your space</span>
+                      <span className="z-plate-world">Treehouse</span>
                     </span>
                   </button>
-                ))}
-
-                {/* Treehouse hotspot on the glowing tree */}
-                <button
-                  type="button"
-                  onClick={openTreehouse}
-                  aria-label="Treehouse, your writing space"
-                  className={
-                    "treehouse-hotspot absolute -translate-x-1/2 -translate-y-1/2 " +
-                    (focus ? "pointer-events-none opacity-0" : "")
-                  }
-                  style={{
-                    left: `${treehouseSpot.x}%`,
-                    top: `${treehouseSpot.y}%`,
-                    width: `${treehouseSpot.w}%`,
-                    height: `${treehouseSpot.h}%`,
-                  }}
-                >
-                  <span className="treehouse-ring" aria-hidden="true" />
-                  <span className="portal-plate treehouse-plate">
-                    <span className="portal-plate-mod">Your space</span>
-                    <span className="portal-plate-world">Treehouse</span>
-                  </span>
-                </button>
-                  </div>
                 </div>
               </div>
             </div>
+          </div>
 
-            {focused && !lesson ? (
-              <section className="absolute inset-x-0 bottom-0 px-3 pb-3 sm:px-6 sm:pb-5">
-                <div className="mx-auto max-w-3xl rounded-3xl bg-cream/95 p-4 text-ink shadow-2xl sm:p-5">
-                  <p className="text-sm font-bold text-lantern">
-                    Module {focused.n} · {focused.world}
-                    {mastered(focused.id) ? " · Path lit" : ""}
-                  </p>
-                  <h2 className="font-display text-2xl">{focused.name}</h2>
-                  <p className="mt-1 text-sm text-muted">{focused.blurb}</p>
-                  <ol className="mt-3 grid gap-2 sm:grid-cols-3">
-                    {focused.lessons.map((item, index) => {
-                      const finished = (done[focused.id] ?? []).includes(item.title);
-                      return (
-                        <li key={item.title}>
-                          <button
-                            type="button"
-                            onClick={() => setLessonTitle(item.title)}
-                            className="flex min-h-16 w-full flex-col items-start rounded-2xl bg-cream-deep px-3 py-2 text-left"
-                          >
-                            <span className="text-xs font-bold text-moss">
-                              Lesson {index + 1}
-                              {finished ? " · Done" : ` · ${item.minutes} min`}
-                            </span>
-                            <span className="font-bold">{item.title}</span>
-                            <span className="text-xs text-muted">{item.world}</span>
-                          </button>
-                        </li>
-                      );
-                    })}
-                  </ol>
-                </div>
-              </section>
-            ) : null}
-
-            {focused && lesson ? (
-              <section className="absolute inset-x-0 bottom-0 px-3 pb-3 sm:px-6 sm:pb-5">
-                <div className="mx-auto max-w-xl rounded-3xl bg-cream p-5 text-ink shadow-2xl">
-                  <p className="text-sm font-bold text-lantern">
-                    {focused.name} · {lesson.world}
-                  </p>
-                  <h2 className="mt-1 font-display text-3xl">{writeTitle ?? lesson.title}</h2>
-                  {writeTitle ? <p className="mt-1 text-sm text-muted">{lesson.title}</p> : null}
-                  <p className="mt-3">{lesson.task}</p>
-                  <div className="mt-4 flex flex-wrap items-center gap-3">
-                    {(done[focused.id] ?? []).includes(lesson.title) ? (
-                      <span className="inline-flex min-h-11 items-center gap-2 text-sm font-bold text-moss">
-                        <Check className="size-4" aria-hidden="true" />
-                        Saved to Treehouse
-                      </span>
-                    ) : (
-                      <button
-                        type="button"
-                        onClick={() => markDone(focused.id, lesson.title)}
-                        className="inline-flex min-h-11 items-center rounded-full bg-moss px-4 text-sm font-bold text-cream"
-                      >
-                        Save to Treehouse
-                      </button>
-                    )}
-                    <button
-                      type="button"
-                      onClick={() => setLessonTitle(null)}
-                      className="inline-flex min-h-11 items-center gap-2 text-sm font-bold text-lantern"
-                    >
-                      <ArrowLeft className="size-4" aria-hidden="true" />
-                      Other lessons
-                    </button>
-                  </div>
-                </div>
-              </section>
-            ) : null}
-
-            {treehouse && !entry && !quick ? (
-              <section className="absolute inset-x-0 bottom-0 px-3 pb-3 sm:px-6 sm:pb-5">
-                <div className="mx-auto max-w-xl rounded-3xl bg-cream/95 p-4 text-ink shadow-2xl sm:p-5">
-                  <p className="text-sm font-bold text-lantern">Treehouse · Your space</p>
-                  <h2 className="font-display text-2xl">Treehouse</h2>
-                  <p className="mt-1 text-sm text-muted">Quick writes and finished work live here with Astra.</p>
-                  <button
-                    type="button"
-                    onClick={startQuickWrite}
-                    className="mt-3 inline-flex min-h-11 w-full items-center justify-center rounded-full bg-lantern px-4 text-sm font-bold text-cream"
-                  >
-                    Start Quick write
-                  </button>
-                  <ul className="mt-3 grid gap-2">
-                    {writings.map((item) => (
+          {focused && !lesson ? (
+            <section className="absolute inset-x-0 bottom-0 z-10 px-3 pb-3 sm:px-6 sm:pb-5">
+              <div className="mx-auto max-w-3xl rounded-3xl bg-cream/95 p-4 text-ink shadow-2xl sm:p-5">
+                <p className="text-sm font-bold text-lantern">
+                  Module {focused.n} · {focused.world}
+                  {mastered(focused.id) ? " · Path lit" : ""}
+                </p>
+                <h2 className="font-display text-2xl">{focused.name}</h2>
+                <p className="mt-1 text-sm text-muted">{focused.blurb}</p>
+                <ol className="mt-3 grid gap-2 sm:grid-cols-3">
+                  {focused.lessons.map((item, index) => {
+                    const finished = lessonDone(focused.id, item.title);
+                    return (
                       <li key={item.title}>
                         <button
                           type="button"
-                          onClick={() => setEntryTitle(item.title)}
-                          className="flex min-h-14 w-full flex-col items-start rounded-2xl bg-cream-deep px-3 py-2 text-left"
+                          onClick={() => setLessonTitle(item.title)}
+                          className="flex min-h-16 w-full flex-col items-start rounded-2xl bg-cream-deep px-3 py-2 text-left"
                         >
+                          <span className="text-xs font-bold text-moss">
+                            Lesson {index + 1}
+                            {finished ? " · Done" : ` · ${item.minutes} min`}
+                          </span>
                           <span className="font-bold">{item.title}</span>
-                          <span className="text-xs text-muted">{item.from}</span>
+                          <span className="text-xs text-muted">{item.world}</span>
                         </button>
                       </li>
-                    ))}
-                  </ul>
-                </div>
-              </section>
-            ) : null}
+                    );
+                  })}
+                </ol>
+              </div>
+            </section>
+          ) : null}
 
-            {treehouse && entry ? (
-              <section className="absolute inset-x-0 bottom-0 px-3 pb-3 sm:px-6 sm:pb-5">
-                <div className="mx-auto max-w-xl rounded-3xl bg-cream p-5 text-ink shadow-2xl">
-                  <p className="text-sm font-bold text-lantern">{entry.from}</p>
-                  <h2 className="mt-1 font-display text-3xl">{entry.title}</h2>
-                  <p className="mt-3">{entry.body}</p>
-                  <button
-                    type="button"
-                    onClick={() => setEntryTitle(null)}
-                    className="mt-4 inline-flex min-h-11 items-center gap-2 text-sm font-bold text-lantern"
-                  >
-                    <ArrowLeft className="size-4" aria-hidden="true" />
-                    All writing
-                  </button>
-                </div>
-              </section>
-            ) : null}
-
-            {!focus && !quick ? (
-              <AssignmentShelf
-                open={shelfOpen}
-                onToggle={() => setShelfOpen((value) => !value)}
-                onOpen={(id, lessonName, title) => openModule(id, lessonName, title)}
-                ecrNote={ecrNote}
-                onCloseEcr={() => setEcrNote(false)}
-              />
-            ) : null}
-            {quick ? (
-              <section className="absolute inset-x-0 bottom-0 px-4 pb-4">
-                <div className="mx-auto max-w-xl rounded-3xl bg-cream p-5 text-ink shadow-2xl">
-                  <p className="text-sm font-bold text-lantern">Astra · Quick write</p>
-                  <h2 className="mt-1 font-display text-3xl">Robot at School</h2>
-                  <p className="mt-3">A robot joins your class. What happens during the day?</p>
-                  <div className="mt-4 flex flex-wrap items-center gap-3">
+          {focused && lesson ? (
+            <section className="absolute inset-x-0 bottom-0 z-10 px-3 pb-3 sm:px-6 sm:pb-5">
+              <div className="mx-auto max-w-xl rounded-3xl bg-cream p-5 text-ink shadow-2xl">
+                <p className="text-sm font-bold text-lantern">
+                  {focused.name} · {lesson.world}
+                </p>
+                <h2 className="mt-1 font-display text-3xl">{writeTitle ?? lesson.title}</h2>
+                {writeTitle ? <p className="mt-1 text-sm text-muted">{lesson.title}</p> : null}
+                <p className="mt-3">{lesson.task}</p>
+                <div className="mt-4 flex flex-wrap items-center gap-3">
+                  {lessonDone(focused.id, lesson.title) ? (
+                    <span className="inline-flex min-h-11 items-center gap-2 text-sm font-bold text-moss">
+                      <Check className="size-4" aria-hidden="true" />
+                      Saved to Treehouse
+                    </span>
+                  ) : (
                     <button
                       type="button"
-                      onClick={() => {
-                        setWritings((current) => [
-                          {
-                            title: "Robot at School",
-                            from: "Astra · Quick write",
-                            body: "A robot joins your class. What happens during the day?",
-                          },
-                          ...current.filter((item) => item.title !== "Robot at School"),
-                        ]);
-                        setQuick(false);
-                        openTreehouse();
-                      }}
+                      onClick={() => markDone(focused.id, lesson.title)}
                       className="inline-flex min-h-11 items-center rounded-full bg-moss px-4 text-sm font-bold text-cream"
                     >
                       Save to Treehouse
                     </button>
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setQuick(false);
-                        setTreehouse(true);
-                      }}
-                      className="inline-flex min-h-11 items-center text-sm font-bold text-lantern"
-                    >
-                      Back to Treehouse
-                    </button>
-                  </div>
+                  )}
+                  <button
+                    type="button"
+                    onClick={() => setLessonTitle(null)}
+                    className="inline-flex min-h-11 items-center gap-2 text-sm font-bold text-lantern"
+                  >
+                    <ArrowLeft className="size-4" aria-hidden="true" />
+                    Other lessons
+                  </button>
                 </div>
-              </section>
-            ) : null}
-          </div>
-          <AstraGuide
-            onQuickWrite={startQuickWrite}
-            worlds={modules.map((mod) => ({
-              id: mod.id,
-              n: mod.n,
-              short: mod.short,
-              world: mod.world,
-              accent: mod.accent,
-              lit: mod.id === "scr" || mastered(mod.id),
-            }))}
-          />
+              </div>
+            </section>
+          ) : null}
+
+          {treehouse && !entry && !quick ? (
+            <section className="absolute inset-x-0 bottom-0 z-10 px-3 pb-3 sm:px-6 sm:pb-5">
+              <div className="mx-auto max-w-xl rounded-3xl bg-cream/95 p-4 text-ink shadow-2xl sm:p-5">
+                <p className="text-sm font-bold text-lantern">Treehouse · Your space</p>
+                <h2 className="font-display text-2xl">Treehouse</h2>
+                <p className="mt-1 text-sm text-muted">Quick writes and finished work live here with Astra.</p>
+                <button
+                  type="button"
+                  onClick={startQuickWrite}
+                  className="mt-3 inline-flex min-h-11 w-full items-center justify-center rounded-full bg-lantern px-4 text-sm font-bold text-cream"
+                >
+                  Start Quick write
+                </button>
+                <ul className="mt-3 grid gap-2">
+                  {writings.map((item) => (
+                    <li key={item.title}>
+                      <button
+                        type="button"
+                        onClick={() => setEntryTitle(item.title)}
+                        className="flex min-h-14 w-full flex-col items-start rounded-2xl bg-cream-deep px-3 py-2 text-left"
+                      >
+                        <span className="font-bold">{item.title}</span>
+                        <span className="text-xs text-muted">{item.from}</span>
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </section>
+          ) : null}
+
+          {treehouse && entry ? (
+            <section className="absolute inset-x-0 bottom-0 z-10 px-3 pb-3 sm:px-6 sm:pb-5">
+              <div className="mx-auto max-w-xl rounded-3xl bg-cream p-5 text-ink shadow-2xl">
+                <p className="text-sm font-bold text-lantern">{entry.from}</p>
+                <h2 className="mt-1 font-display text-3xl">{entry.title}</h2>
+                <p className="mt-3">{entry.body}</p>
+                <button
+                  type="button"
+                  onClick={() => setEntryTitle(null)}
+                  className="mt-4 inline-flex min-h-11 items-center gap-2 text-sm font-bold text-lantern"
+                >
+                  <ArrowLeft className="size-4" aria-hidden="true" />
+                  All writing
+                </button>
+              </div>
+            </section>
+          ) : null}
+
+          {quick ? (
+            <section className="absolute inset-x-0 bottom-0 z-10 px-4 pb-4">
+              <div className="mx-auto max-w-xl rounded-3xl bg-cream p-5 text-ink shadow-2xl">
+                <p className="text-sm font-bold text-lantern">Astra · Quick write</p>
+                <h2 className="mt-1 font-display text-3xl">Robot at School</h2>
+                <p className="mt-3">A robot joins your class. What happens during the day?</p>
+                <div className="mt-4 flex flex-wrap items-center gap-3">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setWritings((current) => [
+                        {
+                          title: "Robot at School",
+                          from: "Astra · Quick write",
+                          body: "A robot joins your class. What happens during the day?",
+                        },
+                        ...current.filter((item) => item.title !== "Robot at School"),
+                      ]);
+                      setQuick(false);
+                      openTreehouse();
+                    }}
+                    className="inline-flex min-h-11 items-center rounded-full bg-moss px-4 text-sm font-bold text-cream"
+                  >
+                    Save to Treehouse
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setQuick(false);
+                      setTreehouse(true);
+                    }}
+                    className="inline-flex min-h-11 items-center text-sm font-bold text-lantern"
+                  >
+                    Back to Treehouse
+                  </button>
+                </div>
+              </div>
+            </section>
+          ) : null}
+
+          {sheet === "goal" ? (
+            <FrostCard title="My goal" onClose={() => setSheet(null)}>
+              <p>{MY_GOAL}</p>
+            </FrostCard>
+          ) : null}
+
+          {sheet === "practice" ? (
+            <FrostCard title="Practice" onClose={() => setSheet(null)}>
+              <p>Practice pages coming soon — Astra is still packing the crystal drills!</p>
+            </FrostCard>
+          ) : null}
+
+          {sheet === "progress" ? (
+            <FrostCard title="My progress" eyebrow="Data & goals" onClose={() => setSheet(null)} wide>
+              <p className="mb-3 text-sm font-bold text-[#7a5a2e]">
+                {modules.filter((m) => mastered(m.id)).length} of 6 worlds explored · Goal: {MY_GOAL}
+              </p>
+              <ul className="grid gap-2">
+                {modules.map((mod) => {
+                  const finished = (done[mod.id] ?? []).length;
+                  const total = mod.lessons.length;
+                  const lit = mastered(mod.id);
+                  return (
+                    <li
+                      key={mod.id}
+                      className="flex items-center gap-3 rounded-2xl bg-[rgb(255,248,235)]/70 px-3 py-2"
+                    >
+                      <span
+                        className="inline-block size-3 rotate-45 rounded-[2px]"
+                        style={{
+                          background: lit ? mod.accent : "rgba(74,46,26,.2)",
+                          boxShadow: lit ? `0 0 8px ${mod.accent}` : "none",
+                        }}
+                      />
+                      <span className="min-w-0 flex-1">
+                        <span className="block font-bold">M{mod.n} · {mod.short}</span>
+                        <span className="block text-xs text-[#7a5a2e]">{mod.world}</span>
+                      </span>
+                      <span className="text-xs font-bold text-[#7a5a2e]">
+                        {finished}/{total}
+                      </span>
+                    </li>
+                  );
+                })}
+              </ul>
+            </FrostCard>
+          ) : null}
+
+          {!overlayOpen ? (
+            <AssignmentBar
+              open={shelfOpen}
+              onToggle={() => setShelfOpen((value) => !value)}
+              onOpen={(id, lessonName, title) => openModule(id, lessonName, title)}
+              ecrNote={ecrNote}
+              onCloseEcr={() => setEcrNote(false)}
+            />
+          ) : null}
         </div>
       </div>
     </div>
   );
 }
 
-function AstraGuide({
-  onQuickWrite,
-  worlds,
+function FrostCard({
+  title,
+  eyebrow,
+  onClose,
+  children,
+  wide,
 }: {
-  onQuickWrite: () => void;
-  worlds: { id: string; n: number; short: string; world: string; accent: string; lit: boolean }[];
+  title: string;
+  eyebrow?: string;
+  onClose: () => void;
+  children: ReactNode;
+  wide?: boolean;
 }) {
-  const [practiceOpen, setPracticeOpen] = useState(false);
-  const [progressOpen, setProgressOpen] = useState(false);
-  const litCount = worlds.filter((w) => w.lit).length;
-
   return (
-    <aside className="astra-guide flex w-[17.5rem] shrink-0 flex-col gap-2 bg-cream px-2.5 pt-2.5 pb-3 text-ink">
-      {/* Hero tip card */}
-      <div className="tip-hero">
-        <div className="tip-hero-sparkles" aria-hidden="true" />
-        <img
-          src={asset("astra-guide.jpg")}
-          alt="Astra the wolf waving from his treehouse, holding a book"
-          className="tip-hero-img"
-        />
-        <div className="tip-hero-bubble">
-          <p className="tip-hero-label">Astra’s tip</p>
-          <p className="tip-hero-text">{CLASS_FOCUS}</p>
+    <div className={"z-frost " + (wide ? "wide" : "")} role="dialog" aria-label={title}>
+      <div className="z-frost-head">
+        <div>
+          {eyebrow ? <p className="z-frost-k">{eyebrow}</p> : null}
+          <h2 className="z-frost-title">{title}</h2>
         </div>
-      </div>
-
-      {/* Quest compass = My goal */}
-      <div className="goal-compass">
-        <div className="goal-compass-icon" aria-hidden="true">
-          <Compass className="size-5" strokeWidth={2.4} />
-        </div>
-        <div className="min-w-0">
-          <p className="goal-compass-label">My goal</p>
-          <p className="goal-compass-text">{MY_GOAL}</p>
-        </div>
-      </div>
-
-      {/* My progress — fills the middle gap */}
-      <button
-        type="button"
-        className="progress-card"
-        onClick={() => setProgressOpen(true)}
-        aria-label={`My progress, ${litCount} of 6 worlds explored`}
-      >
-        <div className="progress-card-top">
-          <p className="progress-card-label">My progress</p>
-          <p className="progress-card-count">
-            {litCount} of 6 worlds explored
-          </p>
-        </div>
-        <div className="progress-gems" aria-hidden="true">
-          {worlds.map((w) => (
-            <span
-              key={w.id}
-              className={w.lit ? "progress-gem lit" : "progress-gem"}
-              style={{ ["--gem" as string]: w.accent }}
-              title={`M${w.n} · ${w.short}`}
-            >
-              <span className="progress-gem-facet" />
-            </span>
-          ))}
-        </div>
-        <div className="progress-gem-labels" aria-hidden="true">
-          {worlds.map((w) => (
-            <span key={w.id} className={w.lit ? "progress-gem-cap lit" : "progress-gem-cap"}>
-              {w.short}
-            </span>
-          ))}
-        </div>
-      </button>
-
-      {/* Crystal-blue action stack */}
-      <div className="guide-actions">
-        <button
-          type="button"
-          onClick={() => setPracticeOpen(true)}
-          className="crystal-btn"
-        >
-          <span className="crystal-btn-icon" aria-hidden="true">
-            <Sparkles className="size-3.5" strokeWidth={2.5} />
-          </span>
-          Practice
-        </button>
-        <button type="button" onClick={onQuickWrite} className="crystal-btn">
-          <span className="crystal-btn-icon" aria-hidden="true">
-            <Feather className="size-3.5" strokeWidth={2.5} />
-          </span>
-          Quick write
+        <button type="button" className="z-frost-x" aria-label="Close" onClick={onClose}>
+          <X className="size-4" />
         </button>
       </div>
-
-      {practiceOpen ? (
-        <div className="guide-toast" role="status">
-          <p className="guide-toast-title">Practice pages</p>
-          <p className="guide-toast-body">Practice pages coming soon — Astra is still packing the crystal drills!</p>
-          <button type="button" className="guide-toast-close" onClick={() => setPracticeOpen(false)}>
-            <X className="size-3.5" aria-hidden="true" />
-            Got it
-          </button>
-        </div>
-      ) : null}
-
-      {progressOpen ? (
-        <div className="guide-sheet" role="dialog" aria-label="My progress">
-          <div className="guide-sheet-head">
-            <div>
-              <p className="guide-sheet-label">Data & goals</p>
-              <h2 className="guide-sheet-title">My progress</h2>
-            </div>
-            <button
-              type="button"
-              className="guide-sheet-x"
-              aria-label="Close progress"
-              onClick={() => setProgressOpen(false)}
-            >
-              <X className="size-4" />
-            </button>
-          </div>
-          <p className="guide-sheet-summary">
-            {litCount} of 6 worlds explored · Goal: {MY_GOAL}
-          </p>
-          <ul className="guide-sheet-list">
-            {worlds.map((w) => (
-              <li key={w.id} className={w.lit ? "guide-sheet-row lit" : "guide-sheet-row"}>
-                <span
-                  className={w.lit ? "progress-gem lit" : "progress-gem"}
-                  style={{ ["--gem" as string]: w.accent }}
-                  aria-hidden="true"
-                >
-                  <span className="progress-gem-facet" />
-                </span>
-                <span className="min-w-0 flex-1 text-left">
-                  <span className="guide-sheet-mod">M{w.n} · {w.short}</span>
-                  <span className="guide-sheet-world">{w.world}</span>
-                </span>
-                <span className="guide-sheet-status">{w.lit ? "Lit" : "Ahead"}</span>
-              </li>
-            ))}
-          </ul>
-        </div>
-      ) : null}
-    </aside>
+      <div className="z-frost-body">{children}</div>
+    </div>
   );
 }
 
-function AssignmentShelf({
+function AssignmentBar({
   open,
   onToggle,
   onOpen,
@@ -799,31 +837,28 @@ function AssignmentShelf({
 }) {
   const today = assignments[0];
   return (
-    <section className="absolute inset-x-0 bottom-4 flex flex-col items-center gap-2 px-4">
+    <section className="absolute inset-x-0 bottom-3 z-10 flex flex-col items-center gap-2 px-4">
       {ecrNote ? (
-        <p className="max-w-xl rounded-2xl bg-cream/95 px-4 py-3 text-sm text-ink">
+        <p className="z-assign max-w-xl px-4 py-3 text-sm">
           Extended responses are the longer writes. Today’s path is Short Responses.
-          <button type="button" onClick={onCloseEcr} className="ml-2 font-bold text-lantern">
+          <button type="button" onClick={onCloseEcr} className="ml-2 font-bold text-[#a0521d]">
             Close
           </button>
         </p>
       ) : null}
-      <div className="w-full max-w-xl rounded-3xl bg-cream/95 text-ink shadow-2xl">
+      <div className="z-assign w-full max-w-xl">
         <div className="flex min-h-14 items-center gap-2 px-3">
-          <button
-            type="button"
-            onClick={onToggle}
-            className="min-w-0 flex-1 py-2 text-left"
-            aria-expanded={open}
-          >
-            <span className="block text-xs font-bold text-lantern">Current assignment</span>
-            <span className="block truncate font-bold">{today.title}</span>
+          <button type="button" onClick={onToggle} className="min-w-0 flex-1 py-2 text-left" aria-expanded={open}>
+            <span className="block text-[11px] font-extrabold tracking-[0.08em] text-[#a0521d]">
+              CURRENT ASSIGNMENT
+            </span>
+            <span className="block truncate text-[17px] font-bold leading-tight">{today.title}</span>
           </button>
           <button
             type="button"
             onClick={() => onOpen(today.moduleId, today.lesson, today.title)}
             className={
-              "start-write inline-flex min-h-11 shrink-0 items-center rounded-full bg-lantern px-4 text-sm font-bold text-cream" +
+              "start-write inline-flex min-h-11 shrink-0 items-center rounded-full bg-[#8a4a17] px-5 text-sm font-extrabold text-white" +
               (assignments.length > 1 ? " start-write-glow" : "")
             }
           >
@@ -834,31 +869,28 @@ function AssignmentShelf({
             onClick={onToggle}
             aria-label={open ? "Hide assignments" : "Show all assignments"}
             aria-expanded={open}
-            className={
-              "assign-chip grid size-12 place-items-center " +
-              (assignments.length > 1 && !open ? "assign-chip-pulse" : "")
-            }
+            className="assign-chip grid size-11 place-items-center"
           >
             <img src={asset("crystal.png")} alt="" className="assign-crystal" />
           </button>
         </div>
         {open ? (
-          <ul className="max-h-[42vh] overflow-y-auto border-t border-line px-2 pb-2">
+          <ul className="max-h-[36vh] overflow-y-auto border-t border-[rgb(74,46,26)]/15 px-2 pb-2">
             {assignments.map((item) => (
-              <li key={item.title} className="flex items-center gap-2 border-b border-line py-2 last:border-b-0">
+              <li key={item.title} className="flex items-center gap-2 border-b border-[rgb(74,46,26)]/10 py-2 last:border-b-0">
                 <div className="min-w-0 flex-1 px-2">
                   <p className="font-bold">{item.title}</p>
-                  <p className="mt-1 flex flex-wrap items-center gap-1.5 text-xs text-muted">
-                    <span className="rounded-full bg-moss-soft px-2 py-0.5 font-bold text-moss">{item.kind}</span>
+                  <p className="mt-1 flex flex-wrap items-center gap-1.5 text-xs text-[#7a5a2e]">
+                    <span className="rounded-full bg-[rgb(74,46,26)]/10 px-2 py-0.5 font-bold">{item.kind}</span>
                     <span>{item.format}</span>
                     <span>{item.teacher}</span>
-                    <span className="font-bold text-lantern">{item.due}</span>
+                    <span className="font-bold text-[#a0521d]">{item.due}</span>
                   </p>
                 </div>
                 <button
                   type="button"
                   onClick={() => onOpen(item.moduleId, item.lesson, item.title)}
-                  className="inline-flex min-h-11 shrink-0 items-center rounded-full bg-ink px-3 text-sm font-bold text-cream"
+                  className="inline-flex min-h-11 shrink-0 items-center rounded-full bg-[#4a2e1a] px-3 text-sm font-bold text-cream"
                 >
                   {item.action}
                 </button>
