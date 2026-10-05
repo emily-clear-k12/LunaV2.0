@@ -33,6 +33,9 @@ type Lantern = {
   y: number;
   w: number;
   h: number;
+  /** Center of painted wooden sign under the lantern (for frosted label cover). */
+  signX: number;
+  signY: number;
 };
 
 const CLASS_FOCUS = "Today, let's back every answer with evidence from the text!";
@@ -54,11 +57,11 @@ const modules: Module[] = [
     world: "Crystal Caverns",
     blurb: "Short constructed responses with clear evidence.",
     x: 25.9,
-    y: 60,
+    y: 65.74,
     w: 11,
-    h: 28,
+    h: 23.98,
     dotX: 25.9,
-    dotY: 80.5,
+    dotY: 83.3,
     accent: "#4aa3ff",
     lessons: [
       { title: "Answer the ask", world: "First crystals", minutes: 20, task: "Write a short answer that restates the question." },
@@ -74,11 +77,11 @@ const modules: Module[] = [
     world: "Sky Harbor",
     blurb: "Extended responses that build a full argument.",
     x: 38.8,
-    y: 60,
+    y: 65.74,
     w: 11,
-    h: 28,
+    h: 23.98,
     dotX: 38.8,
-    dotY: 80.5,
+    dotY: 83.3,
     accent: "#7cc8ff",
     lessons: [
       { title: "Claim the sky", world: "Docking ring", minutes: 20, task: "Write a clear claim for a longer response." },
@@ -94,11 +97,11 @@ const modules: Module[] = [
     world: "Starfall Meadow",
     blurb: "Sentences that hold one clear idea.",
     x: 51.5,
-    y: 60,
+    y: 65.74,
     w: 11,
-    h: 28,
+    h: 23.98,
     dotX: 51.5,
-    dotY: 80.5,
+    dotY: 83.3,
     accent: "#b46bff",
     lessons: [
       { title: "One complete thought", world: "First stones", minutes: 20, task: "Write three sentences that each say one whole idea." },
@@ -114,11 +117,11 @@ const modules: Module[] = [
     world: "Ember Forge",
     blurb: "Read the prompt, take notes, make a plan.",
     x: 64.5,
-    y: 60,
+    y: 65.74,
     w: 11,
-    h: 28,
+    h: 23.98,
     dotX: 64.5,
-    dotY: 80.5,
+    dotY: 83.3,
     accent: "#ff9a3c",
     lessons: [
       { title: "Read the prompt", world: "White trunks", minutes: 15, task: "Underline what the prompt is asking you to do." },
@@ -134,11 +137,11 @@ const modules: Module[] = [
     world: "Sunken Library",
     blurb: "Make the draft clearer and stronger.",
     x: 78.1,
-    y: 60,
+    y: 65.74,
     w: 11,
-    h: 28,
+    h: 23.98,
     dotX: 78.1,
-    dotY: 80.5,
+    dotY: 83.3,
     accent: "#2fd6c8",
     lessons: [
       { title: "Name the idea", world: "Lookout", minutes: 15, task: "Say what the draft is really about, in one line." },
@@ -154,11 +157,11 @@ const modules: Module[] = [
     world: "Coral Cove",
     blurb: "Polish conventions until the writing is clear.",
     x: 92.3,
-    y: 60,
+    y: 65.74,
     w: 11,
-    h: 28,
+    h: 23.98,
     dotX: 92.3,
-    dotY: 80.5,
+    dotY: 83.3,
     accent: "#ff6fa8",
     lessons: [
       { title: "Capitals and stops", world: "Fallen leaves", minutes: 15, task: "Fix sentences that start or end the wrong way." },
@@ -168,16 +171,16 @@ const modules: Module[] = [
   },
 ];
 
-const treehouseSpot = { x: 50, y: 42, w: 13, h: 26 };
-const astraSpot = { x: 9.5, y: 58, w: 13, h: 38 };
-const tipDotSpot = { x: 14, y: 44 };
+const treehouseSpot = { x: 50, y: 50.32, w: 13, h: 22.27 };
+const astraSpot = { x: 9.5, y: 64.03, w: 13, h: 32.55 };
+const tipDotSpot = { x: 22, y: 36.62 };
 
 /** Four interactive lanterns; any extra lantern in the art stays decorative. */
 const lanterns: Lantern[] = [
-  { id: "goal", label: "My goal", x: 34.5, y: 33.5, w: 5.5, h: 12 },
-  { id: "progress", label: "My progress", x: 41.5, y: 34, w: 5.5, h: 12 },
-  { id: "practice", label: "Practice", x: 63.5, y: 37, w: 5.5, h: 12 },
-  { id: "quick", label: "Quick write", x: 74.5, y: 33.5, w: 5.5, h: 12 },
+  { id: "goal", label: "My goal", x: 34.5, y: 43.04, w: 5.5, h: 10.28, signX: 32.8, signY: 50.6 },
+  { id: "progress", label: "My progress", x: 41.5, y: 43.47, w: 5.5, h: 10.28, signX: 39.8, signY: 50.0 },
+  { id: "practice", label: "Practice", x: 63.5, y: 46.04, w: 5.5, h: 10.28, signX: 63.5, signY: 52.2 },
+  { id: "quick", label: "Quick write", x: 74.5, y: 43.04, w: 5.5, h: 10.28, signX: 74.2, signY: 50.2 },
 ];
 
 const assignments = [
@@ -523,9 +526,20 @@ function StudentHome() {
                       }}
                     >
                       <span className="z-ring warm" aria-hidden="true" />
-                      <span className="z-lantern-tag">{lan.label}</span>
                     </button>
                   ))}
+
+                  {!focus
+                    ? lanterns.map((lan) => (
+                        <span
+                          key={`${lan.id}-sign`}
+                          className="z-lantern-tag"
+                          style={{ left: `${lan.signX}%`, top: `${lan.signY}%` }}
+                        >
+                          {lan.label}
+                        </span>
+                      ))
+                    : null}
 
                   <button
                     type="button"
