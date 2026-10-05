@@ -206,14 +206,18 @@ const asset = (file: string) => `${import.meta.env.BASE_URL}${file}`;
 
 const STAGE_W = 1366;
 const STAGE_H = 768;
+const HEADER_H = 90;
+const BODY_H = STAGE_H - HEADER_H;
 
 function useStageScale() {
   const [scale, setScale] = useState(1);
   useEffect(() => {
     const fit = () => {
-      // Leave room for the view switcher bar when it is shown above the stage.
+      // Leave room for the view switcher and the full-bleed header outside the scaled body.
       const bar = document.querySelector<HTMLElement>(".vswitch")?.offsetHeight ?? 0;
-      setScale(Math.min(window.innerWidth / STAGE_W, (window.innerHeight - bar) / STAGE_H));
+      setScale(
+        Math.min(window.innerWidth / STAGE_W, (window.innerHeight - bar - HEADER_H) / BODY_H),
+      );
     };
     fit();
     window.addEventListener("resize", fit);
@@ -310,61 +314,64 @@ function StudentHome() {
   const scale = useStageScale();
 
   return (
-    <div className="grid h-dvh w-full place-items-center overflow-hidden bg-cream">
-      <div
-        className="relative flex flex-col overflow-hidden bg-dusk"
-        style={{ width: STAGE_W, height: STAGE_H, transform: `scale(${scale})` }}
-      >
+    <div className="flex h-dvh w-full flex-col overflow-hidden bg-cream">
       <header className="title-bar">
         <img src={asset("astra-banner.jpg")} alt="" className="title-banner" />
-        <div className="title-left">
-          <h1 className="title-heading">Astra’s Writing Adventure</h1>
-        </div>
-        {focus ? (
-          <button
-            type="button"
-            onClick={backToMap}
-            className="inline-flex min-h-11 shrink-0 items-center gap-2 rounded-full bg-cream px-4 text-sm font-bold text-ink"
-          >
-            <ArrowLeft className="size-4" aria-hidden="true" />
-            Back to map
-          </button>
-        ) : (
-          <div className="mastery">
-            <span className="mastery-label">Your Mastery</span>
-            <div className="mastery-row">
-              {badges.map((badge) => {
-                const active =
-                  badge.id === "scr" ||
-                  (badge.moduleId ? mastered(badge.moduleId) : false);
-                const src = asset(
-                  `badges/${badge.id}-${active ? "active" : "inactive"}.png`,
-                );
-                return (
-                  <button
-                    key={badge.id}
-                    type="button"
-                    onClick={() => {
-                      if (badge.moduleId) {
-                        setEcrNote(false);
-                        openModule(badge.moduleId);
-                      } else {
-                        setEcrNote(true);
-                      }
-                    }}
-                    aria-current={active ? "true" : undefined}
-                    title={badge.name}
-                    className={active ? "medal medal-live" : "medal"}
-                  >
-                    <img src={src} alt="" className="medal-art" />
-                    <span className="medal-label">{badge.label}</span>
-                  </button>
-                );
-              })}
-            </div>
+        <div className="title-bar-inner">
+          <div className="title-left">
+            <h1 className="title-heading">Astra’s Writing Adventure</h1>
           </div>
-        )}
+          {focus ? (
+            <button
+              type="button"
+              onClick={backToMap}
+              className="inline-flex min-h-11 shrink-0 items-center gap-2 rounded-full bg-cream px-4 text-sm font-bold text-ink"
+            >
+              <ArrowLeft className="size-4" aria-hidden="true" />
+              Back to map
+            </button>
+          ) : (
+            <div className="mastery">
+              <span className="mastery-label">Your Mastery</span>
+              <div className="mastery-row">
+                {badges.map((badge) => {
+                  const active =
+                    badge.id === "scr" ||
+                    (badge.moduleId ? mastered(badge.moduleId) : false);
+                  const src = asset(
+                    `badges/${badge.id}-${active ? "active" : "inactive"}.png`,
+                  );
+                  return (
+                    <button
+                      key={badge.id}
+                      type="button"
+                      onClick={() => {
+                        if (badge.moduleId) {
+                          setEcrNote(false);
+                          openModule(badge.moduleId);
+                        } else {
+                          setEcrNote(true);
+                        }
+                      }}
+                      aria-current={active ? "true" : undefined}
+                      title={badge.name}
+                      className={active ? "medal medal-live" : "medal"}
+                    >
+                      <img src={src} alt="" className="medal-art" />
+                      <span className="medal-label">{badge.label}</span>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+        </div>
       </header>
+      <div className="grid min-h-0 flex-1 place-items-center overflow-hidden">
+      <div
+        className="relative flex overflow-hidden bg-dusk"
+        style={{ width: STAGE_W, height: BODY_H, transform: `scale(${scale})` }}
+      >
       <div className="flex min-h-0 flex-1">
       <div className="relative min-w-0 flex-1">
       <div className="absolute inset-0 overflow-hidden">
@@ -605,6 +612,7 @@ function StudentHome() {
       </div>
       <div className="pane-break" aria-hidden="true" />
       <QuickWrite onStart={startQuickWrite} />
+      </div>
       </div>
       </div>
     </div>
