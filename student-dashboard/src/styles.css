@@ -250,6 +250,13 @@
     filter: drop-shadow(0 0 6px rgb(90 200 255 / 0.85));
   }
 
+  /* Shared animated crystal (./routes/assign-crystal.css), sized for Plan A's 44px chip. */
+  .assign-chip.pb-assign-crystal {
+    --ac-h: 2.35rem;
+    --ac-ratio: 640 / 1207;
+    --ac-u: 0.8rem;
+  }
+
   .assign-chip-pulse .assign-crystal {
     animation: crystal-pulse 1.6s ease-in-out infinite;
     filter: drop-shadow(0 0 10px rgb(140 225 255 / 1));
@@ -1213,20 +1220,18 @@
     background: #2a1840;
   }
 
-  /* Cover-fit, top-aligned: keep canopy/sky; crop sides/bottom as needed.
-     The art has an old dark frost strip baked into its top 57 rows (of 776). Lift the
-     frame by up to that strip (never more than the spare height below, so no gap ever
-     opens at the bottom). At 1366x768 this raises the whole scene ~61px: sky meets the
-     switcher, the portal row + lesson dots clear the assignment bar, and Astra's feet
-     come into view. */
+  /* Cover-fit 16:9 animated hub (1280x720, no dark strip any more). When the stage is
+     shorter than the frame, crop up to 40 rows of empty sky first (never more than the
+     spare height, so no gap opens at the bottom), keeping the portal row, lesson dots and
+     Astra's feet clear of the assignment bar. At a full 1366x768 stage nothing is lifted. */
   .zscene-frame {
-    --z-fw: max(100cqw, calc(100cqh * 1280 / 776));
-    --z-lift: max(0px, min(calc(var(--z-fw) * 57 / 1280), calc(var(--z-fw) * 776 / 1280 - 100cqh)));
+    --z-fw: max(100cqw, calc(100cqh * 1280 / 720));
+    --z-lift: max(0px, min(calc(var(--z-fw) * 40 / 1280), calc(var(--z-fw) * 720 / 1280 - 100cqh)));
     position: absolute;
     left: 50%;
     top: calc(-1 * var(--z-lift));
     translate: -50% 0;
-    aspect-ratio: 1280 / 776;
+    aspect-ratio: 1280 / 720;
     width: var(--z-fw);
     height: auto;
   }
@@ -1237,6 +1242,18 @@
     height: 100%;
     object-fit: fill;
     pointer-events: none;
+  }
+
+  /* Video sits exactly over the poster and fades in once it can play (no flash). */
+  .zscene-video {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    transition: opacity 0.4s ease;
+  }
+
+  .zscene-video.ready {
+    opacity: 1;
   }
 
   .z-sky-title {
@@ -1517,7 +1534,7 @@
     position: absolute;
     z-index: 6;
     left: 1.1%;
-    top: 14.6%;
+    top: 9.7%;
     width: min(230px, 17%);
     border: 1.5px solid rgb(255 255 255 / 0.75);
     border-radius: 18px;

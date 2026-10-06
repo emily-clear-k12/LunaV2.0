@@ -16,6 +16,7 @@ import {
   type TreehouseRoute,
 } from "./plan-a-pages";
 import { DEMO_LESSON_TITLE, StarfallWorld } from "./world-starfall";
+import { AssignCrystalArt } from "./assign-crystal";
 
 export const Route = createFileRoute("/")({ component: StudentHome });
 
@@ -69,10 +70,10 @@ const modules: Module[] = [
     world: "Crystal Caverns",
     blurb: "Short constructed responses with clear evidence.",
     x: 25.9,
-    y: 60,
+    y: 60.5,
     w: 11,
-    h: 28,
-    tagY: 79.8,
+    h: 31,
+    tagY: 80.2,
     accent: "#4aa3ff",
     lessons: [
       { title: "Answer the ask", world: "First crystals", minutes: 20, task: "Write a short answer that restates the question." },
@@ -88,10 +89,10 @@ const modules: Module[] = [
     world: "Sky Harbor",
     blurb: "Extended responses that build a full argument.",
     x: 38.8,
-    y: 60,
+    y: 60.5,
     w: 11,
-    h: 28,
-    tagY: 79.8,
+    h: 31,
+    tagY: 80.2,
     accent: "#7cc8ff",
     lessons: [
       { title: "Claim the sky", world: "Docking ring", minutes: 20, task: "Write a clear claim for a longer response." },
@@ -106,11 +107,11 @@ const modules: Module[] = [
     short: "Stellar",
     world: "Starfall Meadow",
     blurb: "Sentences that hold one clear idea.",
-    x: 51.5,
-    y: 60,
+    x: 51.6,
+    y: 60.5,
     w: 11,
-    h: 28,
-    tagY: 79.8,
+    h: 31,
+    tagY: 80.2,
     accent: "#b46bff",
     lessons: [
       { title: "Writing Sentences", world: "First stones", minutes: 20, task: "Write three sentences that each say one whole idea." },
@@ -126,11 +127,11 @@ const modules: Module[] = [
     short: "Process",
     world: "Ember Forge",
     blurb: "Read the prompt, take notes, make a plan.",
-    x: 64.5,
-    y: 60,
+    x: 64.6,
+    y: 60.5,
     w: 11,
-    h: 28,
-    tagY: 79.8,
+    h: 31,
+    tagY: 80.2,
     accent: "#ff9a3c",
     lessons: [
       { title: "Read the prompt", world: "White trunks", minutes: 15, task: "Underline what the prompt is asking you to do." },
@@ -145,11 +146,11 @@ const modules: Module[] = [
     short: "Revision",
     world: "Sunken Library",
     blurb: "Make the draft clearer and stronger.",
-    x: 78.1,
-    y: 60,
+    x: 78.2,
+    y: 60.5,
     w: 11,
-    h: 28,
-    tagY: 79.8,
+    h: 31,
+    tagY: 80.2,
     accent: "#2fd6c8",
     lessons: [
       { title: "Name the idea", world: "Lookout", minutes: 15, task: "Say what the draft is really about, in one line." },
@@ -164,11 +165,11 @@ const modules: Module[] = [
     short: "Edit",
     world: "Coral Cove",
     blurb: "Polish conventions until the writing is clear.",
-    x: 92.3,
-    y: 60,
+    x: 92.5,
+    y: 60.5,
     w: 11,
-    h: 28,
-    tagY: 82.9,
+    h: 31,
+    tagY: 83.5,
     accent: "#ff6fa8",
     lessons: [
       { title: "Capitals and stops", world: "Fallen leaves", minutes: 15, task: "Fix sentences that start or end the wrong way." },
@@ -178,21 +179,23 @@ const modules: Module[] = [
   },
 ];
 
-/* Centered on the tree trunk / treehouse tower in portal-hub-z.jpg (trunk spans ~576-768 of
-   1280 between the sky gaps at rows 300-340; tower window ~673) — not the frame center. */
-const treehouseSpot = { x: 52.6, y: 42, w: 13, h: 26 };
+/* Frame-% of the 1280x720 animated hub (portal-hub-loop / portal-hub-poster.jpg). The video
+   is the old 1280x776 still minus its top 44 rows (x' = 1.003x - 1, y' = 1.003y - 44), so these
+   were carried over from portal-hub-z.jpg and checked on the poster frame.
+   Treehouse: centered on the trunk / tower window, not the frame center. */
+const treehouseSpot = { x: 52.7, y: 39.3, w: 13, h: 28 };
 
 /** Two interactive lanterns (crystal = My growth, leaf = Practice); the compass and
     feather lanterns stay decorative. */
-/* Measured on portal-hub-z.jpg (1280x776): body centers compass 398, crystal 489,
-   feather 813, leaf 960; the wooden plaque hangs directly under each body. */
+/* Lantern bodies + the wooden plaque hanging under each (poster frame, 1280x720). The video's
+   lanterns sway a little; the labels stay put on the plaques. */
 const lanterns: Lantern[] = [
-  { id: "growth", label: "My growth", x: 38.2, y: 30.3, w: 5.5, h: 18, signX: 38.2, signY: 41.9 },
-  { id: "practice", label: "Practice", x: 75.0, y: 34.1, w: 5.5, h: 16, signX: 75.0, signY: 42.3 },
+  { id: "growth", label: "My growth", x: 38.2, y: 26.7, w: 5.5, h: 19.5, signX: 38.2, signY: 39.2 },
+  { id: "practice", label: "Practice", x: 75.1, y: 30.8, w: 5.5, h: 17.3, signX: 75.1, signY: 39.7 },
 ];
 
 /** Astra’s pouch sits on the ground beside his left shoe (frame-%). */
-const pouchSpot = { x: 3.9, y: 83.2 };
+const pouchSpot = { x: 3.8, y: 83.9 };
 
 type View =
   | { page: "hub" }
@@ -204,6 +207,18 @@ type View =
 /* ——— Portal worlds: demo progress + coins persist in localStorage so the world is testable ——— */
 const COINS_KEY = "astra.coins";
 const lessonsKey = (modId: string) => `astra.lessons.${modId}`;
+
+function useReducedMotion() {
+  const [reduce, setReduce] = useState(() => window.matchMedia?.("(prefers-reduced-motion: reduce)").matches ?? false);
+  useEffect(() => {
+    const mq = window.matchMedia?.("(prefers-reduced-motion: reduce)");
+    if (!mq) return;
+    const on = () => setReduce(mq.matches);
+    mq.addEventListener("change", on);
+    return () => mq.removeEventListener("change", on);
+  }, []);
+  return reduce;
+}
 
 function readCoins(): number {
   try {
@@ -331,6 +346,7 @@ function StudentHome() {
   const [dive, setDive] = useState<{ x: number; y: number; ox: number; oy: number; reduce: boolean } | null>(null);
   const [cameByPortal, setCameByPortal] = useState(false);
   const sceneRef = useRef<HTMLDivElement>(null);
+  const reduceMotion = useReducedMotion();
   const [view, setView] = useState<View>(() => parseHash(window.location.hash));
   const [glow, setGlow] = useState<{ x: number; y: number } | null>(null);
   const [cade, setCade] = useState(false);
@@ -590,11 +606,30 @@ function StudentHome() {
             >
               <div className="zscene">
                 <div className="zscene-frame">
+                  {/* Emily's animated hub (seamless 1s cross-fade loop). The poster still stays
+                      underneath as the fallback and is all reduced-motion users see. */}
                   <img
-                    src={asset("portal-hub-z.jpg")}
+                    src={asset("portal-hub-poster.jpg")}
                     alt="Astra beside six magical portals under a lantern treehouse"
                     className="zscene-img"
                   />
+                  {!reduceMotion ? (
+                    <video
+                      className="zscene-img zscene-video"
+                      poster={asset("portal-hub-poster.jpg")}
+                      autoPlay
+                      muted
+                      loop
+                      playsInline
+                      preload="auto"
+                      disablePictureInPicture
+                      aria-hidden="true"
+                      onCanPlay={(e) => e.currentTarget.classList.add("ready")}
+                    >
+                      <source src={asset("portal-hub-loop.mp4")} type="video/mp4" />
+                      <source src={asset("portal-hub-loop.webm")} type="video/webm" />
+                    </video>
+                  ) : null}
 
                   {/* Astra's tip: always showing so today's focus stays in view */}
                   <div className="z-tip" role="note" aria-label="Astra’s tip">
@@ -876,9 +911,9 @@ function AssignmentBar({
             onClick={onToggle}
             aria-label={open ? "Hide assignments" : "Show all assignments"}
             aria-expanded={open}
-            className="assign-chip grid size-11 place-items-center"
+            className="assign-chip pb-assign-crystal grid size-11 place-items-center"
           >
-            <img src={asset("crystal.png")} alt="" className="assign-crystal" />
+            <AssignCrystalArt src={asset("crystal.png")} />
           </button>
         </div>
         {open ? (

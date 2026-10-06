@@ -12,6 +12,7 @@ import {
 } from "./plan-b-worlds";
 import { M1_VARIANT, M1_VARIANTS, PLAN_B_LESSONS, lessonLabel, type PlanBLesson } from "./plan-b-lessons";
 import "./plan-b-hub.css";
+import { AssignCrystalArt } from "./assign-crystal";
 
 export const Route = createFileRoute("/")({ component: StudentHome });
 
@@ -507,15 +508,7 @@ function StudentHome() {
             aria-expanded={shelfOpen}
             className="pb-bottom-crystal pb-assign-crystal"
           >
-            {/* Light-to-sapphire colour cycle + glow, a shine sweep masked to the crystal, and 4 sparkles. */}
-            <span className="pb-ac-body" style={{ ["--crystal" as string]: `url(${CRYSTAL_ICON})` }}>
-              <img src={CRYSTAL_ICON} alt="" className="pb-ac-img" />
-              <span className="pb-ac-shine" />
-            </span>
-            <span className="pb-ac-spark s1" />
-            <span className="pb-ac-spark s2" />
-            <span className="pb-ac-spark s3" />
-            <span className="pb-ac-spark s4" />
+            <AssignCrystalArt src={CRYSTAL_ICON} />
           </button>
           <button
             type="button"
