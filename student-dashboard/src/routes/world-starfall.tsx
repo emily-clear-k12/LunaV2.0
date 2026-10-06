@@ -43,7 +43,7 @@ const ART = {
 /* Lesson spots (glowing flowers + a blue crystal) in frame-% over worlds/starfall-meadow-bg.jpg
    (cover-fit, 16:9): Lessons 1-2 left of the creek (left slope, center rise), Lessons 3-4
    right of it, set back in the meadow to mirror 1-2 (far right meadow, right meadow). Kept off the
-   stream, the top HUD, and Astra + her tip bubble (bottom-left). The firefly jar lives in the HUD. */
+   stream, the top HUD, and Astra + his tip bubble (bottom-left). The firefly jar lives in the HUD. */
 const SPOTS: { x: number; y: number }[] = [
   { x: 25, y: 56 },
   { x: 46, y: 51 },
@@ -73,18 +73,54 @@ function useImagesOk(srcs: string[]) {
 
 const TIP = "Tap a glowing spot to start a lesson. Want coins? Catch word fireflies in the jar!";
 
-/* ——— read aloud ——— */
+/* ——— read aloud ———
+   Lines recorded in Astra's own voice (Higgins "Astra-1") play from public/voice/.
+   Anything not recorded yet (e.g. the sentence a student builds in the firefly jar)
+   falls back to the browser's text-to-speech, preferring a boy/male voice to match Astra. */
+const VOICE: Record<string, string> = {
+  [`Welcome to Starfall Meadow! ${TIP}`]: "voice/starfall-welcome.mp3",
+};
+
+let playing: HTMLAudioElement | null = null;
+
 export function speak(text: string) {
   const synth = typeof window !== "undefined" ? window.speechSynthesis : undefined;
+  synth?.cancel();
+  if (playing) {
+    playing.pause();
+    playing = null;
+  }
+  const clip = VOICE[text];
+  if (clip) {
+    const a = new Audio(asset(clip));
+    playing = a;
+    a.play().catch(() => {
+      /* autoplay blocked or file missing: fall back to the browser voice */
+      if (playing === a) browserSpeak(text);
+    });
+    return;
+  }
+  browserSpeak(text);
+}
+
+export function stopSpeech() {
+  window.speechSynthesis?.cancel();
+  if (playing) {
+    playing.pause();
+    playing = null;
+  }
+}
+
+function browserSpeak(text: string) {
+  const synth = typeof window !== "undefined" ? window.speechSynthesis : undefined;
   if (!synth) return;
-  synth.cancel();
   const u = new SpeechSynthesisUtterance(text);
   u.lang = "en-US";
-  u.rate = 0.92;
-  u.pitch = 1.1;
+  u.rate = 0.95;
+  u.pitch = 1.15;
   const voices = synth.getVoices();
   const voice =
-    voices.find((v) => /en[-_]US/i.test(v.lang) && /samantha|google us|female|aria|jenny/i.test(v.name)) ??
+    voices.find((v) => /en[-_]US/i.test(v.lang) && /guy|davis|david|mark|aaron|alex|daniel|male|andrew|brian|eric/i.test(v.name) && !/female/i.test(v.name)) ??
     voices.find((v) => /^en/i.test(v.lang));
   if (voice) u.voice = voice;
   synth.speak(u);
@@ -209,7 +245,7 @@ export function StarfallWorld({
 
   useEffect(() => {
     if (autoSpeak) speak(`Welcome to Starfall Meadow! ${TIP}`);
-    return () => window.speechSynthesis?.cancel();
+    return () => stopSpeech();
   }, [autoSpeak]);
 
   useEffect(() => {
