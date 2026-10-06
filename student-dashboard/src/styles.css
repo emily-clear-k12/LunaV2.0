@@ -1527,7 +1527,7 @@
     text-align: left;
     box-shadow: 0 10px 30px rgb(40 20 60 / 0.35);
     backdrop-filter: blur(14px) saturate(1.2);
-    cursor: pointer;
+    cursor: default;
   }
 
   .z-tip::after {

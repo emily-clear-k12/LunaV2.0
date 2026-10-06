@@ -179,9 +179,6 @@ const modules: Module[] = [
 /* Centered on the tree trunk / treehouse tower in portal-hub-z.jpg (trunk spans ~576-768 of
    1280 between the sky gaps at rows 300-340; tower window ~673) — not the frame center. */
 const treehouseSpot = { x: 52.6, y: 42, w: 13, h: 26 };
-const astraSpot = { x: 9.5, y: 58, w: 13, h: 38 };
-/** Thought bubble: top-left corner in frame-%, in the sky right of Astra's right ear. */
-const thinkSpot = { x: 19.5, y: 25.8 };
 
 /** Two interactive lanterns (crystal = My growth, leaf = Practice); the compass and
     feather lanterns stay decorative. */
@@ -192,8 +189,8 @@ const lanterns: Lantern[] = [
   { id: "practice", label: "Practice", x: 75.0, y: 34.1, w: 5.5, h: 16, signX: 75.0, signY: 42.3 },
 ];
 
-/** Astra’s pouch sits on the ground beside his right shoe (frame-%). */
-const pouchSpot = { x: 20.6, y: 85.2 };
+/** Astra’s pouch sits on the ground beside his left shoe (frame-%). */
+const pouchSpot = { x: 3.6, y: 85.2 };
 
 type View =
   | { page: "hub" }
@@ -289,7 +286,6 @@ function StudentHome() {
   const [ecrNote, setEcrNote] = useState(false);
   const [pieces, setPieces] = useState<Piece[]>(PIECES_AT_START);
   const [coins, setCoins] = useState<CoinState>(COINS_AT_START);
-  const [tipOpen, setTipOpen] = useState(true);
   const [view, setView] = useState<View>(() => parseHash(window.location.hash));
   const [glow, setGlow] = useState<{ x: number; y: number } | null>(null);
   const [cade, setCade] = useState(false);
@@ -306,11 +302,6 @@ function StudentHome() {
     return () => window.removeEventListener("hashchange", onHash);
   }, []);
 
-  useEffect(() => {
-    if (!tipOpen) return;
-    const id = window.setTimeout(() => setTipOpen(false), 6000);
-    return () => window.clearTimeout(id);
-  }, [tipOpen]);
 
   function navigate(next: View) {
     const hash = viewHash(next);
@@ -494,55 +485,11 @@ function StudentHome() {
                     className="zscene-img"
                   />
 
-                  {/* Astra tip bubble; after it collapses (~6s) a thought bubble invites a re-open */}
-                  {tipOpen ? (
-                    <button
-                      type="button"
-                      className="z-tip"
-                      onClick={() => setTipOpen(false)}
-                      aria-label="Astra’s tip. Tap to dismiss."
-                    >
-                      <span className="z-tip-k">✦ Astra’s tip</span>
-                      <span className="z-tip-t">{CLASS_FOCUS}</span>
-                    </button>
-                  ) : !focus ? (
-                    <button
-                      type="button"
-                      className="z-think"
-                      style={{ left: `${thinkSpot.x}%`, top: `${thinkSpot.y}%` }}
-                      onClick={() => setTipOpen(true)}
-                      aria-label="Astra has a thought. Show Astra’s tip"
-                      title="Astra has a thought"
-                    >
-                      <svg viewBox="0 0 52 54" aria-hidden="true">
-                        <circle className="z-think-trail t2" cx="6" cy="48" r="2.6" />
-                        <circle className="z-think-trail t1" cx="12.5" cy="40" r="4" />
-                        <path
-                          className="z-think-cloud"
-                          d="M20 34c-6.5 0-8.6-6.7-4.4-9.6-2.6-5.6 3-10.6 8-8.3 1.6-6 10.6-7.2 13.8-1.8 4.6-3 11.4.6 10.2 6.2 4.4 2.4 3 9.8-3.2 9.6-1.6 4.8-9.4 5.8-12.4 2-3.6 4-10.8 3.6-12-1.1z"
-                        />
-                        <circle className="z-think-dot d1" cx="25.5" cy="24.6" r="2.3" />
-                        <circle className="z-think-dot d2" cx="32" cy="24.6" r="2.3" />
-                        <circle className="z-think-dot d3" cx="38.5" cy="24.6" r="2.3" />
-                      </svg>
-                    </button>
-                  ) : null}
-
-                  <button
-                    type="button"
-                    className={
-                      "z-hotspot z-astra absolute -translate-x-1/2 -translate-y-1/2 " +
-                      (focus ? "pointer-events-none opacity-0" : "")
-                    }
-                    style={{
-                      left: `${astraSpot.x}%`,
-                      top: `${astraSpot.y}%`,
-                      width: `${astraSpot.w}%`,
-                      height: `${astraSpot.h}%`,
-                    }}
-                    onClick={() => setTipOpen(true)}
-                    aria-label="Astra, show tip"
-                  />
+                  {/* Astra's tip: always showing so today's focus stays in view */}
+                  <div className="z-tip" role="note" aria-label="Astra’s tip">
+                    <span className="z-tip-k">✦ Astra’s tip</span>
+                    <span className="z-tip-t">{CLASS_FOCUS}</span>
+                  </div>
 
                   {modules.map((mod) => (
                     <button
