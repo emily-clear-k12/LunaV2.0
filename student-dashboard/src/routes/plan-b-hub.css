@@ -1,0 +1,475 @@
+/* ——— Plan B hub: treehouse-balcony frame (Emily's Oct 6 mockup) ———
+   One 16:9 stage. Positions are % of the 1672x941 frame art; text scales with the stage (cqw/cqh). */
+
+.pb-root {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  container-type: size;
+  /* Gutters (only when the viewport isn't 16:9, e.g. under the View switcher): dark wood. */
+  background: radial-gradient(ellipse at center, #4a3020 0%, #2c1c10 100%);
+}
+
+.pb-stage {
+  --pb-teal: #015985;
+  --pb-navy: #13294b;
+  --pb-ink: #2b3a4a;
+  position: relative;
+  width: min(100cqw, calc(100cqh * 16 / 9));
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  container-type: size;
+  font-family: "Baloo 2", "Nunito", sans-serif;
+  color: var(--pb-ink);
+  background: #6fb7f0;
+}
+
+/* Map window of the frame (x 47-1254, y 94-778 of 1672x941). */
+.pb-window {
+  position: absolute;
+  left: 2.81%;
+  top: 9.99%;
+  width: 72.19%;
+  height: 72.69%;
+}
+
+.pb-map-clip {
+  z-index: 1;
+  overflow: hidden;
+  background: #8fc8f4;
+}
+
+/* The map sits a little larger than the window (fitted to the mockup's label positions). */
+.pb-mapbox {
+  position: absolute;
+  left: -3.18%;
+  top: -5.44%;
+  width: 109.64%;
+  height: 108.89%;
+}
+
+.pb-map-img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  user-select: none;
+}
+
+.pb-frame-art {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  user-select: none;
+}
+
+.pb-marker-layer {
+  z-index: 3;
+  pointer-events: none;
+}
+
+.pb-marker-layer .pb-mapbox > * {
+  pointer-events: auto;
+}
+
+.pb-marker-layer .pb-mapbox {
+  transition: opacity 0.35s ease;
+}
+
+.pb-marker-layer .pb-mapbox.is-hidden {
+  opacity: 0;
+}
+
+.pb-marker-layer .pb-mapbox.is-hidden * {
+  pointer-events: none !important;
+}
+
+/* World pages live in the map window, behind the frame: move the name pill clear of the lantern
+   and lift the toast above the railing. */
+.pb-map-clip .pb-world-name {
+  left: 50%;
+  translate: -50% 0;
+  align-items: center;
+}
+
+.pb-map-clip .pb-toast {
+  bottom: 22%;
+}
+
+/* ——— Title ribbon (x 122-1142, y 0-85) ——— */
+.pb-ribbon {
+  position: absolute;
+  z-index: 4;
+  left: 7.3%;
+  top: 0;
+  width: 61%;
+  height: 9.03%;
+  display: flex;
+  align-items: center;
+  gap: 1.1cqw;
+  padding-left: 2.6cqw;
+  pointer-events: none;
+}
+
+.pb-ribbon-crystal {
+  height: 7.4cqh;
+  width: auto;
+  filter: drop-shadow(0 0 0.5cqw rgb(90 190 255 / 0.7));
+}
+
+.pb-ribbon-title {
+  margin: 0;
+  font-size: 3.05cqw;
+  font-weight: 800;
+  line-height: 1;
+  color: var(--pb-navy);
+  white-space: nowrap;
+  letter-spacing: -0.005em;
+}
+
+/* ——— Right panel sections (x 1296-1650) ——— */
+.pb-panel {
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  pointer-events: none;
+}
+
+.pb-sec {
+  position: absolute;
+  left: 77.51%;
+  width: 21.17%;
+  pointer-events: auto;
+}
+
+.pb-cap {
+  margin: 0;
+  font-size: 1.02cqw;
+  font-weight: 800;
+  line-height: 1.15;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: var(--pb-teal);
+}
+
+.pb-sec-tip {
+  top: 9.78%;
+  height: 18.07%;
+  display: flex;
+  align-items: center;
+  gap: 1cqw;
+}
+
+.pb-portrait {
+  width: 8.1cqw;
+  height: 8.1cqw;
+  flex-shrink: 0;
+  border-radius: 50%;
+  box-shadow: 0 0.25cqw 0.6cqw rgb(60 40 20 / 0.28);
+}
+
+.pb-tip-text {
+  margin: 0.15cqw 0 0;
+  font-size: 1.28cqw;
+  font-weight: 700;
+  line-height: 1.2;
+  color: var(--pb-ink);
+}
+
+.pb-sec-mastery {
+  top: 29.33%;
+  height: 30.18%;
+  display: flex;
+  flex-direction: column;
+}
+
+.pb-sec-title {
+  margin: 0 0 0.2cqw;
+  font-size: 1.55cqw;
+  font-weight: 800;
+  line-height: 1.2;
+  color: var(--pb-navy);
+}
+
+.pb-medals {
+  display: grid;
+  flex: 1;
+  grid-template-columns: repeat(3, 1fr);
+  align-content: space-evenly;
+  row-gap: 0.4cqw;
+}
+
+.pb-medal {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.15cqw;
+  border: 0;
+  background: transparent;
+  padding: 0;
+  cursor: pointer;
+}
+
+.pb-medal-art {
+  width: 6cqw;
+  height: 6cqw;
+  object-fit: contain;
+  transition: transform 0.18s ease, filter 0.18s ease;
+}
+
+.pb-medal:hover .pb-medal-art,
+.pb-medal:focus-visible .pb-medal-art {
+  transform: scale(1.07);
+  filter: drop-shadow(0 0 0.5cqw rgb(90 190 255 / 0.6));
+}
+
+.pb-medal.is-active .pb-medal-art {
+  filter: drop-shadow(0 0 0.45cqw rgb(255 210 90 / 0.65));
+}
+
+.pb-medal:focus-visible {
+  outline: 2px solid #1a8fd0;
+  outline-offset: 2px;
+  border-radius: 0.6cqw;
+}
+
+.pb-medal-label {
+  font-size: 1.05cqw;
+  font-weight: 800;
+  line-height: 1.1;
+  color: var(--pb-navy);
+}
+
+.pb-sec-goal {
+  top: 61%;
+  height: 12.33%;
+  display: flex;
+  align-items: center;
+  gap: 1cqw;
+}
+
+.pb-compass {
+  width: 5cqw;
+  height: 5cqw;
+  flex-shrink: 0;
+}
+
+.pb-goal-text {
+  margin: 0.1cqw 0 0;
+  font-size: 1.28cqw;
+  font-weight: 700;
+  line-height: 1.2;
+  color: var(--pb-ink);
+}
+
+.pb-sec-tree {
+  top: 74.81%;
+  height: 22.1%;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+}
+
+.pb-tree-title {
+  margin: 0.1cqw 0 0;
+  font-size: 2.2cqw;
+  font-weight: 800;
+  line-height: 1.1;
+  color: var(--pb-navy);
+}
+
+.pb-tree-text {
+  margin: 0.2cqw 0 0;
+  font-size: 1.2cqw;
+  font-weight: 600;
+  line-height: 1.2;
+  color: var(--pb-ink);
+}
+
+/* ——— Blue pill buttons (mockup gradient) ——— */
+.pb-pill {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.7cqw;
+  border: 0.13cqw solid rgb(200 240 255 / 0.9);
+  border-radius: 999px;
+  background: linear-gradient(180deg, #4cc8f1 0%, #16a2d9 42%, #0a86c2 68%, #006a9e 100%);
+  font-family: inherit;
+  font-weight: 800;
+  color: #fff;
+  text-shadow: 0 1px 1px rgb(0 50 90 / 0.35);
+  box-shadow:
+    inset 0 0.12cqw 0 rgb(255 255 255 / 0.45),
+    0 0.3cqw 0.8cqw rgb(0 80 130 / 0.35),
+    0 0 0.9cqw rgb(80 190 255 / 0.35);
+  cursor: pointer;
+  transition: filter 0.18s ease, transform 0.18s ease;
+}
+
+.pb-pill:hover {
+  filter: brightness(1.07);
+}
+
+.pb-pill:active {
+  transform: translateY(1px) scale(0.99);
+}
+
+.pb-pill:focus-visible {
+  outline: 2px solid #b8e8ff;
+  outline-offset: 2px;
+}
+
+.pb-pill-icon {
+  width: 1.5em;
+  height: 1.5em;
+}
+
+.pb-pill-chev {
+  position: absolute;
+  right: 1.1em;
+  width: 1.15em;
+  height: 1.15em;
+}
+
+.pb-pill-big {
+  width: 100%;
+  height: 6.8cqh;
+  margin-top: auto;
+  margin-bottom: 0.2cqh;
+  font-size: 1.35cqw;
+}
+
+/* ——— Bottom assignment bar (x 45-1135, y 851-909) ——— */
+.pb-bottom {
+  position: absolute;
+  z-index: 4;
+  left: 2.69%;
+  top: 90.44%;
+  width: 65.19%;
+  height: 6.16%;
+  display: flex;
+  align-items: center;
+  gap: 0.8cqw;
+  padding: 0 0.95cqw 0 1.4cqw;
+}
+
+.pb-bottom-crystal {
+  display: grid;
+  flex-shrink: 0;
+  place-items: center;
+  border: 0;
+  background: transparent;
+  padding: 0;
+  cursor: pointer;
+}
+
+.pb-bottom-crystal img {
+  height: 4.9cqh;
+  width: auto;
+  filter: drop-shadow(0 0 0.4cqw rgb(90 190 255 / 0.7));
+}
+
+.pb-bottom-crystal.is-pulsing img {
+  animation: pb-chip-pulse 2.4s ease-in-out infinite;
+}
+
+@keyframes pb-chip-pulse {
+  0%, 100% { filter: drop-shadow(0 0 0.3cqw rgb(90 190 255 / 0.6)); }
+  50% { filter: drop-shadow(0 0 0.9cqw rgb(90 200 255 / 0.95)); }
+}
+
+.pb-bottom-text {
+  display: flex;
+  min-width: 0;
+  flex: 1;
+  flex-direction: column;
+  align-items: flex-start;
+  border: 0;
+  background: transparent;
+  padding: 0;
+  text-align: left;
+  cursor: pointer;
+}
+
+.pb-bottom-text .pb-cap {
+  font-size: 0.82cqw;
+}
+
+.pb-bottom-title {
+  max-width: 100%;
+  overflow: hidden;
+  font-size: 1.55cqw;
+  font-weight: 800;
+  line-height: 1.15;
+  color: var(--pb-navy);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.pb-pill-start {
+  flex-shrink: 0;
+  width: 18.4cqw;
+  height: 5.6cqh;
+  font-size: 1.1cqw;
+}
+
+.pb-assign-pop {
+  position: absolute;
+  z-index: 6;
+  left: 2.69%;
+  bottom: 10.2%;
+  width: 42%;
+  border: 1px solid rgb(196 160 110 / 0.6);
+  border-radius: 1.1cqw;
+  background: rgb(255 251 242 / 0.98);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  box-shadow: 0 1cqw 2.4cqw rgb(40 24 12 / 0.35);
+}
+
+/* ——— Cards + Back to map (above the frame, inside the map window) ——— */
+.pb-card-layer {
+  z-index: 5;
+  pointer-events: none;
+  font-family: var(--font-sans);
+}
+
+.pb-card-layer > * {
+  pointer-events: auto;
+}
+
+.pb-back {
+  position: absolute;
+  top: 2.2%;
+  right: 1.4%;
+  z-index: 2;
+  display: inline-flex;
+  min-height: 2.75rem;
+  align-items: center;
+  gap: 0.5rem;
+  border: 1px solid rgb(196 160 110 / 0.7);
+  border-radius: 999px;
+  background: var(--color-cream);
+  padding: 0 1rem;
+  font-family: "Baloo 2", "Nunito", sans-serif;
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: var(--color-ink);
+  box-shadow: 0 6px 16px rgb(30 20 10 / 0.3);
+  cursor: pointer;
+}
+
+/* Hub labels a touch larger than on the old full-width map, to match the mockup. */
+.pb-marker-layer .pb-hub-label-mod {
+  font-size: max(10.5px, 0.95cqw);
+}
+
+.pb-marker-layer .pb-hub-label-world {
+  font-size: max(12.5px, 1.2cqw);
+}

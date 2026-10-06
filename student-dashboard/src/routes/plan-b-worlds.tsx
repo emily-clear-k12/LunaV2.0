@@ -33,8 +33,7 @@ export const STATE_LABEL: Record<LessonState, string> = {
 };
 
 /** Hub map (01_Main_Map_mockup): crystal = bottom-centre anchor + height, label = top-centre.
-    Merfolk's label sits above its crystal (nudged): in the mockup it is below, where it would
-    sit under Plan B's "Current assignment" bar. */
+    All labels sit below their crystals, as in Emily's mockups (Merfolk's just above the railing). */
 export type HubSpot = { x: number; bottom: number; h: number; labelTop: number; labelAbove?: boolean };
 
 export const HUB: Record<string, HubSpot> = {
@@ -42,7 +41,7 @@ export const HUB: Record<string, HubSpot> = {
   ecr: { x: 45.9, bottom: 30.4, h: 5.4, labelTop: 30.9 },
   sentences: { x: 77.7, bottom: 33.6, h: 5.8, labelTop: 34.4 },
   plan: { x: 79.5, bottom: 60.7, h: 5.4, labelTop: 61.6 },
-  revise: { x: 59.5, bottom: 86.6, h: 6.0, labelTop: 80.0, labelAbove: true },
+  revise: { x: 59.5, bottom: 86.6, h: 6.0, labelTop: 87.0 },
   edit: { x: 22.3, bottom: 79.8, h: 5.8, labelTop: 81.2 },
   treehouse: { x: 51.0, bottom: 66.1, h: 5.8, labelTop: 67.6 },
 };

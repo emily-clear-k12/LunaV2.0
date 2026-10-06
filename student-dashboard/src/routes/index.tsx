@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { ArrowLeft, Check, Compass, Feather } from "lucide-react";
+import { ArrowLeft, Check, ChevronRight, Feather } from "lucide-react";
 import { useEffect, useState } from "react";
 import {
   Crystal,
@@ -11,6 +11,7 @@ import {
   worldBySlug,
 } from "./plan-b-worlds";
 import { M1_VARIANT, M1_VARIANTS, PLAN_B_LESSONS, lessonLabel, type PlanBLesson } from "./plan-b-lessons";
+import "./plan-b-hub.css";
 
 export const Route = createFileRoute("/")({ component: StudentHome });
 
@@ -164,7 +165,7 @@ const assignments = [
 
 const badges = [
   { id: "scr", label: "SCR", name: "Short responses", moduleId: "scr" },
-  { id: "ecr", label: "ECR", name: "Extended responses", moduleId: "" },
+  { id: "ecr", label: "ECR", name: "Extended responses", moduleId: "ecr" },
   { id: "stellar", label: "Stellar", name: "Sentences", moduleId: "sentences" },
   { id: "process", label: "Process", name: "Preparing to write", moduleId: "plan" },
   { id: "revision", label: "Revision", name: "Revision", moduleId: "revise" },
@@ -195,10 +196,11 @@ const MY_GOAL = "Back up my opinion with strong, specific reasons.";
 
 const asset = (file: string) => `${import.meta.env.BASE_URL}${file}`;
 
-const STAGE_W = 1366;
-const STAGE_H = 768;
-/** Cream frame on all four sides around the map + panel. */
-const FRAME_GAP = 18;
+/* Treehouse-balcony frame (Emily, Oct 6): 1672x941 art with the map window keyed transparent. */
+const HUB_FRAME = asset("worlds/plan-b/hub-frame.webp");
+const ASTRA_PORTRAIT = asset("worlds/plan-b/astra-portrait.webp");
+const GOAL_COMPASS = asset("worlds/plan-b/goal-compass.webp");
+const CRYSTAL_ICON = asset("worlds/plan-b/crystal-blue.webp");
 
 function StudentHome() {
   const [moduleId, setModuleId] = useState<string | null>(null);
@@ -208,7 +210,6 @@ function StudentHome() {
   });
   const [shelfOpen, setShelfOpen] = useState(false);
   const [writeTitle, setWriteTitle] = useState<string | null>(null);
-  const [ecrNote, setEcrNote] = useState(false);
   const [quick, setQuick] = useState(false);
   const [treehouse, setTreehouse] = useState(false);
   const [entryTitle, setEntryTitle] = useState<string | null>(null);
@@ -253,8 +254,14 @@ function StudentHome() {
   function goWorld(id: string) {
     const target = worldByModule(id);
     if (!target || leaving) return;
-    setEcrNote(false);
     setShelfOpen(false);
+    if (world || focus) {
+      // From the side panel while a world or card is open: switch straight to that world.
+      backToMap();
+      history.pushState(null, "", `#world/${target.slug}`);
+      setWorldSlug(target.slug);
+      return;
+    }
     const spot = HUB[id];
     const reduce = window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
     setLeaving({ x: spot.x, y: spot.bottom - spot.h / 2 });
@@ -273,6 +280,7 @@ function StudentHome() {
   }
 
   function openModule(id: string, lessonName?: string, assignmentTitle?: string) {
+    if (world) leaveWorld();
     setTreehouse(false);
     setEntryTitle(null);
     setModuleId(id || null);
@@ -283,6 +291,7 @@ function StudentHome() {
   }
 
   function openTreehouse() {
+    if (world) leaveWorld();
     setModuleId(null);
     setLessonTitle(null);
     setWriteTitle(null);
@@ -293,6 +302,7 @@ function StudentHome() {
   }
 
   function startQuickWrite() {
+    if (world) leaveWorld();
     setModuleId(null);
     setLessonTitle(null);
     setWriteTitle(null);
@@ -332,129 +342,72 @@ function StudentHome() {
     });
   }
 
+  const today = assignments[0];
+  const hideMarkers = Boolean(focus || leaving || world);
+
   return (
-    <div className="flex h-dvh w-full flex-col overflow-hidden bg-cream">
-      <header className="title-bar">
-        <img src={asset("astra-banner.jpg")} alt="" className="title-banner" />
-        <div className="title-bar-inner">
-          <div className="title-left">
-            <h1 className="title-heading">Astra’s Writing Adventure</h1>
-          </div>
-          {focus || world ? (
-            <button
-              type="button"
-              onClick={backToMap}
-              className="inline-flex min-h-11 shrink-0 items-center gap-2 rounded-full bg-cream px-4 text-sm font-bold text-ink"
-            >
-              <ArrowLeft className="size-4" aria-hidden="true" />
-              Back to map
-            </button>
+    <div className="pb-root h-dvh w-full">
+      <div className="pb-stage">
+        {/* Map window (behind the frame): the hub map, or a world page. */}
+        <div className="pb-window pb-map-clip">
+          {world && worldMod ? (
+            <WorldPage
+              key={world.slug}
+              world={world}
+              moduleN={worldMod.n}
+              moduleShort={worldMod.id === "scr" && M1_VARIANT !== "scr" ? `${worldMod.short} · ${M1_VARIANTS[M1_VARIANT].label}` : worldMod.short}
+              worldName={worldMod.world}
+              lessons={worldMod.lessons}
+              states={progress[world.moduleId] ?? []}
+              entering
+            />
           ) : (
-            <div className="mastery">
-              <span className="mastery-label">Your Mastery</span>
-              <div className="mastery-row">
-                {badges.map((badge) => {
-                  const active =
-                    badge.id === "scr" ||
-                    (badge.moduleId ? mastered(badge.moduleId) : false);
-                  const src = asset(
-                    `badges/${badge.id}-${active ? "active" : "inactive"}.png`,
-                  );
-                  return (
-                    <button
-                      key={badge.id}
-                      type="button"
-                      onClick={() => {
-                        if (badge.moduleId) {
-                          setEcrNote(false);
-                          if (world) leaveWorld();
-                          goWorld(badge.moduleId);
-                        } else {
-                          setEcrNote(true);
-                        }
-                      }}
-                      aria-current={active ? "true" : undefined}
-                      title={badge.name}
-                      className={active ? "medal medal-live" : "medal"}
-                    >
-                      <img src={src} alt="" className="medal-art" />
-                      <span className="medal-label">{badge.label}</span>
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
-          )}
-        </div>
-      </header>
-      <div
-        className="flex min-h-0 w-full min-w-0 flex-1 overflow-hidden bg-cream"
-        style={{ padding: FRAME_GAP }}
-      >
-      <div className="flex h-full min-h-0 w-full min-w-0 overflow-hidden bg-dusk">
-      <div className="relative min-h-0 min-w-0 flex-1">
-      <div className="absolute inset-0 overflow-hidden">
-        {world && worldMod ? (
-          <WorldPage
-            key={world.slug}
-            world={world}
-            moduleN={worldMod.n}
-            moduleShort={worldMod.id === "scr" && M1_VARIANT !== "scr" ? `${worldMod.short} · ${M1_VARIANTS[M1_VARIANT].label}` : worldMod.short}
-            worldName={worldMod.world}
-            lessons={worldMod.lessons}
-            states={progress[world.moduleId] ?? []}
-            entering
-          />
-        ) : (
-        <div
-          className={
-            "pb-hub-scene absolute inset-0 transition-transform duration-700 ease-out" +
-            (leaving ? " is-leaving" : "") +
-            (mapEnter ? " pb-map-enter" : "")
-          }
-          style={{
-            transformOrigin: leaving
-              ? `${leaving.x}% ${leaving.y}%`
-              : focus
-                ? `${focus.x}% ${focus.y}%`
-                : "50% 50%",
-            transform: leaving ? "scale(1.9)" : focus ? "scale(2.35)" : "scale(1)",
-          }}
-        >
-          <div className="kingdom-scene">
-            <div className="kingdom-scene-frame pb-frame">
+            <div
+              className={"pb-mapbox pb-hub-scene" + (leaving ? " is-leaving" : "") + (mapEnter ? " pb-map-enter" : "")}
+              style={{
+                transformOrigin: leaving
+                  ? `${leaving.x}% ${leaving.y}%`
+                  : focus
+                    ? `${focus.x}% ${focus.y}%`
+                    : "50% 50%",
+                transform: leaving ? "scale(1.9)" : focus ? "scale(2.35)" : "scale(1)",
+              }}
+            >
               <img
                 src={MAP_BG}
                 alt="Floating islands map with six module worlds around Astra’s Treehouse"
-                className="kingdom-scene-img"
+                className="pb-map-img"
               />
-              <button
-                type="button"
-                onClick={openTreehouse}
-                aria-label="Treehouse, your writing space"
-                tabIndex={-1}
-                className={
-                  "kingdom-hotspot tree-canopy-hotspot absolute -translate-x-1/2 -translate-y-1/2 " +
-                  (focus || leaving ? "pointer-events-none opacity-0" : "")
-                }
-                style={{
-                  left: `${treeCanopySpot.x}%`,
-                  top: `${treeCanopySpot.y}%`,
-                  width: `${treeCanopySpot.w}%`,
-                  height: `${treeCanopySpot.h}%`,
-                }}
-              >
-                <span className="kingdom-ring soft" aria-hidden="true" />
-              </button>
-              {[...modules.map((mod) => ({ id: mod.id, top: `M${mod.n} · ${mod.short}`, name: mod.world, n: mod.n })), { id: "treehouse", top: "Your space", name: "Treehouse", n: 0 }].map((item, i) => {
+            </div>
+          )}
+        </div>
+
+        <img src={HUB_FRAME} alt="" className="pb-frame-art" draggable={false} />
+
+        {/* Crystals + labels sit above the frame so the railing never hides them. */}
+        <div className="pb-window pb-marker-layer">
+          <div className={"pb-mapbox pb-frame" + (hideMarkers ? " is-hidden" : "")}>
+            <button
+              type="button"
+              onClick={openTreehouse}
+              aria-label="Treehouse, your writing space"
+              tabIndex={-1}
+              className="kingdom-hotspot tree-canopy-hotspot absolute -translate-x-1/2 -translate-y-1/2"
+              style={{
+                left: `${treeCanopySpot.x}%`,
+                top: `${treeCanopySpot.y}%`,
+                width: `${treeCanopySpot.w}%`,
+                height: `${treeCanopySpot.h}%`,
+              }}
+            >
+              <span className="kingdom-ring soft" aria-hidden="true" />
+            </button>
+            {[...modules.map((mod) => ({ id: mod.id, top: `M${mod.n} · ${mod.short}`, name: mod.world, n: mod.n })), { id: "treehouse", top: "Your space", name: "Treehouse", n: 0 }].map((item, i) => {
                 const spot = HUB[item.id];
                 const onOpen = item.id === "treehouse" ? openTreehouse : () => goWorld(item.id);
                 const label = item.n ? `Module ${item.n}, ${item.name}` : "Treehouse, your writing space";
                 return (
-                  <div
-                    key={item.id}
-                    className={"pb-hub-item" + (focus || leaving ? " pointer-events-none opacity-0 transition-opacity" : "")}
-                  >
+                  <div key={item.id} className="pb-hub-item">
                     <button
                       type="button"
                       onClick={onOpen}
@@ -483,12 +436,134 @@ function StudentHome() {
                   </div>
                 );
               })}
-            </div>
           </div>
         </div>
-        )}
+
+        <header className="pb-ribbon">
+          <img src={CRYSTAL_ICON} alt="" className="pb-ribbon-crystal" />
+          <h1 className="pb-ribbon-title">Astra’s Writing Adventure</h1>
+        </header>
+
+        <aside className="pb-panel" aria-label="Astra, mastery, goal and Treehouse">
+          <section className="pb-sec pb-sec-tip">
+            <img src={ASTRA_PORTRAIT} alt="Astra the wolf" className="pb-portrait" />
+            <div className="min-w-0">
+              <p className="pb-cap">Astra’s Tip</p>
+              <p className="pb-tip-text">{CLASS_FOCUS}</p>
+            </div>
+          </section>
+
+          <section className="pb-sec pb-sec-mastery">
+            <h2 className="pb-sec-title">Your Mastery</h2>
+            <div className="pb-medals">
+              {badges.map((badge) => {
+                const active = badge.id === "scr" || (badge.moduleId ? mastered(badge.moduleId) : false);
+                return (
+                  <button
+                    key={badge.id}
+                    type="button"
+                    onClick={() => goWorld(badge.moduleId)}
+                    aria-current={active ? "true" : undefined}
+                    title={badge.name}
+                    className={"pb-medal" + (active ? " is-active" : "")}
+                  >
+                    <img
+                      src={asset(`badges/${badge.id}-${active ? "active" : "inactive"}.png`)}
+                      alt=""
+                      className="pb-medal-art"
+                    />
+                    <span className="pb-medal-label">{badge.label}</span>
+                  </button>
+                );
+              })}
+            </div>
+          </section>
+
+          <section className="pb-sec pb-sec-goal">
+            <img src={GOAL_COMPASS} alt="" className="pb-compass" />
+            <div className="min-w-0">
+              <p className="pb-cap">My Goal</p>
+              <p className="pb-goal-text">{MY_GOAL}</p>
+            </div>
+          </section>
+
+          <section className="pb-sec pb-sec-tree">
+            <p className="pb-cap">Treehouse</p>
+            <h2 className="pb-tree-title">Robot at School</h2>
+            <p className="pb-tree-text">A robot joins your class. What happens during the day?</p>
+            <button type="button" onClick={startQuickWrite} className="pb-pill pb-pill-big">
+              <Feather className="pb-pill-icon" strokeWidth={2.4} aria-hidden="true" />
+              <span>Quick write</span>
+              <ChevronRight className="pb-pill-chev" strokeWidth={2.6} aria-hidden="true" />
+            </button>
+          </section>
+        </aside>
+
+        <div className="pb-bottom">
+          <button
+            type="button"
+            onClick={() => setShelfOpen((value) => !value)}
+            aria-label={shelfOpen ? "Hide assignments" : "Show all assignments"}
+            aria-expanded={shelfOpen}
+            className={"pb-bottom-crystal" + (assignments.length > 1 && !shelfOpen ? " is-pulsing" : "")}
+          >
+            <img src={CRYSTAL_ICON} alt="" />
+          </button>
+          <button
+            type="button"
+            onClick={() => setShelfOpen((value) => !value)}
+            aria-expanded={shelfOpen}
+            className="pb-bottom-text"
+          >
+            <span className="pb-cap">Current assignment</span>
+            <span className="pb-bottom-title">{today.title}</span>
+          </button>
+          <button
+            type="button"
+            onClick={() => openModule(today.moduleId, today.lesson, today.title)}
+            className="pb-pill pb-pill-start"
+          >
+            <Feather className="pb-pill-icon" strokeWidth={2.4} aria-hidden="true" />
+            <span>Start writing</span>
+            <ChevronRight className="pb-pill-chev" strokeWidth={2.6} aria-hidden="true" />
+          </button>
         </div>
 
+        {shelfOpen ? (
+          <div className="pb-assign-pop">
+            <ul className="max-h-[42vh] overflow-y-auto px-2 py-1">
+              {assignments.map((item) => (
+                <li key={item.title} className="flex items-center gap-2 border-b border-line py-2 last:border-b-0">
+                  <div className="min-w-0 flex-1 px-2">
+                    <p className="font-bold">{item.title}</p>
+                    <p className="mt-1 flex flex-wrap items-center gap-1.5 text-xs text-muted">
+                      <span className="rounded-full bg-moss-soft px-2 py-0.5 font-bold text-moss">{item.kind}</span>
+                      <span>{item.format}</span>
+                      <span>{item.teacher}</span>
+                      <span className="font-bold text-lantern">{item.due}</span>
+                    </p>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => openModule(item.moduleId, item.lesson, item.title)}
+                    className="inline-flex min-h-11 shrink-0 items-center rounded-full bg-ink px-3 text-sm font-bold text-cream"
+                  >
+                    {item.action}
+                  </button>
+                </li>
+              ))}
+            </ul>
+          </div>
+        ) : null}
+
+        {/* Cards + Back to map float above the frame, inside the map window. */}
+        <div className="pb-window pb-card-layer">
+          {focus || world ? (
+            <button type="button" onClick={backToMap} className="pb-back">
+              <ArrowLeft className="size-4" aria-hidden="true" />
+              Back to map
+            </button>
+          ) : null}
       {focused && lesson ? (
         <section className="absolute inset-x-0 bottom-0 px-3 pb-3 sm:px-6 sm:pb-5">
           <div className="mx-auto max-w-xl rounded-3xl bg-cream p-5 text-ink shadow-2xl">
@@ -579,15 +654,6 @@ function StudentHome() {
         </section>
       ) : null}
 
-      {!focus && !quick && !world ? (
-        <AssignmentShelf
-          open={shelfOpen}
-          onToggle={() => setShelfOpen((value) => !value)}
-          onOpen={(id, lessonName, title) => openModule(id, lessonName, title)}
-          ecrNote={ecrNote}
-          onCloseEcr={() => setEcrNote(false)}
-        />
-      ) : null}
       {quick ? (
         <section className="absolute inset-x-0 bottom-0 px-4 pb-4">
           <div className="mx-auto max-w-xl rounded-3xl bg-cream p-5 text-ink shadow-2xl">
@@ -627,9 +693,7 @@ function StudentHome() {
           </div>
         </section>
       ) : null}
-      </div>
-      <QuickWrite onStart={startQuickWrite} />
-      </div>
+        </div>
       </div>
     </div>
   );
@@ -638,131 +702,4 @@ function StudentHome() {
 function slugFromHash() {
   const m = window.location.hash.match(/^#\/?world\/([a-z-]+)/);
   return m ? m[1] : null;
-}
-
-function QuickWrite({ onStart }: { onStart: () => void }) {
-  return (
-    <aside className="planb-guide flex w-[17.5rem] shrink-0 flex-col gap-2 bg-cream px-2.5 pt-2.5 pb-3 text-ink">
-      <div className="planb-astra relative min-h-0 flex-[1.15] overflow-hidden rounded-2xl shadow-md">
-        <img
-          src={asset("astra-treehouse.jpg")}
-          alt="Astra the wolf waving from the stairs of his treehouse"
-          className="absolute inset-0 h-full w-full object-cover object-[center_18%]"
-        />
-        <div className="planb-tip-bubble">
-          <p className="planb-tip-label">Astra’s tip</p>
-          <p className="planb-tip-text">{CLASS_FOCUS}</p>
-        </div>
-      </div>
-
-      <div className="goal-compass">
-        <div className="goal-compass-icon" aria-hidden="true">
-          <Compass className="size-5" strokeWidth={2.4} />
-        </div>
-        <div className="min-w-0">
-          <p className="goal-compass-label">My goal</p>
-          <p className="goal-compass-text">{MY_GOAL}</p>
-        </div>
-      </div>
-
-      <div className="planb-quest">
-        <p className="planb-quest-label">Treehouse</p>
-        <h2 className="planb-quest-title">Robot at School</h2>
-        <p className="planb-quest-body">A robot joins your class. What happens during the day?</p>
-        <button type="button" onClick={onStart} className="crystal-btn mt-2">
-          <span className="crystal-btn-icon" aria-hidden="true">
-            <Feather className="size-3.5" strokeWidth={2.5} />
-          </span>
-          Quick write
-        </button>
-      </div>
-    </aside>
-  );
-}
-
-function AssignmentShelf({
-  open,
-  onToggle,
-  onOpen,
-  ecrNote,
-  onCloseEcr,
-}: {
-  open: boolean;
-  onToggle: () => void;
-  onOpen: (moduleId: string, lesson: string, title: string) => void;
-  ecrNote: boolean;
-  onCloseEcr: () => void;
-}) {
-  const today = assignments[0];
-  return (
-    <section className="absolute inset-x-0 bottom-3 flex flex-col items-center gap-2 px-4">
-      {ecrNote ? (
-        <p className="max-w-xl rounded-2xl bg-cream/95 px-4 py-3 text-sm text-ink">
-          Extended responses are the longer writes. Today’s path is Short Responses.
-          <button type="button" onClick={onCloseEcr} className="ml-2 font-bold text-lantern">
-            Close
-          </button>
-        </p>
-      ) : null}
-      <div className="w-full max-w-xl rounded-3xl bg-cream/95 text-ink shadow-2xl">
-        <div className="flex min-h-14 items-center gap-2 px-3">
-          <button
-            type="button"
-            onClick={onToggle}
-            className="min-w-0 flex-1 py-2 text-left"
-            aria-expanded={open}
-          >
-            <span className="block text-xs font-bold text-lantern">Current assignment</span>
-            <span className="block truncate font-bold">{today.title}</span>
-          </button>
-          <button
-            type="button"
-            onClick={() => onOpen(today.moduleId, today.lesson, today.title)}
-            className={
-              "start-write inline-flex min-h-11 shrink-0 items-center rounded-full bg-lantern px-4 text-sm font-bold text-cream" +
-              (assignments.length > 1 ? " start-write-glow" : "")
-            }
-          >
-            Start writing
-          </button>
-          <button
-            type="button"
-            onClick={onToggle}
-            aria-label={open ? "Hide assignments" : "Show all assignments"}
-            aria-expanded={open}
-            className={
-              "assign-chip grid size-12 place-items-center " +
-              (assignments.length > 1 && !open ? "assign-chip-pulse" : "")
-            }
-          >
-            <img src={asset("crystal.png")} alt="" className="assign-crystal" />
-          </button>
-        </div>
-        {open ? (
-          <ul className="max-h-[42vh] overflow-y-auto border-t border-line px-2 pb-2">
-            {assignments.map((item) => (
-              <li key={item.title} className="flex items-center gap-2 border-b border-line py-2 last:border-b-0">
-                <div className="min-w-0 flex-1 px-2">
-                  <p className="font-bold">{item.title}</p>
-                  <p className="mt-1 flex flex-wrap items-center gap-1.5 text-xs text-muted">
-                    <span className="rounded-full bg-moss-soft px-2 py-0.5 font-bold text-moss">{item.kind}</span>
-                    <span>{item.format}</span>
-                    <span>{item.teacher}</span>
-                    <span className="font-bold text-lantern">{item.due}</span>
-                  </p>
-                </div>
-                <button
-                  type="button"
-                  onClick={() => onOpen(item.moduleId, item.lesson, item.title)}
-                  className="inline-flex min-h-11 shrink-0 items-center rounded-full bg-ink px-3 text-sm font-bold text-cream"
-                >
-                  {item.action}
-                </button>
-              </li>
-            ))}
-          </ul>
-        ) : null}
-      </div>
-    </section>
-  );
 }
