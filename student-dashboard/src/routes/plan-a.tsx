@@ -164,7 +164,9 @@ const modules: Module[] = [
   },
 ];
 
-const treehouseSpot = { x: 50, y: 42, w: 13, h: 26 };
+/* Centered on the tree trunk / treehouse tower in portal-hub-z.jpg (trunk spans ~576-768 of
+   1280 between the sky gaps at rows 300-340; tower window ~673) — not the frame center. */
+const treehouseSpot = { x: 52.6, y: 42, w: 13, h: 26 };
 const astraSpot = { x: 9.5, y: 58, w: 13, h: 38 };
 /** Thought bubble: top-left corner in frame-%, in the sky right of Astra's right ear. */
 const thinkSpot = { x: 19.5, y: 25.8 };

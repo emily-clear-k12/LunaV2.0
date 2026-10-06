@@ -1260,15 +1260,17 @@
     pointer-events: none;
   }
 
+  /* Six mastery badges: 44px tap targets with 40px art (~1.33x the old 30px), packed
+     edge-to-edge so the row stays clear of the canopy's right edge (~x1100 at 1366). */
   .z-mastery-pill {
     position: absolute;
     z-index: 8;
-    top: 8px;
-    right: 12px;
+    top: 4px;
+    right: 8px;
     display: flex;
     align-items: center;
-    gap: 5px;
-    padding: 4px 6px;
+    gap: 0;
+    padding: 0;
     border-radius: 16px;
     border: 0;
     background: transparent;
@@ -1280,8 +1282,8 @@
   .z-mastery-btn {
     display: grid;
     place-items: center;
-    width: 32px;
-    height: 32px;
+    width: 44px;
+    height: 44px;
     padding: 0;
     border: 0;
     border-radius: 999px;
@@ -1290,8 +1292,8 @@
   }
 
   .z-mastery-btn img {
-    width: 30px;
-    height: 30px;
+    width: 40px;
+    height: 40px;
     display: block;
     object-fit: contain;
   }
@@ -1395,7 +1397,7 @@
   }
 
   .z-plate.tree {
-    bottom: 12%;
+    bottom: 15%;
     translate: -50% 0;
   }
 
