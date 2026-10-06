@@ -17,9 +17,8 @@ type Module = {
   y: number;
   w: number;
   h: number;
-  /** Lesson-dot pill center under the portal */
-  dotX: number;
-  dotY: number;
+  /** Top of the name tag + lesson-dot stack, just under the glowing ring (frame-%). */
+  tagY: number;
   accent: string;
   lessons: Lesson[];
 };
@@ -33,7 +32,7 @@ type Lantern = {
   y: number;
   w: number;
   h: number;
-  /** Center of wooden plaque under lantern (image-space %) */
+  /** Center of the wooden plaque under the lantern (frame-%); x = lantern body center */
   signX: number;
   signY: number;
 };
@@ -60,8 +59,7 @@ const modules: Module[] = [
     y: 60,
     w: 11,
     h: 28,
-    dotX: 25.9,
-    dotY: 80.5,
+    tagY: 79.8,
     accent: "#4aa3ff",
     lessons: [
       { title: "Answer the ask", world: "First crystals", minutes: 20, task: "Write a short answer that restates the question." },
@@ -80,8 +78,7 @@ const modules: Module[] = [
     y: 60,
     w: 11,
     h: 28,
-    dotX: 38.8,
-    dotY: 80.5,
+    tagY: 79.8,
     accent: "#7cc8ff",
     lessons: [
       { title: "Claim the sky", world: "Docking ring", minutes: 20, task: "Write a clear claim for a longer response." },
@@ -100,8 +97,7 @@ const modules: Module[] = [
     y: 60,
     w: 11,
     h: 28,
-    dotX: 51.5,
-    dotY: 80.5,
+    tagY: 79.8,
     accent: "#b46bff",
     lessons: [
       { title: "One complete thought", world: "First stones", minutes: 20, task: "Write three sentences that each say one whole idea." },
@@ -120,8 +116,7 @@ const modules: Module[] = [
     y: 60,
     w: 11,
     h: 28,
-    dotX: 64.5,
-    dotY: 80.5,
+    tagY: 79.8,
     accent: "#ff9a3c",
     lessons: [
       { title: "Read the prompt", world: "White trunks", minutes: 15, task: "Underline what the prompt is asking you to do." },
@@ -140,8 +135,7 @@ const modules: Module[] = [
     y: 60,
     w: 11,
     h: 28,
-    dotX: 78.1,
-    dotY: 80.5,
+    tagY: 79.8,
     accent: "#2fd6c8",
     lessons: [
       { title: "Name the idea", world: "Lookout", minutes: 15, task: "Say what the draft is really about, in one line." },
@@ -160,8 +154,7 @@ const modules: Module[] = [
     y: 60,
     w: 11,
     h: 28,
-    dotX: 92.3,
-    dotY: 80.5,
+    tagY: 82.9,
     accent: "#ff6fa8",
     lessons: [
       { title: "Capitals and stops", world: "Fallen leaves", minutes: 15, task: "Fix sentences that start or end the wrong way." },
@@ -173,15 +166,17 @@ const modules: Module[] = [
 
 const treehouseSpot = { x: 50, y: 42, w: 13, h: 26 };
 const astraSpot = { x: 9.5, y: 58, w: 13, h: 38 };
-const tipDotSpot = { x: 12, y: 40 };
+/** Thought bubble: top-left corner in frame-%, in the sky right of Astra's right ear. */
+const thinkSpot = { x: 19.5, y: 25.8 };
 
 /** Four interactive lanterns; any extra lantern in the art stays decorative. */
-/* compass=My goal, crystal=My progress, feather=Quick write (x~63.5), leaf=Practice (x~74.5) */
+/* Measured on portal-hub-z.jpg (1280x776): body centers compass 398, crystal 489,
+   feather 813, leaf 960; the wooden plaque hangs directly under each body. */
 const lanterns: Lantern[] = [
-  { id: "goal", label: "My goal", x: 34.5, y: 33.5, w: 5.5, h: 12, signX: 32.8, signY: 43.0 },
-  { id: "progress", label: "My progress", x: 41.5, y: 34, w: 5.5, h: 12, signX: 40.8, signY: 43.0 },
-  { id: "quick", label: "Quick write", x: 63.5, y: 37, w: 5.5, h: 12, signX: 63.2, signY: 46.2 },
-  { id: "practice", label: "Practice", x: 74.5, y: 33.5, w: 5.5, h: 12, signX: 74.3, signY: 42.8 },
+  { id: "goal", label: "My goal", x: 31.1, y: 31.6, w: 5.5, h: 18, signX: 31.1, signY: 42.9 },
+  { id: "progress", label: "My progress", x: 38.2, y: 30.3, w: 5.5, h: 18, signX: 38.2, signY: 41.9 },
+  { id: "quick", label: "Quick write", x: 63.5, y: 36.7, w: 5.5, h: 16, signX: 63.5, signY: 45.1 },
+  { id: "practice", label: "Practice", x: 75.0, y: 34.1, w: 5.5, h: 16, signX: 75.0, signY: 42.3 },
 ];
 
 const assignments = [
@@ -416,7 +411,7 @@ function StudentHome() {
                     className="zscene-img"
                   />
 
-                  {/* Astra tip bubble / collapsed tip dot */}
+                  {/* Astra tip bubble; after it collapses (~6s) a thought bubble invites a re-open */}
                   {tipOpen ? (
                     <button
                       type="button"
@@ -427,15 +422,28 @@ function StudentHome() {
                       <span className="z-tip-k">✦ Astra’s tip</span>
                       <span className="z-tip-t">{CLASS_FOCUS}</span>
                     </button>
-                  ) : (
+                  ) : !focus ? (
                     <button
                       type="button"
-                      className="z-tip-dot"
-                      style={{ left: `${tipDotSpot.x}%`, top: `${tipDotSpot.y}%` }}
+                      className="z-think"
+                      style={{ left: `${thinkSpot.x}%`, top: `${thinkSpot.y}%` }}
                       onClick={() => setTipOpen(true)}
-                      aria-label="Show Astra’s tip"
-                    />
-                  )}
+                      aria-label="Astra has a thought. Show Astra’s tip"
+                      title="Astra has a thought"
+                    >
+                      <svg viewBox="0 0 52 54" aria-hidden="true">
+                        <circle className="z-think-trail t2" cx="6" cy="48" r="2.6" />
+                        <circle className="z-think-trail t1" cx="12.5" cy="40" r="4" />
+                        <path
+                          className="z-think-cloud"
+                          d="M20 34c-6.5 0-8.6-6.7-4.4-9.6-2.6-5.6 3-10.6 8-8.3 1.6-6 10.6-7.2 13.8-1.8 4.6-3 11.4.6 10.2 6.2 4.4 2.4 3 9.8-3.2 9.6-1.6 4.8-9.4 5.8-12.4 2-3.6 4-10.8 3.6-12-1.1z"
+                        />
+                        <circle className="z-think-dot d1" cx="25.5" cy="24.6" r="2.3" />
+                        <circle className="z-think-dot d2" cx="32" cy="24.6" r="2.3" />
+                        <circle className="z-think-dot d3" cx="38.5" cy="24.6" r="2.3" />
+                      </svg>
+                    </button>
+                  ) : null}
 
                   <button
                     type="button"
@@ -472,39 +480,42 @@ function StudentHome() {
                       }}
                     >
                       <span className="z-ring" aria-hidden="true" />
-                      <span className="z-plate under">
-                        <span className="z-plate-mod">M{mod.n} · {mod.short}</span>
-                        <span className="z-plate-world">{mod.world}</span>
-                      </span>
                     </button>
                   ))}
 
-                  {/* Lesson crystal dots — demo mastery via DEMO_DONE */}
+                  {/* Portal name (world + topic) sitting right above its lesson crystal dots,
+                      just under the glowing ring — demo mastery via DEMO_DONE */}
                   {!focus
                     ? modules.map((mod) => (
                         <div
-                          key={`dots-${mod.id}`}
-                          className="z-dots"
-                          style={{ left: `${mod.dotX}%`, top: `${mod.dotY}%` }}
+                          key={`tag-${mod.id}`}
+                          className="z-portal-tag"
+                          style={{ left: `${mod.x}%`, top: `${mod.tagY}%` }}
                           aria-hidden="true"
                         >
-                          {mod.lessons.map((item) => {
-                            const lit = lessonDone(mod.id, item.title);
-                            return (
-                              <i
-                                key={item.title}
-                                className={lit ? "lit" : undefined}
-                                style={
-                                  lit
-                                    ? {
-                                        background: mod.accent,
-                                        boxShadow: `0 0 8px ${mod.accent}`,
-                                      }
-                                    : undefined
-                                }
-                              />
-                            );
-                          })}
+                          <span className="z-portal-name">
+                            <span className="z-portal-world">{mod.world}</span>
+                            <span className="z-portal-topic">{mod.short}</span>
+                          </span>
+                          <span className="z-dots">
+                            {mod.lessons.map((item) => {
+                              const lit = lessonDone(mod.id, item.title);
+                              return (
+                                <i
+                                  key={item.title}
+                                  className={lit ? "lit" : undefined}
+                                  style={
+                                    lit
+                                      ? {
+                                          background: mod.accent,
+                                          boxShadow: `0 0 8px ${mod.accent}`,
+                                        }
+                                      : undefined
+                                  }
+                                />
+                              );
+                            })}
+                          </span>
                         </div>
                       ))
                     : null}
@@ -834,7 +845,7 @@ function AssignmentBar({
 }) {
   const today = assignments[0];
   return (
-    <section className="absolute inset-x-0 bottom-3 z-10 flex flex-col items-center gap-2 px-4">
+    <section className="z-assign-wrap absolute inset-x-0 z-10 flex flex-col items-center gap-2 px-4">
       {ecrNote ? (
         <p className="z-assign max-w-xl px-4 py-3 text-sm">
           Extended responses are the longer writes. Today’s path is Short Responses.
@@ -844,18 +855,18 @@ function AssignmentBar({
         </p>
       ) : null}
       <div className="z-assign w-full max-w-xl">
-        <div className="flex min-h-14 items-center gap-2 px-3">
-          <button type="button" onClick={onToggle} className="min-w-0 flex-1 py-2 text-left" aria-expanded={open}>
-            <span className="block text-[11px] font-extrabold tracking-[0.08em] text-[#a0521d]">
+        <div className="z-assign-row flex items-center gap-2 pl-3.5 pr-1.5">
+          <button type="button" onClick={onToggle} className="z-assign-text min-w-0 flex-1 text-left" aria-expanded={open}>
+            <span className="block text-[10px] leading-[1.1] font-extrabold tracking-[0.08em] text-[#a0521d]">
               CURRENT ASSIGNMENT
             </span>
-            <span className="block truncate text-[17px] font-bold leading-tight">{today.title}</span>
+            <span className="block truncate text-[16px] font-bold leading-[1.15]">{today.title}</span>
           </button>
           <button
             type="button"
             onClick={() => onOpen(today.moduleId, today.lesson, today.title)}
             className={
-              "start-write inline-flex min-h-11 shrink-0 items-center rounded-full bg-[#8a4a17] px-5 text-sm font-extrabold text-white" +
+              "start-write inline-flex shrink-0 items-center rounded-full bg-[#8a4a17] px-5 text-sm font-extrabold text-white" +
               (assignments.length > 1 ? " start-write-glow" : "")
             }
           >

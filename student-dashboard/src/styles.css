@@ -1213,14 +1213,21 @@
     background: #2a1840;
   }
 
-  /* Cover-fit, top-aligned: keep canopy/sky; crop sides/bottom as needed */
+  /* Cover-fit, top-aligned: keep canopy/sky; crop sides/bottom as needed.
+     The art has an old dark frost strip baked into its top 57 rows (of 776). Lift the
+     frame by up to that strip (never more than the spare height below, so no gap ever
+     opens at the bottom). At 1366x768 this raises the whole scene ~61px: sky meets the
+     switcher, the portal row + lesson dots clear the assignment bar, and Astra's feet
+     come into view. */
   .zscene-frame {
+    --z-fw: max(100cqw, calc(100cqh * 1280 / 776));
+    --z-lift: max(0px, min(calc(var(--z-fw) * 57 / 1280), calc(var(--z-fw) * 776 / 1280 - 100cqh)));
     position: absolute;
     left: 50%;
-    top: 0;
+    top: calc(-1 * var(--z-lift));
     translate: -50% 0;
     aspect-ratio: 1280 / 776;
-    width: max(100cqw, calc(100cqh * 1280 / 776));
+    width: var(--z-fw);
     height: auto;
   }
 
@@ -1266,8 +1273,8 @@
     border: 0;
     background: transparent;
     box-shadow: none;
-    backdrop-filter: none;
     -webkit-backdrop-filter: none;
+    backdrop-filter: none;
   }
 
   .z-mastery-btn {
@@ -1387,10 +1394,6 @@
     pointer-events: none;
   }
 
-  .z-plate.under {
-    bottom: 4%;
-  }
-
   .z-plate.tree {
     bottom: 12%;
     translate: -50% 0;
@@ -1415,6 +1418,7 @@
     white-space: nowrap;
   }
 
+  /* Heavy-frosted glass label, centered on the wooden plaque directly under its lantern */
   .z-lantern-tag {
     position: absolute;
     z-index: 5;
@@ -1422,33 +1426,80 @@
     width: max-content;
     max-width: none;
     border-radius: 999px;
-    border: 1px solid rgb(255 255 255 / 1);
-    background: rgb(255 248 235 / 0.92);
-    padding: 0.42rem 1.05rem;
+    border: 1px solid rgb(255 255 255 / 0.62);
+    /* ~0.5 cream overall; a touch denser in the middle so the art's wooden plaque
+       underneath melts into the frost instead of reading as a dark patch */
+    background: radial-gradient(ellipse 70% 80% at 50% 50%, rgb(255 251 243 / 0.6), rgb(255 251 243 / 0.44));
+    padding: 0.32rem 0.72rem 0.36rem;
     font-family: "Baloo 2", "Nunito", var(--font-sans);
-    font-size: 15px;
+    font-size: 14px;
     font-weight: 800;
     line-height: 1.15;
     color: #4a2e1a;
     text-align: center;
     white-space: nowrap;
     pointer-events: none;
-    box-shadow: 0 4px 12px rgb(40 20 60 / 0.22);
-    backdrop-filter: blur(10px) saturate(1.1);
-    -webkit-backdrop-filter: blur(10px) saturate(1.1);
+    text-shadow: 0 0 6px rgb(255 248 235 / 0.7);
+    box-shadow:
+      0 4px 14px rgb(40 20 60 / 0.28),
+      inset 0 1px 0 rgb(255 255 255 / 0.55);
+    -webkit-backdrop-filter: blur(20px) saturate(1.35);
+    backdrop-filter: blur(20px) saturate(1.35);
+  }
+
+  /* Portal name + lesson dots: one stack centered on the portal, just under its ring */
+  .z-portal-tag {
+    position: absolute;
+    z-index: 4;
+    translate: -50% 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+    pointer-events: none;
+  }
+
+  .z-portal-name {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    border-radius: 11px;
+    border: 1px solid rgb(255 255 255 / 0.55);
+    background: rgb(255 251 243 / 0.58);
+    padding: 1px 10px 2px;
+    font-family: "Baloo 2", "Nunito", var(--font-sans);
+    color: #4a2e1a;
+    white-space: nowrap;
+    text-shadow: 0 0 5px rgb(255 248 235 / 0.65);
+    box-shadow:
+      0 3px 10px rgb(20 10 30 / 0.3),
+      inset 0 1px 0 rgb(255 255 255 / 0.5);
+    -webkit-backdrop-filter: blur(18px) saturate(1.35);
+    backdrop-filter: blur(18px) saturate(1.35);
+  }
+
+  .z-portal-world {
+    font-size: 10.5px;
+    font-weight: 700;
+    line-height: 1.05;
+    color: #6a4224;
+  }
+
+  .z-portal-topic {
+    font-size: 13px;
+    font-weight: 800;
+    line-height: 1.05;
+    letter-spacing: 0.01em;
   }
 
   .z-dots {
-    position: absolute;
-    z-index: 2;
     display: flex;
     gap: 6px;
-    translate: -50% -50%;
     border-radius: 12px;
     background: rgb(20 15 40 / 0.45);
     padding: 5px 9px;
+    -webkit-backdrop-filter: blur(6px);
     backdrop-filter: blur(6px);
-    pointer-events: none;
   }
 
   .z-dots i {
@@ -1464,7 +1515,7 @@
     position: absolute;
     z-index: 6;
     left: 1.1%;
-    top: 12%;
+    top: 14.6%;
     width: min(230px, 17%);
     border: 1.5px solid rgb(255 255 255 / 0.75);
     border-radius: 18px;
@@ -1480,7 +1531,7 @@
   .z-tip::after {
     content: "";
     position: absolute;
-    left: 98px;
+    left: 150px;
     bottom: -9px;
     width: 16px;
     height: 16px;
@@ -1510,23 +1561,110 @@
     line-height: 1.25;
   }
 
-  .z-tip-dot {
+  /* "Astra has a thought" bubble — replaces the old yellow tip dot; tap re-opens the tip */
+  .z-think {
     position: absolute;
     z-index: 6;
-    width: 18px;
-    height: 18px;
-    translate: -50% -50%;
-    border: 1.5px solid rgb(255 255 255 / 0.85);
-    border-radius: 999px;
-    background:
-      radial-gradient(circle at 35% 30%, #fff8e8 0%, #ffd27a 45%, #c47a2a 100%);
-    box-shadow: 0 0 14px rgb(255 200 120 / 0.85);
+    width: 58px;
+    height: 60px;
+    padding: 0;
+    border: 0;
+    border-radius: 16px;
+    background: transparent;
     cursor: pointer;
+    filter: drop-shadow(0 3px 6px rgb(40 20 60 / 0.35)) drop-shadow(0 0 8px rgb(255 226 160 / 0.55));
   }
 
-  .z-tip-dot:focus-visible {
+  /* animate the drawing, not the button, so the tap target stays put */
+  .z-think svg {
+    display: block;
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+    transform-origin: 12% 88%;
+    animation: z-think-float 3.2s ease-in-out infinite;
+  }
+
+  .z-think-cloud,
+  .z-think-trail {
+    fill: rgb(255 251 243 / 0.94);
+    stroke: rgb(255 255 255 / 0.95);
+    stroke-width: 1.2;
+  }
+
+  .z-think-dot {
+    fill: #4a2e1a;
+    animation: z-think-blink 1.6s ease-in-out infinite;
+  }
+
+  .z-think-dot.d2 { animation-delay: 0.2s; }
+  .z-think-dot.d3 { animation-delay: 0.4s; }
+  .z-think-trail.t1 { animation: z-think-blink 3.2s ease-in-out infinite 0.15s; }
+  .z-think-trail.t2 { animation: z-think-blink 3.2s ease-in-out infinite; }
+
+  .z-think:hover,
+  .z-think:focus-visible {
+    filter: drop-shadow(0 3px 6px rgb(40 20 60 / 0.35)) drop-shadow(0 0 12px rgb(255 214 130 / 0.95));
+  }
+
+  .z-think:focus-visible {
     outline: 2px solid #ffd27a;
     outline-offset: 2px;
+  }
+
+  @keyframes z-think-float {
+    0%,
+    100% {
+      transform: translateY(0) scale(1);
+    }
+    50% {
+      transform: translateY(-3px) scale(1.06);
+    }
+  }
+
+  @keyframes z-think-blink {
+    0%,
+    100% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0.35;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .z-think svg,
+    .z-think-dot,
+    .z-think-trail {
+      animation: none !important;
+    }
+  }
+
+  /* Slim, low assignment bar: 48px row, 8px off the bottom edge */
+  .z-assign-wrap {
+    bottom: 7px;
+  }
+
+  .z-assign-row {
+    min-height: 48px;
+  }
+
+  .z-assign-text {
+    padding-block: 3px;
+  }
+
+  .z-assign .start-write {
+    position: relative;
+    height: 38px;
+    padding-inline: 1.2rem;
+  }
+
+  /* keep the tap target at the full 48px bar height while the pill reads slimmer */
+  .z-assign .start-write::before {
+    content: "";
+    position: absolute;
+    inset: -5px -4px;
+    border-radius: 999px;
   }
 
   .z-assign {
