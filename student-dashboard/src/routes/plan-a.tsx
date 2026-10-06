@@ -1,6 +1,20 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { ArrowLeft, Check, X } from "lucide-react";
-import { useEffect, useState, type ReactNode } from "react";
+import { ArrowLeft, Check } from "lucide-react";
+import { useEffect, useState } from "react";
+import {
+  COINS_AT_START,
+  ClassCadeNote,
+  GrowthPage,
+  PIECES_AT_START,
+  Pouch,
+  PracticePage,
+  TreehousePage,
+  useWritingStats,
+  type CoinState,
+  type Earning,
+  type Piece,
+  type TreehouseRoute,
+} from "./plan-a-pages";
 
 export const Route = createFileRoute("/")({ component: StudentHome });
 
@@ -23,7 +37,6 @@ type Module = {
   lessons: Lesson[];
 };
 
-type Writing = { title: string; from: string; body: string };
 
 type Lantern = {
   id: string;
@@ -38,7 +51,6 @@ type Lantern = {
 };
 
 const CLASS_FOCUS = "Today, let's back every answer with evidence from the text!";
-const MY_GOAL = "Back up my opinion with strong, specific reasons.";
 
 /** Demo mastery seeds — not live student data. */
 const DEMO_DONE: Record<string, string[]> = {
@@ -171,15 +183,55 @@ const astraSpot = { x: 9.5, y: 58, w: 13, h: 38 };
 /** Thought bubble: top-left corner in frame-%, in the sky right of Astra's right ear. */
 const thinkSpot = { x: 19.5, y: 25.8 };
 
-/** Four interactive lanterns; any extra lantern in the art stays decorative. */
+/** Two interactive lanterns (crystal = My growth, leaf = Practice); the compass and
+    feather lanterns stay decorative. */
 /* Measured on portal-hub-z.jpg (1280x776): body centers compass 398, crystal 489,
    feather 813, leaf 960; the wooden plaque hangs directly under each body. */
 const lanterns: Lantern[] = [
-  { id: "goal", label: "My goal", x: 31.1, y: 31.6, w: 5.5, h: 18, signX: 31.1, signY: 42.9 },
-  { id: "progress", label: "My progress", x: 38.2, y: 30.3, w: 5.5, h: 18, signX: 38.2, signY: 41.9 },
-  { id: "quick", label: "Quick write", x: 63.5, y: 36.7, w: 5.5, h: 16, signX: 63.5, signY: 45.1 },
+  { id: "growth", label: "My growth", x: 38.2, y: 30.3, w: 5.5, h: 18, signX: 38.2, signY: 41.9 },
   { id: "practice", label: "Practice", x: 75.0, y: 34.1, w: 5.5, h: 16, signX: 75.0, signY: 42.3 },
 ];
+
+/** Astra's pouch hangs at his hip (frame-%). */
+const pouchSpot = { x: 16.4, y: 66.5 };
+
+type View =
+  | { page: "hub" }
+  | { page: "growth" }
+  | { page: "practice" }
+  | { page: "treehouse"; route: TreehouseRoute };
+
+function parseHash(hash: string): View {
+  const parts = hash.replace(/^#\/?/, "").split("/").filter(Boolean);
+  if (parts[0] === "growth") return { page: "growth" };
+  if (parts[0] === "practice") return { page: "practice" };
+  if (parts[0] === "treehouse") {
+    if (parts[1] === "write") return { page: "treehouse", route: { mode: "write", id: parts[2], idea: parts[2] === "idea" ? true : undefined } };
+    if (parts[1] === "piece" && parts[2]) return { page: "treehouse", route: { mode: "piece", id: parts[2] } };
+    return { page: "treehouse", route: { mode: "shelf" } };
+  }
+  return { page: "hub" };
+}
+
+function viewHash(v: View): string {
+  if (v.page === "hub") return "";
+  if (v.page !== "treehouse") return `#${v.page}`;
+  const r = v.route;
+  if (r.mode === "piece") return `#treehouse/piece/${r.id}`;
+  if (r.mode === "write") return r.idea ? "#treehouse/write/idea" : r.id ? `#treehouse/write/${r.id}` : "#treehouse/write";
+  return "#treehouse";
+}
+
+const PIP_PIECE: Piece = {
+  id: "pip-challenge",
+  title: "Pip’s rough draft: Should recess be longer?",
+  kind: "lesson",
+  from: "Daily challenge · Pip’s draft",
+  date: "Today",
+  status: "Challenge",
+  prompt: "Pip wrote this. Make the reasons strong and specific, then add a real ending.",
+  drafts: ["Recess should be longer. Recess is good. We like it alot. it is fun and we get to play. So recess should be longer"],
+};
 
 const assignments = [
   {
@@ -226,19 +278,6 @@ const badges = [
   { id: "editing", label: "Editing", name: "Edit", moduleId: "edit" },
 ];
 
-const savedAtStart: Writing[] = [
-  {
-    title: "Why is the old tree special?",
-    from: "Stellar Writers · Finished",
-    body: "The old tree is special because the path starts at its roots. Lanterns hang by the door, and the bark holds the names of writers who passed.",
-  },
-  {
-    title: "One complete thought",
-    from: "Stellar Writers",
-    body: "A sentence holds one idea. The fox waited on the stone until the lantern was lit.",
-  },
-];
-
 const asset = (file: string) => `${import.meta.env.BASE_URL}${file}`;
 
 function StudentHome() {
@@ -248,24 +287,52 @@ function StudentHome() {
   const [shelfOpen, setShelfOpen] = useState(false);
   const [writeTitle, setWriteTitle] = useState<string | null>(null);
   const [ecrNote, setEcrNote] = useState(false);
-  const [quick, setQuick] = useState(false);
-  const [treehouse, setTreehouse] = useState(false);
-  const [entryTitle, setEntryTitle] = useState<string | null>(null);
-  const [writings, setWritings] = useState<Writing[]>(savedAtStart);
+  const [pieces, setPieces] = useState<Piece[]>(PIECES_AT_START);
+  const [coins, setCoins] = useState<CoinState>(COINS_AT_START);
   const [tipOpen, setTipOpen] = useState(true);
-  const [sheet, setSheet] = useState<"goal" | "progress" | "practice" | null>(null);
+  const [view, setView] = useState<View>(() => parseHash(window.location.hash));
+  const [glow, setGlow] = useState<{ x: number; y: number } | null>(null);
+  const [cade, setCade] = useState(false);
+  const stats = useWritingStats(pieces);
 
   const focused = modules.find((mod) => mod.id === moduleId) ?? null;
   const lesson = focused?.lessons.find((item) => item.title === lessonTitle) ?? null;
-  const entry = writings.find((item) => item.title === entryTitle) ?? null;
-  const focus = treehouse || focused;
-  const overlayOpen = Boolean(focus || quick || sheet);
+  const focus = focused;
+  const overlayOpen = Boolean(focus);
+
+  useEffect(() => {
+    const onHash = () => setView(parseHash(window.location.hash));
+    window.addEventListener("hashchange", onHash);
+    return () => window.removeEventListener("hashchange", onHash);
+  }, []);
 
   useEffect(() => {
     if (!tipOpen) return;
     const id = window.setTimeout(() => setTipOpen(false), 6000);
     return () => window.clearTimeout(id);
   }, [tipOpen]);
+
+  function navigate(next: View) {
+    const hash = viewHash(next);
+    if (hash !== window.location.hash) {
+      history.pushState(null, "", hash || window.location.pathname + window.location.search);
+    }
+    setView(next);
+    window.scrollTo(0, 0);
+  }
+
+  /** Lantern / treehouse light swells to fill the screen, then the new page fades in. */
+  function enter(next: View, from: { x: number; y: number }) {
+    setGlow(from);
+    window.setTimeout(() => {
+      navigate(next);
+      window.setTimeout(() => setGlow(null), 380);
+    }, 420);
+  }
+
+  function earn(e: Earning) {
+    setCoins((c) => ({ coins: c.coins + e.amount, recent: [e, ...c.recent].slice(0, 6), pulse: c.pulse + 1 }));
+  }
 
   function mastered(id: string) {
     const mod = modules.find((item) => item.id === id);
@@ -279,35 +346,9 @@ function StudentHome() {
   }
 
   function openModule(id: string, lessonName?: string, assignmentTitle?: string) {
-    setTreehouse(false);
-    setEntryTitle(null);
-    setSheet(null);
     setModuleId(id || null);
     setLessonTitle(lessonName ?? null);
     setWriteTitle(assignmentTitle ?? null);
-    setQuick(false);
-    setShelfOpen(false);
-  }
-
-  function openTreehouse() {
-    setModuleId(null);
-    setLessonTitle(null);
-    setWriteTitle(null);
-    setQuick(false);
-    setSheet(null);
-    setTreehouse(true);
-    setEntryTitle(null);
-    setShelfOpen(false);
-  }
-
-  function startQuickWrite() {
-    setModuleId(null);
-    setLessonTitle(null);
-    setWriteTitle(null);
-    setSheet(null);
-    setTreehouse(true);
-    setQuick(true);
-    setEntryTitle(null);
     setShelfOpen(false);
   }
 
@@ -315,10 +356,6 @@ function StudentHome() {
     setModuleId(null);
     setLessonTitle(null);
     setWriteTitle(null);
-    setQuick(false);
-    setTreehouse(false);
-    setEntryTitle(null);
-    setSheet(null);
   }
 
   function markDone(moduleKey: string, title: string) {
@@ -327,28 +364,76 @@ function StudentHome() {
       if (list.includes(title)) return current;
       return { ...current, [moduleKey]: [...list, title] };
     });
-    setWritings((current) => {
+    const mod = modules.find((item) => item.id === moduleKey);
+    setPieces((current) => {
       if (current.some((item) => item.title === title)) return current;
-      const mod = modules.find((item) => item.id === moduleKey);
-      return [{ title, from: mod ? mod.name : "Astra", body: "Saved in your Treehouse." }, ...current];
+      return [
+        {
+          id: `lesson-${moduleKey}-${current.length}`,
+          title,
+          kind: "lesson",
+          from: `${mod ? mod.name : "Astra"} lesson`,
+          date: "Today",
+          status: "Finished",
+          drafts: [mod?.lessons.find((l) => l.title === title)?.task ?? "Saved in your Treehouse."],
+        },
+        ...current,
+      ];
     });
+    earn({ label: `Finished “${title}”`, amount: 10 });
   }
 
-  function onLantern(id: string) {
-    if (id === "quick") {
-      startQuickWrite();
-      return;
-    }
-    if (id === "goal") setSheet("goal");
-    if (id === "progress") setSheet("progress");
-    if (id === "practice") setSheet("practice");
-    setModuleId(null);
-    setLessonTitle(null);
-    setWriteTitle(null);
-    setQuick(false);
-    setTreehouse(false);
-    setEntryTitle(null);
-    setShelfOpen(false);
+  function onLantern(lan: Lantern) {
+    enter({ page: lan.id === "growth" ? "growth" : "practice" }, { x: lan.x, y: lan.y });
+  }
+
+  function savePiece(piece: Piece, isNewDraft: boolean) {
+    const exists = pieces.some((p) => p.id === piece.id);
+    setPieces((current) => (exists ? current.map((p) => (p.id === piece.id ? piece : p)) : [piece, ...current]));
+    if (piece.id === PIP_PIECE.id && isNewDraft) earn({ label: "Daily challenge · fixed Pip’s draft", amount: 50 });
+    else if (isNewDraft) earn({ label: `Revised “${piece.title}”`, amount: 15 });
+    else earn({ label: exists ? `Kept writing “${piece.title}”` : `Free write · “${piece.title}”`, amount: 5 });
+    navigate({ page: "treehouse", route: { mode: "piece", id: piece.id } });
+  }
+
+  function revisePip() {
+    setPieces((current) => (current.some((p) => p.id === PIP_PIECE.id) ? current : [PIP_PIECE, ...current]));
+    navigate({ page: "treehouse", route: { mode: "write", id: PIP_PIECE.id } });
+  }
+
+  const toHub = () => navigate({ page: "hub" });
+  const openCade = () => setCade(true);
+
+  if (view.page !== "hub") {
+    return (
+      <div className="ap-fade-in">
+        {view.page === "growth" ? (
+          <GrowthPage
+            onBack={toHub}
+            coins={coins}
+            onOpenClassCade={openCade}
+            stats={stats}
+            onPractice={() => navigate({ page: "practice" })}
+            onOpenPiece={(id) => navigate({ page: "treehouse", route: { mode: "piece", id } })}
+          />
+        ) : null}
+        {view.page === "practice" ? (
+          <PracticePage onBack={toHub} coins={coins} onOpenClassCade={openCade} onEarn={earn} onRevisePip={revisePip} />
+        ) : null}
+        {view.page === "treehouse" ? (
+          <TreehousePage
+            route={view.route}
+            go={(route) => navigate({ page: "treehouse", route })}
+            pieces={pieces}
+            onSave={savePiece}
+            onBack={toHub}
+            coins={coins}
+            onOpenClassCade={openCade}
+          />
+        ) : null}
+        {cade ? <ClassCadeNote onClose={() => setCade(false)} /> : null}
+      </div>
+    );
   }
 
   return (
@@ -397,11 +482,7 @@ function StudentHome() {
             <div
               className="absolute inset-0 transition-transform duration-700 ease-out"
               style={{
-                transformOrigin: focused
-                  ? `${focused.x}% ${focused.y}%`
-                  : treehouse
-                    ? `${treehouseSpot.x}% ${treehouseSpot.y}%`
-                    : "50% 45%",
+                transformOrigin: focused ? `${focused.x}% ${focused.y}%` : "50% 45%",
                 transform: focus ? "scale(1.85)" : "scale(1)",
               }}
             >
@@ -526,7 +607,7 @@ function StudentHome() {
                     <button
                       key={lan.id}
                       type="button"
-                      onClick={() => onLantern(lan.id)}
+                      onClick={() => onLantern(lan)}
                       aria-label={lan.label}
                       className={
                         "z-hotspot z-lantern absolute -translate-x-1/2 -translate-y-1/2 " +
@@ -557,7 +638,9 @@ function StudentHome() {
 
                   <button
                     type="button"
-                    onClick={openTreehouse}
+                    onClick={() =>
+                      enter({ page: "treehouse", route: { mode: "shelf" } }, { x: treehouseSpot.x, y: treehouseSpot.y })
+                    }
                     aria-label="Treehouse, your writing space"
                     className={
                       "z-hotspot z-tree absolute -translate-x-1/2 -translate-y-1/2 " +
@@ -576,6 +659,12 @@ function StudentHome() {
                       <span className="z-plate-world">Treehouse</span>
                     </span>
                   </button>
+
+                  {!focus ? (
+                    <div className="ap-pouch-anchor" style={{ left: `${pouchSpot.x}%`, top: `${pouchSpot.y}%` }}>
+                      <Pouch state={coins} variant="hub" onOpenClassCade={openCade} />
+                    </div>
+                  ) : null}
                 </div>
               </div>
             </div>
@@ -652,143 +741,6 @@ function StudentHome() {
             </section>
           ) : null}
 
-          {treehouse && !entry && !quick ? (
-            <section className="absolute inset-x-0 bottom-0 z-10 px-3 pb-3 sm:px-6 sm:pb-5">
-              <div className="mx-auto max-w-xl rounded-3xl bg-cream/95 p-4 text-ink shadow-2xl sm:p-5">
-                <p className="text-sm font-bold text-lantern">Treehouse · Your space</p>
-                <h2 className="font-display text-2xl">Treehouse</h2>
-                <p className="mt-1 text-sm text-muted">Quick writes and finished work live here with Astra.</p>
-                <button
-                  type="button"
-                  onClick={startQuickWrite}
-                  className="mt-3 inline-flex min-h-11 w-full items-center justify-center rounded-full bg-lantern px-4 text-sm font-bold text-cream"
-                >
-                  Start Quick write
-                </button>
-                <ul className="mt-3 grid gap-2">
-                  {writings.map((item) => (
-                    <li key={item.title}>
-                      <button
-                        type="button"
-                        onClick={() => setEntryTitle(item.title)}
-                        className="flex min-h-14 w-full flex-col items-start rounded-2xl bg-cream-deep px-3 py-2 text-left"
-                      >
-                        <span className="font-bold">{item.title}</span>
-                        <span className="text-xs text-muted">{item.from}</span>
-                      </button>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            </section>
-          ) : null}
-
-          {treehouse && entry ? (
-            <section className="absolute inset-x-0 bottom-0 z-10 px-3 pb-3 sm:px-6 sm:pb-5">
-              <div className="mx-auto max-w-xl rounded-3xl bg-cream p-5 text-ink shadow-2xl">
-                <p className="text-sm font-bold text-lantern">{entry.from}</p>
-                <h2 className="mt-1 font-display text-3xl">{entry.title}</h2>
-                <p className="mt-3">{entry.body}</p>
-                <button
-                  type="button"
-                  onClick={() => setEntryTitle(null)}
-                  className="mt-4 inline-flex min-h-11 items-center gap-2 text-sm font-bold text-lantern"
-                >
-                  <ArrowLeft className="size-4" aria-hidden="true" />
-                  All writing
-                </button>
-              </div>
-            </section>
-          ) : null}
-
-          {quick ? (
-            <section className="absolute inset-x-0 bottom-0 z-10 px-4 pb-4">
-              <div className="mx-auto max-w-xl rounded-3xl bg-cream p-5 text-ink shadow-2xl">
-                <p className="text-sm font-bold text-lantern">Astra · Quick write</p>
-                <h2 className="mt-1 font-display text-3xl">Robot at School</h2>
-                <p className="mt-3">A robot joins your class. What happens during the day?</p>
-                <div className="mt-4 flex flex-wrap items-center gap-3">
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setWritings((current) => [
-                        {
-                          title: "Robot at School",
-                          from: "Astra · Quick write",
-                          body: "A robot joins your class. What happens during the day?",
-                        },
-                        ...current.filter((item) => item.title !== "Robot at School"),
-                      ]);
-                      setQuick(false);
-                      openTreehouse();
-                    }}
-                    className="inline-flex min-h-11 items-center rounded-full bg-moss px-4 text-sm font-bold text-cream"
-                  >
-                    Save to Treehouse
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setQuick(false);
-                      setTreehouse(true);
-                    }}
-                    className="inline-flex min-h-11 items-center text-sm font-bold text-lantern"
-                  >
-                    Back to Treehouse
-                  </button>
-                </div>
-              </div>
-            </section>
-          ) : null}
-
-          {sheet === "goal" ? (
-            <FrostCard title="My goal" onClose={() => setSheet(null)}>
-              <p>{MY_GOAL}</p>
-            </FrostCard>
-          ) : null}
-
-          {sheet === "practice" ? (
-            <FrostCard title="Practice" onClose={() => setSheet(null)}>
-              <p>Practice pages coming soon — Astra is still packing the crystal drills!</p>
-            </FrostCard>
-          ) : null}
-
-          {sheet === "progress" ? (
-            <FrostCard title="My progress" eyebrow="Data & goals" onClose={() => setSheet(null)} wide>
-              <p className="mb-3 text-sm font-bold text-[#7a5a2e]">
-                {modules.filter((m) => mastered(m.id)).length} of 6 worlds explored · Goal: {MY_GOAL}
-              </p>
-              <ul className="grid gap-2">
-                {modules.map((mod) => {
-                  const finished = (done[mod.id] ?? []).length;
-                  const total = mod.lessons.length;
-                  const lit = mastered(mod.id);
-                  return (
-                    <li
-                      key={mod.id}
-                      className="flex items-center gap-3 rounded-2xl bg-[rgb(255,248,235)]/70 px-3 py-2"
-                    >
-                      <span
-                        className="inline-block size-3 rotate-45 rounded-[2px]"
-                        style={{
-                          background: lit ? mod.accent : "rgba(74,46,26,.2)",
-                          boxShadow: lit ? `0 0 8px ${mod.accent}` : "none",
-                        }}
-                      />
-                      <span className="min-w-0 flex-1">
-                        <span className="block font-bold">M{mod.n} · {mod.short}</span>
-                        <span className="block text-xs text-[#7a5a2e]">{mod.world}</span>
-                      </span>
-                      <span className="text-xs font-bold text-[#7a5a2e]">
-                        {finished}/{total}
-                      </span>
-                    </li>
-                  );
-                })}
-              </ul>
-            </FrostCard>
-          ) : null}
-
           {!overlayOpen ? (
             <AssignmentBar
               open={shelfOpen}
@@ -798,36 +750,16 @@ function StudentHome() {
               onCloseEcr={() => setEcrNote(false)}
             />
           ) : null}
-      </div>
-    </div>
-  );
-}
 
-function FrostCard({
-  title,
-  eyebrow,
-  onClose,
-  children,
-  wide,
-}: {
-  title: string;
-  eyebrow?: string;
-  onClose: () => void;
-  children: ReactNode;
-  wide?: boolean;
-}) {
-  return (
-    <div className={"z-frost " + (wide ? "wide" : "")} role="dialog" aria-label={title}>
-      <div className="z-frost-head">
-        <div>
-          {eyebrow ? <p className="z-frost-k">{eyebrow}</p> : null}
-          <h2 className="z-frost-title">{title}</h2>
-        </div>
-        <button type="button" className="z-frost-x" aria-label="Close" onClick={onClose}>
-          <X className="size-4" />
-        </button>
+          {glow ? (
+            <div
+              className="ap-glow"
+              aria-hidden="true"
+              style={{ ["--gx" as string]: `${glow.x}%`, ["--gy" as string]: `${glow.y}%` }}
+            />
+          ) : null}
+          {cade ? <ClassCadeNote onClose={() => setCade(false)} /> : null}
       </div>
-      <div className="z-frost-body">{children}</div>
     </div>
   );
 }
