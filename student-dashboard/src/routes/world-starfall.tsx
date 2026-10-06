@@ -77,8 +77,29 @@ const TIP = "Tap a glowing spot to start a lesson. Want coins? Catch word firefl
    Lines recorded in Astra's own voice (Higgins "Astra-1") play from public/voice/.
    Anything not recorded yet (e.g. the sentence a student builds in the firefly jar)
    falls back to the browser's text-to-speech, preferring a boy/male voice to match Astra. */
+const V = (name: string) => `voice/starfall-${name}.mp3`;
 const VOICE: Record<string, string> = {
-  [`Welcome to Starfall Meadow! ${TIP}`]: "voice/starfall-welcome.mp3",
+  [`Welcome to Starfall Meadow! ${TIP}`]: V("welcome"),
+  [TIP]: V("tip"),
+  "Starfall Meadow. Stellar Writers. Sentences that hold one clear idea.": V("world-name"),
+  "Writing Sentences. Write three sentences that each say one whole idea.": V("lesson-1"),
+  "Connecting Ideas. Join two short sentences without losing either idea.": V("lesson-2"),
+  "Details & Evidence. Use details to bring a story to life, then choose strong evidence and quote it.": V("lesson-3"),
+  "Vocabulary & Language. Pick strong, exact words that make your sentences shine.": V("lesson-4"),
+  "Finish Writing Sentences first.": V("locked-2"),
+  "Finish Connecting Ideas first.": V("locked-3"),
+  "Finish Details & Evidence first.": V("locked-4"),
+  "Catch word fireflies to build a sentence. A complete sentence tells who, and what they did.": V("jar-intro"),
+  "Tap some fireflies first. Who is your sentence about?": V("jar-empty"),
+  "That tells when or where. Who is it about, and what did they do?": V("jar-when-where"),
+  "Almost! Who is this sentence about? Catch a who firefly.": V("jar-need-who"),
+  "Almost! What did they do? Catch a doing firefly.": V("jar-need-what"),
+  "Let’s keep one clear idea: one who and one doing part.": V("jar-one-idea"),
+  "So close! Try putting the who part before the doing part.": V("jar-order"),
+  "You built a complete thought, and you grew it with when or where!": V("jar-win-grew"),
+  "You built a complete thought! It tells who and what they did.": V("jar-win"),
+  "New fireflies! Build another complete sentence.": V("jar-new-round"),
+  "Starfall Meadow is glowing! You finished all four lessons. Every clear sentence you wrote helped light it up!": V("celebrate"),
 };
 
 let playing: HTMLAudioElement | null = null;
