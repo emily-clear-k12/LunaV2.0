@@ -30,6 +30,8 @@ const asset = (file: string) => `${import.meta.env.BASE_URL}${file}`;
 const ART = {
   bg: asset("worlds/starfall-meadow-bg.jpg"),
   bgFallback: asset("worlds/starfall-bg.jpg"),
+  bgVideo: asset("worlds/starfall-meadow-loop.mp4"),
+  bgVideoWebm: asset("worlds/starfall-meadow-loop.webm"),
   astra: asset("worlds/astra-full.png"),
   jar: asset("worlds/icons/firefly-jar.png"),
   crystal: asset("worlds/crystal-blue.png"),
@@ -338,7 +340,26 @@ export function StarfallWorld({
       className={`sf-world ${leaving ? "leaving" : "arriving"} ${reduce ? "reduce" : ""} ${celebrate ? "celebrating" : ""}`}
       style={{ ["--sf-accent" as string]: mod.accent }}
     >
-      <div className={`sf-bg ${bgUrl === ART.bgFallback ? "legacy" : ""}`} aria-hidden="true" style={{ backgroundImage: `url(${bgUrl})` }} />
+      <div className={`sf-bg ${bgUrl === ART.bgFallback ? "legacy" : ""}`} aria-hidden="true" style={{ backgroundImage: `url(${bgUrl})` }}>
+        {/* Animated meadow (Emily's Grok clip, looped with a 2.5s cross-fade). The still image
+            above stays as the poster/fallback; motion is skipped for reduced-motion users. */}
+        {!reduce && bgUrl === ART.bg ? (
+          <video
+            className="sf-bg-video"
+            poster={bgUrl}
+            autoPlay
+            muted
+            loop
+            playsInline
+            preload="auto"
+            disablePictureInPicture
+            onCanPlay={(e) => e.currentTarget.classList.add("ready")}
+          >
+            <source src={ART.bgVideoWebm} type="video/webm" />
+            <source src={ART.bgVideo} type="video/mp4" />
+          </video>
+        ) : null}
+      </div>
       <div className="sf-tint" aria-hidden="true" />
       <div className="sf-glowpools" aria-hidden="true">
         <i style={{ left: "12%", top: "78%" }} />
