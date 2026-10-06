@@ -1,10 +1,20 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { ArrowLeft, Check, Compass, Feather } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import {
+  Crystal,
+  HUB,
+  MAP_BG,
+  WorldPage,
+  useProgress,
+  worldByModule,
+  worldBySlug,
+} from "./plan-b-worlds";
+import { M1_VARIANT, M1_VARIANTS, PLAN_B_LESSONS, lessonLabel, type PlanBLesson } from "./plan-b-lessons";
 
 export const Route = createFileRoute("/")({ component: StudentHome });
 
-type Lesson = { title: string; world: string; minutes: number; task: string };
+type Lesson = PlanBLesson;
 
 type Module = {
   id: string;
@@ -31,15 +41,11 @@ const modules: Module[] = [
     short: "SCR",
     world: "Fairy Hollow",
     blurb: "Short constructed responses with clear evidence.",
-    x: 21.1,
-    y: 38.5,
+    x: 19.2,
+    y: 34.8,
     w: 5.5,
     h: 9,
-    lessons: [
-      { title: "Answer the ask", world: "Mushroom lane", minutes: 20, task: "Write a short answer that restates the question." },
-      { title: "Evidence", world: "Glow caps", minutes: 23, task: "Use two pieces of proof from the passage." },
-      { title: "Details", world: "Spore bridge", minutes: 20, task: "Write detail sentences a reader can picture." },
-    ],
+    lessons: PLAN_B_LESSONS.scr,
   },
   {
     id: "ecr",
@@ -48,15 +54,11 @@ const modules: Module[] = [
     short: "ECR",
     world: "Dwarven Stonehold",
     blurb: "Extended responses that build a full argument.",
-    x: 41.1,
-    y: 31.7,
+    x: 45.9,
+    y: 27.7,
     w: 5.5,
     h: 9,
-    lessons: [
-      { title: "Claim the fort", world: "Gate stones", minutes: 20, task: "Write a clear claim for a longer response." },
-      { title: "Stack reasons", world: "Hall of proofs", minutes: 25, task: "Order three reasons that support your claim." },
-      { title: "Land the ending", world: "Deep vault", minutes: 20, task: "Close with a conclusion that ties the reasons together." },
-    ],
+    lessons: PLAN_B_LESSONS.ecr,
   },
   {
     id: "sentences",
@@ -65,15 +67,11 @@ const modules: Module[] = [
     short: "Stellar",
     world: "Elven Starspire",
     blurb: "Sentences that hold one clear idea.",
-    x: 65.0,
-    y: 31.7,
+    x: 77.7,
+    y: 30.7,
     w: 5.5,
     h: 9,
-    lessons: [
-      { title: "One complete thought", world: "First spires", minutes: 20, task: "Write three sentences that each say one whole idea." },
-      { title: "Who did what", world: "Star bridge", minutes: 20, task: "Mark the who and the what in each sentence." },
-      { title: "Join two ideas", world: "Twin towers", minutes: 20, task: "Combine two short sentences without losing either idea." },
-    ],
+    lessons: PLAN_B_LESSONS.sentences,
   },
   {
     id: "plan",
@@ -82,15 +80,11 @@ const modules: Module[] = [
     short: "Process",
     world: "Gnome Gearworks",
     blurb: "Read the prompt, take notes, make a plan.",
-    x: 77.4,
-    y: 51.2,
+    x: 79.5,
+    y: 58.0,
     w: 5.5,
     h: 9,
-    lessons: [
-      { title: "Read the prompt", world: "Windmill gate", minutes: 15, task: "Underline what the prompt is asking you to do." },
-      { title: "Gather notes", world: "Gear loft", minutes: 20, task: "List the facts you will use before you draft." },
-      { title: "Order the plan", world: "Clockwork yard", minutes: 20, task: "Put your notes in the order a reader needs." },
-    ],
+    lessons: PLAN_B_LESSONS.plan,
   },
   {
     id: "revise",
@@ -99,16 +93,12 @@ const modules: Module[] = [
     short: "Revision",
     world: "Merfolk Lagoon",
     blurb: "Make the draft clearer and stronger.",
-    x: 73.9,
-    y: 81.2,
+    x: 59.5,
+    y: 83.6,
     w: 5.5,
     h: 9,
     labelAbove: true,
-    lessons: [
-      { title: "Name the idea", world: "Dock lights", minutes: 15, task: "Say what the draft is really about, in one line." },
-      { title: "Add what’s missing", world: "Tide shelves", minutes: 20, task: "Find a claim with no support and add it." },
-      { title: "Cut what wanders", world: "Reef path", minutes: 20, task: "Remove a sentence that does not help the idea." },
-    ],
+    lessons: PLAN_B_LESSONS.revise,
   },
   {
     id: "edit",
@@ -117,23 +107,24 @@ const modules: Module[] = [
     short: "Edit",
     world: "Dragon’s Roost",
     blurb: "Polish conventions until the writing is clear.",
-    x: 16.5,
-    y: 81.5,
+    x: 22.3,
+    y: 76.9,
     w: 5.5,
     h: 9,
     labelAbove: true,
-    lessons: [
-      { title: "Capitals and stops", world: "Cliff stairs", minutes: 15, task: "Fix sentences that start or end the wrong way." },
-      { title: "Spelling that counts", world: "Aerie wall", minutes: 20, task: "Correct the words a reader would stumble on." },
-      { title: "Read it through", world: "Lookout torch", minutes: 15, task: "Read aloud and mark anything that still snags." },
-    ],
+    lessons: PLAN_B_LESSONS.edit,
   },
 ];
 
 /** Crystal at the foot of the great tree */
-const treehouseSpot = { x: 50.3, y: 64.5, w: 6, h: 10, labelAbove: true };
+const treehouseSpot = { x: HUB.treehouse.x, y: 62.0, w: 6, h: 10, labelAbove: true };
 /** Broader hotspot over the tree canopy / observatory */
-const treeCanopySpot = { x: 50.0, y: 38.0, w: 14, h: 28 };
+const treeCanopySpot = { x: 50.0, y: 40.0, w: 15, h: 30 };
+
+/** Assignments point at an M1 lesson by topic, so they follow whichever M1 variant is set. */
+function m1Lesson(match: RegExp) {
+  return (PLAN_B_LESSONS.scr.find((l) => match.test(l.title)) ?? PLAN_B_LESSONS.scr[0]).title;
+}
 
 const assignments = [
   {
@@ -144,7 +135,7 @@ const assignments = [
     due: "Due tomorrow",
     action: "Begin",
     moduleId: "scr",
-    lesson: "Evidence",
+    lesson: m1Lesson(/Evidence/),
     current: true,
   },
   {
@@ -155,7 +146,7 @@ const assignments = [
     due: "Due Jul 4",
     action: "Continue",
     moduleId: "scr",
-    lesson: "Evidence",
+    lesson: m1Lesson(/Evidence/),
     current: false,
   },
   {
@@ -166,7 +157,7 @@ const assignments = [
     due: "Due Jul 6",
     action: "Begin",
     moduleId: "scr",
-    lesson: "Details",
+    lesson: m1Lesson(/Expla/),
     current: false,
   },
 ];
@@ -187,12 +178,12 @@ const savedAtStart: Writing[] = [
     body: "The old tree is special because the path starts at its roots. Lanterns hang by the door, and the bark holds the names of writers who passed.",
   },
   {
-    title: "One complete thought",
+    title: "Lesson 1: Writing Sentences",
     from: "Stellar Writers",
     body: "A sentence holds one idea. The fox waited on the stone until the lantern was lit.",
   },
   {
-    title: "Who did what",
+    title: "Lesson 2: Connecting Ideas",
     from: "Stellar Writers",
     body: "The writer followed the path. The crystal marked the turn.",
   },
@@ -222,9 +213,32 @@ function StudentHome() {
   const [treehouse, setTreehouse] = useState(false);
   const [entryTitle, setEntryTitle] = useState<string | null>(null);
   const [writings, setWritings] = useState<Writing[]>(savedAtStart);
+  /* World pages live at #world/<slug> (like Plan A's #world/starfall). */
+  const [worldSlug, setWorldSlug] = useState<string | null>(() => slugFromHash());
+  const [leaving, setLeaving] = useState<{ x: number; y: number } | null>(null);
+  const [mapEnter, setMapEnter] = useState(false);
+  const progress = useProgress();
+
+  useEffect(() => {
+    const onHash = () => {
+      setWorldSlug(slugFromHash());
+      setLeaving(null);
+    };
+    window.addEventListener("hashchange", onHash);
+    window.addEventListener("popstate", onHash);
+    return () => {
+      window.removeEventListener("hashchange", onHash);
+      window.removeEventListener("popstate", onHash);
+    };
+  }, []);
+
+  const world = worldBySlug(worldSlug);
+  const worldMod = world ? modules.find((mod) => mod.id === world.moduleId) ?? null : null;
 
   const focused = modules.find((mod) => mod.id === moduleId) ?? null;
-  const lesson = focused?.lessons.find((item) => item.title === lessonTitle) ?? null;
+  const lessonIndex = focused ? focused.lessons.findIndex((item) => item.title === lessonTitle) : -1;
+  const lesson = focused && lessonIndex >= 0 ? focused.lessons[lessonIndex] : null;
+  const lessonName = lesson ? lessonLabel(lessonIndex, lesson.title) : "";
   const entry = writings.find((item) => item.title === entryTitle) ?? null;
   const focus = treehouse ? treehouseSpot : focused;
 
@@ -233,6 +247,29 @@ function StudentHome() {
     if (!mod) return false;
     const finished = done[id] ?? [];
     return mod.lessons.every((item) => finished.includes(item.title));
+  }
+
+  /** Zoom + fade toward the island, then open its world page. */
+  function goWorld(id: string) {
+    const target = worldByModule(id);
+    if (!target || leaving) return;
+    setEcrNote(false);
+    setShelfOpen(false);
+    const spot = HUB[id];
+    const reduce = window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
+    setLeaving({ x: spot.x, y: spot.bottom - spot.h / 2 });
+    window.setTimeout(() => {
+      history.pushState(null, "", `#world/${target.slug}`);
+      setWorldSlug(target.slug);
+      setLeaving(null);
+      setMapEnter(false);
+    }, reduce ? 60 : 480);
+  }
+
+  function leaveWorld() {
+    history.pushState(null, "", window.location.pathname + window.location.search);
+    setWorldSlug(null);
+    setMapEnter(true);
   }
 
   function openModule(id: string, lessonName?: string, assignmentTitle?: string) {
@@ -266,6 +303,7 @@ function StudentHome() {
   }
 
   function backToMap() {
+    if (world) leaveWorld();
     setModuleId(null);
     setLessonTitle(null);
     setWriteTitle(null);
@@ -274,18 +312,18 @@ function StudentHome() {
     setEntryTitle(null);
   }
 
-  function markDone(moduleKey: string, title: string) {
+  function markDone(moduleKey: string, title: string, label = title) {
     setDone((current) => {
       const list = current[moduleKey] ?? [];
       if (list.includes(title)) return current;
       return { ...current, [moduleKey]: [...list, title] };
     });
     setWritings((current) => {
-      if (current.some((item) => item.title === title)) return current;
+      if (current.some((item) => item.title === label)) return current;
       const mod = modules.find((item) => item.id === moduleKey);
       return [
         {
-          title,
+          title: label,
           from: mod ? mod.name : "Astra",
           body: "Saved in your Treehouse.",
         },
@@ -302,7 +340,7 @@ function StudentHome() {
           <div className="title-left">
             <h1 className="title-heading">Astra’s Writing Adventure</h1>
           </div>
-          {focus ? (
+          {focus || world ? (
             <button
               type="button"
               onClick={backToMap}
@@ -329,7 +367,8 @@ function StudentHome() {
                       onClick={() => {
                         if (badge.moduleId) {
                           setEcrNote(false);
-                          openModule(badge.moduleId);
+                          if (world) leaveWorld();
+                          goWorld(badge.moduleId);
                         } else {
                           setEcrNote(true);
                         }
@@ -355,51 +394,48 @@ function StudentHome() {
       <div className="flex h-full min-h-0 w-full min-w-0 overflow-hidden bg-dusk">
       <div className="relative min-h-0 min-w-0 flex-1">
       <div className="absolute inset-0 overflow-hidden">
+        {world && worldMod ? (
+          <WorldPage
+            key={world.slug}
+            world={world}
+            moduleN={worldMod.n}
+            moduleShort={worldMod.id === "scr" && M1_VARIANT !== "scr" ? `${worldMod.short} · ${M1_VARIANTS[M1_VARIANT].label}` : worldMod.short}
+            worldName={worldMod.world}
+            lessons={worldMod.lessons}
+            states={progress[world.moduleId] ?? []}
+            entering
+          />
+        ) : (
         <div
-          className="absolute inset-0 transition-transform duration-700 ease-out"
+          className={
+            "pb-hub-scene absolute inset-0 transition-transform duration-700 ease-out" +
+            (leaving ? " is-leaving" : "") +
+            (mapEnter ? " pb-map-enter" : "")
+          }
           style={{
-            transformOrigin: focus ? `${focus.x}% ${focus.y}%` : "50% 50%",
-            transform: focus ? "scale(2.35)" : "scale(1)",
+            transformOrigin: leaving
+              ? `${leaving.x}% ${leaving.y}%`
+              : focus
+                ? `${focus.x}% ${focus.y}%`
+                : "50% 50%",
+            transform: leaving ? "scale(1.9)" : focus ? "scale(2.35)" : "scale(1)",
           }}
         >
           <div className="kingdom-scene">
-            <div className="kingdom-scene-frame">
+            <div className="kingdom-scene-frame pb-frame">
               <img
-                src={asset("kingdom-map.jpg")}
-                alt="Storybook kingdom map with six module crystals and the Treehouse"
+                src={MAP_BG}
+                alt="Floating islands map with six module worlds around Astra’s Treehouse"
                 className="kingdom-scene-img"
               />
-              {modules.map((mod) => (
-                <button
-                  key={mod.id}
-                  type="button"
-                  onClick={() => openModule(mod.id)}
-                  aria-label={`Module ${mod.n}, ${mod.name}, ${mod.world}`}
-                  className={
-                    "kingdom-hotspot absolute -translate-x-1/2 -translate-y-1/2 " +
-                    (focus ? "pointer-events-none opacity-0" : "")
-                  }
-                  style={{
-                    left: `${mod.x}%`,
-                    top: `${mod.y}%`,
-                    width: `${mod.w}%`,
-                    height: `${mod.h}%`,
-                  }}
-                >
-                  <span className="kingdom-ring" aria-hidden="true" />
-                  <span className={"kingdom-plate" + (mod.labelAbove ? " above" : "")}>
-                    <span className="kingdom-plate-mod">M{mod.n} · {mod.short}</span>
-                    <span className="kingdom-plate-world">{mod.world}</span>
-                  </span>
-                </button>
-              ))}
               <button
                 type="button"
                 onClick={openTreehouse}
                 aria-label="Treehouse, your writing space"
+                tabIndex={-1}
                 className={
                   "kingdom-hotspot tree-canopy-hotspot absolute -translate-x-1/2 -translate-y-1/2 " +
-                  (focus ? "pointer-events-none opacity-0" : "")
+                  (focus || leaving ? "pointer-events-none opacity-0" : "")
                 }
                 style={{
                   left: `${treeCanopySpot.x}%`,
@@ -410,75 +446,58 @@ function StudentHome() {
               >
                 <span className="kingdom-ring soft" aria-hidden="true" />
               </button>
-              <button
-                type="button"
-                onClick={openTreehouse}
-                aria-label="Treehouse crystal, your writing space"
-                className={
-                  "kingdom-hotspot absolute -translate-x-1/2 -translate-y-1/2 " +
-                  (focus ? "pointer-events-none opacity-0" : "")
-                }
-                style={{
-                  left: `${treehouseSpot.x}%`,
-                  top: `${treehouseSpot.y}%`,
-                  width: `${treehouseSpot.w}%`,
-                  height: `${treehouseSpot.h}%`,
-                }}
-              >
-                <span className="kingdom-ring" aria-hidden="true" />
-                <span className={"kingdom-plate" + (treehouseSpot.labelAbove ? " above" : "")}>
-                  <span className="kingdom-plate-mod">Your space</span>
-                  <span className="kingdom-plate-world">Treehouse</span>
-                </span>
-              </button>
+              {[...modules.map((mod) => ({ id: mod.id, top: `M${mod.n} · ${mod.short}`, name: mod.world, n: mod.n })), { id: "treehouse", top: "Your space", name: "Treehouse", n: 0 }].map((item, i) => {
+                const spot = HUB[item.id];
+                const onOpen = item.id === "treehouse" ? openTreehouse : () => goWorld(item.id);
+                const label = item.n ? `Module ${item.n}, ${item.name}` : "Treehouse, your writing space";
+                return (
+                  <div
+                    key={item.id}
+                    className={"pb-hub-item" + (focus || leaving ? " pointer-events-none opacity-0 transition-opacity" : "")}
+                  >
+                    <button
+                      type="button"
+                      onClick={onOpen}
+                      tabIndex={-1}
+                      aria-hidden="true"
+                      className="pb-hub-crystal"
+                      style={{
+                        left: `${spot.x}%`,
+                        top: `${spot.bottom - spot.h}%`,
+                        height: `${spot.h}%`,
+                        ["--d" as string]: `${i * -0.5}s`,
+                      }}
+                    >
+                      <Crystal state="mastered" />
+                    </button>
+                    <button
+                      type="button"
+                      onClick={onOpen}
+                      aria-label={label}
+                      className={"pb-hub-label" + (spot.labelAbove ? " above" : "")}
+                      style={{ left: `${spot.x}%`, top: `${spot.labelTop}%` }}
+                    >
+                      <span className="pb-hub-label-mod">{item.top}</span>
+                      <span className="pb-hub-label-world">{item.name}</span>
+                    </button>
+                  </div>
+                );
+              })}
             </div>
           </div>
         </div>
+        )}
         </div>
-
-      {focused && !lesson ? (
-        <section className="absolute inset-x-0 bottom-0 px-3 pb-3 sm:px-6 sm:pb-5">
-          <div className="mx-auto max-w-3xl rounded-3xl bg-cream/95 p-4 text-ink shadow-2xl sm:p-5">
-            <p className="text-sm font-bold text-lantern">
-              Module {focused.n} · {focused.world}
-              {mastered(focused.id) ? " · Path lit" : ""}
-            </p>
-            <h2 className="font-display text-2xl">{focused.name}</h2>
-            <p className="mt-1 text-sm text-muted">{focused.blurb}</p>
-            <ol className="mt-3 grid gap-2 sm:grid-cols-3">
-              {focused.lessons.map((item, index) => {
-                const finished = (done[focused.id] ?? []).includes(item.title);
-                return (
-                  <li key={item.title}>
-                    <button
-                      type="button"
-                      onClick={() => setLessonTitle(item.title)}
-                      className="flex min-h-16 w-full flex-col items-start rounded-2xl bg-cream-deep px-3 py-2 text-left"
-                    >
-                      <span className="text-xs font-bold text-moss">
-                        Lesson {index + 1}
-                        {finished ? " · Done" : ` · ${item.minutes} min`}
-                      </span>
-                      <span className="font-bold">{item.title}</span>
-                      <span className="text-xs text-muted">{item.world}</span>
-                    </button>
-                  </li>
-                );
-              })}
-            </ol>
-          </div>
-        </section>
-      ) : null}
 
       {focused && lesson ? (
         <section className="absolute inset-x-0 bottom-0 px-3 pb-3 sm:px-6 sm:pb-5">
           <div className="mx-auto max-w-xl rounded-3xl bg-cream p-5 text-ink shadow-2xl">
             <p className="text-sm font-bold text-lantern">
-              {focused.name} · {lesson.world}
+              {focused.name} · {focused.world}
             </p>
-            <h2 className="mt-1 font-display text-3xl">{writeTitle ?? lesson.title}</h2>
-            {writeTitle ? <p className="mt-1 text-sm text-muted">{lesson.title}</p> : null}
-            <p className="mt-3">{lesson.task}</p>
+            <h2 className="mt-1 font-display text-3xl">{writeTitle ?? lessonName}</h2>
+            {writeTitle ? <p className="mt-1 text-sm text-muted">{lessonName}</p> : null}
+            {lesson.task ? <p className="mt-3">{lesson.task}</p> : null}
             <div className="mt-4 flex flex-wrap items-center gap-3">
               {(done[focused.id] ?? []).includes(lesson.title) ? (
                 <span className="inline-flex min-h-11 items-center gap-2 text-sm font-bold text-moss">
@@ -488,7 +507,7 @@ function StudentHome() {
               ) : (
                 <button
                   type="button"
-                  onClick={() => markDone(focused.id, lesson.title)}
+                  onClick={() => markDone(focused.id, lesson.title, lessonName)}
                   className="inline-flex min-h-11 items-center rounded-full bg-moss px-4 text-sm font-bold text-cream"
                 >
                   Save to Treehouse
@@ -496,7 +515,11 @@ function StudentHome() {
               )}
               <button
                 type="button"
-                onClick={() => setLessonTitle(null)}
+                onClick={() => {
+                  const id = focused.id;
+                  backToMap();
+                  goWorld(id);
+                }}
                 className="inline-flex min-h-11 items-center gap-2 text-sm font-bold text-lantern"
               >
                 <ArrowLeft className="size-4" aria-hidden="true" />
@@ -556,7 +579,7 @@ function StudentHome() {
         </section>
       ) : null}
 
-      {!focus && !quick ? (
+      {!focus && !quick && !world ? (
         <AssignmentShelf
           open={shelfOpen}
           onToggle={() => setShelfOpen((value) => !value)}
@@ -610,6 +633,11 @@ function StudentHome() {
       </div>
     </div>
   );
+}
+
+function slugFromHash() {
+  const m = window.location.hash.match(/^#\/?world\/([a-z-]+)/);
+  return m ? m[1] : null;
 }
 
 function QuickWrite({ onStart }: { onStart: () => void }) {

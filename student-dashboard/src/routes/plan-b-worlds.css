@@ -1,0 +1,307 @@
+/* ——— Plan B worlds: hub map crystals + labels, world pages (see plan-b-worlds.tsx) ——— */
+
+/* The frame is the 16:9 art box; make it a container so text can scale with it (cqw). */
+.pb-frame {
+  container-type: inline-size;
+}
+
+/* World pages may anchor the cover-crop left/right instead of centre (--fx: 0..1). */
+.pb-world .pb-frame {
+  --fw: max(100cqw, calc(100cqh * 16 / 9));
+  left: calc((100cqw - var(--fw)) * var(--fx, 0.5));
+  translate: 0 -50%;
+}
+
+@keyframes pb-float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-5%); }
+}
+
+@keyframes pb-glow {
+  0%, 100% { opacity: 0.55; transform: translateX(-50%) scale(0.92); }
+  50% { opacity: 0.95; transform: translateX(-50%) scale(1.06); }
+}
+
+@keyframes pb-fade-in {
+  from { opacity: 0; transform: scale(1.06); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+@keyframes pb-map-in {
+  from { opacity: 0; transform: scale(1.04); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+@keyframes pb-toast-in {
+  from { opacity: 0; transform: translate(-50%, 0.6rem); }
+  to { opacity: 1; transform: translate(-50%, 0); }
+}
+
+/* ——— Crystal (shared) ——— */
+.pb-crystal {
+  position: relative;
+  display: block;
+  height: 100%;
+  aspect-ratio: 197 / 256;
+  animation: pb-float 3.6s ease-in-out infinite;
+  animation-delay: var(--d, 0s);
+}
+
+.pb-crystal-img {
+  position: relative;
+  z-index: 1;
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  pointer-events: none;
+  user-select: none;
+  filter: drop-shadow(0 0 0.35rem var(--glow, rgb(110 200 255 / 0.85)));
+  transition: filter 0.2s ease, transform 0.2s ease;
+}
+
+.pb-crystal-glow {
+  position: absolute;
+  left: 50%;
+  bottom: -12%;
+  z-index: 0;
+  width: 150%;
+  height: 40%;
+  border-radius: 50%;
+  background: radial-gradient(closest-side, var(--glow, rgb(110 200 255 / 0.85)), transparent);
+  animation: pb-glow 3.6s ease-in-out infinite;
+  animation-delay: var(--d, 0s);
+  pointer-events: none;
+}
+
+.pb-crystal-mastered { --glow: rgb(96 190 255 / 0.85); }
+.pb-crystal-current { --glow: rgb(110 240 140 / 0.9); }
+.pb-crystal-new { --glow: rgb(190 130 255 / 0.8); }
+.pb-crystal-retry { --glow: rgb(255 214 90 / 0.9); }
+
+@media (prefers-reduced-motion: reduce) {
+  .pb-crystal,
+  .pb-crystal-glow {
+    animation: none;
+  }
+}
+
+/* ——— Hub map ——— */
+/* "backwards" (not "both") so the finished animation never pins transform and blocks
+   Plan B's existing zoom-to-focus (Treehouse, Start writing). */
+.pb-map-enter {
+  animation: pb-map-in 0.45s ease-out backwards;
+}
+
+.pb-hub-scene {
+  transition: transform 0.7s ease-out, opacity 0.5s ease-in;
+}
+
+.pb-hub-scene.is-leaving {
+  opacity: 0;
+  transition: transform 0.5s ease-in, opacity 0.5s ease-in;
+}
+
+.pb-hub-crystal {
+  position: absolute;
+  z-index: 2;
+  translate: -50% 0;
+  border: 0;
+  background: transparent;
+  padding: 0;
+  cursor: pointer;
+}
+
+.pb-hub-crystal:hover .pb-crystal-img,
+.pb-hub-crystal:focus-visible .pb-crystal-img,
+.pb-hub-item:hover .pb-crystal-img {
+  transform: scale(1.12);
+  filter: drop-shadow(0 0 0.6rem var(--glow)) brightness(1.12);
+}
+
+.pb-hub-crystal:active .pb-crystal-img,
+.pb-hub-label:active {
+  transform: scale(0.95);
+}
+
+.pb-hub-label {
+  position: absolute;
+  z-index: 3;
+  display: flex;
+  translate: -50% 0;
+  flex-direction: column;
+  align-items: center;
+  gap: 0;
+  border: 1.5px solid rgb(232 205 150 / 0.85);
+  border-radius: 0.6rem;
+  background: rgb(10 30 52 / 0.9);
+  padding: 0.12rem 0.55rem 0.18rem;
+  box-shadow: 0 4px 10px rgb(4 12 24 / 0.45), 0 0 0 1px rgb(0 0 0 / 0.25);
+  cursor: pointer;
+  transition: transform 0.18s ease, box-shadow 0.18s ease, background 0.18s ease;
+  white-space: nowrap;
+}
+
+.pb-hub-label.above {
+  translate: -50% -100%;
+}
+
+.pb-hub-label:hover,
+.pb-hub-label:focus-visible,
+.pb-hub-item:hover .pb-hub-label {
+  background: rgb(14 42 72 / 0.96);
+  box-shadow: 0 6px 14px rgb(4 12 24 / 0.5), 0 0 12px rgb(110 200 255 / 0.6);
+  transform: translateY(-2px);
+}
+
+.pb-hub-label:focus-visible,
+.pb-hub-crystal:focus-visible {
+  outline: 2px solid #b8e8ff;
+  outline-offset: 2px;
+}
+
+.pb-hub-label-mod {
+  font-family: "Baloo 2", "Nunito", sans-serif;
+  font-size: max(9.5px, 0.78cqw);
+  font-weight: 700;
+  line-height: 1.15;
+  color: rgb(255 255 255 / 0.92);
+}
+
+.pb-hub-label-world {
+  font-family: "Baloo 2", "Nunito", sans-serif;
+  font-size: max(11px, 0.98cqw);
+  font-weight: 800;
+  line-height: 1.12;
+  color: #fff;
+}
+
+/* ——— World pages ——— */
+.pb-world-enter {
+  animation: pb-fade-in 0.5s ease-out both;
+}
+
+.pb-lesson-crystal {
+  position: absolute;
+  z-index: 2;
+  translate: -50% 0;
+  border: 0;
+  background: transparent;
+  padding: 0;
+  cursor: pointer;
+}
+
+.pb-lesson-crystal:hover .pb-crystal-img,
+.pb-lesson-crystal:focus-visible .pb-crystal-img {
+  transform: scale(1.1);
+  filter: drop-shadow(0 0 0.7rem var(--glow)) brightness(1.12);
+}
+
+.pb-lesson-crystal:active .pb-crystal-img {
+  transform: scale(0.94);
+}
+
+.pb-lesson-crystal:focus-visible {
+  outline: 2px solid #fff6dc;
+  outline-offset: 3px;
+  border-radius: 0.6rem;
+}
+
+/* Light plaque laid over the blank plaque painted on each pedestal. It is at least the painted
+   plaque's size, grows wider for long names (up to --plaque-max) and wraps to two lines. */
+.pb-plaque {
+  --plaque-max: 16cqw;
+  position: absolute;
+  z-index: 3;
+  display: grid;
+  width: max-content;
+  max-width: var(--plaque-max);
+  translate: -50% -50%;
+  place-items: center;
+  border: 1px solid rgb(196 160 110 / 0.8);
+  border-radius: 0.7rem;
+  background: linear-gradient(180deg, #fffaf0 0%, #f4e8d2 100%);
+  padding: 0.18rem 0.6rem 0.22rem;
+  font-family: "Baloo 2", "Nunito", sans-serif;
+  font-size: clamp(11.5px, calc(var(--ph) * 0.26cqw), 14px);
+  font-weight: 800;
+  line-height: 1.12;
+  text-align: center;
+  text-wrap: balance;
+  color: #4a2e1a;
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.9), 0 2px 5px rgb(60 36 18 / 0.32);
+  cursor: pointer;
+  transition: transform 0.18s ease, box-shadow 0.18s ease;
+}
+
+.pb-plaque.align-left {
+  translate: 0 -50%;
+}
+
+.pb-plaque.align-right {
+  translate: -100% -50%;
+}
+
+.pb-plaque:hover {
+  transform: translateY(-1px);
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.9), 0 4px 10px rgb(60 36 18 / 0.35);
+}
+
+.pb-plaque.is-current {
+  box-shadow: 0 0 0 2px rgb(110 220 140 / 0.9), 0 2px 6px rgb(40 24 12 / 0.3);
+}
+
+.pb-spot:hover .pb-crystal-img {
+  transform: scale(1.1);
+  filter: drop-shadow(0 0 0.7rem var(--glow)) brightness(1.12);
+}
+
+.pb-world-name {
+  position: absolute;
+  top: 0.75rem;
+  left: 0.75rem;
+  z-index: 4;
+  display: flex;
+  flex-direction: column;
+  border: 1.5px solid rgb(232 205 150 / 0.85);
+  border-radius: 0.75rem;
+  background: rgb(10 30 52 / 0.88);
+  padding: 0.2rem 0.75rem 0.3rem;
+  box-shadow: 0 4px 10px rgb(4 12 24 / 0.45);
+  pointer-events: none;
+}
+
+.pb-world-name-mod {
+  font-family: "Baloo 2", "Nunito", sans-serif;
+  font-size: 0.72rem;
+  font-weight: 700;
+  line-height: 1.2;
+  color: rgb(255 255 255 / 0.9);
+}
+
+.pb-world-name-world {
+  font-family: "Baloo 2", "Nunito", sans-serif;
+  font-size: 1.05rem;
+  font-weight: 800;
+  line-height: 1.1;
+  color: #fff;
+}
+
+.pb-toast {
+  position: absolute;
+  left: 50%;
+  bottom: 1rem;
+  z-index: 10;
+  max-width: min(28rem, calc(100% - 2rem));
+  transform: translate(-50%, 0);
+  border: 1px solid rgb(196 160 110 / 0.75);
+  border-radius: 999px;
+  background: #fffaf0;
+  padding: 0.55rem 1.1rem;
+  font-family: "Baloo 2", "Nunito", sans-serif;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #4a2e1a;
+  box-shadow: 0 10px 24px rgb(30 20 10 / 0.3);
+  animation: pb-toast-in 0.25s ease-out both;
+}
