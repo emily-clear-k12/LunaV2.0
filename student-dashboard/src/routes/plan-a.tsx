@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { ArrowLeft, Check } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   COINS_AT_START,
   ClassCadeNote,
@@ -15,6 +15,7 @@ import {
   type Piece,
   type TreehouseRoute,
 } from "./plan-a-pages";
+import { DEMO_LESSON_TITLE, StarfallWorld } from "./world-starfall";
 
 export const Route = createFileRoute("/")({ component: StudentHome });
 
@@ -56,7 +57,7 @@ const CLASS_FOCUS = "Today, let's back every answer with evidence from the text!
 const DEMO_DONE: Record<string, string[]> = {
   scr: ["Answer the ask", "Cite the text", "Explain the link"],
   ecr: ["Claim the sky"],
-  sentences: ["One complete thought", "Who did what"],
+  sentences: ["Writing Sentences", "Connecting Ideas"],
 };
 
 const modules: Module[] = [
@@ -112,9 +113,10 @@ const modules: Module[] = [
     tagY: 79.8,
     accent: "#b46bff",
     lessons: [
-      { title: "One complete thought", world: "First stones", minutes: 20, task: "Write three sentences that each say one whole idea." },
-      { title: "Who did what", world: "Root bridge", minutes: 20, task: "Mark the who and the what in each sentence." },
-      { title: "Join two ideas", world: "Twin trunks", minutes: 20, task: "Combine two short sentences without losing either idea." },
+      { title: "Writing Sentences", world: "First stones", minutes: 20, task: "Write three sentences that each say one whole idea." },
+      { title: "Connecting Ideas", world: "Root bridge", minutes: 20, task: "Join two short sentences without losing either idea." },
+      { title: "Details & Evidence", world: "Twin trunks", minutes: 20, task: "Use details to bring a story to life, then choose strong evidence and quote it." },
+      { title: "Vocabulary & Language", world: "Wishing hill", minutes: 20, task: "Pick strong, exact words that make your sentences shine." },
     ],
   },
   {
@@ -196,10 +198,49 @@ type View =
   | { page: "hub" }
   | { page: "growth" }
   | { page: "practice" }
-  | { page: "treehouse"; route: TreehouseRoute };
+  | { page: "treehouse"; route: TreehouseRoute }
+  | { page: "world"; id: "starfall" };
+
+/* ——— Portal worlds: demo progress + coins persist in localStorage so the world is testable ——— */
+const COINS_KEY = "astra.coins";
+const lessonsKey = (modId: string) => `astra.lessons.${modId}`;
+
+function readCoins(): number {
+  try {
+    const n = Number(localStorage.getItem(COINS_KEY));
+    return localStorage.getItem(COINS_KEY) !== null && Number.isFinite(n) ? n : COINS_AT_START.coins;
+  } catch {
+    return COINS_AT_START.coins;
+  }
+}
+
+/** Starfall lesson titles were renamed (Oct 2026); keep saved demo progress working. */
+const RENAMED_LESSONS: Record<string, string> = {
+  "One complete thought": "Writing Sentences",
+  "Who did what": "Connecting Ideas",
+  "Join two ideas": "Details & Evidence",
+  "Grow the sentence": "Vocabulary & Language",
+};
+
+function readDone(): Record<string, string[]> {
+  const out = { ...DEMO_DONE };
+  try {
+    const raw = localStorage.getItem(lessonsKey("sentences"));
+    if (raw) out.sentences = (JSON.parse(raw) as string[]).map((t) => RENAMED_LESSONS[t] ?? t);
+    // Emily's example lesson (/demo/lesson/) records its own finish under this key.
+    const lessonDemo = JSON.parse(localStorage.getItem("astra-demo-alex-v1") || "{}");
+    if (lessonDemo["details-and-evidence"] && !(out.sentences ?? []).includes(DEMO_LESSON_TITLE)) {
+      out.sentences = [...(out.sentences ?? []), DEMO_LESSON_TITLE];
+    }
+  } catch {
+    /* ignore bad demo state */
+  }
+  return out;
+}
 
 function parseHash(hash: string): View {
-  const parts = hash.replace(/^#\/?/, "").split("/").filter(Boolean);
+  const parts = hash.replace(/^#\/?/, "").split("?")[0].split("/").filter(Boolean);
+  if (parts[0] === "world" && parts[1] === "starfall") return { page: "world", id: "starfall" };
   if (parts[0] === "growth") return { page: "growth" };
   if (parts[0] === "practice") return { page: "practice" };
   if (parts[0] === "treehouse") {
@@ -212,6 +253,7 @@ function parseHash(hash: string): View {
 
 function viewHash(v: View): string {
   if (v.page === "hub") return "";
+  if (v.page === "world") return `#world/${v.id}`;
   if (v.page !== "treehouse") return `#${v.page}`;
   const r = v.route;
   if (r.mode === "piece") return `#treehouse/piece/${r.id}`;
@@ -280,12 +322,15 @@ const asset = (file: string) => `${import.meta.env.BASE_URL}${file}`;
 function StudentHome() {
   const [moduleId, setModuleId] = useState<string | null>(null);
   const [lessonTitle, setLessonTitle] = useState<string | null>(null);
-  const [done, setDone] = useState<Record<string, string[]>>(DEMO_DONE);
+  const [done, setDone] = useState<Record<string, string[]>>(readDone);
   const [shelfOpen, setShelfOpen] = useState(false);
   const [writeTitle, setWriteTitle] = useState<string | null>(null);
   const [ecrNote, setEcrNote] = useState(false);
   const [pieces, setPieces] = useState<Piece[]>(PIECES_AT_START);
-  const [coins, setCoins] = useState<CoinState>(COINS_AT_START);
+  const [coins, setCoins] = useState<CoinState>(() => ({ ...COINS_AT_START, coins: readCoins() }));
+  const [dive, setDive] = useState<{ x: number; y: number; ox: number; oy: number; reduce: boolean } | null>(null);
+  const [cameByPortal, setCameByPortal] = useState(false);
+  const sceneRef = useRef<HTMLDivElement>(null);
   const [view, setView] = useState<View>(() => parseHash(window.location.hash));
   const [glow, setGlow] = useState<{ x: number; y: number } | null>(null);
   const [cade, setCade] = useState(false);
@@ -302,6 +347,44 @@ function StudentHome() {
     return () => window.removeEventListener("hashchange", onHash);
   }, []);
 
+
+  useEffect(() => {
+    try {
+      localStorage.setItem(COINS_KEY, String(coins.coins));
+    } catch {
+      /* ignore */
+    }
+  }, [coins.coins]);
+
+  useEffect(() => {
+    try {
+      localStorage.setItem(lessonsKey("sentences"), JSON.stringify(done.sentences ?? []));
+    } catch {
+      /* ignore */
+    }
+  }, [done.sentences]);
+
+  /** Portal dive: the scene zooms into the tapped portal while its light floods the screen,
+      then the world takes over (reduced motion: a plain fade). */
+  function diveInto(el: HTMLElement) {
+    const reduce = window.matchMedia?.("(prefers-reduced-motion: reduce)").matches ?? false;
+    const r = el.getBoundingClientRect();
+    const stage = sceneRef.current?.getBoundingClientRect();
+    const cx = r.left + r.width / 2;
+    const cy = r.top + r.height * 0.42;
+    setDive({
+      x: stage ? ((cx - stage.left) / stage.width) * 100 : 50,
+      y: stage ? ((cy - stage.top) / stage.height) * 100 : 50,
+      ox: stage ? cx - stage.left : 0,
+      oy: stage ? cy - stage.top : 0,
+      reduce,
+    });
+    window.setTimeout(() => {
+      setCameByPortal(true);
+      navigate({ page: "world", id: "starfall" });
+      setDive(null);
+    }, reduce ? 300 : 680);
+  }
 
   function navigate(next: View) {
     const hash = viewHash(next);
@@ -395,6 +478,25 @@ function StudentHome() {
   const toHub = () => navigate({ page: "hub" });
   const openCade = () => setCade(true);
 
+  if (view.page === "world") {
+    const mod = modules.find((m) => m.id === "sentences")!;
+    return (
+      <StarfallWorld
+        mod={mod}
+        done={done.sentences ?? []}
+        setDone={(list) => setDone((cur) => ({ ...cur, sentences: list }))}
+        defaultDone={DEMO_DONE.sentences}
+        coins={coins.coins}
+        onEarn={(label, amount) => earn({ label, amount })}
+        onBack={() => {
+          setCameByPortal(false);
+          toHub();
+        }}
+        autoSpeak={cameByPortal}
+      />
+    );
+  }
+
   if (view.page !== "hub") {
     return (
       <div className="ap-fade-in">
@@ -471,11 +573,20 @@ function StudentHome() {
           )}
           <div className="absolute inset-0 overflow-hidden">
             <div
+              ref={sceneRef}
               className="absolute inset-0 transition-transform duration-700 ease-out"
-              style={{
-                transformOrigin: focused ? `${focused.x}% ${focused.y}%` : "50% 45%",
-                transform: focus ? "scale(1.85)" : "scale(1)",
-              }}
+              style={
+                dive && !dive.reduce
+                  ? {
+                      transformOrigin: `${dive.ox}px ${dive.oy}px`,
+                      transform: "scale(3.4)",
+                      transition: "transform 680ms cubic-bezier(0.55, 0, 0.8, 0.4)",
+                    }
+                  : {
+                      transformOrigin: focused ? `${focused.x}% ${focused.y}%` : "50% 45%",
+                      transform: focus ? "scale(1.85)" : "scale(1)",
+                    }
+              }
             >
               <div className="zscene">
                 <div className="zscene-frame">
@@ -495,7 +606,7 @@ function StudentHome() {
                     <button
                       key={mod.id}
                       type="button"
-                      onClick={() => openModule(mod.id)}
+                      onClick={(e) => (mod.id === "sentences" ? diveInto(e.currentTarget) : openModule(mod.id))}
                       aria-label={`Module ${mod.n}, ${mod.name}, ${mod.world}`}
                       className={
                         "z-hotspot z-portal absolute -translate-x-1/2 -translate-y-1/2 " +
@@ -703,6 +814,13 @@ function StudentHome() {
               className="ap-glow"
               aria-hidden="true"
               style={{ ["--gx" as string]: `${glow.x}%`, ["--gy" as string]: `${glow.y}%` }}
+            />
+          ) : null}
+          {dive ? (
+            <div
+              className={`wf-dive ${dive.reduce ? "reduce" : ""}`}
+              aria-hidden="true"
+              style={{ ["--gx" as string]: `${dive.x}%`, ["--gy" as string]: `${dive.y}%` }}
             />
           ) : null}
           {cade ? <ClassCadeNote onClose={() => setCade(false)} /> : null}

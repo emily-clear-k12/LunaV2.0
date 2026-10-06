@@ -595,7 +595,7 @@ function renderEnd(){
     <p class="dir" style="font-weight:600">You used details to bring a story to life, chose strong evidence, and quoted it correctly.</p>
     <div class="end-stats"><div class="tile cream stat"><b>${firstTry}/${graded}</b><span>checked activities right on the first try</span></div><div class="tile cream stat"><b>${saved.length}</b><span>messages saved</span></div></div>
     <p class="end-note">Replay any message from your pouch.</p>`;
-  goBtn('Back to home',true,()=>{try{const k='astra-demo-alex-v1';const p=JSON.parse(localStorage.getItem(k)||'{}');p['details-and-evidence']=true;localStorage.setItem(k,JSON.stringify(p));}catch(e){}location.href='../';});
+  goBtn('Back to home',true,()=>{try{const k='astra-demo-alex-v1';const p=JSON.parse(localStorage.getItem(k)||'{}');p['details-and-evidence']=true;localStorage.setItem(k,JSON.stringify(p));}catch(e){}location.href=new URLSearchParams(location.search).get('from')==='starfall'?'../../dashboard-a/#world/starfall':'../';});
 }
 
 /* ---------- canvas world ---------- */

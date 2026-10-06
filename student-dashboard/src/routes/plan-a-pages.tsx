@@ -1055,7 +1055,7 @@ export const PIECES_AT_START: Piece[] = [
   },
   {
     id: "one-thought",
-    title: "One complete thought",
+    title: "Writing Sentences",
     kind: "lesson",
     from: "Stellar Writers lesson",
     date: "Sep 19",
