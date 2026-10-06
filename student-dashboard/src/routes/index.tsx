@@ -505,9 +505,17 @@ function StudentHome() {
             onClick={() => setShelfOpen((value) => !value)}
             aria-label={shelfOpen ? "Hide assignments" : "Show all assignments"}
             aria-expanded={shelfOpen}
-            className={"pb-bottom-crystal" + (assignments.length > 1 && !shelfOpen ? " is-pulsing" : "")}
+            className="pb-bottom-crystal pb-assign-crystal"
           >
-            <img src={CRYSTAL_ICON} alt="" />
+            {/* Light-to-sapphire colour cycle + glow, a shine sweep masked to the crystal, and 4 sparkles. */}
+            <span className="pb-ac-body" style={{ ["--crystal" as string]: `url(${CRYSTAL_ICON})` }}>
+              <img src={CRYSTAL_ICON} alt="" className="pb-ac-img" />
+              <span className="pb-ac-shine" />
+            </span>
+            <span className="pb-ac-spark s1" />
+            <span className="pb-ac-spark s2" />
+            <span className="pb-ac-spark s3" />
+            <span className="pb-ac-spark s4" />
           </button>
           <button
             type="button"

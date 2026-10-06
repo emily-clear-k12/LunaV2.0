@@ -369,19 +369,97 @@
   cursor: pointer;
 }
 
-.pb-bottom-crystal img {
+/* ——— Assignment crystal: light icy blue <-> deep sapphire, glow swell, shine sweep, sparkles ——— */
+.pb-assign-crystal {
+  position: relative;
+  overflow: visible;
+}
+
+.pb-ac-body {
+  position: relative;
+  display: block;
   height: 4.9cqh;
-  width: auto;
-  filter: drop-shadow(0 0 0.4cqw rgb(90 190 255 / 0.7));
+  aspect-ratio: 197 / 256;
+  animation: pb-ac-bob 3s ease-in-out infinite alternate;
 }
 
-.pb-bottom-crystal.is-pulsing img {
-  animation: pb-chip-pulse 2.4s ease-in-out infinite;
+.pb-ac-img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  animation: pb-ac-color 3s ease-in-out infinite alternate;
 }
 
-@keyframes pb-chip-pulse {
-  0%, 100% { filter: drop-shadow(0 0 0.3cqw rgb(90 190 255 / 0.6)); }
-  50% { filter: drop-shadow(0 0 0.9cqw rgb(90 200 255 / 0.95)); }
+@keyframes pb-ac-color {
+  from {
+    filter: brightness(1.45) saturate(0.55) hue-rotate(-12deg)
+      drop-shadow(0 0 0.25cqw rgb(170 230 255 / 0.55));
+  }
+  to {
+    filter: brightness(0.6) saturate(1.7) hue-rotate(14deg)
+      drop-shadow(0 0 1.1cqw rgb(40 110 255 / 0.95)) drop-shadow(0 0 0.4cqw rgb(120 180 255 / 0.9));
+  }
+}
+
+@keyframes pb-ac-bob {
+  from { transform: scale(1); }
+  to { transform: scale(1.08); }
+}
+
+/* Shine band clipped to the crystal's own shape. */
+.pb-ac-shine {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(115deg, transparent 35%, rgb(255 255 255 / 0.85) 50%, transparent 65%) no-repeat;
+  background-size: 250% 100%;
+  background-position: 160% 0;
+  -webkit-mask: var(--crystal) center / contain no-repeat;
+  mask: var(--crystal) center / contain no-repeat;
+  animation: pb-ac-shine 4.5s ease-in-out infinite;
+  pointer-events: none;
+}
+
+@keyframes pb-ac-shine {
+  0%, 62% { background-position: 160% 0; }
+  88%, 100% { background-position: -60% 0; }
+}
+
+.pb-ac-spark {
+  position: absolute;
+  width: 1cqw;
+  height: 1cqw;
+  /* White core with a blue rim so the sparkles read on the cream bar. */
+  background: radial-gradient(circle, #fff 0 22%, #9fe0ff 40%, #2f8fff 100%);
+  clip-path: polygon(50% 0, 61% 39%, 100% 50%, 61% 61%, 50% 100%, 39% 61%, 0 50%, 39% 39%);
+  filter: drop-shadow(0 0 0.3cqw rgb(40 140 255 / 0.95));
+  opacity: 0;
+  transform: scale(0);
+  animation: pb-ac-twinkle 2.4s ease-in-out infinite;
+  pointer-events: none;
+}
+
+.pb-ac-spark.s1 { top: -12%; left: 68%; }
+.pb-ac-spark.s2 { top: 38%; left: -38%; width: 0.75cqw; height: 0.75cqw; animation-delay: 0.6s; }
+.pb-ac-spark.s3 { top: 68%; left: 84%; width: 0.8cqw; height: 0.8cqw; animation-delay: 1.2s; }
+.pb-ac-spark.s4 { top: 0%; left: -22%; width: 0.7cqw; height: 0.7cqw; animation-delay: 1.8s; }
+
+@keyframes pb-ac-twinkle {
+  0%, 100% { opacity: 0; transform: scale(0) rotate(0deg); }
+  20% { opacity: 1; transform: scale(1.15) rotate(45deg); }
+  40% { opacity: 0; transform: scale(0) rotate(90deg); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pb-ac-body,
+  .pb-ac-img,
+  .pb-ac-shine,
+  .pb-ac-spark {
+    animation: none;
+  }
+
+  .pb-ac-img {
+    filter: drop-shadow(0 0 0.6cqw rgb(80 170 255 / 0.85));
+  }
 }
 
 .pb-bottom-text {
