@@ -45,39 +45,17 @@ export const COINS_AT_START: CoinState = {
   pulse: 0,
 };
 
-/** Small leather drawstring pouch with glowing coins peeking out. */
+/** Astra's leather coin pouch (Higgins art) with CSS life: a slow settle, coins that
+    catch the light, and a crystal charm that pulses. */
 function PouchArt() {
   return (
-    <svg viewBox="0 0 64 64" aria-hidden="true" className="ap-pouch-art">
-      <defs>
-        <radialGradient id="apPouchBody" cx="40%" cy="38%" r="70%">
-          <stop offset="0%" stopColor="#c27a3e" />
-          <stop offset="60%" stopColor="#8a4a1c" />
-          <stop offset="100%" stopColor="#5a2d10" />
-        </radialGradient>
-        <radialGradient id="apCoin" cx="35%" cy="35%" r="70%">
-          <stop offset="0%" stopColor="#fff3b0" />
-          <stop offset="55%" stopColor="#f4c541" />
-          <stop offset="100%" stopColor="#b9821c" />
-        </radialGradient>
-      </defs>
-      {/* coins peeking over the rim */}
-      <circle cx="25" cy="20" r="7" fill="url(#apCoin)" stroke="#8a5a12" strokeWidth="1" />
-      <circle cx="37" cy="18" r="7" fill="url(#apCoin)" stroke="#8a5a12" strokeWidth="1" />
-      <circle cx="31" cy="15" r="6" fill="url(#apCoin)" stroke="#8a5a12" strokeWidth="1" />
-      {/* body */}
-      <path
-        d="M14 27c-6 10-6 22 2 28 8 6 24 6 32 0 8-6 8-18 2-28-3-4-33-4-36 0z"
-        fill="url(#apPouchBody)"
-        stroke="#3d1d08"
-        strokeWidth="1.5"
-      />
-      {/* gathered neck + drawstring */}
-      <path d="M15 27c6 3 28 3 34 0" fill="none" stroke="#3d1d08" strokeWidth="2.5" strokeLinecap="round" />
-      <path d="M20 29c-3 5-4 9-2 13M44 29c3 5 4 9 2 13" fill="none" stroke="#e8b06a" strokeWidth="1.2" strokeLinecap="round" opacity=".7" />
-      {/* tiny crystal clasp */}
-      <path d="M32 31l3 4-3 4-3-4z" fill="#8fd3ff" stroke="#e8f7ff" strokeWidth=".8" />
-    </svg>
+    <span className="ap-pouch-art" aria-hidden="true">
+      <img src={asset("coin-pouch.png")} alt="" draggable={false} />
+      <i className="ap-glint g1" />
+      <i className="ap-glint g2" />
+      <i className="ap-glint g3" />
+      <i className="ap-charm" />
+    </span>
   );
 }
 

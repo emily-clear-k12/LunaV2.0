@@ -190,7 +190,7 @@ const lanterns: Lantern[] = [
 ];
 
 /** Astra’s pouch sits on the ground beside his left shoe (frame-%). */
-const pouchSpot = { x: 3.6, y: 85.2 };
+const pouchSpot = { x: 3.9, y: 83.2 };
 
 type View =
   | { page: "hub" }
