@@ -192,8 +192,8 @@ const lanterns: Lantern[] = [
   { id: "practice", label: "Practice", x: 75.0, y: 34.1, w: 5.5, h: 16, signX: 75.0, signY: 42.3 },
 ];
 
-/** Astra's pouch hangs at his hip (frame-%). */
-const pouchSpot = { x: 16.4, y: 66.5 };
+/** Astra’s pouch sits on the ground beside his right shoe (frame-%). */
+const pouchSpot = { x: 20.6, y: 85.2 };
 
 type View =
   | { page: "hub" }

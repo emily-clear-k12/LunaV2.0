@@ -1997,7 +1997,7 @@ html:not(.vs-on) .ap-head { top: 0; }
   padding: 0;
 }
 .ap-pouch-art { display: block; filter: drop-shadow(0 4px 6px rgb(20 10 30 / 0.5)); transition: transform 0.2s ease; }
-.ap-pouch.hub .ap-pouch-art { width: clamp(38px, 3.6vw, 56px); height: auto; transform-origin: 50% 0; animation: ap-sway 4s ease-in-out infinite; }
+.ap-pouch.hub .ap-pouch-art { width: clamp(54px, 5.2vw, 82px); height: auto; filter: drop-shadow(0 6px 5px rgb(10 5 20 / 0.55)) drop-shadow(0 0 12px rgb(255 200 90 / 0.35)); }
 .ap-pouch.page .ap-pouch-art { width: 42px; height: 42px; }
 .ap-pouch-btn:hover .ap-pouch-art { transform: scale(1.08); }
 .ap-pouch-count {
@@ -2011,7 +2011,7 @@ html:not(.vs-on) .ap-head { top: 0; }
   line-height: 1;
   box-shadow: 0 0 10px rgb(255 200 80 / 0.45);
 }
-.ap-pouch.hub .ap-pouch-count { left: 72%; bottom: 2%; font-size: 12px; padding: 3px 7px 2px; }
+.ap-pouch.hub .ap-pouch-count { left: 74%; bottom: 8%; font-size: 14px; padding: 3px 8px 2px; }
 .ap-pouch.page .ap-pouch-btn {
   gap: 6px;
   border-radius: 999px;
@@ -2051,7 +2051,7 @@ html:not(.vs-on) .ap-head { top: 0; }
   backdrop-filter: blur(14px);
   font-family: "Nunito", var(--font-sans);
 }
-.ap-pouch.hub .ap-pouch-pop { left: calc(100% + 8px); bottom: 0; }
+.ap-pouch.hub .ap-pouch-pop { left: calc(100% + 10px); bottom: 45%; }
 .ap-pouch.page .ap-pouch-pop { right: 0; top: calc(100% + 8px); }
 .ap-pouch-total { margin: 0; font-family: "Baloo 2", "Nunito", var(--font-sans); font-size: 30px; font-weight: 800; line-height: 1; }
 .ap-pouch-total span { font-size: 15px; color: #7a5a2e; }
