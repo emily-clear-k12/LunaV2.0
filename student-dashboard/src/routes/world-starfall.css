@@ -47,6 +47,8 @@ html.vs-on .sf-world { top: var(--vs-h); }
   transition: opacity 0.8s ease;
 }
 .sf-bg-video.ready { opacity: 1; }
+/* the slow zoom is for the still image; on top of the video it reads as extra, unfocused motion */
+.sf-bg.has-video { animation: none; transform: none; }
 @keyframes sf-breathe { from { transform: scale(1); } to { transform: scale(1.045) translateY(-0.6%); } }
 .sf-tint {
   position: absolute;

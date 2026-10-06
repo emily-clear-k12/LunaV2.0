@@ -353,10 +353,13 @@ export function StarfallWorld({
             playsInline
             preload="auto"
             disablePictureInPicture
-            onCanPlay={(e) => e.currentTarget.classList.add("ready")}
+            onCanPlay={(e) => {
+              e.currentTarget.classList.add("ready");
+              e.currentTarget.parentElement?.classList.add("has-video");
+            }}
           >
-            <source src={ART.bgVideoWebm} type="video/webm" />
             <source src={ART.bgVideo} type="video/mp4" />
+            <source src={ART.bgVideoWebm} type="video/webm" />
           </video>
         ) : null}
       </div>
