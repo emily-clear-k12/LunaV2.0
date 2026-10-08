@@ -151,8 +151,8 @@ const modules: Module[] = [
   },
 ];
 
-/* Portal x/y/w/h/tagY are frame-% of the 1280x720 animated hub (portal-hub-loop /
-   portal-hub-poster.jpg). */
+/* Portal x/y/w/h/tagY are frame-% of the 1280x720 animated hub (portal-hub-loop-v3 /
+   portal-hub-poster-v3.jpg; v3 = the loop with the two blank lantern plaques painted out). */
 
 type View = { page: "hub" } | { page: "world"; id: "starfall" };
 
@@ -409,14 +409,14 @@ function StudentHome() {
                   {/* Emily's animated hub (seamless 1s cross-fade loop). The poster still stays
                       underneath as the fallback and is all reduced-motion users see. */}
                   <img
-                    src={asset("portal-hub-poster.jpg")}
+                    src={asset("portal-hub-poster-v3.jpg")}
                     alt="Astra beside six magical portals under a lantern treehouse"
                     className="zscene-img"
                   />
                   {!reduceMotion ? (
                     <video
                       className="zscene-img zscene-video"
-                      poster={asset("portal-hub-poster.jpg")}
+                      poster={asset("portal-hub-poster-v3.jpg")}
                       autoPlay
                       muted
                       loop
@@ -426,8 +426,8 @@ function StudentHome() {
                       aria-hidden="true"
                       onCanPlay={(e) => e.currentTarget.classList.add("ready")}
                     >
-                      <source src={asset("portal-hub-loop.mp4")} type="video/mp4" />
-                      <source src={asset("portal-hub-loop.webm")} type="video/webm" />
+                      <source src={asset("portal-hub-loop-v3.mp4")} type="video/mp4" />
+                      <source src={asset("portal-hub-loop-v3.webm")} type="video/webm" />
                     </video>
                   ) : null}
 
