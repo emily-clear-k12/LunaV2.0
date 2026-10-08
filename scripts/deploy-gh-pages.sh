@@ -3,8 +3,10 @@ set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 cd "$ROOT"
 npm run build
-# Astra student dashboards (Plan B → dist/dashboard/, Plan A → dist/dashboard-a/)
-( cd student-dashboard && { [ -d node_modules ] || npm install --no-audit --no-fund; } && npm run build && npm run build:a && \
+# Astra student dashboards: Plan A (React) → dist/dashboard-a/.
+# Plans B–D (Crystal Railways, Pop Up Mounts, Forest Guides) are static pages in public/dashboard-b … dashboard-d,
+# copied into dist/ by the root build above. dist/dashboard/ is a redirect stub for the retired map-style Plan B.
+( cd student-dashboard && { [ -d node_modules ] || npm install --no-audit --no-fund; } && npm run build:a && \
   if [ -f ../dist/dashboard-a/index-a.html ] && [ ! -f ../dist/dashboard-a/index.html ]; then
     mv ../dist/dashboard-a/index-a.html ../dist/dashboard-a/index.html
   fi
