@@ -1,22 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { ArrowLeft, Check } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
-import {
-  COINS_AT_START,
-  ClassCadeNote,
-  GrowthPage,
-  PIECES_AT_START,
-  Pouch,
-  PracticePage,
-  TreehousePage,
-  useWritingStats,
-  type CoinState,
-  type Earning,
-  type Piece,
-  type TreehouseRoute,
-} from "./plan-a-pages";
 import { DEMO_LESSON_TITLE, StarfallWorld } from "./world-starfall";
-import { AssignCrystalArt } from "./assign-crystal";
 
 export const Route = createFileRoute("/")({ component: StudentHome });
 
@@ -37,19 +22,6 @@ type Module = {
   tagY: number;
   accent: string;
   lessons: Lesson[];
-};
-
-
-type Lantern = {
-  id: string;
-  label: string;
-  x: number;
-  y: number;
-  w: number;
-  h: number;
-  /** Center of the wooden plaque under the lantern (frame-%); x = lantern body center */
-  signX: number;
-  signY: number;
 };
 
 const CLASS_FOCUS = "Today, let's back every answer with evidence from the text!";
@@ -179,33 +151,15 @@ const modules: Module[] = [
   },
 ];
 
-/* Frame-% of the 1280x720 animated hub (portal-hub-loop / portal-hub-poster.jpg). The video
-   is the old 1280x776 still minus its top 44 rows (x' = 1.003x - 1, y' = 1.003y - 44), so these
-   were carried over from portal-hub-z.jpg and checked on the poster frame.
-   Treehouse: centered on the trunk / tower window, not the frame center. */
-const treehouseSpot = { x: 52.7, y: 39.3, w: 13, h: 28 };
+/* Portal x/y/w/h/tagY are frame-% of the 1280x720 animated hub (portal-hub-loop /
+   portal-hub-poster.jpg). */
 
-/** Two interactive lanterns (crystal = My growth, leaf = Practice); the compass and
-    feather lanterns stay decorative. */
-/* Lantern bodies + the wooden plaque hanging under each (poster frame, 1280x720). The video's
-   lanterns sway a little; the labels stay put on the plaques. */
-const lanterns: Lantern[] = [
-  { id: "growth", label: "My growth", x: 38.2, y: 26.7, w: 5.5, h: 19.5, signX: 38.2, signY: 39.2 },
-  { id: "practice", label: "Practice", x: 75.1, y: 30.8, w: 5.5, h: 17.3, signX: 75.1, signY: 39.7 },
-];
-
-/** Astra’s pouch sits on the ground beside his left shoe (frame-%). */
-const pouchSpot = { x: 3.8, y: 83.9 };
-
-type View =
-  | { page: "hub" }
-  | { page: "growth" }
-  | { page: "practice" }
-  | { page: "treehouse"; route: TreehouseRoute }
-  | { page: "world"; id: "starfall" };
+type View = { page: "hub" } | { page: "world"; id: "starfall" };
 
 /* ——— Portal worlds: demo progress + coins persist in localStorage so the world is testable ——— */
 const COINS_KEY = "astra.coins";
+/** Starting demo coins (shown inside the portal worlds). */
+const COINS_AT_START = 120;
 const lessonsKey = (modId: string) => `astra.lessons.${modId}`;
 
 function useReducedMotion() {
@@ -223,9 +177,9 @@ function useReducedMotion() {
 function readCoins(): number {
   try {
     const n = Number(localStorage.getItem(COINS_KEY));
-    return localStorage.getItem(COINS_KEY) !== null && Number.isFinite(n) ? n : COINS_AT_START.coins;
+    return localStorage.getItem(COINS_KEY) !== null && Number.isFinite(n) ? n : COINS_AT_START;
   } catch {
-    return COINS_AT_START.coins;
+    return COINS_AT_START;
   }
 }
 
@@ -256,72 +210,12 @@ function readDone(): Record<string, string[]> {
 function parseHash(hash: string): View {
   const parts = hash.replace(/^#\/?/, "").split("?")[0].split("/").filter(Boolean);
   if (parts[0] === "world" && parts[1] === "starfall") return { page: "world", id: "starfall" };
-  if (parts[0] === "growth") return { page: "growth" };
-  if (parts[0] === "practice") return { page: "practice" };
-  if (parts[0] === "treehouse") {
-    if (parts[1] === "write") return { page: "treehouse", route: { mode: "write", id: parts[2], idea: parts[2] === "idea" ? true : undefined } };
-    if (parts[1] === "piece" && parts[2]) return { page: "treehouse", route: { mode: "piece", id: parts[2] } };
-    return { page: "treehouse", route: { mode: "shelf" } };
-  }
   return { page: "hub" };
 }
 
 function viewHash(v: View): string {
-  if (v.page === "hub") return "";
-  if (v.page === "world") return `#world/${v.id}`;
-  if (v.page !== "treehouse") return `#${v.page}`;
-  const r = v.route;
-  if (r.mode === "piece") return `#treehouse/piece/${r.id}`;
-  if (r.mode === "write") return r.idea ? "#treehouse/write/idea" : r.id ? `#treehouse/write/${r.id}` : "#treehouse/write";
-  return "#treehouse";
+  return v.page === "world" ? `#world/${v.id}` : "";
 }
-
-const PIP_PIECE: Piece = {
-  id: "pip-challenge",
-  title: "Pip’s rough draft: Should recess be longer?",
-  kind: "lesson",
-  from: "Daily challenge · Pip’s draft",
-  date: "Today",
-  status: "Challenge",
-  prompt: "Pip wrote this. Make the reasons strong and specific, then add a real ending.",
-  drafts: ["Recess should be longer. Recess is good. We like it alot. it is fun and we get to play. So recess should be longer"],
-};
-
-const assignments = [
-  {
-    title: "How Refrigerators Changed Our Food",
-    kind: "ECR",
-    format: "Argument",
-    teacher: "Mr. Verret",
-    due: "Due tomorrow",
-    action: "Begin",
-    moduleId: "scr",
-    lesson: "Cite the text",
-    current: true,
-  },
-  {
-    title: "Should recess be longer?",
-    kind: "ECR",
-    format: "Argument",
-    teacher: "Mr. Nowitski",
-    due: "Due Jul 4",
-    action: "Continue",
-    moduleId: "scr",
-    lesson: "Explain the link",
-    current: false,
-  },
-  {
-    title: "The Brave Little Girl of 1776",
-    kind: "SCR",
-    format: "Narrative",
-    teacher: "Mr. Prescott",
-    due: "Due Jul 6",
-    action: "Begin",
-    moduleId: "scr",
-    lesson: "Answer the ask",
-    current: false,
-  },
-];
 
 const badges = [
   { id: "scr", label: "SCR", name: "Short responses", moduleId: "scr" },
@@ -338,19 +232,12 @@ function StudentHome() {
   const [moduleId, setModuleId] = useState<string | null>(null);
   const [lessonTitle, setLessonTitle] = useState<string | null>(null);
   const [done, setDone] = useState<Record<string, string[]>>(readDone);
-  const [shelfOpen, setShelfOpen] = useState(false);
-  const [writeTitle, setWriteTitle] = useState<string | null>(null);
-  const [ecrNote, setEcrNote] = useState(false);
-  const [pieces, setPieces] = useState<Piece[]>(PIECES_AT_START);
-  const [coins, setCoins] = useState<CoinState>(() => ({ ...COINS_AT_START, coins: readCoins() }));
+  const [coins, setCoins] = useState<number>(readCoins);
   const [dive, setDive] = useState<{ x: number; y: number; ox: number; oy: number; reduce: boolean } | null>(null);
   const [cameByPortal, setCameByPortal] = useState(false);
   const sceneRef = useRef<HTMLDivElement>(null);
   const reduceMotion = useReducedMotion();
   const [view, setView] = useState<View>(() => parseHash(window.location.hash));
-  const [glow, setGlow] = useState<{ x: number; y: number } | null>(null);
-  const [cade, setCade] = useState(false);
-  const stats = useWritingStats(pieces);
 
   const focused = modules.find((mod) => mod.id === moduleId) ?? null;
   const lesson = focused?.lessons.find((item) => item.title === lessonTitle) ?? null;
@@ -366,11 +253,11 @@ function StudentHome() {
 
   useEffect(() => {
     try {
-      localStorage.setItem(COINS_KEY, String(coins.coins));
+      localStorage.setItem(COINS_KEY, String(coins));
     } catch {
       /* ignore */
     }
-  }, [coins.coins]);
+  }, [coins]);
 
   useEffect(() => {
     try {
@@ -411,17 +298,8 @@ function StudentHome() {
     window.scrollTo(0, 0);
   }
 
-  /** Lantern / treehouse light swells to fill the screen, then the new page fades in. */
-  function enter(next: View, from: { x: number; y: number }) {
-    setGlow(from);
-    window.setTimeout(() => {
-      navigate(next);
-      window.setTimeout(() => setGlow(null), 380);
-    }, 420);
-  }
-
-  function earn(e: Earning) {
-    setCoins((c) => ({ coins: c.coins + e.amount, recent: [e, ...c.recent].slice(0, 6), pulse: c.pulse + 1 }));
+  function earn(amount: number) {
+    setCoins((c) => c + amount);
   }
 
   function mastered(id: string) {
@@ -435,17 +313,14 @@ function StudentHome() {
     return (done[modId] ?? []).includes(title);
   }
 
-  function openModule(id: string, lessonName?: string, assignmentTitle?: string) {
-    setModuleId(id || null);
-    setLessonTitle(lessonName ?? null);
-    setWriteTitle(assignmentTitle ?? null);
-    setShelfOpen(false);
+  function openModule(id: string) {
+    setModuleId(id);
+    setLessonTitle(null);
   }
 
   function backToHub() {
     setModuleId(null);
     setLessonTitle(null);
-    setWriteTitle(null);
   }
 
   function markDone(moduleKey: string, title: string) {
@@ -454,45 +329,10 @@ function StudentHome() {
       if (list.includes(title)) return current;
       return { ...current, [moduleKey]: [...list, title] };
     });
-    const mod = modules.find((item) => item.id === moduleKey);
-    setPieces((current) => {
-      if (current.some((item) => item.title === title)) return current;
-      return [
-        {
-          id: `lesson-${moduleKey}-${current.length}`,
-          title,
-          kind: "lesson",
-          from: `${mod ? mod.name : "Astra"} lesson`,
-          date: "Today",
-          status: "Finished",
-          drafts: [mod?.lessons.find((l) => l.title === title)?.task ?? "Saved in your Treehouse."],
-        },
-        ...current,
-      ];
-    });
-    earn({ label: `Finished “${title}”`, amount: 10 });
-  }
-
-  function onLantern(lan: Lantern) {
-    enter({ page: lan.id === "growth" ? "growth" : "practice" }, { x: lan.x, y: lan.y });
-  }
-
-  function savePiece(piece: Piece, isNewDraft: boolean) {
-    const exists = pieces.some((p) => p.id === piece.id);
-    setPieces((current) => (exists ? current.map((p) => (p.id === piece.id ? piece : p)) : [piece, ...current]));
-    if (piece.id === PIP_PIECE.id && isNewDraft) earn({ label: "Daily challenge · fixed Pip’s draft", amount: 50 });
-    else if (isNewDraft) earn({ label: `Revised “${piece.title}”`, amount: 15 });
-    else earn({ label: exists ? `Kept writing “${piece.title}”` : `Free write · “${piece.title}”`, amount: 5 });
-    navigate({ page: "treehouse", route: { mode: "piece", id: piece.id } });
-  }
-
-  function revisePip() {
-    setPieces((current) => (current.some((p) => p.id === PIP_PIECE.id) ? current : [PIP_PIECE, ...current]));
-    navigate({ page: "treehouse", route: { mode: "write", id: PIP_PIECE.id } });
+    earn(10);
   }
 
   const toHub = () => navigate({ page: "hub" });
-  const openCade = () => setCade(true);
 
   if (view.page === "world") {
     const mod = modules.find((m) => m.id === "sentences")!;
@@ -502,46 +342,14 @@ function StudentHome() {
         done={done.sentences ?? []}
         setDone={(list) => setDone((cur) => ({ ...cur, sentences: list }))}
         defaultDone={DEMO_DONE.sentences}
-        coins={coins.coins}
-        onEarn={(label, amount) => earn({ label, amount })}
+        coins={coins}
+        onEarn={(_label, amount) => earn(amount)}
         onBack={() => {
           setCameByPortal(false);
           toHub();
         }}
         autoSpeak={cameByPortal}
       />
-    );
-  }
-
-  if (view.page !== "hub") {
-    return (
-      <div className="ap-fade-in">
-        {view.page === "growth" ? (
-          <GrowthPage
-            onBack={toHub}
-            coins={coins}
-            onOpenClassCade={openCade}
-            stats={stats}
-            onPractice={() => navigate({ page: "practice" })}
-            onOpenPiece={(id) => navigate({ page: "treehouse", route: { mode: "piece", id } })}
-          />
-        ) : null}
-        {view.page === "practice" ? (
-          <PracticePage onBack={toHub} coins={coins} onOpenClassCade={openCade} onEarn={earn} onRevisePip={revisePip} />
-        ) : null}
-        {view.page === "treehouse" ? (
-          <TreehousePage
-            route={view.route}
-            go={(route) => navigate({ page: "treehouse", route })}
-            pieces={pieces}
-            onSave={savePiece}
-            onBack={toHub}
-            coins={coins}
-            onOpenClassCade={openCade}
-          />
-        ) : null}
-        {cade ? <ClassCadeNote onClose={() => setCade(false)} /> : null}
-      </div>
     );
   }
 
@@ -562,21 +370,13 @@ function StudentHome() {
             <div className="z-mastery-pill" aria-label="Your mastery">
               {badges.map((badge) => {
                 const active =
-                  badge.id === "scr" ||
-                  (badge.moduleId ? mastered(badge.moduleId) : false);
+                  badge.id === "scr" || mastered(badge.moduleId);
                 const src = asset(`badges/${badge.id}-${active ? "active" : "inactive"}.png`);
                 return (
                   <button
                     key={badge.id}
                     type="button"
-                    onClick={() => {
-                      if (badge.moduleId) {
-                        setEcrNote(false);
-                        openModule(badge.moduleId);
-                      } else {
-                        setEcrNote(true);
-                      }
-                    }}
+                    onClick={() => openModule(badge.moduleId)}
                     aria-current={active ? "true" : undefined}
                     title={badge.name}
                     className="z-mastery-btn"
@@ -695,69 +495,6 @@ function StudentHome() {
                         </div>
                       ))
                     : null}
-
-                  {lanterns.map((lan) => (
-                    <button
-                      key={lan.id}
-                      type="button"
-                      onClick={() => onLantern(lan)}
-                      aria-label={lan.label}
-                      className={
-                        "z-hotspot z-lantern absolute -translate-x-1/2 -translate-y-1/2 " +
-                        (focus ? "pointer-events-none opacity-0" : "")
-                      }
-                      style={{
-                        left: `${lan.x}%`,
-                        top: `${lan.y}%`,
-                        width: `${lan.w}%`,
-                        height: `${lan.h}%`,
-                      }}
-                    >
-                      <span className="z-ring warm" aria-hidden="true" />
-                    </button>
-                  ))}
-
-                  {!focus
-                    ? lanterns.map((lan) => (
-                        <span
-                          key={`${lan.id}-sign`}
-                          className="z-lantern-tag"
-                          style={{ left: `${lan.signX}%`, top: `${lan.signY}%` }}
-                        >
-                          {lan.label}
-                        </span>
-                      ))
-                    : null}
-
-                  <button
-                    type="button"
-                    onClick={() =>
-                      enter({ page: "treehouse", route: { mode: "shelf" } }, { x: treehouseSpot.x, y: treehouseSpot.y })
-                    }
-                    aria-label="Treehouse, your writing space"
-                    className={
-                      "z-hotspot z-tree absolute -translate-x-1/2 -translate-y-1/2 " +
-                      (focus ? "pointer-events-none opacity-0" : "")
-                    }
-                    style={{
-                      left: `${treehouseSpot.x}%`,
-                      top: `${treehouseSpot.y}%`,
-                      width: `${treehouseSpot.w}%`,
-                      height: `${treehouseSpot.h}%`,
-                    }}
-                  >
-                    <span className="z-ring warm" aria-hidden="true" />
-                    <span className="z-plate tree">
-                      <span className="z-plate-mod">Your space</span>
-                      <span className="z-plate-world">Treehouse</span>
-                    </span>
-                  </button>
-
-                  {!focus ? (
-                    <div className="ap-pouch-anchor" style={{ left: `${pouchSpot.x}%`, top: `${pouchSpot.y}%` }}>
-                      <Pouch state={coins} variant="hub" onOpenClassCade={openCade} />
-                    </div>
-                  ) : null}
                 </div>
               </div>
             </div>
@@ -803,14 +540,13 @@ function StudentHome() {
                 <p className="text-sm font-bold text-lantern">
                   {focused.name} · {lesson.world}
                 </p>
-                <h2 className="mt-1 font-display text-3xl">{writeTitle ?? lesson.title}</h2>
-                {writeTitle ? <p className="mt-1 text-sm text-muted">{lesson.title}</p> : null}
+                <h2 className="mt-1 font-display text-3xl">{lesson.title}</h2>
                 <p className="mt-3">{lesson.task}</p>
                 <div className="mt-4 flex flex-wrap items-center gap-3">
                   {lessonDone(focused.id, lesson.title) ? (
                     <span className="inline-flex min-h-11 items-center gap-2 text-sm font-bold text-moss">
                       <Check className="size-4" aria-hidden="true" />
-                      Saved to Treehouse
+                      Lesson done
                     </span>
                   ) : (
                     <button
@@ -818,7 +554,7 @@ function StudentHome() {
                       onClick={() => markDone(focused.id, lesson.title)}
                       className="inline-flex min-h-11 items-center rounded-full bg-moss px-4 text-sm font-bold text-cream"
                     >
-                      Save to Treehouse
+                      Mark lesson done
                     </button>
                   )}
                   <button
@@ -834,23 +570,6 @@ function StudentHome() {
             </section>
           ) : null}
 
-          {!overlayOpen ? (
-            <AssignmentBar
-              open={shelfOpen}
-              onToggle={() => setShelfOpen((value) => !value)}
-              onOpen={(id, lessonName, title) => openModule(id, lessonName, title)}
-              ecrNote={ecrNote}
-              onCloseEcr={() => setEcrNote(false)}
-            />
-          ) : null}
-
-          {glow ? (
-            <div
-              className="ap-glow"
-              aria-hidden="true"
-              style={{ ["--gx" as string]: `${glow.x}%`, ["--gy" as string]: `${glow.y}%` }}
-            />
-          ) : null}
           {dive ? (
             <div
               className={`wf-dive ${dive.reduce ? "reduce" : ""}`}
@@ -858,89 +577,7 @@ function StudentHome() {
               style={{ ["--gx" as string]: `${dive.x}%`, ["--gy" as string]: `${dive.y}%` }}
             />
           ) : null}
-          {cade ? <ClassCadeNote onClose={() => setCade(false)} /> : null}
       </div>
     </div>
-  );
-}
-
-function AssignmentBar({
-  open,
-  onToggle,
-  onOpen,
-  ecrNote,
-  onCloseEcr,
-}: {
-  open: boolean;
-  onToggle: () => void;
-  onOpen: (moduleId: string, lesson: string, title: string) => void;
-  ecrNote: boolean;
-  onCloseEcr: () => void;
-}) {
-  const today = assignments[0];
-  return (
-    <section className="z-assign-wrap absolute inset-x-0 z-10 flex flex-col items-center gap-2 px-4">
-      {ecrNote ? (
-        <p className="z-assign max-w-xl px-4 py-3 text-sm">
-          Extended responses are the longer writes. Today’s path is Short Responses.
-          <button type="button" onClick={onCloseEcr} className="ml-2 font-bold text-[#a0521d]">
-            Close
-          </button>
-        </p>
-      ) : null}
-      <div className="z-assign w-full max-w-xl">
-        <div className="z-assign-row flex items-center gap-2 pl-3.5 pr-1.5">
-          <button type="button" onClick={onToggle} className="z-assign-text min-w-0 flex-1 text-left" aria-expanded={open}>
-            <span className="block text-[10px] leading-[1.1] font-extrabold tracking-[0.08em] text-[#a0521d]">
-              CURRENT ASSIGNMENT
-            </span>
-            <span className="block truncate text-[16px] font-bold leading-[1.15]">{today.title}</span>
-          </button>
-          <button
-            type="button"
-            onClick={() => onOpen(today.moduleId, today.lesson, today.title)}
-            className={
-              "start-write inline-flex shrink-0 items-center rounded-full bg-[#8a4a17] px-5 text-sm font-extrabold text-white" +
-              (assignments.length > 1 ? " start-write-glow" : "")
-            }
-          >
-            Start writing
-          </button>
-          <button
-            type="button"
-            onClick={onToggle}
-            aria-label={open ? "Hide assignments" : "Show all assignments"}
-            aria-expanded={open}
-            className="assign-chip pb-assign-crystal grid size-11 place-items-center"
-          >
-            <AssignCrystalArt src={asset("crystal.png")} />
-          </button>
-        </div>
-        {open ? (
-          <ul className="max-h-[36vh] overflow-y-auto border-t border-[rgb(74,46,26)]/15 px-2 pb-2">
-            {assignments.map((item) => (
-              <li key={item.title} className="flex items-center gap-2 border-b border-[rgb(74,46,26)]/10 py-2 last:border-b-0">
-                <div className="min-w-0 flex-1 px-2">
-                  <p className="font-bold">{item.title}</p>
-                  <p className="mt-1 flex flex-wrap items-center gap-1.5 text-xs text-[#7a5a2e]">
-                    <span className="rounded-full bg-[rgb(74,46,26)]/10 px-2 py-0.5 font-bold">{item.kind}</span>
-                    <span>{item.format}</span>
-                    <span>{item.teacher}</span>
-                    <span className="font-bold text-[#a0521d]">{item.due}</span>
-                  </p>
-                </div>
-                <button
-                  type="button"
-                  onClick={() => onOpen(item.moduleId, item.lesson, item.title)}
-                  className="inline-flex min-h-11 shrink-0 items-center rounded-full bg-[#4a2e1a] px-3 text-sm font-bold text-cream"
-                >
-                  {item.action}
-                </button>
-              </li>
-            ))}
-          </ul>
-        ) : null}
-      </div>
-    </section>
   );
 }
