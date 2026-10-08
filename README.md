@@ -30,6 +30,20 @@ Built assets are already on the **`gh-pages`** branch (with `.nojekyll`). Vite `
 
 After Pages is enabled, the URL above should serve this site. Private Pages (Pro+) are only visible to users logged in with repo access.
 
+## Student dashboard plans (live)
+
+Top view switcher on every dashboard page (shared `public/demo/switcher.js` / `switcher.css`), in order:
+
+| Plan | Name | URL | Source |
+| --- | --- | --- | --- |
+| **A** | Portals | `/dashboard-a/` | React app in `student-dashboard/` (`vite.config.a.ts`) |
+| **B** | Crystal Railways | `/dashboard-b/` | static page `public/dashboard-b/` |
+| **C** | Pop Up Mounts | `/dashboard-c/` | static page `public/dashboard-c/` |
+| **D** | Forest Guides | `/dashboard-d/` | static page `public/dashboard-d/` |
+
+Plus **Lesson** at `/demo/lesson/`. The old map-style Plan B (`/dashboard/`) was retired; that URL now redirects to `/dashboard-b/`.
+Deploy with `bash scripts/deploy-gh-pages.sh` (builds `dist/` and pushes it to the `gh-pages` branch).
+
 ## Local development
 
 ```bash

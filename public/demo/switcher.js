@@ -1,14 +1,16 @@
-/* Version switcher: injects a slim top bar with Plan B / Plan A / Lesson pills.
-   Usage: <script src=".../demo/switcher.js" data-page="dashboard|dashboard-a|lesson"></script>
-   Links resolve from this script's folder (/demo/), so they work from /dashboard/,
-   /dashboard-a/, /demo/ and /demo/lesson/. */
+/* Version switcher: injects a slim top bar with the four dashboard plans (A–D, in order) plus the Lesson.
+   Usage: <script src=".../demo/switcher.js" data-page="dashboard-a|dashboard-b|dashboard-c|dashboard-d|lesson"></script>
+   Links resolve from this script's folder (/demo/), so they work from /dashboard-a/ … /dashboard-d/,
+   /demo/ and /demo/lesson/. */
 (function () {
   var me = document.currentScript;
-  var page = (me && me.dataset.page) || "dashboard";
+  var page = (me && me.dataset.page) || "dashboard-a";
   var base = new URL("./", (me && me.src) || location.href); // .../demo/
   var links = [
-    { id: "dashboard", label: "Dashboard · Plan B", href: new URL("../dashboard/", base).href },
-    { id: "dashboard-a", label: "Dashboard · Plan A", href: new URL("../dashboard-a/", base).href },
+    { id: "dashboard-a", label: "Plan A · Portals", href: new URL("../dashboard-a/", base).href },
+    { id: "dashboard-b", label: "Plan B · Crystal Railways", href: new URL("../dashboard-b/", base).href },
+    { id: "dashboard-c", label: "Plan C · Pop Up Mounts", href: new URL("../dashboard-c/", base).href },
+    { id: "dashboard-d", label: "Plan D · Forest Guides", href: new URL("../dashboard-d/", base).href },
     { id: "lesson", label: "Lesson", href: new URL("./lesson/", base).href },
   ];
   document.documentElement.classList.add("vs-on");

@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Plan C · Pop Up Mounts · Astra’s Writing Adventure</title>
+<link rel="icon" type="image/svg+xml" href="../favicon.svg" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="../demo/switcher.css" />
+<style>
+  /* Plan C "Pop Up Mounts": full-bleed scene (porcelain mountain world in the book, teacup buggy on the right)
+     + frosted cream overlays in the top-right sky, clear of Astra, the book and the buggy. Tuned for 1366x768. */
+  :root {
+    --frost: rgba(255, 248, 235, .82);
+    --brown: #4a2e1a;
+    --brown-soft: #7a5638;
+    --gold: #d9a93f;
+    --gold-hi: #f3d68c;
+    --gold-deep: #94690f;
+    --cream: #fff8eb;
+    --display: "Baloo 2", "Nunito", "Trebuchet MS", system-ui, sans-serif;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; width: 100%; height: 100%; overflow: hidden; }
+  body {
+    font-family: var(--display); color: var(--brown); -webkit-font-smoothing: antialiased;
+    background: #2a3320;
+  }
+  .scene { position: fixed; left: 0; right: 0; bottom: 0; top: 0; background: url("assets/scene.jpg") center / cover no-repeat; }
+  /* View switcher (../demo/switcher.js adds html.vs-on and a 36px bar): the scene sits under it */
+  html.vs-on .scene { top: var(--vs-h); }
+  html.vs-on .top { top: calc(var(--vs-h) + 12px); }
+
+  .frost {
+    background: var(--frost);
+    -webkit-backdrop-filter: blur(10px) saturate(1.1); backdrop-filter: blur(10px) saturate(1.1);
+    border: 1px solid rgba(255, 255, 255, .85);
+    border-radius: 16px;
+    box-shadow: 0 6px 18px rgba(30, 20, 8, .28), 0 1px 2px rgba(30, 20, 8, .18);
+  }
+
+  /* ---------- Top-right cluster in the sky: title, today's goal, next world ---------- */
+  .top {
+    position: absolute; top: 12px; right: 14px; width: 462px;
+    display: grid; grid-template-columns: 1fr; gap: 8px;
+  }
+  .title {
+    grid-column: 1 / -1; justify-self: end;
+    display: flex; align-items: center; gap: 9px;
+    padding: 5px 16px 4px 12px; border-radius: 999px;
+  }
+  .title svg { width: 18px; height: 24px; flex: none; filter: drop-shadow(0 0 4px rgba(120, 200, 255, .7)); }
+  .title h1 { margin: 0; font-size: 24px; font-weight: 800; line-height: 1.15; letter-spacing: .01em; white-space: nowrap; }
+
+  .card { padding: 8px 12px 9px; }
+  .lbl {
+    margin: 0; display: flex; align-items: center; gap: 6px;
+    font-size: 13px; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; line-height: 1.2; color: var(--gold-deep);
+  }
+  .lbl svg { width: 14px; height: 14px; flex: none; }
+  .txt { margin: 3px 0 0; font-size: 17px; font-weight: 700; line-height: 1.22; color: var(--brown); }
+
+  /* ---------- Next world + Hop in (last row of the cluster, above the buggy) ---------- */
+  .go {
+    display: flex; align-items: center; justify-content: space-between; gap: 16px;
+    padding: 7px 7px 7px 18px; border-radius: 20px;
+  }
+  .world .kicker { margin: 0; font-size: 13px; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; line-height: 1.2; color: var(--gold-deep); }
+  .world .place { margin: 0; font-size: 24px; font-weight: 800; line-height: 1.1; white-space: nowrap; }
+  .world .lesson { margin: 1px 0 0; font-size: 16px; font-weight: 700; line-height: 1.2; color: var(--brown-soft); white-space: nowrap; }
+  .hop {
+    display: flex; align-items: center; gap: 10px;
+    height: 58px; padding: 0 22px 0 26px; border-radius: 16px; cursor: pointer;
+    font: inherit; font-size: 26px; font-weight: 800; letter-spacing: .01em; color: #fffaf0; white-space: nowrap;
+    text-shadow: 0 1px 0 rgba(90, 52, 14, .6);
+    background: linear-gradient(180deg, #edc25c 0%, #d39a33 55%, #b47a22 100%);
+    border: 2px solid #fff3d2;
+    box-shadow: 0 0 0 2px #8a5a1c, 0 5px 0 #6e4614, 0 9px 16px rgba(40, 22, 6, .4), inset 0 2px 0 rgba(255, 255, 255, .45);
+  }
+  .hop svg { width: 24px; height: 24px; }
+  .hop:hover { filter: brightness(1.05); }
+  .hop:active { translate: 0 3px; box-shadow: 0 0 0 2px #8a5a1c, 0 2px 0 #6e4614, 0 4px 8px rgba(40, 22, 6, .4), inset 0 2px 0 rgba(255, 255, 255, .45); }
+</style>
+</head>
+<body>
+<script src="../demo/switcher.js" data-page="dashboard-c"></script>
+<div class="scene" aria-hidden="true"></div>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <linearGradient id="gLit" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#bfe9ff"/><stop offset=".45" stop-color="#5bb4f5"/><stop offset="1" stop-color="#1f5fbf"/>
+    </linearGradient>
+    <symbol id="crystal-lit" viewBox="0 0 24 32">
+      <polygon points="12,1 22,10 12,31 2,10" fill="url(#gLit)" stroke="#1b4f9e" stroke-width="1.2" stroke-linejoin="round"/>
+      <polygon points="12,1 22,10 12,13 2,10" fill="#d9f3ff" opacity=".75"/>
+      <polyline points="2,10 12,13 22,10" fill="none" stroke="#1b4f9e" stroke-width=".9" opacity=".6"/>
+      <line x1="12" y1="13" x2="12" y2="31" stroke="#ffffff" stroke-width=".9" opacity=".45"/>
+    </symbol>
+  </defs>
+</svg>
+
+<div class="top">
+  <header class="title frost">
+    <svg aria-hidden="true"><use href="#crystal-lit"/></svg>
+    <h1>Astra’s Writing Adventure</h1>
+  </header>
+  <section class="card frost" aria-label="Today's goal">
+    <p class="lbl"><svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="6.2" fill="none" stroke="#d9a93f" stroke-width="2"/><circle cx="8" cy="8" r="2.6" fill="#d9a93f"/></svg>Today’s goal</p>
+    <p class="txt">Back up my opinion with strong, specific reasons.</p>
+  </section>
+  <aside class="go frost" aria-label="Next world">
+    <div class="world">
+      <p class="kicker">Next world</p>
+      <p class="place">Porcelain Tea Gardens</p>
+      <p class="lesson">Lesson 3: Details &amp; Evidence</p>
+    </div>
+    <button class="hop" type="button">Hop in!
+      <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M4 10h11M11 5.5 15.5 10 11 14.5" fill="none" stroke="#fffaf0" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </button>
+  </aside>
+</div>
+</body>
+</html>

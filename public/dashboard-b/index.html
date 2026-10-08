@@ -1,0 +1,334 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Plan B · Crystal Railways · Astra’s Writing Adventure</title>
+<link rel="icon" type="image/svg+xml" href="../favicon.svg" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Courier+Prime:wght@400;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="../demo/switcher.css" />
+<style>
+  /* Plan B "Crystal Railways": the right panel is a vintage rail ticket. Tuned for 1366x768 (scene sits under the 36px view switcher). */
+  :root {
+    --paper: #fbf3df;
+    --paper-2: #f2e4c4;
+    --brown: #4a2e1a;
+    --brown-soft: #7a5638;
+    --navy: #1d2b4f;
+    --navy-2: #27396b;
+    --ink: rgba(29, 43, 79, .78);
+    --silver: #c9d1dc;
+    --silver-hi: #eef2f7;
+    --gold: #d9a93f;
+    --gold-hi: #f3d68c;
+    --cream: #fff8eb;
+    --display: "Baloo 2", "Nunito", system-ui, sans-serif;
+    --type: "Courier Prime", "Courier New", ui-monospace, monospace;
+    --bite: 5px;      /* scallop bite radius along the long edges */
+    --pitch: 22px;    /* scallop spacing */
+    --notch: 14px;    /* tear-off notch radius */
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; height: 100%; overflow: hidden; }
+  body { font-family: var(--display); color: var(--brown); background: #1a2318; -webkit-font-smoothing: antialiased; }
+
+  /* ---------- Scene (natural framing, same as v2) ---------- */
+  .scene { position: fixed; inset: 0; overflow: hidden; }
+  .scene img { width: 100%; height: 100%; display: block; object-fit: cover; object-position: 50% 0; }
+  .scene::after {
+    content: ""; position: absolute; inset: 0; pointer-events: none;
+    background:
+      radial-gradient(420px 150px at 0 0, rgba(10, 16, 12, .45), rgba(10, 16, 12, 0) 75%),
+      linear-gradient(270deg, rgba(14, 18, 34, .30) 0, rgba(14, 18, 34, 0) 460px);
+  }
+
+  /* ---------- View switcher (../demo/switcher.js adds html.vs-on and a 36px bar) ---------- */
+  html.vs-on .scene { top: var(--vs-h); }
+  html.vs-on .title { top: calc(var(--vs-h) + 8px); }
+  html.vs-on .ticket { top: calc(50% + var(--vs-h) / 2); }
+
+  /* ---------- Title ---------- */
+  .title { position: absolute; left: 14px; top: 8px; z-index: 3; display: flex; align-items: center; gap: 9px; }
+  .title svg { width: 24px; height: 32px; filter: drop-shadow(0 0 6px rgba(120, 200, 255, .7)); }
+  .title h1 {
+    margin: 0; padding-top: 5px; font-weight: 800; font-size: 31px; line-height: 1; letter-spacing: .01em;
+    background: linear-gradient(180deg, #fff6dc 10%, #f2cf7a 85%);
+    -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
+    filter: drop-shadow(0 2px 0 rgba(58, 34, 14, .85)) drop-shadow(0 3px 8px rgba(0, 0, 0, .5));
+  }
+  .title small {
+    display: block; margin-top: 1px; font-size: 14px; font-weight: 700; letter-spacing: .03em;
+    -webkit-text-fill-color: var(--cream); text-shadow: 0 1px 3px rgba(0, 0, 0, .75);
+  }
+
+  /* ---------- Ticket ---------- */
+  .ticket {
+    position: absolute; right: 18px; top: 50%; translate: 0 -50%; width: 440px; z-index: 3;
+    /* card resting on the scene: shadow follows the die-cut silhouette */
+    filter: drop-shadow(0 2px 1.5px rgba(30, 18, 6, .35)) drop-shadow(0 14px 20px rgba(6, 10, 24, .5));
+  }
+  .paper {
+    position: relative;
+    background:
+      /* paper grain (feTurbulence noise, very low alpha) */
+      url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 .32  0 0 0 0 .22  0 0 0 0 .1  0 0 0 .16 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>"),
+      radial-gradient(120% 60% at 20% 0%, rgba(255, 255, 255, .6), rgba(255, 255, 255, 0) 60%),
+      radial-gradient(80% 50% at 100% 100%, rgba(205, 170, 110, .22), rgba(205, 170, 110, 0) 70%),
+      linear-gradient(180deg, var(--paper), var(--paper-2));
+    /* die cut: scalloped long edges (mask layers are intersected) */
+    -webkit-mask-image:
+      radial-gradient(circle at 0 50%, transparent var(--bite), #000 calc(var(--bite) + .5px)),
+      radial-gradient(circle at 100% 50%, transparent var(--bite), #000 calc(var(--bite) + .5px)),
+      var(--cut-a), var(--cut-b), var(--cut-c, linear-gradient(#000, #000)), var(--perf-cut);
+            mask-image:
+      radial-gradient(circle at 0 50%, transparent var(--bite), #000 calc(var(--bite) + .5px)),
+      radial-gradient(circle at 100% 50%, transparent var(--bite), #000 calc(var(--bite) + .5px)),
+      var(--cut-a), var(--cut-b), var(--cut-c, linear-gradient(#000, #000)), var(--perf-cut);
+    -webkit-mask-size: 100% var(--pitch), 100% var(--pitch), 100% 100%, 100% 100%, 100% 100%, 10px 100%;
+            mask-size: 100% var(--pitch), 100% var(--pitch), 100% 100%, 100% 100%, 100% 100%, 10px 100%;
+    -webkit-mask-repeat: repeat-y, repeat-y, no-repeat, no-repeat, no-repeat, repeat-x;
+            mask-repeat: repeat-y, repeat-y, no-repeat, no-repeat, no-repeat, repeat-x;
+    -webkit-mask-position: 0 calc(var(--pitch) / 2), 0 calc(var(--pitch) / 2), 0 0, 0 0, 0 0, 5px 0;
+            mask-position: 0 calc(var(--pitch) / 2), 0 calc(var(--pitch) / 2), 0 0, 0 0, 0 0, 5px 0;
+    -webkit-mask-composite: source-in; mask-composite: intersect;
+  }
+  /* printed double-rule frame */
+  .paper::before {
+    content: ""; position: absolute; inset: 11px 13px; pointer-events: none; z-index: 0;
+    border: 3.5px double var(--ink); border-radius: 9px;
+  }
+  .main {
+    border-radius: 16px 16px 0 0;
+    padding: 17px 21px 12px;
+    --cut-a: radial-gradient(circle at 0 100%, transparent var(--notch), #000 calc(var(--notch) + .5px));
+    --cut-b: radial-gradient(circle at 100% 100%, transparent var(--notch), #000 calc(var(--notch) + .5px));
+    --perf-cut: radial-gradient(circle at 50% 100%, transparent 2.2px, #000 2.7px);
+  }
+  .main::before { bottom: 6px; }
+  .main > * { position: relative; z-index: 1; }
+
+  /* faint guilloche + crystal watermark behind the body */
+  .security {
+    position: absolute !important; z-index: 0 !important; left: 17px; right: 17px; top: 120px; bottom: 10px;
+    pointer-events: none; border-radius: 6px;
+    background:
+      url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='72' height='18'><path d='M0 9 C9 1 18 1 27 9 S45 17 54 9 S63 1 72 9' fill='none' stroke='%231d2b4f' stroke-opacity='.07' stroke-width='1'/><path d='M0 9 C9 17 18 17 27 9 S45 1 54 9 S63 17 72 9' fill='none' stroke='%231d2b4f' stroke-opacity='.05' stroke-width='1'/></svg>");
+    -webkit-mask-image: radial-gradient(75% 60% at 50% 50%, #000 30%, transparent 100%);
+            mask-image: radial-gradient(75% 60% at 50% 50%, #000 30%, transparent 100%);
+  }
+  .watermark {
+    position: absolute !important; z-index: 0 !important; left: 50%; top: 175px; translate: -50% 0;
+    width: 230px; height: 306px; opacity: .05; pointer-events: none;
+  }
+
+  /* header band */
+  .band {
+    position: relative; display: flex; align-items: center; gap: 12px;
+    padding: 9px 14px 9px 10px; border-radius: 6px;
+    background:
+      repeating-linear-gradient(135deg, rgba(255, 255, 255, .04) 0 2px, rgba(255, 255, 255, 0) 2px 7px),
+      linear-gradient(180deg, var(--navy-2), var(--navy));
+    box-shadow: inset 0 0 0 2px var(--navy), inset 0 0 0 3px rgba(201, 209, 220, .7);
+  }
+  .emblem {
+    flex: none; width: 42px; height: 42px; border-radius: 50%; display: grid; place-items: center;
+    background: radial-gradient(circle at 35% 30%, #34497f, #16213f);
+    border: 2px solid var(--silver); box-shadow: 0 0 0 2px var(--navy), 0 0 0 3px rgba(201, 209, 220, .5);
+  }
+  .emblem svg { width: 18px; height: 24px; filter: drop-shadow(0 0 4px rgba(120, 200, 255, .8)); }
+  .brand { flex: 1; min-width: 0; }
+  .brand .rr {
+    margin: 0; font-size: 20px; font-weight: 800; line-height: 1.05; letter-spacing: .2em; color: var(--silver-hi);
+  }
+  .brand .kinds { margin: 3px 0 0; display: flex; gap: 6px; }
+  .kind {
+    font-size: 13px; font-weight: 800; letter-spacing: .14em; line-height: 18px; padding: 0 7px;
+    color: var(--gold-hi); border: 1.25px solid rgba(243, 214, 140, .75); border-radius: 3px;
+  }
+
+  /* printed fields under the band */
+  .fields {
+    display: flex; justify-content: space-between; align-items: baseline;
+    margin: 7px 2px 0; padding-bottom: 6px; border-bottom: 1.5px solid rgba(29, 43, 79, .35);
+    font-family: var(--type); font-weight: 700; font-size: 14px; letter-spacing: .02em; color: var(--navy);
+  }
+  .fields .serial { color: #8a2d1f; letter-spacing: .06em; }
+  .fields .k { font-weight: 400; color: var(--brown-soft); }
+
+  /* next stop */
+  .nextstop { display: flex; align-items: center; gap: 14px; padding: 14px 2px 14px; border-bottom: 1.5px dotted rgba(122, 86, 56, .5); }
+  .nextstop .ico { flex: none; width: 50px; height: 52px; display: block; filter: drop-shadow(0 2px 2px rgba(40, 26, 12, .3)); }
+  .nextstop .kicker { margin: 0; font-size: 14px; font-weight: 800; letter-spacing: .16em; line-height: 1.2; color: #94690f; }
+  .nextstop .place { margin: 1px 0 0; font-size: 30px; font-weight: 800; line-height: 1.02; color: var(--navy); }
+  .nextstop .lesson { margin: 4px 0 0; font-size: 17px; font-weight: 700; line-height: 1.2; color: var(--brown); }
+  .lbl { margin: 0; font-size: 14px; font-weight: 800; letter-spacing: .14em; text-transform: uppercase; color: var(--navy-2); line-height: 1.2; }
+
+  .sec { padding: 10px 2px 11px; border-bottom: 1.5px dotted rgba(122, 86, 56, .5); }
+  .txt { margin: 0; font-size: 16px; font-weight: 700; line-height: 1.25; color: var(--brown); }
+  .goal .txt { margin-top: 3px; }
+
+  /* stops grid */
+  .stops { padding: 10px 2px 0; }
+  .stops .head { display: flex; align-items: baseline; justify-content: space-between; }
+  .count { font-family: var(--type); font-weight: 700; font-size: 14px; color: var(--brown-soft); }
+  .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px 4px; margin-top: 8px; }
+  .world {
+    position: relative; display: grid; justify-items: center; padding: 6px 0 3px;
+    border: 0; border-radius: 12px; background: none; font: inherit; color: var(--brown); cursor: pointer;
+  }
+  .medal { position: relative; width: 64px; height: 66px; }
+  .medal img { width: 64px; height: 66px; display: block; filter: drop-shadow(0 2px 2px rgba(40, 26, 12, .3)); }
+  .wname { margin-top: 3px; font-size: 15px; font-weight: 800; line-height: 1.1; white-space: nowrap; color: var(--navy); }
+  .wmod { font-size: 14px; font-weight: 700; line-height: 1.2; color: var(--brown-soft); }
+  /* finished = conductor's punch: a punched hole ringed in silver with a check */
+  .punch {
+    position: absolute; right: -6px; top: 36px; width: 25px; height: 25px; border-radius: 50%;
+    display: grid; place-items: center;
+    background: radial-gradient(circle at 50% 40%, #2b3d6e, #121b33);
+    box-shadow: 0 0 0 2px #dfe5ee, 0 0 0 3px rgba(29, 43, 79, .55), inset 0 2px 3px rgba(0, 0, 0, .6);
+  }
+  .punch svg { width: 13px; height: 13px; display: block; }
+  .world.next { background: rgba(243, 214, 140, .26); box-shadow: inset 0 0 0 1.5px rgba(217, 169, 63, .6); }
+  .world.next .medal::before {
+    content: ""; position: absolute; left: -4px; top: -4px; width: 72px; height: 72px; border-radius: 50%;
+    border: 3px solid var(--gold); box-shadow: 0 0 9px rgba(243, 214, 140, .8);
+  }
+  .world.next .wmod { color: #94690f; }
+  .nexttag {
+    position: absolute; left: 50%; top: -10px; translate: -50% 0; z-index: 2;
+    padding: 0 8px; border-radius: 999px; white-space: nowrap;
+    font-size: 13px; font-weight: 800; line-height: 18px; letter-spacing: .06em;
+    background: var(--navy); color: var(--gold-hi); border: 1.5px solid var(--gold);
+  }
+
+  /* ---------- Stub ---------- */
+  .stub {
+    border-radius: 0 0 16px 16px;
+    padding: 15px 21px 15px 20px;
+    display: grid; grid-template-columns: 26px 16px 1fr 64px; align-items: center; gap: 0 10px;
+    --cut-a: radial-gradient(circle at 0 0, transparent var(--notch), #000 calc(var(--notch) + .5px));
+    --cut-b: radial-gradient(circle at 100% 0, transparent var(--notch), #000 calc(var(--notch) + .5px));
+    --perf-cut: radial-gradient(circle at 50% 0, transparent 2.2px, #000 2.7px);
+    /* conductor's punched hole on the stub */
+    --cut-c: radial-gradient(circle at 34px 50%, transparent 7px, #000 7.5px);
+  }
+  .stub::before { top: 6px; }
+  .stub > * { position: relative; z-index: 1; }
+  .perf {
+    position: absolute; left: calc(var(--notch) + 6px); right: calc(var(--notch) + 6px); top: 0; height: 0; z-index: 2;
+    height: 4px; background: linear-gradient(rgba(74, 46, 26, .10), rgba(74, 46, 26, 0));
+  }
+  .admit {
+    justify-self: center; align-self: stretch; display: flex; align-items: center; justify-content: center;
+    writing-mode: vertical-rl; rotate: 180deg;
+    font-size: 13px; font-weight: 800; letter-spacing: .1em; color: var(--navy); line-height: 1;
+  }
+  .board {
+    height: 52px; border-radius: 12px;
+    display: flex; align-items: center; justify-content: center; gap: 10px;
+    background: linear-gradient(180deg, var(--navy-2), var(--navy));
+    border: 2px solid var(--silver);
+    box-shadow: inset 0 0 0 2px var(--navy), inset 0 0 0 3px rgba(238, 242, 247, .35), 0 4px 10px rgba(16, 24, 48, .35);
+    font: inherit; font-size: 20px; font-weight: 800; letter-spacing: .02em; color: var(--cream); cursor: pointer;
+  }
+  .board svg { width: 20px; height: 20px; }
+  .stamp { width: 64px; height: 64px; rotate: -14deg; opacity: .32; justify-self: end; }
+</style>
+</head>
+<body>
+<script src="../demo/switcher.js" data-page="dashboard-b"></script>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <linearGradient id="gLit" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#bfe9ff"/><stop offset=".45" stop-color="#5bb4f5"/><stop offset="1" stop-color="#1f5fbf"/>
+    </linearGradient>
+    <symbol id="crystal-lit" viewBox="0 0 24 32">
+      <polygon points="12,1 22,10 12,31 2,10" fill="url(#gLit)" stroke="#1b4f9e" stroke-width="1.2" stroke-linejoin="round"/>
+      <polygon points="12,1 22,10 12,13 2,10" fill="#d9f3ff" opacity=".75"/>
+      <polyline points="2,10 12,13 22,10" fill="none" stroke="#1b4f9e" stroke-width=".9" opacity=".6"/>
+      <line x1="12" y1="13" x2="12" y2="31" stroke="#ffffff" stroke-width=".9" opacity=".45"/>
+    </symbol>
+    <symbol id="crystal-line" viewBox="0 0 24 32">
+      <g fill="none" stroke="#1d2b4f" stroke-width=".7" stroke-linejoin="round">
+        <polygon points="12,1 22,10 12,31 2,10"/><polyline points="2,10 12,13 22,10"/><line x1="12" y1="13" x2="12" y2="31"/>
+        <line x1="12" y1="1" x2="12" y2="13"/><line x1="7" y1="5.5" x2="12" y2="13"/><line x1="17" y1="5.5" x2="12" y2="13"/>
+      </g>
+    </symbol>
+  </defs>
+</svg>
+
+<div class="scene" aria-hidden="true"><img src="assets/station.jpg" alt="" /></div>
+
+<header class="title">
+  <svg aria-hidden="true"><use href="#crystal-lit"/></svg>
+  <h1>Crystal Railways<small>Astra’s Writing Adventure</small></h1>
+</header>
+
+<aside class="ticket" aria-label="Your train ticket">
+  <div class="paper main">
+    <div class="security" aria-hidden="true"></div>
+    <svg class="watermark" aria-hidden="true"><use href="#crystal-line"/></svg>
+
+    <div class="band">
+      <span class="emblem"><svg aria-hidden="true"><use href="#crystal-lit"/></svg></span>
+      <div class="brand">
+        <p class="rr">CRYSTAL RAILWAYS</p>
+        <p class="kinds"><span class="kind">ADMIT ONE</span><span class="kind">ONE WAY</span></p>
+      </div>
+    </div>
+
+    <div class="fields" aria-hidden="true">
+      <span class="serial">No. 000303</span>
+      <span><span class="k">CLASS</span> WRITER</span>
+      <span>08 OCT 2026</span>
+    </div>
+
+    <section class="nextstop" aria-label="Next stop">
+      <img class="ico" src="assets/icons/moonwater-falls.png" alt="" />
+      <div>
+        <p class="kicker">NEXT STOP</p>
+        <p class="place">Moonwater Falls</p>
+        <p class="lesson">Lesson 3: Details &amp; Evidence</p>
+      </div>
+    </section>
+
+
+    <section class="sec goal">
+      <p class="lbl">Today’s goal</p>
+      <p class="txt">Back up my opinion with strong, specific reasons.</p>
+    </section>
+
+    <section class="stops" aria-label="Choose your stop">
+      <div class="head"><p class="lbl">Choose your stop</p><span class="count">2 of 6 punched</span></div>
+      <div class="grid">
+        <button class="world done" type="button"><span class="medal"><img src="assets/icons/frostpine-peak.png" alt="" /><span class="punch" aria-label="Finished"><svg viewBox="0 0 12 12"><path d="M2.2 6.3 4.8 8.8 9.8 3.4" fill="none" stroke="#eef2f7" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></span></span><span class="wname">Frostpine Peak</span><span class="wmod">M1</span></button>
+        <button class="world done" type="button"><span class="medal"><img src="assets/icons/mushroom-hollow.png" alt="" /><span class="punch" aria-label="Finished"><svg viewBox="0 0 12 12"><path d="M2.2 6.3 4.8 8.8 9.8 3.4" fill="none" stroke="#eef2f7" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></span></span><span class="wname">Mushroom Hollow</span><span class="wmod">M2</span></button>
+        <button class="world next" type="button" aria-current="step"><span class="nexttag">NEXT</span><span class="medal"><img src="assets/icons/moonwater-falls.png" alt="" /></span><span class="wname">Moonwater Falls</span><span class="wmod">M3</span></button>
+        <button class="world" type="button"><span class="medal"><img src="assets/icons/firefly-bayou.png" alt="" /></span><span class="wname">Firefly Bayou</span><span class="wmod">M4</span></button>
+        <button class="world" type="button"><span class="medal"><img src="assets/icons/cloudtop-orchard.png" alt="" /></span><span class="wname">Cloudtop Orchard</span><span class="wmod">M5</span></button>
+        <button class="world" type="button"><span class="medal"><img src="assets/icons/sandstone-canyon.png" alt="" /></span><span class="wname">Sandstone Canyon</span><span class="wmod">M6</span></button>
+      </div>
+    </section>
+  </div>
+
+  <div class="paper stub">
+    <span class="perf" aria-hidden="true"></span>
+    <span class="holegap" aria-hidden="true"></span>
+    <span class="admit" aria-hidden="true">ADMIT ONE</span>
+    <button class="board" type="button">
+      Board the train
+      <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M4 10h11M11 5.5 15.5 10 11 14.5" fill="none" stroke="#f3d68c" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </button>
+    <svg class="stamp" viewBox="0 0 100 100" aria-hidden="true">
+      <defs><path id="ring" d="M50 50 m-36 0 a36 36 0 1 1 72 0 a36 36 0 1 1 -72 0"/></defs>
+      <g fill="none" stroke="#1d2b4f"><circle cx="50" cy="50" r="47" stroke-width="3"/><circle cx="50" cy="50" r="27" stroke-width="1.6"/></g>
+      <text font-family="Baloo 2, sans-serif" font-weight="800" font-size="11.5" letter-spacing="2.2" fill="#1d2b4f"><textPath href="#ring">CRYSTAL RAILWAYS ★ VALID ★</textPath></text>
+      <text x="50" y="47" text-anchor="middle" font-family="Courier Prime, monospace" font-weight="700" font-size="12" fill="#1d2b4f">08 OCT</text>
+      <text x="50" y="61" text-anchor="middle" font-family="Courier Prime, monospace" font-weight="700" font-size="12" fill="#1d2b4f">2026</text>
+    </svg>
+  </div>
+</aside>
+</body>
+</html>
