@@ -6,6 +6,11 @@
   var W = 1280, H = 720;
   var SLOPE = -0.078;                 // the track rises ~0.078px per px to the right
   var STACK = { x: 349, y: 210 };     // smokestack mouth (painting px, train at rest)
+  var VIDEO_STACK = { x: 437, y: 168 }; // smokestack mouth in the last frame of intro-blend.mp4
+  // intro-controller.js (loaded first) films the arrival; when it is present the CSS train/Astra stay hidden
+  // and this file only adds ambient effects once the intro has finished ("crystal-intro-done").
+  var intro = window.CrystalIntro || null;
+  var videoMode = false;
   var ARRIVE_D = 1150, ARRIVE_T = 3300, SETTLE_T = 650;
   var reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
@@ -57,6 +62,7 @@
   var state = reduce ? "idle" : "waiting"; // waiting -> arriving -> idle -> departing
   var t0 = 0, departT0 = 0, lastChuff = 0, nextChuff = 0, shudderT = -10;
   function placeTrain(dx, jx, jy) {
+    if (videoMode) return;
     var x = (dx + (jx || 0)) * scale, y = (SLOPE * dx + (jy || 0)) * scale;
     train.style.transform = "translate3d(" + x.toFixed(2) + "px," + y.toFixed(2) + "px,0)";
   }
@@ -64,7 +70,7 @@
 
   /* ---------- steam ---------- */
   var puffs = [];
-  function stackPos() { return { x: STACK.x + trainDx, y: STACK.y + SLOPE * trainDx }; }
+  function stackPos() { return videoMode ? VIDEO_STACK : { x: STACK.x + trainDx, y: STACK.y + SLOPE * trainDx }; }
   function emitPuff(big, now, extra) {
     var s = stackPos();
     puffs.push({
@@ -195,7 +201,7 @@
     // soft candle flicker: slow drift plus a small quick shimmer (never a regular beat)
     lamp1.style.opacity = (.78 + fl1(t * .9) * .1 + fl1b(t * 5.3) * .05).toFixed(3);
     lamp2.style.opacity = (.74 + fl2(t * 1.1) * .11 + fl2b(t * 6.1) * .06).toFixed(3);
-    headlamp.style.opacity = (.66 + hl(t * .22) * .1).toFixed(3);     // very slow glow breathing
+    if (!videoMode) headlamp.style.opacity = (.66 + hl(t * .22) * .1).toFixed(3);     // very slow glow breathing
   }
   function runeShimmer() {
     runes.forEach(function (g) {
@@ -302,6 +308,29 @@
     if (img.decode) return img.decode().catch(function () {});
     return new Promise(function (res) { if (img.complete) res(); else { img.onload = img.onerror = res; } });
   }
+  function startVideoIdle() {
+    // filmed train is parked: steam from its stack, fireflies, leaves and lantern flicker only
+    if (videoMode) return;
+    videoMode = true;
+    lamp1.style.setProperty("--x", "60"); lamp1.style.setProperty("--y", "305");   // lanterns in the filmed frame
+    lamp2.style.setProperty("--x", "190"); lamp2.style.setProperty("--y", "307");
+    resize();
+    trainDx = 0; state = "idle"; nextChuff = performance.now() + 500;
+    if (reduce) { drawStill(); return; }
+    requestAnimationFrame(function (n) { last = n; requestAnimationFrame(frame); });
+  }
+  var introFailed = intro && intro.video && intro.video.error;
+  if (intro && !introFailed) {
+    window.addEventListener("crystal-intro-done", startVideoIdle);
+    intro.video.addEventListener("error", startPlate);   // video can't play: fall back to the code-layered arrival
+    if (scene().classList.contains("intro-done")) startVideoIdle();
+  } else {
+    startPlate();
+  }
+  function scene() { return document.querySelector(".scene"); }
+  var plateStarted = false;
+  function startPlate() {
+  if (plateStarted || videoMode) return; plateStarted = true;
   if (reduce) {
     placeTrain(0);
     var redraw = function () { resize(); drawStill(); };
@@ -320,14 +349,14 @@
     runeShimmer();
     requestAnimationFrame(function (n) { last = n; requestAnimationFrame(frame); });
   }
+  }
 
-  /* ---------- ticket: only Sandstone Canyon is live ---------- */
+  /* ---------- ticket: every stop is live; picking one punches the ticket, plays the depart video, then opens that world ---------- */
   var ticket = document.querySelector(".ticket");
   var main = document.querySelector(".paper.main");
-  var goBtn = document.getElementById("goSandstone");
+  var goBtn = document.getElementById("goSandstone");   // the NEXT stop (also what "Board the train" uses)
   var board = document.getElementById("board");
   var fade = document.getElementById("departFade");
-  var DEST = "sandstone-canyon/";
   var leaving = false;
 
   Array.prototype.forEach.call(document.querySelectorAll(".world.soon"), function (b) {
@@ -339,9 +368,9 @@
     });
   });
 
-  function punchHole() {
-    // punch a real hole (mask cut) beside the Sandstone Canyon medal, where finished stops carry their punch
-    var medal = goBtn.querySelector(".medal").getBoundingClientRect();
+  function punchHole(btn) {
+    // punch a real hole (mask cut) beside the chosen stop's medal, where finished stops carry their punch
+    var medal = btn.querySelector(".medal").getBoundingClientRect();
     var mr = main.getBoundingClientRect();
     var cx = medal.right - 1 - mr.left, cy = medal.top + 47 - mr.top;
     var ring = document.createElement("span");
@@ -367,32 +396,57 @@
     }, 120);
   }
 
-  function depart(ev) {
-    if (ev) ev.preventDefault();
-    if (leaving) return; leaving = true;
-    goBtn.blur(); board.blur();
-    punchHole();
-    if (reduce) {
-      setTimeout(function () { location.href = DEST; }, 450);
-      return;
-    }
-    // if the train is still pulling in, snap it to the platform first
+  // the old code-layered departure (only used if the depart video is unavailable)
+  function departCSS(dest) {
+    if (videoMode) { videoMode = false; scene().classList.remove("intro-done", "depart-playing", "depart-done"); }
     if (state !== "idle") { state = "idle"; trainDx = 0; placeTrain(0); }
     clearTimeout(astraTimer);
     setTimeout(function () {
       var n = performance.now();
-      emitCylinder(n);                                   // steam whoosh
+      emitCylinder(n);
       for (var i = 0; i < 7; i++) (function (k) { setTimeout(function () { emitPuff(true, performance.now()); }, k * 70); })(i);
       astra.classList.remove("hop", "sway"); shadow.classList.remove("hop");
       void astra.offsetWidth;
-      astra.classList.add("boarding"); shadow.classList.add("boarding");   // Astra hops aboard
+      astra.classList.add("boarding"); shadow.classList.add("boarding");
     }, 380);
     setTimeout(function () { state = "departing"; departT0 = performance.now(); lastChuff = 0; }, 1250);
     setTimeout(function () { fade.classList.add("on"); }, 3150);
-    setTimeout(function () { location.href = DEST; }, 3950);
+    setTimeout(function () { location.href = dest; }, 3950);
   }
-  goBtn.addEventListener("click", depart);
-  board.addEventListener("click", depart);
+
+  function departVideo(dest) {
+    var done = false;
+    function go() { if (done) return; done = true; fade.classList.add("on"); setTimeout(function () { location.href = dest; }, 350); }
+    window.addEventListener("crystal-depart-done", go, { once: true });
+    window.CrystalDepart.play();
+    var v = window.CrystalDepart.video();
+    if (v) {
+      // start a soft fade just before the last frame, then open the world on "ended"
+      v.addEventListener("timeupdate", function tu() {
+        if (v.duration && v.currentTime > v.duration - .6) { fade.classList.add("on"); v.removeEventListener("timeupdate", tu); }
+      });
+      v.addEventListener("error", go, { once: true });
+    }
+    setTimeout(go, 20000); // never strand the student if the video stalls
+  }
+
+  function depart(btn, ev) {
+    if (ev) ev.preventDefault();
+    if (leaving) return; leaving = true;
+    var dest = btn.getAttribute("data-dest") || "sandstone-canyon/";
+    btn.blur(); board.blur();
+    btn.setAttribute("aria-current", "step");
+    punchHole(btn);
+    // stop the intro (and its speech) if the student picks a stop before it finishes
+    if (intro && intro.video && !intro.video.ended) { try { intro.video.pause(); } catch (e) {} setTimeout(function () { try { intro.video.pause(); } catch (e) {} }, 60); }
+    if (reduce) { setTimeout(function () { location.href = dest; }, 450); return; }
+    if (window.CrystalDepart && !(intro && intro.video && intro.video.error)) setTimeout(function () { departVideo(dest); }, 380);
+    else departCSS(dest);
+  }
+  Array.prototype.forEach.call(document.querySelectorAll(".world.go"), function (b) {
+    b.addEventListener("click", function (ev) { depart(b, ev); });
+  });
+  board.addEventListener("click", function (ev) { depart(goBtn, ev); });
 
   // coming back with the browser's back button: reset the scene
   window.addEventListener("pageshow", function (e) { if (e.persisted) location.reload(); });

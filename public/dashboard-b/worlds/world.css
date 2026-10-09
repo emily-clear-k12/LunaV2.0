@@ -1,0 +1,86 @@
+/* Plan B "Crystal Railways": world arrival screens (one per ticket stop). Tuned for 1366x768, no scrolling.
+   The 1280x720 painting is cover-fitted and top-aligned under the 36px view switcher, like the station.
+   Hotspots, fireflies and runes are placed in painting pixels, so they stay on the crystals at any size. */
+* { box-sizing: border-box; }
+html, body { margin: 0; height: 100%; overflow: hidden; }
+body { font-family: "Baloo 2", "Nunito", system-ui, sans-serif; color: #4a2e1a; background: #1a2318; -webkit-font-smoothing: antialiased; }
+:root { --frost: rgba(255, 248, 235, .82); --edge: 1px solid rgba(255, 255, 255, .9); --ink: #4a2e1a; }
+
+.scene { position: fixed; inset: 0; overflow: hidden; container-type: size; animation: arrive .7s ease-out both; }
+html.vs-on .scene { top: var(--vs-h); }
+@keyframes arrive { from { opacity: 0; } }
+.stage { position: absolute; left: 50%; top: 0; transform: translateX(-50%); width: max(100cqw, calc(100cqh * 16 / 9)); aspect-ratio: 16 / 9; }
+.stage > * { position: absolute; }
+.art { inset: 0; width: 100%; height: 100%; display: block; object-fit: cover; }
+.fx { inset: 0; width: 100%; height: 100%; pointer-events: none; }
+
+/* frosted chrome (same recipe everywhere) */
+.frost {
+  background: var(--frost); -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px);
+  border: var(--edge); color: var(--ink); box-shadow: 0 6px 18px -8px rgba(20, 12, 4, .45);
+}
+.hud { position: fixed; left: 14px; top: 12px; z-index: 20; display: flex; align-items: center; gap: 10px; }
+html.vs-on .hud { top: calc(var(--vs-h) + 10px); }
+.back {
+  display: inline-flex; align-items: center; gap: 6px; height: 36px; padding: 0 14px 0 10px; border-radius: 999px;
+  font: 800 15px/1 "Baloo 2", system-ui, sans-serif; text-decoration: none; transition: translate .18s ease, box-shadow .18s ease;
+}
+.back svg { width: 18px; height: 18px; }
+.back:hover { translate: 0 -1px; box-shadow: 0 9px 20px -8px rgba(20, 12, 4, .5); }
+.back:focus-visible, .hs:focus-visible, .toggle button:focus-visible { outline: 3px solid #d9a93f; outline-offset: 2px; }
+.titlecard { padding: 5px 16px 4px; border-radius: 14px; line-height: 1; }
+.titlecard h1 { margin: 0; font-size: 22px; font-weight: 800; line-height: 1.05; }
+.titlecard p { margin: 1px 0 0; font-size: 13.5px; font-weight: 700; letter-spacing: .02em; color: #7a5638; }
+
+/* Frostpine 4 / 5 lesson toggle */
+.toggle { position: fixed; right: 14px; top: 12px; z-index: 20; display: flex; align-items: center; gap: 4px; padding: 4px; border-radius: 999px; }
+html.vs-on .toggle { top: calc(var(--vs-h) + 10px); }
+.toggle span { padding: 0 6px 0 8px; font-size: 13px; font-weight: 800; letter-spacing: .06em; color: #7a5638; }
+.toggle button {
+  border: 0; border-radius: 999px; padding: 4px 12px; font: 800 14px/1.2 "Baloo 2", system-ui, sans-serif; color: var(--ink);
+  background: transparent; cursor: pointer;
+}
+.toggle button[aria-pressed="true"] { background: #4a2e1a; color: #fff8eb; }
+
+/* lesson crystals: a soft, steady glow (no pulsing); hover lifts it a touch */
+.hs {
+  position: absolute;
+  left: calc(var(--x) * 100% / 1280); top: calc(var(--y) * 100% / 720);
+  width: calc(var(--w) * 100% / 1280); height: calc(var(--h) * 100% / 720); translate: -50% -50%;
+  padding: 0; border: 0; background: none; cursor: pointer; z-index: 5; border-radius: 45%;
+  transition: transform .22s ease;
+}
+.hs::before {
+  content: ""; position: absolute; left: 50%; top: 50%; width: 190%; height: 150%; translate: -50% -50%; border-radius: 50%;
+  background: radial-gradient(closest-side, rgba(190, 236, 255, .55), rgba(110, 196, 255, .26) 45%, rgba(90, 170, 255, 0) 100%);
+  mix-blend-mode: screen; opacity: .7; pointer-events: none; transition: opacity .25s ease;
+}
+.hs .tag {
+  position: absolute; left: 50%; bottom: calc(100% + 6px); translate: -50% 0; white-space: nowrap;
+  padding: 1px 11px 0; border-radius: 999px; font-size: 14px; font-weight: 800; line-height: 22px; letter-spacing: .02em;
+  transition: box-shadow .22s ease;
+}
+.hs.below .tag { bottom: auto; top: calc(100% + 6px); }
+.hs:hover, .hs:focus-visible { transform: translateY(-3px); }
+.hs:hover::before, .hs:focus-visible::before { opacity: 1; }
+.hs:hover .tag { box-shadow: 0 8px 18px -6px rgba(20, 12, 4, .55); }
+
+/* small note when a lesson is picked (the lessons themselves are not built yet) */
+.toast {
+  position: fixed; left: 50%; bottom: 22px; z-index: 30; translate: -50% 0; padding: 8px 18px; border-radius: 999px;
+  font-size: 17px; font-weight: 800; opacity: 0; transition: opacity .25s ease, translate .25s ease; pointer-events: none;
+}
+.toast.on { opacity: 1; translate: -50% -4px; }
+
+/* gold runes (Crystal Caverns left rock wall): carved groove + gold line + soft glow whose opacity drifts slowly */
+.rune { left: calc(var(--x) * 100% / 1280); top: calc(var(--y) * 100% / 720); width: calc(var(--w) * 100% / 1280); aspect-ratio: 1; translate: -50% -50%; pointer-events: none; }
+.rune svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; rotate: var(--r, 0deg); fill: none; stroke-linecap: round; stroke-linejoin: round; }
+.rune .carve { mix-blend-mode: multiply; stroke: #241205; stroke-width: 3.2; opacity: .5; translate: .4% .9%; }
+.rune .gold { mix-blend-mode: screen; stroke: #d9a443; stroke-width: 1.5; opacity: .42; }
+.rune .glow { mix-blend-mode: screen; stroke: #ffc75a; stroke-width: 4.5; filter: blur(2.6px); opacity: .12; transition: opacity 3s ease-in-out; }
+
+@media (prefers-reduced-motion: reduce) {
+  .scene { animation: none; }
+  .hs, .back, .toast { transition: none; }
+  .rune .glow { transition: none; }
+}
