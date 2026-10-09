@@ -319,6 +319,7 @@
     if (reduce) { drawStill(); return; }
     requestAnimationFrame(function (n) { last = n; requestAnimationFrame(frame); });
   }
+  var plateStarted = false;
   var introFailed = intro && intro.video && intro.video.error;
   if (intro && !introFailed) {
     window.addEventListener("crystal-intro-done", startVideoIdle);
@@ -328,7 +329,6 @@
     startPlate();
   }
   function scene() { return document.querySelector(".scene"); }
-  var plateStarted = false;
   function startPlate() {
   if (plateStarted || videoMode) return; plateStarted = true;
   if (reduce) {
@@ -351,13 +351,16 @@
   }
   }
 
-  /* ---------- ticket: every stop is live; picking one punches the ticket, plays the depart video, then opens that world ---------- */
+  /* ---------- ticket: pick a stop (highlight), then "Board the train" punches it, the ticket flies off,
+     the depart video plays unobstructed, and the chosen world opens when it ends ---------- */
   var ticket = document.querySelector(".ticket");
   var main = document.querySelector(".paper.main");
-  var goBtn = document.getElementById("goSandstone");   // the NEXT stop (also what "Board the train" uses)
+  var goBtn = document.getElementById("goSandstone");   // the NEXT stop: selected by default
   var board = document.getElementById("board");
+  var boardDest = document.getElementById("boardDest");
   var fade = document.getElementById("departFade");
-  var leaving = false;
+  var leaving = false, selected = null;
+  if (!intro) document.body.classList.remove("ui-away");   // no intro controller: show the ticket right away
 
   Array.prototype.forEach.call(document.querySelectorAll(".world.soon"), function (b) {
     var tm = 0;
@@ -367,6 +370,23 @@
       tm = setTimeout(function () { b.classList.remove("tip"); }, 1600);
     });
   });
+
+  function select(b, animate) {
+    if (leaving) return;
+    Array.prototype.forEach.call(document.querySelectorAll(".world.go"), function (x) {
+      x.classList.toggle("sel", x === b); x.setAttribute("aria-pressed", x === b ? "true" : "false");
+    });
+    selected = b;
+    var name = b.querySelector(".wname").textContent;
+    if (boardDest) boardDest.textContent = "to " + name;
+    board.disabled = false;
+    board.setAttribute("aria-label", "Board the train to " + name);
+    if (animate && !reduce) { b.classList.remove("pick"); void b.offsetWidth; b.classList.add("pick"); }
+  }
+  Array.prototype.forEach.call(document.querySelectorAll(".world.go"), function (b) {
+    b.addEventListener("click", function (ev) { ev.preventDefault(); select(b, true); });
+  });
+  if (goBtn) select(goBtn, false); else board.disabled = true;
 
   function punchHole(btn) {
     // punch a real hole (mask cut) beside the chosen stop's medal, where finished stops carry their punch
@@ -421,32 +441,29 @@
     window.CrystalDepart.play();
     var v = window.CrystalDepart.video();
     if (v) {
-      // start a soft fade just before the last frame, then open the world on "ended"
+      // soft fade over the very last frames, then open the world on "ended"
       v.addEventListener("timeupdate", function tu() {
-        if (v.duration && v.currentTime > v.duration - .6) { fade.classList.add("on"); v.removeEventListener("timeupdate", tu); }
+        if (v.duration && v.currentTime > v.duration - .45) { fade.classList.add("on"); v.removeEventListener("timeupdate", tu); }
       });
       v.addEventListener("error", go, { once: true });
     }
-    setTimeout(go, 20000); // never strand the student if the video stalls
+    setTimeout(go, 22000); // never strand the student if the video stalls
   }
 
-  function depart(btn, ev) {
+  function boardTrain(ev) {
     if (ev) ev.preventDefault();
-    if (leaving) return; leaving = true;
-    var dest = btn.getAttribute("data-dest") || "sandstone-canyon/";
-    btn.blur(); board.blur();
-    btn.setAttribute("aria-current", "step");
-    punchHole(btn);
-    // stop the intro (and its speech) if the student picks a stop before it finishes
-    if (intro && intro.video && !intro.video.ended) { try { intro.video.pause(); } catch (e) {} setTimeout(function () { try { intro.video.pause(); } catch (e) {} }, 60); }
+    if (leaving || !selected) return;
+    leaving = true;
+    var dest = selected.getAttribute("data-dest") || "sandstone-canyon/";
+    board.blur();
+    if (window.CrystalDepart && window.CrystalDepart.preload) window.CrystalDepart.preload();
+    punchHole(selected);                                       // conductor's punch on the chosen stop
     if (reduce) { setTimeout(function () { location.href = dest; }, 450); return; }
-    if (window.CrystalDepart && !(intro && intro.video && intro.video.error)) setTimeout(function () { departVideo(dest); }, 380);
-    else departCSS(dest);
+    setTimeout(function () { document.body.classList.add("ui-flyoff"); }, 420);   // ticket lifts and swoops off
+    var useVideo = window.CrystalDepart && !(intro && (intro.failed || (intro.video && intro.video.error)));
+    setTimeout(function () { if (useVideo) departVideo(dest); else departCSS(dest); }, 1300);
   }
-  Array.prototype.forEach.call(document.querySelectorAll(".world.go"), function (b) {
-    b.addEventListener("click", function (ev) { depart(b, ev); });
-  });
-  board.addEventListener("click", function (ev) { depart(goBtn, ev); });
+  board.addEventListener("click", boardTrain);
 
   // coming back with the browser's back button: reset the scene
   window.addEventListener("pageshow", function (e) { if (e.persisted) location.reload(); });
