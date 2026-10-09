@@ -26,7 +26,8 @@
 
   var scale = 1, dpr = 1;
   function resize() {
-    var r = stage.getBoundingClientRect();
+    // layout size (ignores the settle transform in video mode, which moves the canvas together with the video)
+    var r = { width: stage.offsetWidth, height: stage.offsetHeight };
     scale = r.width / W;
     dpr = Math.min(window.devicePixelRatio || 1, 1.25);
     canvas.width = Math.round(r.width * dpr);
@@ -459,7 +460,10 @@
     if (window.CrystalDepart && window.CrystalDepart.preload) window.CrystalDepart.preload();
     punchHole(selected);                                       // conductor's punch on the chosen stop
     if (reduce) { setTimeout(function () { location.href = dest; }, 450); return; }
-    setTimeout(function () { document.body.classList.add("ui-flyoff"); }, 420);   // ticket lifts and swoops off
+    setTimeout(function () {
+      document.body.classList.add("ui-flyoff");                 // ticket lifts and swoops off
+      if (window.CrystalStage) window.CrystalStage.center();    // film eases back to full frame meanwhile
+    }, 420);   // ticket lifts and swoops off
     var useVideo = window.CrystalDepart && !(intro && (intro.failed || (intro.video && intro.video.error)));
     setTimeout(function () { if (useVideo) departVideo(dest); else departCSS(dest); }, 1300);
   }

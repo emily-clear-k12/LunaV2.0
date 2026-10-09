@@ -417,6 +417,22 @@
     body.ui-flyoff .ticket { animation: none; opacity: 0; }
     .world.pick { animation: none; }
   }
+
+  /* ---------- Video framing (intro-controller.js): the filmed scene is shown whole (contain-fit, never cover-cropped),
+     so Astra is full-body and the whole locomotive is visible at any window size. Any area the frame doesn't cover is
+     filled by a blurred, darkened copy of the current frame (#vfill), never black bars. After the intro the stage eases
+     (1s, no bounce) so the locomotive and Astra sit left of the ticket. ---------- */
+  .vfill { position: absolute; inset: -40px; width: calc(100% + 80px); height: calc(100% + 80px); z-index: 0; pointer-events: none;
+    filter: blur(26px) brightness(.55) saturate(1.1); opacity: 0; transition: opacity .4s ease; }
+  .scene.vmode .vfill { opacity: 1; }
+  .scene.vmode .stage {
+    left: var(--vx, 0px); top: var(--vy, 0px); width: var(--vw, 100cqw);
+    transform: translate(var(--dx, 0px), var(--dy, 0px)) scale(var(--k, 1)); transform-origin: 0 0;
+    transition: transform 1s cubic-bezier(.33, 0, .2, 1);
+  }
+  .scene.vmode .stage .intro-bg { object-fit: fill; background: transparent; }
+  .scene.vmode.vnoease .stage { transition: none; }
+  @media (prefers-reduced-motion: reduce) { .scene.vmode .stage { transition: none; } }
 </style>
 </head>
 <body class="ui-away">
@@ -450,6 +466,7 @@
 </svg>
 
 <div class="scene" aria-hidden="true">
+  <canvas class="vfill" id="vfill" width="160" height="90"></canvas>
   <div class="stage" id="stage">
     <img class="plate" src="assets/plate.jpg" alt="" />
     <div class="rune" style="--x:190;--y:190;--w:30;--r:-30deg"><svg class="carve" viewBox="0 0 40 40"><use href="#r-curl"/></svg><svg class="gold" viewBox="0 0 40 40"><use href="#r-curl"/></svg><svg class="glow" viewBox="0 0 40 40"><use href="#r-curl"/></svg></div>
