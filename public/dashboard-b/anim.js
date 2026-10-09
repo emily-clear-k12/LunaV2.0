@@ -438,46 +438,45 @@
     setTimeout(function () { location.href = dest; }, 3950);
   }
 
-  // The depart film ends at ~9.3s, before its camera pushes in after the train; "Let's go!" is over by 7.1s.
-  // Over its last 0.8s the chosen world's painting fades in on the stage (same framing as the world page),
-  // then the world page opens already showing that painting, and only its labels fade in.
-  var DEPART_END = 9.3, DEPART_FADE = 0.8;
+  // The depart film plays to its end (12.7s): Astra waves from the step and the last carriage leaves frame (~12.5s).
+  // Then "Through the tunnel" (tunnel.js, ~3s) runs while the world page is prefetched; its light opens into the
+  // world's painting, and the world page opens already showing that painting (only its labels fade in).
   function worldArt(dest) {
     var slug = dest.replace(/\/.*$/, "");
     return "assets/worlds/" + (slug === "frostpine-peak" ? "frostpine-peak-5" : slug) + ".jpg";
   }
+  function prefetch(dest, art) {
+    var pre = new Image(); pre.src = art;                 // cached for the tunnel's end and for the world page
+    try { var l = document.createElement("link"); l.rel = "prefetch"; l.href = dest; document.head.appendChild(l); } catch (e) {}
+  }
+  function goWorld(dest) {
+    try { sessionStorage.setItem("planb-arrive", "1"); } catch (e) {}
+    location.href = dest;
+  }
+  function plainFade(dest, art) {
+    // fallback / reduced motion: the world painting simply fades in, then the page opens
+    fade.style.backgroundImage = 'url("' + art + '")';
+    fade.classList.add("to-world");
+    void fade.offsetWidth;
+    fade.classList.add("on");
+    setTimeout(function () { goWorld(dest); }, 860);
+  }
   function departVideo(dest) {
-    var art = worldArt(dest), pre = new Image();
-    pre.src = art;                                         // cached for the cross-fade and for the world page
-    var done = false, fading = false, v = null;
-    function go() {
-      if (done) return; done = true;
-      try { sessionStorage.setItem("planb-arrive", "1"); } catch (e) {}
-      location.href = dest;
+    var art = worldArt(dest), next = false, v = null;
+    prefetch(dest, art);
+    function afterFilm() {
+      if (next) return; next = true;
+      if (reduce || !window.CrystalTunnel) { plainFade(dest, art); return; }
+      window.CrystalTunnel.run({ art: art, onDone: function () { goWorld(dest); } });
+      setTimeout(function () { if (v) { try { v.pause(); } catch (e) {} } }, 400);
     }
-    function startFade() {
-      if (fading) return; fading = true;
-      fade.style.backgroundImage = 'url("' + art + '")';
-      fade.classList.add("to-world");
-      void fade.offsetWidth;
-      fade.classList.add("on");                          // 0.8s opacity transition (index.html .depart-fade.to-world)
-      setTimeout(function () { if (v) { try { v.pause(); } catch (e) {} } go(); }, DEPART_FADE * 1000 + 60);
-    }
-    window.addEventListener("crystal-depart-done", startFade, { once: true });
+    window.addEventListener("crystal-depart-done", afterFilm, { once: true });
     window.CrystalDepart.play();
     v = window.CrystalDepart.video();
-    if (v) {
-      var watch = function () {
-        if (done) return;
-        var t = v.currentTime, left = DEPART_END - t;
-        if (left <= DEPART_FADE) { startFade(); v.volume = Math.max(0, Math.min(1, left / DEPART_FADE)); }
-        if (t >= DEPART_END) { try { v.pause(); } catch (e) {} return; }   // hold the last frame under the fade
-        if (v.requestVideoFrameCallback) v.requestVideoFrameCallback(watch); else requestAnimationFrame(watch);
-      };
-      if (v.requestVideoFrameCallback) v.requestVideoFrameCallback(watch); else requestAnimationFrame(watch);
-      v.addEventListener("error", startFade, { once: true });
-    }
-    setTimeout(startFade, 20000); // never strand the student if the video stalls
+    function failed() { if (next) return; next = true; plainFade(dest, art); }
+    if (v && v.error) failed();                                // already failed while preloading
+    else if (v) v.addEventListener("error", failed, { once: true });
+    setTimeout(afterFilm, 24000); // never strand the student if the video stalls
   }
 
   function boardTrain(ev) {

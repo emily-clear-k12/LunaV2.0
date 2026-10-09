@@ -433,6 +433,37 @@
   .scene.vmode .stage .intro-bg { object-fit: fill; background: transparent; }
   .scene.vmode.vnoease .stage { transition: none; }
   @media (prefers-reduced-motion: reduce) { .scene.vmode .stage { transition: none; } }
+
+  /* ---------- "Through the tunnel" loader (tunnel.js): train-window view, then the light opens into the world ---------- */
+  .tunnel { position: absolute; inset: 0; z-index: 850; overflow: hidden; opacity: 0; transition: opacity .35s ease; background: #262350; }
+  .tunnel.on { opacity: 1; }
+  .tunnel canvas { position: absolute; inset: 0; width: 100%; height: 100%; will-change: transform;
+    scale: 1.16; transition: scale .6s cubic-bezier(.2, .7, .3, 1); }
+  .tunnel.on canvas { scale: 1.05; }          /* whoosh: the window view rushes in */
+  .tunnel-art { position: absolute; inset: 0; background: #f6eedb center / cover no-repeat; opacity: 0; transition: opacity .55s ease; }
+  .tunnel.arrive .tunnel-art { opacity: 1; }
+  .tunnel-window {
+    position: absolute; inset: 0; pointer-events: none; transition: opacity .5s ease, scale .55s ease;
+    will-change: transform;
+  }
+  .tunnel-window::before {   /* navy carriage wall around a rounded window opening, brass rim */
+    content: ""; position: absolute; left: 92px; top: 62px; right: 92px; bottom: 62px; border-radius: 54px;
+    border: 7px solid #c9a24a; box-shadow: 0 0 0 3px #7a5a1f, 0 0 0 400px #1f2d5c, inset 0 0 0 3px rgba(255, 230, 160, .55), inset 0 0 26px rgba(10, 12, 40, .45);
+  }
+  .tunnel-window::after {    /* soft sheen on the glass */
+    content: ""; position: absolute; left: 99px; top: 69px; right: 99px; bottom: 69px; border-radius: 48px;
+    background: linear-gradient(115deg, rgba(255, 255, 255, .10), rgba(255, 255, 255, 0) 38%);
+  }
+  .tunnel-window i {          /* brass rivets */
+    position: absolute; width: 14px; height: 14px; border-radius: 50%; translate: -50% -50%;
+    background: radial-gradient(circle at 35% 30%, #fff1c2, #d9ae55 45%, #7a5a1f 100%); box-shadow: 0 1px 2px rgba(0, 0, 0, .5);
+  }
+  .tunnel-window i:nth-child(1) { left: 46px; top: 36px; } .tunnel-window i:nth-child(2) { left: 683px; top: 32px; }
+  .tunnel-window i:nth-child(3) { left: 1320px; top: 36px; } .tunnel-window i:nth-child(4) { left: 1322px; top: 384px; }
+  .tunnel-window i:nth-child(5) { left: 1320px; top: 732px; } .tunnel-window i:nth-child(6) { left: 683px; top: 736px; }
+  .tunnel-window i:nth-child(7) { left: 46px; top: 732px; } .tunnel-window i:nth-child(8) { left: 44px; top: 384px; }
+  .tunnel.arrive .tunnel-window { opacity: 0; scale: 1.08; }
+  .stage-frame.tunnel-on > :not(.tunnel) { visibility: hidden; }
 </style>
 </head>
 <body class="ui-away">
@@ -568,6 +599,7 @@
 </div>
 <script src="stage-fit.js"></script>
 <script src="intro-controller.js"></script>
+<script src="tunnel.js"></script>
 <script src="anim.js"></script>
 </body>
 </html>
