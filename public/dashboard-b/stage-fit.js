@@ -7,12 +7,7 @@
     if (!f) { f = document.createElement("div"); f.id = "frame"; f.className = "stage-frame"; document.body.appendChild(f); }
     return f;
   }
-  function barH() {
-    var root = document.documentElement;
-    if (!root.classList.contains("vs-on")) return 0;
-    var v = parseFloat(getComputedStyle(root).getPropertyValue("--vs-h"));
-    return isNaN(v) ? 36 : v;
-  }
+  function barH() { return 0; }   // the plan switcher floats over the stage (stage-fit.css), it doesn't take height
   var api = { scale: 1, frame: frame, fit: fit, x: 0, y: 0 };
   function fit() {
     if (!document.body) return;

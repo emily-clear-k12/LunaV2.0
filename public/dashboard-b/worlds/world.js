@@ -9,6 +9,9 @@
   var reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   var NS = "http://www.w3.org/2000/svg";
 
+  // arriving straight from the station's depart film: the painting was already faded in there, so show it at once
+  try { if (sessionStorage.getItem("planb-arrive")) { sessionStorage.removeItem("planb-arrive"); document.documentElement.classList.add("from-depart"); } } catch (e) {}
+
   var FRAME = (window.StageFit && window.StageFit.frame()) || document.body;
   function el(tag, cls, parent) { var e = document.createElement(tag); if (cls) e.className = cls; if (parent) parent.appendChild(e); return e; }
 

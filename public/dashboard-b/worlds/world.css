@@ -81,3 +81,10 @@ body { font-family: "Baloo 2", "Nunito", system-ui, sans-serif; color: #4a2e1a; 
   .hs, .back, .toast { transition: none; }
   .rune .glow { transition: none; }
 }
+
+/* arriving from the station's depart film: the painting is already on screen (cross-faded there); only the labels fade in */
+html.from-depart .scene { animation: none; }
+html.from-depart .hud, html.from-depart .toggle, html.from-depart .spots { animation: uiIn .6s ease-out .2s both; }
+@keyframes uiIn { from { opacity: 0; } }
+@media (prefers-reduced-motion: reduce) { html.from-depart .hud, html.from-depart .toggle, html.from-depart .spots { animation: none; } }
+html.vs-on .toggle { top: 50px; }   /* sits under the floating plan switcher (../stage-fit.css) */

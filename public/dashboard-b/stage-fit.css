@@ -1,6 +1,7 @@
 /* Plan B fixed design stage: every Plan B page (station + six worlds) is laid out on one 1366x768 stage, in stage pixels.
-   stage-fit.js scales the whole stage uniformly to fit the window below the view switcher and letterboxes the rest,
-   so the composition is identical on any screen (scale 1 on a 1366x768 stage; never cropped). */
+   stage-fit.js scales the whole stage uniformly to fit the whole window and letterboxes any leftover,
+   so the composition is identical on any screen: exactly scale 1, no strips, in a 1366x768 window / DevTools "Chromebook" preset.
+   The plan switcher floats over the top of the stage as a small glass pill (no full-width bar). */
 html, body { margin: 0; height: 100%; overflow: hidden; }
 html { background: #0b0f0c; }
 body { background: #0b0f0c !important; }
@@ -12,3 +13,13 @@ html.vs-on body { padding-top: 0 !important; }
 }
 /* everything inside sits on the stage, not under the switcher */
 html.vs-on .stage-frame .scene { top: 0; }
+
+/* plan switcher: a floating pill on top of the stage instead of a full-width bar that would push the stage down */
+html.vs-on .vswitch {
+  background: none; border: 0; box-shadow: none; -webkit-backdrop-filter: none; backdrop-filter: none;
+  pointer-events: none; height: 34px; top: 3px; justify-content: flex-end; padding-right: 10px;   /* top-right: clear of the titles */
+}
+html.vs-on .vswitch > * { pointer-events: auto; }
+html.vs-on .vswitch .vs-pills { background: rgba(16, 12, 38, .66); -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px);
+  border-color: rgba(255, 210, 122, .32); box-shadow: 0 6px 16px -10px rgba(0, 0, 0, .8); }
+html.vs-on .vswitch .vs-lbl { padding: 5px 9px; border-radius: 999px; background: rgba(16, 12, 38, .66); }

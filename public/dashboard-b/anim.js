@@ -438,20 +438,46 @@
     setTimeout(function () { location.href = dest; }, 3950);
   }
 
+  // The depart film ends at ~9.3s, before its camera pushes in after the train; "Let's go!" is over by 7.1s.
+  // Over its last 0.8s the chosen world's painting fades in on the stage (same framing as the world page),
+  // then the world page opens already showing that painting, and only its labels fade in.
+  var DEPART_END = 9.3, DEPART_FADE = 0.8;
+  function worldArt(dest) {
+    var slug = dest.replace(/\/.*$/, "");
+    return "assets/worlds/" + (slug === "frostpine-peak" ? "frostpine-peak-5" : slug) + ".jpg";
+  }
   function departVideo(dest) {
-    var done = false;
-    function go() { if (done) return; done = true; fade.classList.add("on"); setTimeout(function () { location.href = dest; }, 350); }
-    window.addEventListener("crystal-depart-done", go, { once: true });
-    window.CrystalDepart.play();
-    var v = window.CrystalDepart.video();
-    if (v) {
-      // soft fade over the very last frames, then open the world on "ended"
-      v.addEventListener("timeupdate", function tu() {
-        if (v.duration && v.currentTime > v.duration - .45) { fade.classList.add("on"); v.removeEventListener("timeupdate", tu); }
-      });
-      v.addEventListener("error", go, { once: true });
+    var art = worldArt(dest), pre = new Image();
+    pre.src = art;                                         // cached for the cross-fade and for the world page
+    var done = false, fading = false, v = null;
+    function go() {
+      if (done) return; done = true;
+      try { sessionStorage.setItem("planb-arrive", "1"); } catch (e) {}
+      location.href = dest;
     }
-    setTimeout(go, 22000); // never strand the student if the video stalls
+    function startFade() {
+      if (fading) return; fading = true;
+      fade.style.backgroundImage = 'url("' + art + '")';
+      fade.classList.add("to-world");
+      void fade.offsetWidth;
+      fade.classList.add("on");                          // 0.8s opacity transition (index.html .depart-fade.to-world)
+      setTimeout(function () { if (v) { try { v.pause(); } catch (e) {} } go(); }, DEPART_FADE * 1000 + 60);
+    }
+    window.addEventListener("crystal-depart-done", startFade, { once: true });
+    window.CrystalDepart.play();
+    v = window.CrystalDepart.video();
+    if (v) {
+      var watch = function () {
+        if (done) return;
+        var t = v.currentTime, left = DEPART_END - t;
+        if (left <= DEPART_FADE) { startFade(); v.volume = Math.max(0, Math.min(1, left / DEPART_FADE)); }
+        if (t >= DEPART_END) { try { v.pause(); } catch (e) {} return; }   // hold the last frame under the fade
+        if (v.requestVideoFrameCallback) v.requestVideoFrameCallback(watch); else requestAnimationFrame(watch);
+      };
+      if (v.requestVideoFrameCallback) v.requestVideoFrameCallback(watch); else requestAnimationFrame(watch);
+      v.addEventListener("error", startFade, { once: true });
+    }
+    setTimeout(startFade, 20000); // never strand the student if the video stalls
   }
 
   function boardTrain(ev) {
