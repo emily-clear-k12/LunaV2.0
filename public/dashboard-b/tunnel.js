@@ -6,9 +6,9 @@
   "use strict";
   var W = 1366, H = 768, CX = 683, CY = 372;
   var RES = 0.5;             // canvas resolution vs. the stage
-  var DUR = 3000;            // total tunnel time (ms)
-  var LIGHT_AT = 1900;       // the light at the end starts growing
-  var ART_AT = 2450;         // the world painting appears inside the light
+  var DUR = 2200;            // total tunnel time (ms)
+  var LIGHT_AT = 1300;       // the light at the end starts growing
+  var ART_AT = 1750;         // the world painting appears inside the light
 
   function rand(a, b) { return a + Math.random() * (b - a); }
   function ease(u) { return u < 0 ? 0 : u > 1 ? 1 : u * u * (3 - 2 * u); }

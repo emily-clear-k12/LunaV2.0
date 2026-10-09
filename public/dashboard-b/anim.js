@@ -468,11 +468,25 @@
       if (next) return; next = true;
       if (reduce || !window.CrystalTunnel) { plainFade(dest, art); return; }
       window.CrystalTunnel.run({ art: art, onDone: function () { goWorld(dest); } });
-      setTimeout(function () { if (v) { try { v.pause(); } catch (e) {} } }, 400);
+      setTimeout(function () { if (v) { try { v.pause(); } catch (e) {} } }, 300);
     }
     window.addEventListener("crystal-depart-done", afterFilm, { once: true });
     window.CrystalDepart.play();
     v = window.CrystalDepart.video();
+    // Pacing: walk-to-train a little brisk, "Let's go!" and the wave at true speed, the idle hold and the
+    // pull-away quicker; cut to the tunnel once the last carriage is mostly off-screen (film 11.9s).
+    var RATES = [[6.3, 1.4], [7.2, 1], [9.0, 1.6], [10.75, 1], [99, 1.6]], CUT = 11.9;
+    if (v) {
+      try { v.preservesPitch = true; } catch (e) {}
+      (function pace() {
+        if (next) return;
+        var t = v.currentTime, r = 1;
+        for (var i = 0; i < RATES.length; i++) if (t < RATES[i][0]) { r = RATES[i][1]; break; }
+        if (v.playbackRate !== r) v.playbackRate = r;
+        if (t >= CUT) { afterFilm(); return; }
+        requestAnimationFrame(pace);
+      })();
+    }
     function failed() { if (next) return; next = true; plainFade(dest, art); }
     if (v && v.error) failed();                                // already failed while preloading
     else if (v) v.addEventListener("error", failed, { once: true });
@@ -491,9 +505,9 @@
     setTimeout(function () {
       document.body.classList.add("ui-flyoff");                 // ticket lifts and swoops off
       if (window.CrystalStage) window.CrystalStage.center();    // film eases back to full frame meanwhile
-    }, 420);   // ticket lifts and swoops off
+    }, 250);   // ticket lifts and swoops off (0.8s)
     var useVideo = window.CrystalDepart && !(intro && (intro.failed || (intro.video && intro.video.error)));
-    setTimeout(function () { if (useVideo) departVideo(dest); else departCSS(dest); }, 1300);
+    setTimeout(function () { if (useVideo) departVideo(dest); else departCSS(dest); }, 850);
   }
   board.addEventListener("click", boardTrain);
 
