@@ -461,7 +461,7 @@
     fade.classList.add("on");
     setTimeout(function () { goWorld(dest); }, 860);
   }
-  // Emily's portal clip (assets/portal.mp4, 6.0s, already 1.25x, no audio): crossfades in over the departing train,
+  // Emily's portal clip (assets/portal.mp4, 5.0s: source 1.3-3.5s + 4.0-8.04s at 1.25x, no audio): crossfades in over the departing train,
   // and its bright white-blue ending dissolves into the world painting. tunnel.js is the fallback if it can't play.
   var portal = document.getElementById("portal");
   function preloadPortal() {
