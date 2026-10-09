@@ -285,6 +285,9 @@
     60% { transform: translate(-4px, 80px) rotate(300deg) scaleY(.9); opacity: 1; }
     100% { transform: translate(5px, 170px) rotate(480deg) scaleY(.5); opacity: 0; }
   }
+  .portal { position: absolute; inset: 0; width: 1366px; height: 768px; object-fit: cover; opacity: 0; pointer-events: none;
+    z-index: 880; transition: opacity .3s ease; background: #071426; }
+  .portal.on { opacity: 1; }
   .depart-fade {
     position: absolute; inset: 0; z-index: 900; pointer-events: none; opacity: 0; transition: opacity .7s ease;
     background: radial-gradient(120% 90% at 50% 40%, #f3d9a6, #d9a466 70%, #b77a44);
@@ -595,6 +598,7 @@
     <span class="small">Tap to start</span>
   </button>
 </div>
+<video class="portal" id="portal" muted playsinline preload="none" aria-hidden="true"></video>
 <div class="depart-fade" id="departFade" aria-hidden="true"></div>
 </div>
 <script src="stage-fit.js"></script>

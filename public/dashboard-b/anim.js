@@ -461,21 +461,52 @@
     fade.classList.add("on");
     setTimeout(function () { goWorld(dest); }, 860);
   }
+  // Emily's portal clip (assets/portal.mp4, 6.0s, already 1.25x, no audio): crossfades in over the departing train,
+  // and its bright white-blue ending dissolves into the world painting. tunnel.js is the fallback if it can't play.
+  var portal = document.getElementById("portal");
+  function preloadPortal() {
+    if (portal && !portal.getAttribute("src")) { portal.preload = "auto"; portal.src = "assets/portal.mp4"; try { portal.load(); } catch (e) {} }
+  }
+  function runPortal(dest, art) {
+    var done = false, faded = false;
+    function tunnel() {
+      if (done) return; done = true;
+      if (portal) portal.classList.remove("on");
+      if (window.CrystalTunnel) window.CrystalTunnel.run({ art: art, onDone: function () { goWorld(dest); } });
+      else plainFade(dest, art);
+    }
+    if (!portal || portal.error) { tunnel(); return; }
+    preloadPortal();
+    portal.addEventListener("error", tunnel, { once: true });
+    portal.addEventListener("playing", function () { if (!done) portal.classList.add("on"); }, { once: true });
+    portal.addEventListener("timeupdate", function tu() {
+      if (done || faded) return;
+      if (portal.duration && portal.currentTime >= portal.duration - 0.85) {     // light fills the frame: world fades in from it
+        faded = true; done = true;
+        fade.style.backgroundImage = 'url("' + art + '")';
+        fade.classList.add("to-world"); void fade.offsetWidth; fade.classList.add("on");
+        setTimeout(function () { goWorld(dest); }, 860);
+      }
+    });
+    var p = portal.play();
+    if (p && p.catch) p.catch(tunnel);
+    setTimeout(function () { if (!done && (portal.paused || portal.currentTime < 0.05)) tunnel(); }, 1500); // stalled
+  }
   function departVideo(dest) {
     var art = worldArt(dest), next = false, v = null;
     prefetch(dest, art);
     function afterFilm() {
       if (next) return; next = true;
-      if (reduce || !window.CrystalTunnel) { plainFade(dest, art); return; }
-      window.CrystalTunnel.run({ art: art, onDone: function () { goWorld(dest); } });
+      if (reduce) { plainFade(dest, art); return; }
+      runPortal(dest, art);
       setTimeout(function () { if (v) { try { v.pause(); } catch (e) {} } }, 300);
     }
     window.addEventListener("crystal-depart-done", afterFilm, { once: true });
     window.CrystalDepart.play();
     v = window.CrystalDepart.video();
     // Pacing: walk-to-train a little brisk, "Let's go!" and the wave at true speed, the idle hold and the
-    // pull-away quicker; cut to the tunnel once the last carriage is mostly off-screen (film 11.9s).
-    var RATES = [[6.3, 1.4], [7.2, 1], [9.0, 1.6], [10.75, 1], [99, 1.6]], CUT = 11.9;
+    // pull-away quicker; cut to Emily's portal clip the moment the engine is off-screen (film 10.75s, right after the wave).
+    var RATES = [[6.3, 1.4], [7.2, 1], [9.0, 1.6], [99, 1]], CUT = 10.75;   // engine has left frame by 10.7s
     if (v) {
       try { v.preservesPitch = true; } catch (e) {}
       (function pace() {
@@ -500,6 +531,7 @@
     var dest = selected.getAttribute("data-dest") || "sandstone-canyon/";
     board.blur();
     if (window.CrystalDepart && window.CrystalDepart.preload) window.CrystalDepart.preload();
+    preloadPortal();
     punchHole(selected);                                       // conductor's punch on the chosen stop
     if (reduce) { setTimeout(function () { location.href = dest; }, 450); return; }
     setTimeout(function () {
