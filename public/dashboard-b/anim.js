@@ -391,9 +391,11 @@
 
   function punchHole(btn) {
     // punch a real hole (mask cut) beside the chosen stop's medal, where finished stops carry their punch
+    // rects are in screen px; the stage may be scaled (stage-fit.js), so convert to stage px
+    var sf = window.StageFit, k = (sf && sf.scale) || 1;
     var medal = btn.querySelector(".medal").getBoundingClientRect();
     var mr = main.getBoundingClientRect();
-    var cx = medal.right - 1 - mr.left, cy = medal.top + 47 - mr.top;
+    var cx = (medal.right - mr.left) / k - 1, cy = (medal.top - mr.top) / k + 47;
     var ring = document.createElement("span");
     ring.className = "punchring"; ring.style.left = cx + "px"; ring.style.top = cy + "px";
     main.appendChild(ring);
@@ -411,8 +413,9 @@
     setTimeout(function () {
       var chad = document.createElement("span");
       chad.className = "chad";
-      chad.style.left = (mr.left + cx) + "px"; chad.style.top = (mr.top + cy) + "px";
-      document.body.appendChild(chad);
+      var ml = sf ? sf.toLocal(mr.left, mr.top) : { x: mr.left, y: mr.top };
+      chad.style.left = (ml.x + cx) + "px"; chad.style.top = (ml.y + cy) + "px";
+      (document.getElementById("frame") || document.body).appendChild(chad);
       setTimeout(function () { chad.remove(); }, 1300);
     }, 120);
   }

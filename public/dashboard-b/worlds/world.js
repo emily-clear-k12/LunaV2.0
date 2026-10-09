@@ -9,17 +9,18 @@
   var reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   var NS = "http://www.w3.org/2000/svg";
 
+  var FRAME = (window.StageFit && window.StageFit.frame()) || document.body;
   function el(tag, cls, parent) { var e = document.createElement(tag); if (cls) e.className = cls; if (parent) parent.appendChild(e); return e; }
 
   /* ---------- scene ---------- */
-  var scene = el("div", "scene", document.body);
+  var scene = el("div", "scene", FRAME);
   var stage = el("div", "stage", scene); stage.id = "stage";
   var art = el("img", "art", stage); art.alt = W.name + " — " + (W.sub || "");
   var spotsLayer = el("div", "spots", stage); spotsLayer.style.cssText = "inset:0";
   var canvas = null;
 
   /* ---------- HUD: back + title ---------- */
-  var hud = el("header", "hud", document.body);
+  var hud = el("header", "hud", FRAME);
   var back = el("a", "back frost", hud); back.href = "../";
   back.innerHTML = '<svg viewBox="0 0 20 20" aria-hidden="true"><path d="M15 10H5M9 5.5 4.5 10 9 14.5" fill="none" stroke="#4a2e1a" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>Station';
   back.setAttribute("aria-label", "Back to the Crystal Railways station");
@@ -27,7 +28,7 @@
   title.innerHTML = "<h1>Astra’s Writing Adventure</h1><p></p>";
   var sub = title.querySelector("p");
 
-  var toast = el("div", "toast frost", document.body); toast.setAttribute("role", "status");
+  var toast = el("div", "toast frost", FRAME); toast.setAttribute("role", "status");
   var toastT = 0;
   function say(msg) { toast.textContent = msg; toast.classList.add("on"); clearTimeout(toastT); toastT = setTimeout(function () { toast.classList.remove("on"); }, 1800); }
 
@@ -54,7 +55,7 @@
   showVariant(cur);
 
   if (variants.length > 1) {
-    var tg = el("div", "toggle frost", document.body);
+    var tg = el("div", "toggle frost", FRAME);
     tg.setAttribute("role", "group"); tg.setAttribute("aria-label", "Number of lessons");
     el("span", "", tg).textContent = "LESSONS";
     variants.forEach(function (v) {
@@ -101,7 +102,7 @@
     stage.insertBefore(canvas, spotsLayer);
     var ctx = canvas.getContext("2d"), scale = 1, dpr = 1;
     var resize = function () {
-      var r = stage.getBoundingClientRect(); scale = r.width / 1280; dpr = Math.min(window.devicePixelRatio || 1, 1.25);
+      var r = { width: stage.offsetWidth, height: stage.offsetHeight }; scale = r.width / 1280; dpr = Math.min(window.devicePixelRatio || 1, 1.25);
       canvas.width = Math.round(r.width * dpr); canvas.height = Math.round(r.height * dpr);
     };
     resize(); window.addEventListener("resize", resize);

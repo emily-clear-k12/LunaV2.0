@@ -1,0 +1,14 @@
+/* Plan B fixed design stage: every Plan B page (station + six worlds) is laid out on one 1366x768 stage, in stage pixels.
+   stage-fit.js scales the whole stage uniformly to fit the window below the view switcher and letterboxes the rest,
+   so the composition is identical on any screen (scale 1 on a 1366x768 stage; never cropped). */
+html, body { margin: 0; height: 100%; overflow: hidden; }
+html { background: #0b0f0c; }
+body { background: #0b0f0c !important; }
+html.vs-on body { padding-top: 0 !important; }
+.stage-frame {
+  position: fixed; left: 0; top: 0; width: 1366px; height: 768px; overflow: hidden;
+  transform-origin: 0 0; transform: scale(1);   /* always a containing block, so position:fixed children stay on the stage */
+  background: #1a2318;
+}
+/* everything inside sits on the stage, not under the switcher */
+html.vs-on .stage-frame .scene { top: 0; }

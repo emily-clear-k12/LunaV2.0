@@ -9,6 +9,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Courier+Prime:wght@400;700&display=swap" rel="stylesheet" />
 <link rel="stylesheet" href="../demo/switcher.css" />
+<link rel="stylesheet" href="stage-fit.css" />
 <style>
   /* Plan B "Crystal Railways": the right panel is a vintage rail ticket. Tuned for 1366x768 (scene sits under the 36px view switcher). */
   :root {
@@ -39,7 +40,7 @@
   /* stage = the 1280x720 painting, cover-fitted and top-aligned (same framing as the old object-fit: cover; object-position: 50% 0) */
   .stage {
     position: absolute; left: 50%; top: 0; transform: translateX(-50%);
-    width: max(100cqw, calc(100cqh * 16 / 9)); aspect-ratio: 16 / 9;
+    width: 1366px; height: 768px;   /* fixed design stage */
   }
   .stage > * { position: absolute; }
   .stage img { display: block; width: 100%; height: auto; }
@@ -97,9 +98,7 @@
   }
 
   /* ---------- View switcher (../demo/switcher.js adds html.vs-on and a 36px bar) ---------- */
-  html.vs-on .scene { top: var(--vs-h); }
-  html.vs-on .title { top: calc(var(--vs-h) + 8px); }
-  html.vs-on .ticket { top: calc(50% + var(--vs-h) / 2); }
+  /* the switcher sits above the 1366x768 stage (stage-fit.css/js), so nothing inside is offset for it */
 
   /* ---------- Title ---------- */
   .title { position: absolute; left: 14px; top: 8px; z-index: 3; display: flex; align-items: center; gap: 9px; }
@@ -368,7 +367,6 @@
 
   /* ---------- Start gate: the intro waits for a tap so it can play from 0 with sound (speech in sync) ---------- */
   .intro-gate { position: fixed; inset: 0; z-index: 60; display: grid; place-items: center; transition: opacity .45s ease; }
-  html.vs-on .intro-gate { top: var(--vs-h); }
   .intro-gate.gone { opacity: 0; pointer-events: none; }
   .intro-gate[hidden] { display: none; }
   .start-btn {
@@ -465,6 +463,7 @@
   </defs>
 </svg>
 
+<div class="stage-frame" id="frame">
 <div class="scene" aria-hidden="true">
   <canvas class="vfill" id="vfill" width="160" height="90"></canvas>
   <div class="stage" id="stage">
@@ -564,6 +563,8 @@
   </button>
 </div>
 <div class="depart-fade" id="departFade" aria-hidden="true"></div>
+</div>
+<script src="stage-fit.js"></script>
 <script src="intro-controller.js"></script>
 <script src="anim.js"></script>
 </body>
