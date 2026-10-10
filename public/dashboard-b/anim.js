@@ -443,6 +443,7 @@
   // world's painting, and the world page opens already showing that painting (only its labels fade in).
   function worldArt(dest) {
     var slug = dest.replace(/\/.*$/, "");
+    if (slug === "sandstone-canyon") return "sandstone-canyon/assets/poster.jpg";   // first frame of the animated world
     return "assets/worlds/" + (slug === "frostpine-peak" ? "frostpine-peak-5" : slug) + ".jpg";
   }
   function prefetch(dest, art) {

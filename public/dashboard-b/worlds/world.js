@@ -38,6 +38,17 @@
   /* ---------- hotspots ---------- */
   function showVariant(v) {
     art.src = v.art;
+    // animated background (static camera, seamless loop); the still/poster underneath is the reduced-motion and error fallback
+    var oldVid = stage.querySelector("video.art"); if (oldVid) oldVid.remove();
+    if (v.video && !reduce) {
+      var vid = document.createElement("video");
+      vid.className = "art artvid"; vid.muted = true; vid.defaultMuted = true; vid.loop = true; vid.autoplay = true;
+      vid.playsInline = true; vid.setAttribute("playsinline", ""); vid.setAttribute("muted", ""); vid.setAttribute("aria-hidden", "true");
+      vid.preload = "auto"; vid.poster = v.art; vid.src = v.video;
+      vid.addEventListener("error", function () { vid.remove(); });
+      stage.insertBefore(vid, art.nextSibling);
+      var pr = vid.play(); if (pr && pr.catch) pr.catch(function () {});
+    }
     spotsLayer.innerHTML = "";
     v.spots.forEach(function (s, i) {
       var b = el("button", "hs" + (s[4] === "below" ? " below" : ""), spotsLayer);
