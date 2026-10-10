@@ -1,0 +1,179 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Plan D · Forest Guides · Astra’s Writing Adventure</title>
+<link rel="icon" type="image/svg+xml" href="../favicon.svg" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="../demo/switcher.css" />
+<style>
+  /* Plan D "Forest Guides": treehouse porch + numbered signpost. Full-bleed scene + frosted cream overlays.
+     Tuned for 1366x768. Panels sit in the open tree (top left) and sky (top right), clear of every character and the signpost. */
+  :root {
+    --frost: rgba(255, 248, 235, .82);
+    --brown: #4a2e1a;
+    --brown-soft: #7a5638;
+    --gold: #d9a93f;
+    --gold-deep: #94690f;
+    --display: "Baloo 2", "Nunito", "Trebuchet MS", system-ui, sans-serif;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; width: 100%; height: 100%; overflow: hidden; }
+  body { font-family: var(--display); color: var(--brown); -webkit-font-smoothing: antialiased; background: #2a3320; }
+
+  /* ---------- Scene: viewport area under the view switcher ---------- */
+  .scene { position: fixed; left: 0; right: 0; bottom: 0; top: 0; overflow: hidden; container-type: size; }
+  /* View switcher (../demo/switcher.js adds html.vs-on and a 36px bar) */
+  html.vs-on .scene { top: var(--vs-h); }
+  html.vs-on .top { top: calc(var(--vs-h) + 12px); }
+  html.vs-on .go { top: calc(var(--vs-h) + 12px); }
+
+  /* Stage = exactly the "cover" box of the 16:9 art (1280x720), so hotspots stay glued to the painted arrows */
+  .stage {
+    position: absolute; left: 50%; top: 50%;
+    width: max(100cqw, 177.7778cqh); height: max(100cqh, 56.25cqw);
+    transform: translate(-50%, -50%);
+    background: url("assets/scene.jpg") center / 100% 100% no-repeat;
+  }
+  .fx { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; overflow: visible; }
+  .fx .halo { mix-blend-mode: screen; }
+  .fx .lift { mix-blend-mode: soft-light; }
+  .fx .rim  { mix-blend-mode: screen; }
+
+  /* Arrow hotspots: clip-path polygons fitted to each painted arrow (static; no looping animation) */
+  .hot {
+    position: absolute; margin: 0; padding: 0; border: 0; cursor: pointer;
+    background: rgba(255, 244, 214, 0); mix-blend-mode: screen;
+    transition: background-color .18s ease;
+  }
+  .hot:hover { background: rgba(255, 244, 214, .16); }
+  .hot:focus-visible { outline: none; background: rgba(255, 244, 214, .26); }
+  .hot.is-current:hover { background: rgba(255, 236, 180, .10); }
+
+  /* ---------- Frosted UI ---------- */
+  .frost {
+    background: var(--frost);
+    -webkit-backdrop-filter: blur(10px) saturate(1.1); backdrop-filter: blur(10px) saturate(1.1);
+    border: 1px solid rgba(255, 255, 255, .85);
+    border-radius: 16px;
+    box-shadow: 0 6px 18px rgba(30, 20, 8, .28), 0 1px 2px rgba(30, 20, 8, .18);
+  }
+  /* top left, over the big tree (above the owl and raccoon) */
+  .top {
+    position: absolute; top: 12px; left: 14px; width: 440px;
+    display: grid; grid-template-columns: 1fr; gap: 8px;
+  }
+  .title {
+    justify-self: start;
+    display: flex; align-items: center; gap: 9px;
+    padding: 5px 16px 4px 12px; border-radius: 999px;
+  }
+  .title svg { width: 18px; height: 24px; flex: none; filter: drop-shadow(0 0 4px rgba(120, 200, 255, .7)); }
+  .title h1 { margin: 0; font-size: 25px; font-weight: 800; line-height: 1.15; letter-spacing: .01em; white-space: nowrap; }
+  .card { padding: 8px 14px 10px; }
+  .lbl {
+    margin: 0; display: flex; align-items: center; gap: 6px;
+    font-size: 13.5px; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; line-height: 1.2; color: var(--gold-deep);
+  }
+  .lbl svg { width: 14px; height: 14px; flex: none; }
+  .txt { margin: 3px 0 0; font-size: 17px; font-weight: 700; line-height: 1.22; color: var(--brown); }
+
+  /* top right, in the open sky between the signpost and the right-hand tree */
+  .go {
+    position: absolute; right: 14px; top: 12px;
+    display: flex; align-items: center; gap: 14px;
+    padding: 8px 8px 8px 16px; border-radius: 20px;
+  }
+  .world .kicker { margin: 0; display: flex; align-items: center; gap: 6px; font-size: 13.5px; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; line-height: 1.2; color: var(--gold-deep); }
+  .world .kicker svg { width: 15px; height: 15px; flex: none; filter: drop-shadow(0 0 3px rgba(255, 196, 60, .8)); }
+  .world .place { margin: 0; font-size: 23px; font-weight: 800; line-height: 1.1; white-space: nowrap; }
+  .world .lesson { margin: 1px 0 0; font-size: 16px; font-weight: 700; line-height: 1.2; color: var(--brown-soft); white-space: nowrap; }
+  .hop {
+    display: flex; align-items: center; gap: 10px;
+    height: 54px; padding: 0 16px 0 20px; border-radius: 16px; cursor: pointer;
+    font: inherit; font-size: 23px; font-weight: 800; letter-spacing: .01em; color: #fffaf0; white-space: nowrap;
+    text-shadow: 0 1px 0 rgba(90, 52, 14, .6);
+    background: linear-gradient(180deg, #edc25c 0%, #d39a33 55%, #b47a22 100%);
+    border: 2px solid #fff3d2;
+    box-shadow: 0 0 0 2px #8a5a1c, 0 5px 0 #6e4614, 0 9px 16px rgba(40, 22, 6, .4), inset 0 2px 0 rgba(255, 255, 255, .45);
+  }
+  .hop svg { width: 22px; height: 22px; }
+  .hop:hover { filter: brightness(1.05); }
+  .hop:active { translate: 0 3px; box-shadow: 0 0 0 2px #8a5a1c, 0 2px 0 #6e4614, 0 4px 8px rgba(40, 22, 6, .4), inset 0 2px 0 rgba(255, 255, 255, .45); }
+</style>
+</head>
+<body>
+<script src="../demo/switcher.js" data-page="dashboard-d"></script>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <linearGradient id="gLit" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#bfe9ff"/><stop offset=".45" stop-color="#5bb4f5"/><stop offset="1" stop-color="#1f5fbf"/>
+    </linearGradient>
+    <symbol id="crystal-lit" viewBox="0 0 24 32">
+      <polygon points="12,1 22,10 12,31 2,10" fill="url(#gLit)" stroke="#1b4f9e" stroke-width="1.2" stroke-linejoin="round"/>
+      <polygon points="12,1 22,10 12,13 2,10" fill="#d9f3ff" opacity=".75"/>
+      <polyline points="2,10 12,13 22,10" fill="none" stroke="#1b4f9e" stroke-width=".9" opacity=".6"/>
+      <line x1="12" y1="13" x2="12" y2="31" stroke="#ffffff" stroke-width=".9" opacity=".45"/>
+    </symbol>
+  </defs>
+</svg>
+
+<div class="scene">
+<main class="stage" aria-label="Treehouse porch signpost: pick a world">
+  <!-- Coordinates below are in the art's own pixels (1280x720); the stage is the art's cover box. -->
+  <svg class="fx" viewBox="0 0 1280 720" preserveAspectRatio="none" aria-hidden="true">
+    <defs>
+      <filter id="fHalo" x="-60%" y="-120%" width="220%" height="340%"><feGaussianBlur stdDeviation="9"/></filter>
+      <filter id="fSoft" x="-20%" y="-40%" width="140%" height="180%"><feGaussianBlur stdDeviation="1.5"/></filter>
+      <mask id="mOut" maskUnits="userSpaceOnUse" x="0" y="0" width="1280" height="720">
+        <rect width="1280" height="720" fill="#fff"/>
+        <polygon points="820,414 819,370 809,363 798,364 795,370 706,366 680,389 680,394 707,419 818,419" fill="#000" filter="url(#fSoft)"/>
+      </mask>
+      <radialGradient id="gLift" cx=".5" cy=".45" r=".7">
+        <stop offset="0" stop-color="#fff6d6"/><stop offset="1" stop-color="#ffd978"/>
+      </radialGradient>
+    </defs>
+    <!-- soft, static golden glow on arrow 5 (the yellow star = current world); halo kept off the arrow face so the star stays crisp -->
+    <g class="halo" mask="url(#mOut)">
+      <polygon points="820,414 819,370 809,363 798,364 795,370 706,366 680,389 680,394 707,419 818,419" fill="#ffb935" stroke="#ffc94f" stroke-width="15" stroke-linejoin="round" filter="url(#fHalo)" opacity=".95"/>
+    </g>
+    <!-- slight brightness lift on the arrow face -->
+    <polygon class="lift" points="820,414 819,370 809,363 798,364 795,370 706,366 680,389 680,394 707,419 818,419" fill="url(#gLift)" opacity=".85"/>
+    <!-- thin warm rim -->
+    <polygon class="rim" points="820,414 819,370 809,363 798,364 795,370 706,366 680,389 680,394 707,419 818,419" fill="none" stroke="#ffe39a" stroke-width="2" stroke-linejoin="round" opacity=".75" filter="url(#fSoft)"/>
+  </svg>
+  <button class="hot" type="button" data-world="shell" data-arrow="1" aria-label="Arrow 1: Shell world (bear's world)" style="left:53.516%;top:11.528%;width:12.266%;height:8.889%;clip-path:polygon(0.6% 6.2%, 0.0% 85.9%, 2.5% 92.2%, 25.5% 95.3%, 26.1% 87.5%, 87.9% 100.0%, 100.0% 71.9%, 100.0% 64.1%, 84.1% 23.4%, 3.8% 0.0%)"></button>
+  <button class="hot" type="button" data-world="leaf" data-arrow="2" aria-label="Arrow 2: Maple Leaf world (raccoon's world)" style="left:53.828%;top:22.083%;width:13.203%;height:8.194%;clip-path:polygon(0.0% 8.5%, 0.6% 88.1%, 3.6% 94.9%, 56.8% 91.5%, 57.4% 98.3%, 85.2% 100.0%, 100.0% 59.3%, 100.0% 52.5%, 85.2% 10.2%, 4.1% 0.0%)"></button>
+  <button class="hot" type="button" data-world="gem" data-arrow="3" aria-label="Arrow 3: Gem world (owl's world)" style="left:54.375%;top:31.250%;width:12.578%;height:8.750%;clip-path:polygon(0.0% 7.9%, 0.0% 81.0%, 2.5% 87.3%, 32.3% 85.7%, 54.7% 90.5%, 55.3% 96.8%, 83.9% 100.0%, 100.0% 65.1%, 100.0% 57.1%, 85.7% 17.5%, 4.3% 0.0%)"></button>
+  <button class="hot" type="button" data-world="carrot" data-arrow="4" aria-label="Arrow 4: Carrot world (fox's world)" style="left:53.438%;top:40.972%;width:11.484%;height:8.056%;clip-path:polygon(0.0% 41.4%, 0.0% 50.0%, 17.7% 94.8%, 43.5% 91.4%, 97.3% 100.0%, 100.0% 93.1%, 98.0% 12.1%, 17.7% 0.0%)"></button>
+  <button class="hot is-current" type="button" data-world="star" data-arrow="5" aria-current="true" aria-label="Arrow 5: Starlight Observatory (squirrel's world) — you are here" style="left:53.125%;top:50.417%;width:10.938%;height:7.778%;clip-path:polygon(100.0% 91.1%, 99.3% 12.5%, 92.1% 0.0%, 84.3% 1.8%, 82.1% 12.5%, 18.6% 5.4%, 0.0% 46.4%, 0.0% 55.4%, 19.3% 100.0%, 98.6% 100.0%)"></button>
+  <button class="hot" type="button" data-world="cupcake" data-arrow="6" aria-label="Arrow 6: Cupcake world (rabbit's world)" style="left:53.438%;top:60.417%;width:10.781%;height:7.083%;clip-path:polygon(0.0% 37.3%, 0.0% 47.1%, 19.6% 98.0%, 97.1% 100.0%, 99.3% 92.2%, 100.0% 9.8%, 97.8% 3.9%, 13.8% 0.0%)"></button>
+</main>
+</div>
+
+<div class="top">
+  <header class="title frost">
+    <svg aria-hidden="true"><use href="#crystal-lit"/></svg>
+    <h1>Astra’s Writing Adventure</h1>
+  </header>
+  <section class="card frost" aria-label="Today's goal">
+    <p class="lbl"><svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="6.2" fill="none" stroke="#d9a93f" stroke-width="2"/><circle cx="8" cy="8" r="2.6" fill="#d9a93f"/></svg>Today’s goal</p>
+    <p class="txt">Back up my opinion with strong, specific reasons.</p>
+  </section>
+</div>
+
+<aside class="go frost" aria-label="Next world">
+  <div class="world">
+    <p class="kicker"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 1.2 10.1 5.6 14.9 6.2 11.4 9.5 12.3 14.3 8 11.9 3.7 14.3 4.6 9.5 1.1 6.2 5.9 5.6Z" fill="#f2bf2f" stroke="#b9860f" stroke-width=".9" stroke-linejoin="round"/></svg>Next world</p>
+    <p class="place">Starlight Observatory</p>
+    <p class="lesson">Lesson 3: Details &amp; Evidence</p>
+  </div>
+  <button class="hop" type="button">Let’s go!
+    <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M4 10h11M11 5.5 15.5 10 11 14.5" fill="none" stroke="#fffaf0" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+  </button>
+</aside>
+</body>
+</html>

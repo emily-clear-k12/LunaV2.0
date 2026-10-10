@@ -1,0 +1,792 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<script src="../switcher.js" data-page="lesson"></script>
+<title>Details and Evidence Trail</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Nunito+Sans:opsz,wght@6..12,400;6..12,600;6..12,700;6..12,800&family=Patrick+Hand&family=Special+Elite&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="astra-look.css">
+<link rel="stylesheet" href="astra-steps.css">
+<link rel="stylesheet" href="../switcher.css">
+<style>
+/* Layout: the Proof Hollow fills the stage and moves as the lesson moves; the lesson card floats over its right side
+   (stacks under the stage on narrow screens). One twilight world, dark in every theme. */
+:root{
+  --night:#120f2a; --dusk:#221a46; --glass:rgba(22,17,52,.88); --line:#3b3272;
+  --ink:#f3efff; --muted:#b0a8d6; --gold:#ffd27a; --crystal:#86d6ff; --violet:#c7a6ff;
+  --good:#7fe0a8; --try:#ffb38a;
+  --display:"Baloo 2","Trebuchet MS",system-ui,sans-serif;
+  --body:"Nunito Sans",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --facet:polygon(50% 0%,100% 6%,100% 94%,50% 100%,0% 94%,0% 6%);
+  --shut:polygon(50% 50%,50% 50%,50% 50%,50% 50%,50% 50%,50% 50%);
+  color-scheme:dark;
+}
+@property --spin{syntax:'<angle>';inherits:false;initial-value:0deg}
+[hidden]{display:none!important}
+html,body{background:var(--night);color:var(--ink)}
+body{font-family:var(--body);font-size:15px;line-height:1.5;padding-inline:16px;padding-block:22px 44px}
+.wrap{max-width:1180px;margin:0 auto;display:flex;flex-direction:column;gap:14px}
+.eyebrow{font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--gold);font-weight:800;margin:0}
+h1{font-family:var(--display);font-weight:800;font-size:clamp(28px,4.6vw,40px);line-height:1.02;margin:2px 0 4px;text-wrap:balance}
+.lede{color:var(--muted);max-width:72ch;margin:0}
+
+.stage-wrap{position:relative}
+.stage{position:relative;width:100%;aspect-ratio:16/9.6;min-height:560px;border-radius:20px;overflow:hidden;background:var(--dusk);box-shadow:0 0 0 1px var(--line),0 24px 70px -28px #000}
+.stage canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
+#scene{transition:filter .8s ease}
+.stage.dim #scene{filter:blur(5px) brightness(.42) saturate(.9)}
+#fx{pointer-events:none;z-index:3}
+
+.card{position:absolute;z-index:5;top:16px;right:16px;bottom:16px;width:min(420px,42%);display:flex;flex-direction:column;
+  background:var(--glass);border:1px solid var(--line);border-radius:18px;backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
+  box-shadow:0 20px 50px -20px #000;transition:opacity .45s ease,transform .45s ease}
+.card.away{opacity:0;transform:translateX(24px);pointer-events:none}
+.card-head{padding:14px 18px 12px;border-bottom:1px solid var(--line);display:flex;flex-direction:column;gap:10px}
+.lesson-name{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+.lesson-name b{font-family:var(--display);font-size:19px;font-weight:800}
+.lesson-name span{color:var(--muted);font-size:13px;font-variant-numeric:tabular-nums}
+.trail{list-style:none;margin:0;padding:0;display:flex;align-items:center;justify-content:space-between;position:relative}
+.trail::before{content:"";position:absolute;left:6px;right:6px;top:50%;height:3px;border-radius:3px;background:var(--line);transform:translateY(-50%)}
+.trail .fill{position:absolute;left:6px;top:50%;height:3px;border-radius:3px;background:var(--gold);transform:translateY(-50%);transition:width .8s ease}
+.trail li{position:relative;z-index:1;width:14px;height:14px;border-radius:50%;background:var(--dusk);border:2px solid var(--line);display:grid;place-items:center;color:var(--muted)}
+.trail li.g{width:18px;height:18px}
+.trail li.done{background:var(--gold);border-color:var(--gold);color:var(--night)}
+.trail li.now{border-color:var(--gold);color:var(--gold);box-shadow:0 0 0 4px rgba(255,210,122,.2)}
+.card-body{flex:1;overflow:auto;padding:16px 18px 8px;display:flex;flex-direction:column;gap:12px;min-height:0}
+.kind{font-size:12px;letter-spacing:.12em;text-transform:uppercase;font-weight:800;color:var(--crystal);margin:0}
+.prompt{font-family:var(--display);font-size:20px;line-height:1.2;font-weight:700;margin:0;text-wrap:balance}
+.dir{margin:0;font-weight:600}
+.box{background:rgba(255,255,255,.05);border:1px solid var(--line);border-radius:12px;padding:10px 12px;line-height:1.6}
+.box h4{margin:0 0 4px;font-family:var(--display);font-size:15px;color:var(--gold);font-weight:700}
+.box p{margin:0 0 6px}.box p:last-child{margin:0}
+.claim{background:rgba(255,210,122,.1);border:1px solid rgba(255,210,122,.4);border-radius:12px;padding:9px 12px;font-weight:700}
+.claim small{display:block;font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--gold);margin-bottom:2px}
+.mark{background:rgba(255,210,122,.25);border-radius:4px;padding:1px 2px}
+.field{display:flex;flex-direction:column;gap:4px}
+.field label{font-weight:800;font-size:14px}
+.field label span{color:var(--muted);font-weight:600}
+textarea,input[type=text]{width:100%;box-sizing:border-box;background:rgba(255,255,255,.06);border:1.5px solid var(--line);border-radius:10px;color:var(--ink);font:600 15px/1.45 var(--body);padding:9px 11px;resize:vertical}
+textarea:focus,input:focus,select:focus{outline:2px solid var(--crystal);outline-offset:1px}
+select{width:100%;background:#2a2357;color:var(--ink);border:1.5px solid var(--line);border-radius:10px;font:600 14px var(--body);padding:8px}
+.choices{display:flex;flex-direction:column;gap:8px}
+.choice{text-align:left;width:100%;border:1.5px solid var(--line);background:rgba(255,255,255,.04);color:var(--ink);font:600 15px/1.4 var(--body);padding:10px 12px;border-radius:12px;cursor:pointer;display:flex;gap:10px;align-items:flex-start}
+.choice .tick{flex:none;width:20px;height:20px;border-radius:6px;border:2px solid var(--muted);margin-top:1px;display:grid;place-items:center;font-size:13px;color:var(--night)}
+.choice[aria-pressed="true"]{border-color:var(--violet);background:rgba(199,166,255,.12)}
+.choice[aria-pressed="true"] .tick{background:var(--violet);border-color:var(--violet)}
+.choice.right{border-color:var(--good);background:rgba(127,224,168,.12)}
+.choice.wrong{border-color:var(--try);background:rgba(255,179,138,.1)}
+.choice:disabled{cursor:default}
+.pool{display:flex;flex-direction:column;gap:7px}
+.chip{border:1.5px solid var(--line);background:rgba(255,255,255,.06);color:var(--ink);font:600 14px/1.35 var(--body);padding:8px 10px;border-radius:10px;cursor:grab;text-align:left;touch-action:none}
+.chip.sel{border-color:var(--violet);box-shadow:0 0 0 3px rgba(199,166,255,.25)}
+.chip.right{border-color:var(--good)}
+.chip.wrong{border-color:var(--try)}
+.bins{display:flex;flex-direction:column;gap:8px}
+.bin{border:1.5px dashed var(--line);border-radius:12px;padding:8px;min-height:44px;display:flex;flex-direction:column;gap:6px;transition:border-color .2s,background .2s}
+.bin.over,.bin.ready{border-color:var(--violet);background:rgba(199,166,255,.08)}
+.bin > b{font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--gold)}
+.passage .s{cursor:pointer;border-radius:5px;padding:1px 2px;box-decoration-break:clone;-webkit-box-decoration-break:clone}
+.passage .s:hover{background:rgba(199,166,255,.18)}
+.passage .s[aria-pressed="true"]{background:rgba(199,166,255,.32)}
+.passage .s.right{background:rgba(127,224,168,.3)}
+.passage .s.wrong{background:rgba(255,179,138,.25)}
+.feedback{margin:0;border-radius:12px;padding:10px 12px;font-weight:600;font-size:14.5px}
+.feedback.good{background:rgba(127,224,168,.12);color:#c9f5dc}
+.feedback.try{background:rgba(255,179,138,.12);color:#ffd9c4}
+.feedback.note{background:rgba(134,214,255,.1);color:#d4efff}
+.feedback ul{margin:6px 0 0;padding-left:18px}
+.card-foot{padding:12px 18px 16px;display:flex;gap:10px;align-items:center}
+.go{flex:1;border:0;cursor:pointer;font:800 18px/1 var(--display);color:var(--night);background:var(--gold);padding:13px 18px 11px;border-radius:999px;box-shadow:0 8px 22px -10px #000}
+.go:disabled{background:#4a4176;color:#8f86b8;cursor:not-allowed;box-shadow:none}
+.check{border:1.5px solid var(--gold);background:transparent;color:var(--gold);font:800 16px/1 var(--display);padding:12px 18px 10px;border-radius:999px;cursor:pointer}
+.check:disabled{opacity:.4;cursor:not-allowed}
+.end-stats{display:flex;gap:10px}
+.end-stats div{flex:1;border:1px solid var(--line);border-radius:12px;padding:10px;text-align:center}
+.end-stats b{display:block;font-family:var(--display);font-size:26px;color:var(--gold);font-variant-numeric:tabular-nums;line-height:1.1}
+.end-stats span{font-size:12px;color:var(--muted)}
+
+.portal{position:absolute;left:50%;top:50%;height:92%;aspect-ratio:9/16;max-width:94%;z-index:6;
+  transform:translate(-50%,-50%) scale(.55) rotate(-10deg);opacity:0;pointer-events:none;
+  transition:transform .85s cubic-bezier(.2,.9,.25,1.12),opacity .25s ease}
+.portal.open{transform:translate(-50%,-50%) scale(1) rotate(0deg);opacity:1;pointer-events:auto}
+.portal .rim,.portal .inner{position:absolute;clip-path:var(--shut);transition:clip-path .85s cubic-bezier(.2,.9,.2,1)}
+.portal .rim{inset:0;background:conic-gradient(from var(--spin),var(--gold),var(--crystal),var(--violet),var(--gold));animation:spin 3.6s linear infinite}
+.portal .inner{inset:5px;background:var(--night)}
+.portal.open .rim,.portal.open .inner{clip-path:var(--facet)}
+.portal video{width:100%;height:100%;object-fit:cover;display:block}
+@keyframes spin{to{--spin:360deg}}
+.portal .x,.portal .sound{position:absolute;z-index:2;border:0;cursor:pointer;font:700 13px var(--body);color:var(--night);background:var(--gold);border-radius:999px;box-shadow:0 4px 14px -4px #000}
+.portal .x{top:8%;right:4%;width:34px;height:34px;font-size:18px;line-height:34px;padding:0}
+.portal .sound{bottom:9%;left:50%;transform:translateX(-50%);padding:8px 14px}
+
+.pouch{position:absolute;left:14px;bottom:14px;z-index:4;display:flex;align-items:center;gap:9px;padding:6px 14px 6px 6px;border-radius:999px;
+  background:rgba(18,15,42,.78);border:1px solid var(--line);color:var(--ink);font:700 13px var(--body);backdrop-filter:blur(6px)}
+.pouch[data-ready="1"]{cursor:pointer;border-color:rgba(255,210,122,.55)}
+.pouch .bag{width:30px;height:30px;border-radius:50%;display:grid;place-items:center;background:var(--dusk)}
+.pouch .count{font-variant-numeric:tabular-nums;min-width:20px;height:20px;padding:0 6px;border-radius:999px;background:var(--gold);color:var(--night);font-weight:800;font-size:12px;display:grid;place-items:center}
+.pouch.bump{animation:bump .6s ease}
+@keyframes bump{40%{transform:scale(1.12)}}
+.replay-list{position:absolute;left:14px;bottom:60px;z-index:7;background:var(--glass);border:1px solid var(--line);border-radius:14px;padding:8px;display:flex;flex-direction:column;gap:4px;min-width:200px}
+.replay-list button{border:0;background:transparent;color:var(--ink);font:700 14px var(--body);text-align:left;padding:8px 10px;border-radius:8px;cursor:pointer}
+.replay-list button:hover{background:rgba(255,255,255,.08)}
+.toast{position:absolute;left:50%;top:16px;transform:translateX(-50%);z-index:8;background:var(--glass);border:1px solid var(--line);border-radius:999px;padding:8px 16px;font-weight:700;font-size:14px;white-space:nowrap;transition:opacity .4s}
+.toast.off{opacity:0;pointer-events:none}
+.where{position:absolute;left:14px;top:14px;z-index:4;background:rgba(18,15,42,.72);border:1px solid var(--line);border-radius:999px;padding:5px 12px;font:800 12px var(--body);letter-spacing:.1em;text-transform:uppercase;color:var(--gold);backdrop-filter:blur(6px)}
+
+button:focus-visible,.pouch:focus-visible,.s:focus-visible{outline:3px solid var(--crystal);outline-offset:2px}
+.controls{display:flex;flex-wrap:wrap;align-items:center;gap:10px 16px;padding-top:12px;border-top:1px solid var(--line)}
+.controls .tag{font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);font-weight:800}
+.ghost{border:1px solid var(--line);background:var(--dusk);color:var(--ink);font:700 14px var(--body);padding:8px 14px;border-radius:10px;cursor:pointer}
+.ghost:disabled{opacity:.4;cursor:not-allowed}
+.toggle{display:flex;align-items:center;gap:8px;color:var(--muted);font-size:14px;cursor:pointer}
+.toggle input{accent-color:var(--gold);width:16px;height:16px}
+select.jump{width:auto;padding:6px 8px}
+.note{color:var(--muted);font-size:13px;margin:0;flex-basis:100%}
+
+@media (max-width:860px){
+  .stage{aspect-ratio:4/5;min-height:0}
+  .stage-wrap{display:flex;flex-direction:column;gap:12px}
+  .card{position:static;width:auto}
+  .card.away{opacity:.35;transform:none}
+  .card-body{overflow:visible}
+  .pouch .label{display:none}
+}
+/* ---------- Astra's Journal / Marlow's Case File ---------- */
+.book{flex:1;display:flex;flex-direction:column;min-height:0;position:relative}
+.card.open-book{top:0;right:0;bottom:0;left:0;width:auto;background:none;border:0;box-shadow:none;backdrop-filter:none;-webkit-backdrop-filter:none}
+.card.open-book.away{transform:translateY(30px) scale(.97)}
+.card.open-book .card-head{position:absolute;top:8px;left:50%;transform:translateX(-50%);width:min(440px,70%);z-index:3;background:var(--glass);border:1px solid var(--line);border-radius:14px;padding:8px 14px 9px;gap:6px}
+.card.open-book .lesson-name b{font-size:16px}
+.card.open-book .book{position:absolute;top:58px;left:50%;transform:translateX(-50%);flex:none;background-size:100% 100%;filter:drop-shadow(0 26px 40px rgba(0,0,0,.6))}
+.book.paper{--ink:#3a2a1d;--muted:#76624d;--line:rgba(90,64,40,.32);--gold:#a8551b;--crystal:#2e66a8;--violet:#7a4cc2;--good:#2b8a52;--try:#c8621c;color:var(--ink);font-size:16.5px}
+.book.journal{background-image:url(journal.jpg)}
+.book.casefile{background-image:url(casefile.jpg)}
+.book.cork{background-image:url(cork.jpg)}
+.book::before{content:attr(data-title);position:absolute;z-index:2;left:3%;top:-14px;transform:rotate(-3deg);padding:4px 14px 3px;border-radius:6px;font:400 22px/1.1 "Patrick Hand",cursive;color:#3a2a1d;background:#ffe58a;box-shadow:0 6px 14px -6px rgba(0,0,0,.6)}
+.book:not(.paper)::before{display:none}
+.book.casefile::before,.book.cork::before{font-family:"Special Elite",monospace;font-size:17px;background:#f6ecd4;color:#8a2a22;border:2px solid #8a2a22}
+.book.paper .card-body{position:absolute;inset:0;padding:0;overflow:visible;display:block}
+.page{position:absolute;overflow:auto;display:flex;flex-direction:column;gap:12px;padding:6px 12px 10px;scrollbar-width:thin;scrollbar-color:rgba(90,64,40,.4) transparent}
+.journal .pageL{left:11.5%;width:35.5%;top:9%;height:76%}
+.journal .pageR{left:53.5%;width:34%;top:9%;height:66%}
+.casefile .pageL{left:19%;width:28.5%;top:15.5%;height:69%}
+.casefile .pageR{left:52.5%;width:29%;top:13.5%;height:57%}
+.cork .pageL{left:11%;width:78%;top:11.5%;height:62%}
+.cork .pageR{display:none}
+.book.paper .card-foot{position:absolute;padding:0;gap:8px}
+.journal .card-foot{left:53.5%;width:34%;top:77%}
+.casefile .card-foot{left:52.5%;width:29%;top:72%}
+.cork .card-foot{left:56%;width:33%;top:76%}
+.book.paper .kind{color:var(--crystal);font-size:12.5px}
+.book.paper .prompt{font:400 30px/1.05 "Patrick Hand",cursive;color:#2b1d12}
+.casefile .kind,.cork .kind{font-family:"Special Elite",monospace;letter-spacing:.06em;color:#8a2a22}
+.book.paper .dir{font-weight:700}
+.book.paper .box{background:rgba(255,255,255,.45);border:1px solid rgba(90,64,40,.22);border-radius:6px;box-shadow:0 3px 8px -5px rgba(60,40,20,.5)}
+.book.paper .box h4{color:#8a2a22}
+.book.paper .claim{background:#ffe08a;border:0;border-radius:4px;box-shadow:0 6px 12px -8px rgba(60,40,20,.7);transform:rotate(-.8deg)}
+.book.paper .claim small{color:#8a2a22;font-family:"Special Elite",monospace;letter-spacing:.06em}
+.book.paper .mark{background:rgba(255,206,70,.55)}
+.book.paper textarea,.book.paper input[type=text]{background:repeating-linear-gradient(transparent 0 29px,rgba(70,110,170,.35) 29px 30px);background-attachment:local;border:0;border-bottom:1.5px solid rgba(70,110,170,.4);border-radius:0;padding:2px 4px;font:400 22px/30px "Patrick Hand",cursive;color:#1f3f78}
+.book.paper input[type=text]{height:34px}
+.book.paper textarea{min-height:64px}
+.book.paper textarea:focus,.book.paper input:focus,.book.paper select:focus{outline:2px dashed rgba(70,110,170,.6);outline-offset:3px}
+.book.paper .field label{font-size:15px}
+.book.paper select{background:#fffaf0;color:var(--ink);border:1.5px solid rgba(90,64,40,.4)}
+.book.paper .choice{background:#fffaf0;border:1.5px solid rgba(90,64,40,.25);border-radius:4px;color:var(--ink);box-shadow:0 4px 8px -6px rgba(60,40,20,.6)}
+.book.paper .choice[aria-pressed="true"]{background:#efe4ff}
+.book.paper .choice.right{background:#dcf3e4}.book.paper .choice.wrong{background:#ffe6d6}
+.book.paper .choice .tick{color:#fff}
+.book.paper .chip{background:#fffaf0;color:var(--ink);border:1px solid rgba(90,64,40,.25);border-radius:3px;box-shadow:0 5px 10px -6px rgba(40,25,10,.8);font-size:15px}
+.book.paper .chip.sel{box-shadow:0 0 0 3px rgba(122,76,194,.45),0 8px 14px -6px rgba(40,25,10,.8);transform:rotate(-1deg)}
+.book.paper .chip.right{background:#e3f6ea}.book.paper .chip.wrong{background:#ffe9da}
+.book.paper .bin{border-color:rgba(90,64,40,.45);background:rgba(255,255,255,.25)}
+.book.paper .bin > b{color:#8a2a22}
+.book.paper .passage .s:hover{background:rgba(122,76,194,.14)}
+.book.paper .passage .s[aria-pressed="true"]{background:rgba(122,76,194,.26)}
+.book.paper .passage .s.right{background:rgba(43,138,82,.25)}.book.paper .passage .s.wrong{background:rgba(200,98,28,.22)}
+.book.paper .feedback{background:#fff1a6!important;color:#3a2a1d!important;border-radius:2px;box-shadow:0 8px 14px -8px rgba(40,25,10,.8);transform:rotate(.6deg);font-family:"Patrick Hand",cursive;font-size:19px;font-weight:400;line-height:1.3}
+.book.paper .feedback.good{background:#d9f5c4!important}
+.book.paper .go{background:#e9a23b;color:#2b1a0e}
+.book.paper .go:disabled{background:rgba(90,64,40,.25);color:rgba(58,42,29,.55)}
+.book.paper .check{border-color:#8a2a22;color:#8a2a22;background:rgba(255,255,255,.4)}
+.book.paper .hint{color:var(--muted)!important}
+/* corkboard sort */
+.cork .page{color:#2b1d12}
+.cork .pageL{display:grid;grid-template-columns:36% 1fr;grid-template-rows:auto auto 1fr;gap:10px 16px;overflow:hidden;height:63%}
+.cork .head-L{grid-column:1/-1;background:#fffaf0;padding:8px 14px;border-radius:3px;box-shadow:0 8px 16px -10px #000;transform:rotate(-.4deg);display:grid!important;grid-template-columns:auto 1fr;column-gap:16px;align-items:center}
+.cork .head-L .kind{grid-column:1/-1}
+.cork .head-L .prompt{font-size:26px;white-space:nowrap}
+.cork .head-L .dir{font-size:15px}
+.cork .hint{grid-column:1/-1;grid-row:2;font-weight:700}
+.cork .pool{grid-column:1;grid-row:3}
+.cork .bins{grid-column:2;grid-row:3}
+.cork .pool{overflow:auto;padding:8px 4px 4px;gap:12px;min-height:0}
+.cork .bins{flex-direction:row;gap:10px;min-height:0}
+.cork .bin{flex:1;background:rgba(255,250,235,.2);border:2px dashed rgba(255,240,210,.75);overflow:auto;padding:8px 6px;gap:10px}
+.cork .bin > b{background:#ffe08a;color:#3a2a1d;padding:6px 8px;border-radius:3px;font-size:12.5px;line-height:1.3;letter-spacing:.02em;text-transform:none;box-shadow:0 4px 8px -5px #000}
+.cork .bin .chip{font-size:13.5px;padding:7px 8px}
+.cork .check{background:#fffaf0}
+.cork .go:disabled{background:rgba(255,250,235,.55);color:rgba(58,42,29,.6)}
+.card.open-book ~ .pouch,.stage .pouch{z-index:6}
+.cork .chip{position:relative}
+.cork .chip::before{content:"";position:absolute;top:-6px;left:50%;width:12px;height:12px;margin-left:-6px;border-radius:50%;background:radial-gradient(circle at 35% 35%,#ff9a8a,#c9302c 60%);box-shadow:0 2px 3px rgba(0,0,0,.5)}
+.book.cork .hint{color:#fff8e6!important;text-shadow:0 1px 3px #000,0 0 8px rgba(0,0,0,.8);font-size:14px!important}
+/* rewards */
+.reward{position:absolute;z-index:4;pointer-events:none}
+.reward.stamp{font:800 34px/1 var(--display);color:#b3261e;border:5px solid #b3261e;border-radius:10px;padding:8px 14px 4px;opacity:.88;transform:rotate(-12deg) scale(2.4);opacity:0;animation:stamp .45s cubic-bezier(.2,.9,.3,1.3) forwards;mix-blend-mode:multiply}
+@keyframes stamp{to{transform:rotate(-12deg) scale(1);opacity:.88}}
+.reward.star{width:84px;height:84px;animation:starpop .7s cubic-bezier(.2,.9,.3,1.4) forwards;transform:scale(0) rotate(-40deg)}
+@keyframes starpop{to{transform:scale(1) rotate(-8deg)}}
+.reduced .reward{animation:none;transform:rotate(-10deg);opacity:.88}
+@media (max-width:860px){
+  .card.open-book .card-head,.card.open-book .book{position:static;transform:none;width:auto!important;height:auto!important}
+  .card.open-book{display:flex;flex-direction:column;gap:10px}
+  .book.paper{background:#f5ead2!important;border-radius:14px;padding:30px 14px 16px}
+  .book.cork.paper{background:#b98a55!important}
+  .book.paper .card-body{position:static}
+  .page{position:static!important;width:auto!important;height:auto!important;overflow:visible}
+  .book.paper .card-foot{position:static;width:auto!important;margin-top:12px}
+  .cork .pageL{display:flex!important}.cork .head-L{display:flex!important;flex-direction:column}.cork .head-L .prompt{white-space:normal}.cork .bins{flex-direction:column}
+}
+.reduced .portal{transform:translate(-50%,-50%);transition:opacity .7s ease}
+.reduced .portal.open{transform:translate(-50%,-50%)}
+.reduced .portal .rim,.reduced .portal .inner{clip-path:var(--facet);transition:none}
+.reduced .portal .rim{animation:none}
+.reduced .pouch.bump{animation:none}
+</style>
+
+<div class="wrap astra" id="app">
+  <header>
+    <p class="eyebrow">Astra's Writing Adventure · Module 3 · Lesson 3 · <a href="../" style="color:var(--gold);text-decoration:none">Student home</a></p>
+    <h1>Details and Evidence</h1>
+    <p class="lede">One full lesson on one trail through the Proof Hollow. Every activity moves the traveller deeper in. The Glimmers mark each message from Astra or Marlow, and the trail ends at the treehouse.</p>
+  </header>
+
+  <div class="topbar glass" id="topbar">
+    <div class="where" id="where">The Entrance</div>
+    <div class="lesson-name"><b>Details and Evidence</b><span id="stopLabel"></span></div>
+    <ol class="trail" id="trail"><div class="fill" id="fill"></div></ol>
+    <a class="home" href="../">Student home</a>
+    <button type="button" class="revbtn" id="revToggle" aria-expanded="false" aria-controls="reviewer">Reviewer</button>
+  </div>
+
+  <div class="stage-wrap">
+    <div class="stage" id="stage">
+      <canvas id="scene" aria-hidden="true"></canvas>
+      <div class="portal" id="portal" aria-hidden="true">
+        <div class="rim"></div>
+        <div class="inner"><video id="clip" playsinline preload="metadata"></video></div>
+        <button class="x" id="closeX" hidden aria-label="Close message">&times;</button>
+        <button class="sound" id="soundOn" hidden>Tap for sound</button>
+      </div>
+      <canvas id="fx" aria-hidden="true"></canvas>
+    </div>
+
+    <section class="card" id="card" aria-live="polite">
+      <div class="card-head" hidden></div>
+      <div class="book" id="book">
+        <div class="head-box" id="headBox" hidden></div>
+        <div class="card-body" id="body"></div>
+        <div class="card-foot" id="foot"></div>
+      </div>
+    </section>
+  </div>
+    <div class="toast off" id="toast"></div>
+    <div class="replay-list" id="replays" hidden></div>
+    <div class="pouch" id="pouch" role="button" tabindex="-1" aria-label="Messages from the trail" data-ready="0">
+      <span class="bag" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24"><path d="M8 5.5c1.2-.9 2.6-1.3 4-1.3s2.8.4 4 1.3l-1.6 2.3c2.7 1.4 4.6 4.3 4.6 7.6 0 3.6-3.1 5.4-7 5.4s-7-1.8-7-5.4c0-3.3 1.9-6.2 4.6-7.6z" fill="#ffd27a" opacity=".9"/><path d="M9.2 8h5.6" stroke="#120f2a" stroke-width="1.4" stroke-linecap="round"/></svg></span>
+      <span class="label">Saved messages</span>
+      <span class="count" id="count">0</span>
+    </div>
+
+  <div class="controls glass" id="reviewer" hidden>
+    <span class="tag">Reviewer</span>
+    <button class="ghost" id="restart">Restart lesson</button>
+    <button class="ghost" id="skip" disabled>Skip to end of message</button>
+    <label class="toggle">Jump to <select class="jump" id="jump"></select></label>
+    <label class="toggle"><input type="checkbox" id="snd" checked> Chimes</label>
+    <label class="toggle"><input type="checkbox" id="rm"> Reduced motion</label>
+    <p class="note">Activities use the slide wording as written. Written responses save as submitted; scoring is still to be decided. Answer keys for A7, A8 and A9 follow the readings in the lesson plan and are waiting on confirmation. Students can't skip a message the first time; the skip button is only for review.</p>
+  </div>
+</div>
+
+<script src="astra-sort.js"></script>
+<script>
+(function(){
+const TAU=Math.PI*2,$=id=>document.getElementById(id);
+const app=$('app'),stage=$('stage'),scene=$('scene'),fx=$('fx'),sc=scene.getContext('2d'),fc=fx.getContext('2d');
+const card=$('card'),body=$('body'),foot=$('foot'),trail=$('trail'),fill=$('fill'),stopLabel=$('stopLabel'),whereEl=$('where');
+const portal=$('portal'),clip=$('clip'),closeX=$('closeX'),soundOn=$('soundOn'),pouch=$('pouch'),countEl=$('count'),toast=$('toast'),replays=$('replays');
+const skipBtn=$('skip'),rmBox=$('rm'),sndBox=$('snd'),jumpSel=$('jump');
+const clamp=(v,a,b)=>Math.max(a,Math.min(b,v)),lerp=(a,b,t)=>a+(b-a)*t,ease=t=>t<.5?4*t*t*t:1-Math.pow(-2*t+2,3)/2;
+const DQ='“',CQ='”';
+let RM=!!(window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches);
+rmBox.checked=RM;app.classList.toggle('reduced',RM);
+rmBox.onchange=()=>{RM=rmBox.checked;app.classList.toggle('reduced',RM);};
+
+/* ---------- scenes ---------- */
+const SCENES=[
+ {name:'The Entrance',src:'scene1.jpg',focal:{x:.51,y:.56},swarm:{x:.51,y:.5},zmax:1.35,crystals:[{x:.22,y:.77},{x:.70,y:.57}]},
+ {name:'The Root Tunnel',src:'scene2.jpg',focal:{x:.63,y:.45},swarm:{x:.6,y:.42},zmax:1.6,crystals:[{x:.44,y:.49},{x:.93,y:.92}]},
+ {name:"Marlow's Study",src:'scene3.jpg',focal:{x:.67,y:.36},swarm:{x:.64,y:.33},zmax:1.85,crystals:[{x:.54,y:.09},{x:.58,y:.22},{x:.83,y:.40}]},
+ {name:'The Treehouse Clearing',src:'scene4.jpg',focal:{x:.56,y:.58},swarm:{x:.56,y:.5},zmax:1.35,crystals:[{x:.48,y:.66},{x:.22,y:.81},{x:.90,y:.81}]}
+];
+SCENES.forEach(s=>{s.img=new Image();s.img.src=s.src;s.lit=0;});
+
+/* ---------- lesson steps (slide wording as written) ---------- */
+const sent=(arr)=>arr.map((t,i)=>`(${i+1}) ${t}`);
+const STEPS=[
+ {type:'intro',scene:0},
+ {type:'glimmer',scene:0,video:'v1_welcome.mp4',who:'Astra',label:"Astra's welcome",code:'V1'},
+ {type:'write',scene:0,code:'A1',title:'Star Power: Sentence Type Fun',scored:false,
+  dir:'Write a creative and entertaining sentence for each type using the word: OVERPOWERED.',
+  fields:[['Declarative:','(statement)'],['Imperative:','(command)'],['Interrogative:','(question)'],['Exclamatory:','(exclamation)']],
+  word:'overpowered'},
+ {type:'glimmer',scene:1,video:'v2_details.mp4',who:'Astra',label:'Details and evidence',code:'V2'},
+ {type:'sort',scene:1,code:'A2',title:'Star Power: Sort the Evidence',
+  dir:'Read each detail and drag and drop it to the correct category.',
+  bins:['MAIN IDEA: The roller coaster ride was amazing.','MAIN IDEA: My first day of middle school was a rush of emotions.','WEAK DETAILS'],
+  items:[['My teacher smiled and told us about all the fun projects we would do.',1],['My stomach dropped as we zoomed down the steep hill.',0],
+         ['At lunch, I sat with new friends, and we traded snacks.',1],['My sister always takes my clothes, and it drives me crazy.',2],
+         ['I laughed so hard my cheeks hurt by the end of the ride.',0],['I stayed home and played video games all day.',2],
+         ['The wind whipped my hair back, and people screamed all around me.',0]]},
+ {type:'write',scene:1,code:'A3',title:'Star Power: Detail Brainstorm',scored:false,
+  dir:'Using the essay outline, brainstorm a list of details that could be added to body paragraph 2.',
+  context:['My Favorite Hobby:',['Introduction: My favorite hobby is playing basketball.','Body Paragraph 1: First, I like basketball because it keeps me active and healthy.','Body Paragraph 2: In addition to this, basketball is my favorite hobby because I get to spend time with my friends.','Body Paragraph 3: Furthermore, I like basketball because it helps me improve my skills.','Conclusion: In conclusion, basketball is my favorite hobby because it keeps me active, lets me spend time with my friends, and helps me get better at the sport.']],
+  fields:[['POSSIBLE DETAIL SENTENCES','BODY PARAGRAPH 2:',8]]},
+ {type:'write',scene:1,code:'A4',title:'Star Power: Write the Details',scored:true,
+  dir:'A student is writing an essay about their favorite memory. Below is the introduction and first body paragraph.  The first body paragraph needs three detail sentences about swimming in the ocean.  Be creative and add those three detail sentences.',
+  context:['',['The best memory I have is the day my family went to the beach last summer. It was a hot day, and the sand was warm under my feet as soon as we arrived. I could hear the waves crashing, and I was so excited to spend the whole day outside. We packed snacks, games, and even a kite to fly. That trip to the beach is my favorite memory because I had fun swimming, building sandcastles, and spending time with my family.']],
+  before:'First, swimming in the ocean made the day unforgettable.',after:'But the fun didn’t stop there.',
+  fields:[['Detail sentence 1','',2],['Detail sentence 2','',2],['Detail sentence 3','',2]]},
+ {type:'glimmer',scene:2,video:'v3_evidence.mp4',who:'Marlow',label:'Meet Marlow: choosing strong evidence',code:'V3',meet:true},
+ {type:'sort',scene:2,code:'A5',title:'Star Power: Sort the Evidence',
+  dir:'Read each piece of evidence and drag and drop it to the correct category.',
+  bins:['CLAIM: Thomas Jefferson helped shape American democracy.','CLAIM: Martin Luther King Jr. was an important leader in the Civil Rights Movement.','WEAK EVIDENCE'],
+  items:[[`The author of Leaders writes, ${DQ}Jefferson wanted a government that listened to the people.${CQ}`,0],
+         [`In Building a Nation, Diaz says, ${DQ}Jefferson believed schools were important so citizens could protect liberty.${CQ}`,0],
+         [`Martin Luther King himself said, ${DQ}Injustice anywhere is a threat to justice everywhere.${CQ}`,1],
+         [`The author of Change Leaders states, ${DQ}King helped lead the Montgomery Bus Boycott to fight unfair laws.${CQ}`,1],
+         [`In Yummy Foods, Johnson says, ${DQ}Thomas Jefferson loved ice cream and served it at the White House.${CQ}`,2],
+         [`In Fun Facts About Leaders it says, ${DQ}Martin Luther King Jr. enjoyed playing pool with his friends.${CQ}`,2]]},
+ {type:'dropdown',scene:2,code:'A6',title:'Star Power: Outline the Evidence',
+  dir:'Use the drop-down menu to choose the evidence from the text that best supports the student’s claim.',
+  textTitle:'The Text', textSub:'(from A Nation’s Courage by Samuel Ortiz)',
+  sentences:['Neil Armstrong and his crew had been training at NASA for months.','On July 20, 1969, he landed and walked on the moon.','Millions of people watched on television as he stepped onto the lunar surface.','The Apollo 11 mission proved that space exploration was possible and led to many more missions.','It was a day that was very important.'],
+  claim:'Neil Armstrong’s moon landing changed the space program in great ways.',stem:'The author of A Nations Courage states,',answer:3},
+ {type:'tap',scene:2,code:'A7',title:'Star Power: Choose the Evidence',
+  dir:'Read the excerpt below.  Click on the two sentence numbers in the excerpt that can best be used as evidence to support body paragraph 2.',
+  textTitle:'From Voices of Science by Maria Lopez',
+  sentences:['Jane Goodall traveled to Africa in 1960 to study.','She spent years carefully watching chimpanzees, their behavior, and how they learned to communicate.','Goodall discovered that chimpanzees use tools, like sticks, to gather food.','She also worked to protect the environment and spoke out about saving endangered animals.','Many people admire her for her lifelong dedication to science and conservation.'],
+  outline:['Body Paragraph 1: Chimpanzees are amazing creatures.','Body Paragraph 2: Jane Goodall made important discoveries about chimpanzees.','Body Paragraph 3: We can help these endangered animals today.'],
+  answer:[1,2],pick:2},
+ {type:'glimmer',scene:2,video:'v4_quoting.mp4',who:'Marlow',label:'Quoting evidence',code:'V4'},
+ {type:'multi',scene:2,code:'A8',title:'Star Power: Correct or Incorrect',
+  dir:'Choose all the evidence sentences that correctly use quotation marks.',
+  options:[`The article, Voices of Freedom, explains, ${DQ}Rosa Parks refused to give up her seat on the bus${CQ}.`,
+           `In Protecting Nature, Maria Lopez writes ${DQ}Everyone should do their part to recycle and help our Earth.${CQ}`,
+           'The book, The Homework Wars notes, Homework can be detrimental to teens.',
+           `The author of Natural Disasters states, ${DQ}Hurricanes form over warm ocean waters.${CQ}`,
+           `The book Science Discoveries says, ${DQ}Alexander Fleming discovered penicillin by accident.${CQ}`],
+  answer:[3,4]},
+ {type:'multi',scene:2,code:'A9',title:'Star Power: Find the Mistake',
+  dir:'Part of a student essay is show below.  The highlighted sentence uses a quotation from a text as evidence, but it is written incorrectly.  Choose ALL the ways to fix the evidence sentence.',
+  essay:['The rainforest is one of the most important places on Earth, and people need to protect it. Rainforests provide oxygen, shelter animals, and give us resources that we use every day. Sadly, they are being cut down too quickly. If we want to keep our planet healthy, we must find ways to protect the rainforest.',
+         ['First, protecting the rainforest is important because it gives us clean air to breathe. Trees in the rainforest make oxygen, which people all over the world need. ',`In Rainforest Facts, the author says ${DQ}rainforests produce about 20 percent of the world’s oxygen supply${CQ}.`,' This shows that rainforests are not just important for the animals that live there, but also for people everywhere. Without the rainforest, the air we breathe would not be as clean.']],
+  options:[`Place a comma after the word ${DQ}says.${CQ}`,`Move the beginning quotation marks before the word ${DQ}author.${CQ}`,`Capitalize the word ${DQ}Rainforests.${CQ}`,`Place a comma after the word ${DQ}author.${CQ}`,'Move the period inside the quotation marks at the end of the quote.','Make no changes.'],
+  answer:[0,2,4]},
+ {type:'quote',scene:2,code:'A10',title:'Star Power: Practice Writing a Quote',scored:true,
+  dir:'Follow the directions given to practice writing evidence sentences that contain quotations.',
+  items:[{starter:'The author of All About Jackie states',sentence:'Jackie Robinson broke barriers in baseball.'},
+         {starter:'In Longer Lunches, the author claims,',sentence:'Longer lunch periods have a proven correlation to higher grades.'}]},
+ {type:'evidence',scene:3,code:'A11',title:'Star Power: Write the Evidence',scored:true,
+  dir:'Write an evidence sentence from the text that supports the student’s claim.  Use a sentence starter that references the text and make sure to use quotation marks correctly.',
+  textTitle:'The Text',textSub:'(from Dangerous Chemicals by Robert Diaz)',
+  sentences:['Rachel Carson was a scientist and writer in the 1960s.','She warned people about the dangers of pesticides, which are chemicals used to kill insects.','Her book Silent Spring showed how these chemicals were harming birds, fish, and other wildlife.','Carson encouraged people to think about how humans affect nature.','Her work led to new environmental laws to protect the Earth that are still making a difference.'],
+  claim:'Rachel Carson’s work continues to make an impact today.'},
+ {type:'glimmer',scene:3,video:'v5_review.mp4',who:'Astra',label:"Astra's review",code:'V5'},
+ {type:'end',scene:3}
+];
+if(false)STEPS.forEach((s,i)=>{if(['A1','A2','A3','A4'].includes(s.code))s.book='journal';else if(s.code==='A5')s.book='cork';else if(/^A(6|7|8|9|10|11)$/.test(s.code||''))s.book='casefile';});
+const BOOKNAME={journal:"Astra's Journal",casefile:"Marlow's Case File",cork:"Marlow's Case Board"};
+const bookEl=$('book');
+function fitBook(){if(!card.classList.contains('open-book')||innerWidth<=860){bookEl.style.width=bookEl.style.height='';return;}
+  const r=stage.getBoundingClientRect();let h=r.height-66,w=Math.min(r.width-24,h*1344/752);h=w*752/1344;bookEl.style.width=w+'px';bookEl.style.height=h+'px';}
+addEventListener('resize',fitBook);
+function setBook(kind){bookEl.className='book'+(kind?' paper '+kind:'');card.classList.toggle('open-book',!!kind);stage.classList.toggle('dim',!!kind);
+  if(kind)bookEl.dataset.title=BOOKNAME[kind];fitBook();}
+function bookify(){const s=STEPS[si];if(!s.book)return;
+  const L=document.createElement('div'),R=document.createElement('div');L.className='page pageL';R.className='page pageR';
+  [...body.children].forEach(ch=>(ch.classList.contains('L')||s.book==='cork'?L:R).appendChild(ch));body.append(L,R);}
+function reward(){const s=STEPS[si];if(!s.book)return;body.querySelectorAll('.reward').forEach(r=>r.remove());const d=document.createElement('div');
+  if(s.book==='journal'){d.className='reward star';d.innerHTML='<svg viewBox="0 0 24 24" width="84" height="84"><path d="M12 1.8l3 6.4 7 .8-5.2 4.8 1.4 6.9L12 17.2l-6.2 3.5 1.4-6.9L2 9l7-.8z" fill="#ffcf3f" stroke="#b37a10" stroke-width="1" stroke-linejoin="round"/></svg>';d.style.right='9%';d.style.top='3%';}
+  else{d.className='reward stamp';d.textContent='PROVED';d.style.right=s.book==='cork'?'12%':'17%';d.style.top=s.book==='cork'?'12%':'8%';}
+  body.appendChild(d);}
+const STOPS=STEPS.map((s,i)=>i).filter(i=>STEPS[i].type!=='intro');
+let si=0,saved=[],firstTry=0,graded=0,attempted={},done={};
+
+/* ---------- trail ---------- */
+function buildTrail(){
+  trail.querySelectorAll('li').forEach(n=>n.remove());
+  STOPS.forEach(i=>{const s=STEPS[i],li=document.createElement('li');
+    if(s.type==='glimmer'){li.className='g';li.innerHTML='<svg width="10" height="10" viewBox="0 0 24 24"><path d="M12 2l2.2 7.8L22 12l-7.8 2.2L12 22l-2.2-7.8L2 12l7.8-2.2z" fill="currentColor"/></svg>';}
+    else if(s.type==='end'){li.className='g';li.innerHTML='<svg width="9" height="9" viewBox="0 0 24 24"><path d="M5 22V3h12l-2 4 2 4H7v11z" fill="currentColor"/></svg>';}
+    li.title=s.type==='glimmer'?s.label:s.type==='end'?'The treehouse':(s.code+' '+s.title.replace('Star Power: ',''));
+    li.dataset.i=i;trail.appendChild(li);});
+  jumpSel.innerHTML=STEPS.map((s,i)=>`<option value="${i}">${i===0?'Start':s.type==='glimmer'?s.code+' ✨ '+s.label:s.type==='end'?'Treehouse (end)':s.code+' '+s.title.replace('Star Power: ','')}</option>`).join('');
+}
+function updateTrail(){
+  const lis=[...trail.querySelectorAll('li')];
+  lis.forEach(li=>{const i=+li.dataset.i;li.classList.toggle('done',i<si);li.classList.toggle('now',i===si);});
+  const k=Math.max(0,STOPS.indexOf(si));fill.style.width=`calc((100% - 12px) * ${k/(STOPS.length-1)})`;
+  stopLabel.textContent=si===0?'17 stops':STEPS[si].type==='end'?'Trail complete':`Stop ${k+1} of ${STOPS.length}`;
+  jumpSel.value=si;
+}
+
+/* ---------- audio ---------- */
+let AC=null;
+function audio(){if(!AC){try{AC=new (window.AudioContext||window.webkitAudioContext)();}catch(e){}}if(AC&&AC.state==='suspended')AC.resume();}
+function ping(f,v,d){if(!sndBox.checked||!AC)return;const t=AC.currentTime,o=AC.createOscillator(),g=AC.createGain();o.type='sine';o.frequency.value=f;g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(v,t+.012);g.gain.exponentialRampToValueAtTime(.0001,t+d);o.connect(g);g.connect(AC.destination);o.start(t);o.stop(t+d+.05);}
+function sweep(f0,f1,v,d){if(!sndBox.checked||!AC)return;const t=AC.currentTime,o=AC.createOscillator(),g=AC.createGain();o.type='triangle';o.frequency.setValueAtTime(f0,t);o.frequency.exponentialRampToValueAtTime(f1,t+d);g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(v,t+d*.7);g.gain.exponentialRampToValueAtTime(.0001,t+d+.25);o.connect(g);g.connect(AC.destination);o.start(t);o.stop(t+d+.3);}
+function chord(b){[1,1.26,1.5,2].forEach((m,i)=>setTimeout(()=>ping(b*m,.05,1.4),i*70));}
+const yay=()=>{ping(1175,.05,.5);setTimeout(()=>ping(1568,.04,.6),90);};
+const nope=()=>ping(330,.03,.3);
+document.addEventListener('pointerdown',audio,{once:true});
+
+/* ---------- card helpers ---------- */
+const esc=s=>String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;');
+let canGo=false;
+function setFoot(html){foot.innerHTML=html;canGo=false;}
+function goBtn(label,enabled,fn){setFoot(`<button class="go" id="go"${enabled?'':' disabled'}>${label}</button>`);$('go').onclick=fn||advance;canGo=enabled;}
+function enableGo(){const g=$('go');if(g){g.disabled=false;}canGo=true;}
+function fb(cls,html){let f=foot.querySelector('.feedback')||body.querySelector('.feedback:not(.inline)');if(!f){f=document.createElement('p');foot.appendChild(f);}f.className='feedback '+cls;f.innerHTML=html;}
+function head(s){return `<div class="L head-L" style="display:flex;flex-direction:column;gap:8px"><p class="kind">${esc(s.code)} · ${s.scored===false?'Practice':'Star Power'}</p><p class="prompt">${esc(s.title.replace('Star Power: ',''))}</p><p class="dir">${esc(s.dir)}</p></div>`;}
+function scoreFirst(ok){if(!(si in attempted)){attempted[si]=ok;graded++;if(ok)firstTry++;}}
+function correct(){lightCrystal();yay();reward();}
+
+/* ---------- render ---------- */
+function render(){
+  const s=STEPS[si];setBook(s.book);render0();bookify();body.querySelectorAll('.page').forEach(p=>p.scrollTop=0);}
+function render0(){
+  const s=STEPS[si];updateTrail();body.scrollTop=0;whereEl.textContent=SCENES[s.scene].name;
+  if(s.type==='intro'){
+    body.innerHTML=`<p class="kind">Module 3 · Lesson 3</p><p class="prompt">Ready to explore the Proof Hollow?</p>
+      <p class="dir" style="font-weight:600;color:var(--muted)">Follow the trail from the roots to the treehouse. See the Glimmers glowing ahead? A message is waiting there.</p>
+      <div class="tile cream intro-tile"><h4>On this trail</h4><p>Details · Evidence · Quoting evidence</p><p class="meta">11 activities · 5 messages</p></div>`;
+    goBtn('Start the trail',true);return;
+  }
+  if(s.type==='glimmer') return renderGlimmer(s);
+  if(s.type==='write') return renderWrite(s);
+  if(s.type==='sort') return renderSort(s);
+  if(s.type==='dropdown') return renderDropdown(s);
+  if(s.type==='tap') return renderTap(s);
+  if(s.type==='multi') return renderMulti(s);
+  if(s.type==='quote') return renderQuote(s);
+  if(s.type==='evidence') return renderEvidence(s);
+  if(s.type==='end') return renderEnd();
+}
+const ctxLine=t=>{const m=t.match(/^([^:]+:)\s*(.*)$/);return m?`<b>${esc(m[1])}</b> ${esc(m[2])}`:esc(t);};
+function writeTile(id,f,cls){return `<div class="tile wtile ${cls||''}"><span class="done" aria-hidden="true">✓</span>
+  <label for="${id}">${esc(f[0])}${f[1]?` <span>${esc(f[1])}</span>`:''}</label>
+  <textarea id="${id}" rows="${f[2]||2}" placeholder="Tap to write…" aria-label="${esc((f[0]+' '+(f[1]||'')).trim())}"></textarea><div class="line"></div></div>`;}
+function renderWrite(s){
+  const fid=i=>`w${si}_${i}`;let html=head(s);
+  if(!s.context){html+=`<div class="agrid">${s.fields.map((f,i)=>writeTile(fid(i),[f[0].replace(/:$/,''),f[1],2])).join('')}</div>`;}
+  else{const big=s.fields.length===1;
+    const ctx=s.context[0]?`<p class="tag">Essay outline</p><h4>${esc(s.context[0])}</h4>`+s.context[1].map(t=>`<p${t.startsWith('Body Paragraph 2')?' class="bp2"':''}>${ctxLine(t)}</p>`).join('')
+      :`<p class="tag">Introduction</p>`+s.context[1].map(t=>`<p>${esc(t)}</p>`).join('');
+    const col=(s.before?`<p class="tile cream given"><small>Body paragraph 1</small>${esc(s.before)}</p>`:'')+s.fields.map((f,i)=>writeTile(fid(i),f,big?'big':'slim')).join('')+(s.after?`<p class="tile cream given">${esc(s.after)}</p>`:'');
+    html+=`<div class="asplit${big?'':' top'}"><div class="tile cream ctx">${ctx}</div><div class="acol">${col}</div></div>`;}
+  body.innerHTML=html;
+  const inputs=[...body.querySelectorAll('input,textarea')];
+  const label=s.scored?'Submit':'Continue';
+  goBtn(label,false,()=>{
+    if(s.word){const miss=inputs.filter(i=>!i.value.toLowerCase().includes(s.word));if(miss.length&&!card.querySelector('.feedback')){fb('try',`Remember to use the word <b>${s.word.toUpperCase()}</b> in every sentence. Fix them, or press ${label} again to keep going.`);nope();return;}}
+    done[si]=true;lightCrystal();yay();if(s.scored)toastMsg('Saved for your teacher');advance();});
+  const chk=()=>{const ok=inputs.every(i=>i.value.trim().length>2);$('go').disabled=!ok;};
+  inputs.forEach(i=>i.addEventListener('input',chk));
+}
+function renderSort(s){
+  const dense=s.items.some(it=>it[0].length>90);
+  body.innerHTML=head(s)+`<div class="asort${dense?' dense':''}"><p class="hint">Drag a sentence into a box, or tap a sentence and then tap a box.</p><div class="pool"></div><div class="bins"></div></div>`;
+  setFoot('<button class="check" id="chk" disabled>Check</button><button class="go" id="go" disabled>Continue</button>');$('go').onclick=advance;
+  AstraSort.mount(body.querySelector('.asort'),s,{esc,onCheck:wrong=>{scoreFirst(wrong===0);
+    if(!wrong){fb('good','Every sentence is in the right place!');correct();enableGo();}
+    else{fb('try',`${wrong} ${wrong===1?'sentence is':'sentences are'} back at the top. Read ${wrong===1?'it':'them'} again and try another box.`);nope();}}});
+}
+function textBox(s){return `<div class="tile cream rtext"><h4>${esc(s.textTitle)}</h4>${s.textSub?`<p class="sub">${esc(s.textSub)}</p>`:''}<p>${s.sentences.map((t,i)=>`(${i+1}) ${esc(t)}`).join(' ')}</p></div>`;}
+const claimTile=s=>`<div class="tile cream rclaim"><small>Student’s Claim</small>${esc(s.claim)}</div>`;
+function optTile(o,i,radio){return `<button type="button" class="tile opt${radio?' radio':''}" ${radio?'role="radio" aria-checked="false"':'aria-pressed="false"'} data-i="${i}"><span class="tick" aria-hidden="true"></span><span>${esc(o)}</span></button>`;}
+function renderDropdown(s){
+  body.innerHTML=head(s)+`<div class="aevi"><div class="acol">${textBox(s)}${claimTile(s)}</div><div class="acol"><p class="tile cream rstem"><small>Evidence:</small>${esc(s.stem)}</p>
+    <div class="opts" role="radiogroup" aria-label="Choose the evidence">${s.sentences.map((t,i)=>optTile(DQ+t+CQ,i,true)).join('')}</div></div></div>`;
+  setFoot('<button class="check" id="chk" disabled>Check</button><button class="go" id="go" disabled>Continue</button>');$('go').onclick=advance;
+  const ops=[...body.querySelectorAll('.opt')];let val='';
+  ops.forEach(o=>o.onclick=()=>{if(o.disabled)return;val=o.dataset.i;ops.forEach(x=>{const on=x===o;x.setAttribute('aria-checked',on);x.querySelector('.tick').textContent=on?'✓':'';x.classList.remove('wrong');});$('chk').disabled=false;});
+  $('chk').onclick=()=>{const ok=val!==''&&+val===s.answer;scoreFirst(ok);const o=ops[+val];
+    if(ok){ops.forEach(x=>x.disabled=true);o.classList.add('right');$('chk').remove();fb('good',`That sentence proves the claim. The mission changed the space program by leading to many more missions.`);correct();enableGo();}
+    else{if(o)o.classList.add('wrong');fb('try','That is from the text, but does it show how the space program <b>changed</b>? Try another sentence.');nope();}};
+}
+function renderTap(s){
+  body.innerHTML=head(s)+`<div class="aevi wide"><div class="acol"><p class="tapcue glass">Tap <b>${s.pick}</b> sentences <span class="dots" aria-hidden="true">${'<i></i>'.repeat(s.pick)}</span></p>
+    <div class="tile cream rtext passage"><h4>${esc(s.textTitle)}</h4><p>${s.sentences.map((t,i)=>`<span class="s" role="button" tabindex="0" aria-pressed="false" data-i="${i}">(${i+1}) ${esc(t)}</span>`).join(' ')}</p></div></div>
+    <div class="acol"><div class="tile cream rtext"><h4>Main idea outline</h4>${s.outline.map(o=>`<p${o.startsWith('Body Paragraph 2')?' class="bp2"':''}>${ctxLine(o)}</p>`).join('')}</div></div></div>`;
+  setFoot('<button class="check" id="chk" disabled>Check</button><button class="go" id="go" disabled>Continue</button>');$('go').onclick=advance;
+  const spans=[...body.querySelectorAll('.s')],dots=[...body.querySelectorAll('.tapcue i')];
+  const cnt=()=>spans.filter(x=>x.getAttribute('aria-pressed')==='true').length,cue=()=>{const n=cnt();dots.forEach((d,k)=>d.classList.toggle('on',k<n));};
+  const toggle=el=>{if(canGo)return;const on=el.getAttribute('aria-pressed')!=='true';if(on&&cnt()>=s.pick)return;el.setAttribute('aria-pressed',on);el.classList.remove('wrong');$('chk').disabled=cnt()!==s.pick;cue();};
+  spans.forEach(el=>{el.onclick=()=>toggle(el);el.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();toggle(el);}};});
+  $('chk').onclick=()=>{const picked=spans.filter(x=>x.getAttribute('aria-pressed')==='true').map(x=>+x.dataset.i);const ok=s.answer.every(a=>picked.includes(a));scoreFirst(ok);
+    picked.forEach(i=>spans[i].classList.add(s.answer.includes(i)?'right':'wrong'));
+    if(ok){$('chk').remove();spans.forEach(x=>{x.tabIndex=-1;x.style.cursor='default';});fb('good','Both sentences show discoveries Goodall made about chimpanzees.');correct();enableGo();}
+    else{fb('try','Body paragraph 2 is about her <b>discoveries about chimpanzees</b>. Tap a highlighted sentence to unselect it and try again.');nope();
+      picked.filter(i=>!s.answer.includes(i)).forEach(i=>{spans[i].setAttribute('aria-pressed','false');setTimeout(()=>spans[i].classList.remove('wrong'),1400);});$('chk').disabled=true;cue();}};
+}
+function renderMulti(s){
+  const opts=`<div class="opts${s.essay?'':' two'}">${s.options.map((o,i)=>optTile(o,i)).join('')}</div>`;
+  body.innerHTML=head(s)+(s.essay?`<div class="aevi wide"><div class="tile cream rtext essay"><p>${esc(s.essay[0])}</p><p>${esc(s.essay[1][0])}<span class="hl">${esc(s.essay[1][1])}</span>${esc(s.essay[1][2])}</p></div>${opts}</div>`:opts);
+  setFoot('<button class="check" id="chk" disabled>Check</button><button class="go" id="go" disabled>Continue</button>');$('go').onclick=advance;
+  const ch=[...body.querySelectorAll('.opt')];
+  ch.forEach(c=>c.onclick=()=>{const on=c.getAttribute('aria-pressed')!=='true';c.setAttribute('aria-pressed',on);c.querySelector('.tick').textContent=on?'✓':'';c.classList.remove('wrong','right');$('chk').disabled=!ch.some(x=>x.getAttribute('aria-pressed')==='true');});
+  $('chk').onclick=()=>{const picked=ch.filter(x=>x.getAttribute('aria-pressed')==='true').map(x=>+x.dataset.i);
+    const ok=picked.length===s.answer.length&&s.answer.every(a=>picked.includes(a));scoreFirst(ok);
+    if(ok){ch.forEach(c=>{c.disabled=true;if(s.answer.includes(+c.dataset.i))c.classList.add('right');});$('chk').remove();fb('good','You found them all!');correct();enableGo();}
+    else{const wrongPicked=picked.filter(i=>!s.answer.includes(i)).length,missed=s.answer.filter(a=>!picked.includes(a)).length;
+      picked.filter(i=>!s.answer.includes(i)).forEach(i=>ch[i].classList.add('wrong'));
+      fb('try',`${wrongPicked?`${wrongPicked} of your choices ${wrongPicked===1?'is':'are'} not right (marked in orange). `:''}${missed?`${missed===1?'One more answer is':missed+' more answers are'} still missing.`:''} Check the comma, the quotation marks, the capital letter, and the end punctuation.`);nope();}};
+}
+const normQ=v=>v.replace(/[“”]/g,'"').replace(/[‘’]/g,"'").replace(/\s+/g,' ').trim();
+function quoteHints(v,sentence){
+  const t=normQ(v),inner=sentence.replace(/\.$/,'');const h=[];
+  if(!/"[^"]+"/.test(t))h.push('Put quotation marks around the words from the text.');
+  else{
+    if(!/,\s*"/.test(t))h.push('Add a comma right before the opening quotation mark.');
+    const q=(t.match(/"([^"]*)"/)||[])[1]||'';
+    if(q&&q[0]!==q[0].toUpperCase())h.push('Start the quote with a capital letter.');
+    if(/"\s*[.!?]\s*$/.test(t))h.push('Move the end punctuation inside the closing quotation mark.');
+    if(q&&normQ(q).replace(/[.!?]$/,'')!==normQ(inner))h.push('Quote the sentence exactly, word for word.');
+  }
+  return h;
+}
+function renderQuote(s){
+  body.innerHTML=head(s)+`<div class="qpairs">${s.items.map((it,i)=>`<div class="qpair"><div class="tile cream rtext"><p><b>Use the sentence starter:</b> ${esc(it.starter)}</p><p><b>Quote this Sentence:</b> ${esc(it.sentence)}</p></div>
+    <div class="acol"><div class="tile wtile ans"><span class="done" aria-hidden="true">✓</span><label for="q${si}_${i}">Sentence ${i+1}</label><textarea id="q${si}_${i}" rows="2" autocomplete="off" spellcheck="false" aria-label="Your evidence sentence ${i+1}">${esc(it.starter)} </textarea><div class="line"></div></div><div class="feedback inline" id="qf${si}_${i}" hidden></div></div></div>`).join('')}</div>`;
+  setFoot('<button class="check" id="chk">Check</button><button class="go" id="go" disabled>Continue</button>');$('go').onclick=()=>{toastMsg('Saved for your teacher');advance();};
+  $('chk').onclick=()=>{let bad=0;s.items.forEach((it,i)=>{const h=quoteHints($('q'+si+'_'+i).value,it.sentence),f=$('qf'+si+'_'+i);
+      if(h.length){bad++;f.className='feedback inline try';f.innerHTML=`<ul>${h.map(x=>`<li>${x}</li>`).join('')}</ul>`;f.hidden=false;}else{f.hidden=true;f.innerHTML='';}});
+    scoreFirst(bad===0);
+    if(!bad){fb('good','Both evidence sentences are quoted like a pro!');correct();$('chk').remove();enableGo();}
+    else{const g=foot.querySelector('.feedback');if(g)g.remove();nope();enableGo();}};
+}
+function renderEvidence(s){
+  body.innerHTML=head(s)+`<div class="aevi"><div class="acol">${textBox(s)}${claimTile(s)}</div><div class="acol"><div class="tile wtile ans ev"><span class="done" aria-hidden="true">✓</span><label for="ev${si}">Evidence:</label><textarea id="ev${si}" rows="3" placeholder="Tap to write…"></textarea><div class="line"></div></div><div class="feedback inline" id="evf${si}" hidden></div></div></div>`;
+  setFoot('<button class="check" id="chk" disabled>Check</button><button class="go" id="go" disabled>Submit</button>');$('go').onclick=()=>{done[si]=true;toastMsg('Saved for your teacher');advance();};
+  const ta=$('ev'+si);ta.oninput=()=>{$('chk').disabled=ta.value.trim().length<10;};
+  $('chk').onclick=()=>{const t=normQ(ta.value),q=(t.match(/"([^"]*)"/)||[])[1]||'';
+    const src=s.sentences.find(x=>normQ(q).replace(/[.!?]$/,'')===normQ(x).replace(/\.$/,''));
+    const h=src?quoteHints(ta.value,src):(q?['Quote one sentence from the text exactly, word for word.']:quoteHints(ta.value,'x'));
+    if(!/dangerous chemicals|diaz/i.test(t))h.unshift('Use a sentence starter that tells where the quote came from, like the title or the author.');
+    scoreFirst(h.length===0);const f=$('evf'+si);f.hidden=false;
+    if(!h.length){f.className='feedback inline good';f.textContent='Clear, specific, and quoted correctly. Submit it when you’re ready.';correct();}
+    else{f.className='feedback inline try';f.innerHTML=`<ul>${h.map(x=>`<li>${x}</li>`).join('')}</ul>`;nope();}
+    enableGo();};
+}
+function renderEnd(){
+  body.innerHTML=`<p class="kind">Destination reached</p><p class="prompt">You made it to the treehouse!</p>
+    <p class="dir" style="font-weight:600">You used details to bring a story to life, chose strong evidence, and quoted it correctly.</p>
+    <div class="end-stats"><div class="tile cream stat"><b>${firstTry}/${graded}</b><span>checked activities right on the first try</span></div><div class="tile cream stat"><b>${saved.length}</b><span>messages saved</span></div></div>
+    <p class="end-note">Replay any message from your pouch.</p>`;
+  goBtn('Back to home',true,()=>{try{const k='astra-demo-alex-v1';const p=JSON.parse(localStorage.getItem(k)||'{}');p['details-and-evidence']=true;localStorage.setItem(k,JSON.stringify(p));}catch(e){}var from=new URLSearchParams(location.search).get('from');location.href=from==='starfall'?'../../dashboard-a/#world/starfall':from==='planb'?'../../dashboard/#world/elven-starspire':'../';});
+}
+
+/* ---------- canvas world ---------- */
+let W=0,H=0,dpr=1;
+function resize(){const r=stage.getBoundingClientRect();if(!r.width)return;dpr=Math.min(2,window.devicePixelRatio||1);W=r.width;H=r.height;
+  [scene,fx].forEach(c=>{c.width=Math.round(W*dpr);c.height=Math.round(H*dpr);});sc.setTransform(dpr,0,0,dpr,0,0);fc.setTransform(dpr,0,0,dpr,0,0);}
+new ResizeObserver(resize).observe(stage);
+function sprite(r,g,b){const c=document.createElement('canvas');c.width=c.height=64;const x=c.getContext('2d'),gr=x.createRadialGradient(32,32,0,32,32,32);
+  gr.addColorStop(0,'rgba(255,255,246,1)');gr.addColorStop(.16,`rgba(${r},${g},${b},.95)`);gr.addColorStop(.42,`rgba(${r},${g},${b},.3)`);gr.addColorStop(1,`rgba(${r},${g},${b},0)`);x.fillStyle=gr;x.fillRect(0,0,64,64);return c;}
+const SG=sprite(255,206,110),SB=sprite(130,210,255),SP=sprite(240,150,230);
+function glim(x,y,s,a,im){fc.globalAlpha=clamp(a,0,1);fc.drawImage(im,x-s/2,y-s/2,s,s);}
+
+let cur=0,z=1,bob=0,now=0,fade=null; // fade: {from, to, t}
+function cam(sIdx,zz){const S=SCENES[sIdx],iw=S.img.naturalWidth||1344,ih=S.img.naturalHeight||752,s=Math.max(W/iw,H/ih)*zz,m=clamp((zz-1)/.8,0,1);
+  let cx=lerp(iw*.5,S.focal.x*iw,m),cy=lerp(ih*.5,S.focal.y*ih,m);const hw=W/(2*s),hh=H/(2*s);cx=clamp(cx,hw,iw-hw);cy=clamp(cy,hh,ih-hh);return{s,cx,cy,iw,ih};}
+function proj(p,c){return{x:(p.x*c.iw-c.cx)*c.s+W/2,y:(p.y*c.ih-c.cy)*c.s+H/2+bob};}
+function zoomFor(i){const s=STEPS[i].scene,list=STEPS.map((x,k)=>k).filter(k=>STEPS[k].scene===s),k=list.indexOf(i);return 1+(SCENES[s].zmax-1)*(list.length>1?k/(list.length-1):0);}
+
+/* swarm, motes, fireflies */
+let swarm=[],scat=[],keeper=null,motes=[],flies=[],flashT=-9,walkSpeed=0,energy=0,gatherC=null,lightFx=[];
+function makeSwarm(){swarm=[];for(let i=0;i<46;i++)swarm.push({a:Math.random()*TAU,r:.25+Math.random()*.75,sp:.6+Math.random()*.9,dir:Math.random()<.5?-1:1,ph:Math.random()*TAU,size:.6+Math.random()*.7,col:Math.random()<.45?SG:SB,dart:0,darting:false,x:0,y:0,sx:0,sy:0,hist:[]});}
+for(let i=0;i<26;i++)flies.push({x:Math.random(),y:.2+Math.random()*.75,vx:(Math.random()-.5)*.012,vy:(Math.random()-.5)*.008,ph:Math.random()*TAU,s:3+Math.random()*4});
+function nextGlimmer(){for(let i=si;i<STEPS.length;i++)if(STEPS[i].type==='glimmer'&&!saved.includes(i))return i;return -1;}
+function swarmVisible(){const g=nextGlimmer();return g>=0&&STEPS[g].scene===cur&&!['gather','open','play','close','scatter','replay'].includes(mode);}
+
+/* ---------- flow ---------- */
+let mode='idle',mt=0,tween=null;
+function setMode(m){mode=m;mt=0;}
+function hideCard(){card.classList.add('away');if(!portal.classList.contains('open'))stage.classList.remove('dim');if(innerWidth<=860)stage.scrollIntoView({behavior:RM?'auto':'smooth',block:'center'});}
+function showCard(){card.classList.remove('away');if(STEPS[si].book){stage.classList.add('dim');fitBook();}}
+function walk(to,dur,then,glimmer){tween={from:z,to,dur:RM?Math.min(dur,1):dur,t:0,then,glimmer,step:0};setMode('walking');}
+function travel(toScene,then){ // walk deeper, fade into the next leg of the trail
+  const dur=RM?.8:2.6;tween={from:z,to:Math.min(z+.45,2.4),dur,t:0,glimmer:false,step:0,then:()=>{fade={from:cur,to:toScene,t:0};cur=toScene;z=1.12;
+    walk(1,RM?.5:1.2,then);}};setMode('walking');sweep(300,700,.02,1.2);}
+function advance(){
+  if(mode!=='idle')return;audio();unlockVideo();replays.hidden=true;
+  const next=si+1;if(next>=STEPS.length)return;hideCard();setPouch(false);
+  const goTo=()=>{si=next;updateTrail();arrive();};
+  if(STEPS[next].scene!==cur){travel(STEPS[next].scene,goTo);return;}
+  if(STEPS[next].type==='glimmer'){walk(zoomFor(next),RM?1:5,goTo,true);return;}
+  walk(zoomFor(next),RM?.8:2,goTo);
+}
+function arrive(){
+  const s=STEPS[si];
+  if(s.type==='glimmer'){
+    render();showCard();setMode('idle');setPouch(saved.length>0);return;}
+  if(s.type==='end'){flashT=now;chord(659);setTimeout(()=>chord(880),350);}
+  render();showCard();setMode('idle');setPouch(saved.length>0);
+}
+let unlocked=false;
+function unlockVideo(){if(unlocked)return;unlocked=true;}
+let vclip=null,vBanked=false;
+function renderGlimmer(s,replay){
+  vBanked=false;
+  body.innerHTML=`<p class="kind">${esc(s.code)} · ${esc(s.who)}</p><p class="prompt">${esc(s.label)}</p>
+    <div class="vstage"><div class="vframe" id="vframe">
+      <div class="vscreen">
+        <video id="vclip" playsinline preload="metadata" src="${esc(s.video)}"></video>
+        <button class="vplay" id="vplay" type="button"><svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 4.5v15l12-7.5z" fill="currentColor"/></svg>Play message</button>
+        <button class="vsound" id="vsound" type="button" hidden>Tap for sound</button>
+        <button class="vx" id="vx" type="button" ${replay?'':'hidden'} aria-label="Close message">&times;</button>
+      </div>
+      <img class="vf" src="mirror-frame.svg" alt="" aria-hidden="true">
+    </div></div>`;
+  setFoot(`${replay?'':`<p class="vnote" id="vnote">Watch the whole message to keep going.</p>`}<button class="go" id="go" ${replay?'':'disabled'}>${replay?'Close':'Continue'}</button>`);
+  const v=$('vclip'),play=$('vplay'),sound=$('vsound'),vx=$('vx'),go=$('go'),note=$('vnote');
+  vclip=v;skipBtn.disabled=true;
+  const startPlay=()=>{play.hidden=true;v.controls=!!replay;skipBtn.disabled=false;setMode(replay?'replay':'play');chord(523);
+    const pr=v.play();if(pr&&pr.catch)pr.catch(()=>{v.muted=true;v.play().catch(()=>{});sound.hidden=false;});};
+  play.onclick=startPlay;
+  sound.onclick=()=>{v.muted=false;sound.hidden=true;};
+  function finish(fromClose){
+    if(mode!=='play'&&mode!=='replay')return;
+    const was=mode;setMode('idle');
+    if(v){try{v.pause();}catch(e){} }
+    skipBtn.disabled=true;
+    if(was==='replay'||replay){unstash();showCard();setPouch(saved.length>0);return;}
+    if(!vBanked&&!saved.includes(si)){bank();vBanked=true;toastMsg('Message saved to your pouch');}
+    if(note)note.hidden=true;if(play)play.hidden=true;
+    enableGo();setPouch(true);
+  }
+  v.addEventListener('ended',()=>finish(false));
+  skipBtn.onclick=()=>finish(false);
+  if(vx)vx.onclick=()=>{if(mode==='replay')finish(true);else{unstash();showCard();setPouch(saved.length>0);}};
+  go.onclick=()=>{if(replay){if(mode==='replay')finish(true);else{unstash();showCard();setPouch(saved.length>0);}return;}advance();};
+}
+let stash=null;
+function stashStep(){const hb=$('headBox');stash={b:[...body.childNodes],f:[...foot.childNodes],h:hb.innerHTML,hh:hb.hidden,skip:skipBtn.onclick,skipOff:skipBtn.disabled,v:vclip};}
+function unstash(){if(!stash)return;const s=stash,hb=$('headBox');stash=null;body.replaceChildren(...s.b);foot.replaceChildren(...s.f);hb.innerHTML=s.h;hb.hidden=s.hh;skipBtn.onclick=s.skip;skipBtn.disabled=s.skipOff;vclip=s.v;}
+function openPortal(){/* crystal portal retired */}
+function closePortal(){const v=$('vclip')||vclip;if(v)try{v.pause();}catch(e){}skipBtn.disabled=true;}
+function playClip(){}
+function endClip(){skipBtn.onclick&&skipBtn.onclick();}
+
+function setPouch(on){pouch.dataset.ready=on?'1':'0';pouch.tabIndex=on?0:-1;}
+function pouchOpen(){if(pouch.dataset.ready!=='1'||mode!=='idle'||stash)return;
+  if(!replays.hidden){replays.hidden=true;return;}
+  replays.innerHTML=saved.map(i=>`<button data-i="${i}">✨ ${esc(STEPS[i].label)}</button>`).join('');replays.hidden=false;
+  replays.querySelectorAll('button').forEach(b=>b.onclick=()=>{replays.hidden=true;audio();const i=+b.dataset.i;stashStep();const keep=si;si=i;renderGlimmer(STEPS[i],true);si=keep;showCard();});}
+pouch.onclick=pouchOpen;pouch.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();pouchOpen();}};
+function bank(){saved.push(si);countEl.textContent=saved.length;pouch.classList.remove('bump');void pouch.offsetWidth;pouch.classList.add('bump');ping(1568,.05,.5);setTimeout(()=>ping(2093,.04,.6),90);}
+function pouchPt(){const a=pouch.querySelector('.bag').getBoundingClientRect(),s=stage.getBoundingClientRect();return{x:a.left-s.left+a.width/2,y:a.top-s.top+a.height/2};}
+function afterGlimmer(){toastMsg('Message saved to your pouch');setMode('idle');advanceForce();}
+function advanceForce(){const next=si+1;const goTo=()=>{si=next;updateTrail();arrive();};if(STEPS[next].scene!==cur)travel(STEPS[next].scene,goTo);else walk(zoomFor(next),2,goTo);}
+let toastTimer;function toastMsg(t){toast.textContent=t;toast.classList.remove('off');clearTimeout(toastTimer);toastTimer=setTimeout(()=>toast.classList.add('off'),2600);}
+function lightCrystal(){const S=SCENES[cur];if(!S.crystals.length)return;const k=S.lit%S.crystals.length;S.lit++;lightFx.push({scene:cur,i:k,t:now});}
+
+function reset(){closePortal();stash=null;scat=[];keeper=null;tween=null;fade=null;saved=[];firstTry=0;graded=0;attempted={};done={};SCENES.forEach(s=>s.lit=0);lightFx=[];countEl.textContent='0';replays.hidden=true;makeSwarm();}
+$('restart').onclick=()=>{reset();si=0;cur=0;z=1;render();showCard();setMode('idle');setPouch(false);};
+jumpSel.onchange=()=>{const i=+jumpSel.value;reset();
+  for(let k=1;k<i;k++)if(STEPS[k].type==='glimmer')saved.push(k);countEl.textContent=saved.length;
+  si=i;cur=STEPS[i].scene;z=zoomFor(i);setMode('idle');
+  render();showCard();setMode('idle');setPouch(saved.length>0);};
+
+/* ---------- update / draw ---------- */
+function update(dt){
+  mt+=dt;
+  if(mode==='walking'&&tween){
+    tween.t+=dt/tween.dur;const k=clamp(tween.t,0,1),e=RM?k:ease(k),prev=z;z=lerp(tween.from,tween.to,e);walkSpeed=(z-prev)/Math.max(dt,1e-3);
+    if(!RM){bob=Math.sin(now*8)*2*Math.sin(Math.PI*k);tween.step+=dt;if(tween.step>.55){tween.step=0;ping(tween.glimmer?520+700*k:660,tween.glimmer?.02+.04*k:.01,.4);}}
+    if(k>=1){walkSpeed=0;bob=0;const t=tween;tween=null;t.then();}
+  }
+  const g=nextGlimmer();energy=0;
+  if(g>=0&&STEPS[g].scene===cur){const zg=zoomFor(g),zp=g>0?zoomFor(Math.max(0,g-1)):1;energy=g===si+1&&tween&&tween.glimmer?clamp((z-zp)/Math.max(.01,zg-zp),0,1):(g===si?1:.1);}
+  if(mode==='gather'){setMode('idle');}
+  if(mode==='open'){setMode('idle');}
+  if(mode==='close'){
+    if(RM){if(mt>=.6){bank();setMode('idle');afterGlimmer();}}
+    else if(mt>=.45&&!keeper&&!scat.length){const c={x:W/2,y:H/2};
+      scat=swarm.map(s=>{const a=Math.random()*TAU,v=160+Math.random()*280;return{x:c.x,y:c.y,vx:Math.cos(a)*v,vy:Math.sin(a)*v,w:(Math.random()<.5?-1:1)*(1.4+Math.random()*2.2),life:0,size:s.size,col:s.col,hist:[]};});
+      keeper={t:0,from:c,to:pouchPt(),dur:1.35};setMode('scatter');}
+  }
+  if(scat.length){scat.forEach(s=>{s.life+=dt;const c=Math.cos(s.w*dt),sn=Math.sin(s.w*dt),vx=s.vx*c-s.vy*sn,vy=s.vx*sn+s.vy*c;s.vx=vx*.992;s.vy=vy*.992-260*dt;s.x+=s.vx*dt;s.y+=s.vy*dt;s.hist.push([s.x,s.y]);if(s.hist.length>6)s.hist.shift();});scat=scat.filter(s=>s.life<1.9);}
+  if(keeper){keeper.t+=dt/keeper.dur;if(keeper.t>=1){keeper=null;bank();makeSwarm();setMode('idle');afterGlimmer();}}
+  if(fade){fade.t+=dt/(RM?.4:1.1);if(fade.t>=1)fade=null;}
+  if(!RM&&W){let n=Math.abs(walkSpeed)*80*dt;const c=cam(cur,z),o=proj(SCENES[cur].focal,c);while(n>0){if(Math.random()<n){const a=Math.random()*TAU;motes.push({x:o.x+Math.cos(a)*20,y:o.y+Math.sin(a)*12,a,v:30+Math.random()*40,life:0,s:3+Math.random()*4,col:Math.random()<.7?SG:SB});}n-=1;}}
+  motes.forEach(m=>{m.life+=dt;m.v*=1+dt*2.6;m.x+=Math.cos(m.a)*m.v*dt;m.y+=Math.sin(m.a)*m.v*dt*.75;});motes=motes.filter(m=>m.life<2&&m.x>-40&&m.x<W+40&&m.y>-40&&m.y<H+40);
+  if(!RM)flies.forEach(f=>{f.x+=f.vx*dt*3;f.y+=f.vy*dt*3+Math.sin(now+f.ph)*.0004;if(f.x<0)f.x=1;if(f.x>1)f.x=0;if(f.y<.15||f.y>.98)f.vy*=-1;});
+}
+function drawImg(sIdx,zz,alpha){const S=SCENES[sIdx];if(!S.img.complete||!S.img.naturalWidth)return;const c=cam(sIdx,zz);sc.globalAlpha=alpha;sc.drawImage(S.img,(0-c.cx)*c.s+W/2,(0-c.cy)*c.s+H/2+bob,c.iw*c.s,c.ih*c.s);sc.globalAlpha=1;}
+function draw(){
+  sc.fillStyle='#221a46';sc.fillRect(0,0,W,H);
+  if(fade){const k=ease(clamp(fade.t,0,1));drawImg(fade.from,2.4+.3*k,1);drawImg(cur,z,k);
+    sc.globalCompositeOperation='lighter';sc.globalAlpha=Math.sin(Math.PI*k)*.35;sc.fillStyle='#ffe3a8';sc.fillRect(0,0,W,H);sc.globalAlpha=1;sc.globalCompositeOperation='source-over';}
+  else drawImg(cur,z,1);
+  const c=cam(cur,z);
+  // lit crystals
+  sc.globalCompositeOperation='lighter';
+  const S=SCENES[cur];
+  S.crystals.forEach((p,i)=>{const lit=Math.min(S.lit,S.crystals.length)>i;if(!lit)return;const q=proj(p,c);const fx0=lightFx.filter(f=>f.scene===cur&&f.i===i).pop();
+    const burst=fx0?clamp(1-(now-fx0.t)/1.2,0,1):0,base=(.55+.15*Math.sin(now*1.8+i))*c.s*90;
+    sc.globalAlpha=.75;sc.drawImage(SB,q.x-base/2,q.y-base/2,base,base);
+    if(burst>0){const r=base*(1+3*(1-burst));sc.globalAlpha=burst;sc.drawImage(SB,q.x-r/2,q.y-r/2,r,r);}});
+  sc.globalAlpha=1;sc.globalCompositeOperation='source-over';
+
+  fc.clearRect(0,0,W,H);fc.globalCompositeOperation='lighter';
+  flies.forEach(f=>{const a=.35+.35*Math.sin(now*2.2+f.ph);glim(f.x*W,f.y*H,f.s*4,a,SG);});
+  motes.forEach(m=>{const al=Math.min(1,m.life*3)*(1-m.life/2);glim(m.x,m.y,m.s*(1+m.life*2.2)*3,al*.8,m.col);});
+  if(swarmVisible()||mode==='gather'){
+    const A=proj(SCENES[cur].swarm,c),R=(.065*c.ih*c.s)*Math.pow(z,.5),k=mode==='gather'?ease(clamp(mt/1.3,0,1)):0,C=gatherC||{x:W/2,y:H/2};
+    if(mode!=='gather')glim(A.x,A.y,R*3.4,.2+.3*energy,SB);
+    swarm.forEach(s=>{let x,y;
+      if(mode==='gather'){const vx=s.sx-C.x,vy=s.sy-C.y,ang=k*3*s.dir,r=1-k;x=C.x+(vx*Math.cos(ang)-vy*Math.sin(ang))*r;y=C.y+(vx*Math.sin(ang)+vy*Math.cos(ang))*r;}
+      else{if(!RM)s.a+=(1/60)*(.35+2.1*energy)*s.sp*s.dir;
+        x=A.x+Math.cos(s.a)*R*s.r;y=A.y+Math.sin(s.a)*R*s.r*.7+(RM?0:Math.sin(now*1.7*s.sp+s.ph)*R*.14);
+        if(!RM&&mode==='walking'&&tween&&tween.glimmer){if(!s.darting&&energy>.45&&Math.random()<(1/60)*.08*energy){s.darting=true;s.dart=0;}
+          if(s.darting){s.dart+=(1/60)/.9;const dd=Math.sin(Math.min(1,s.dart)*Math.PI),tx=W/2+s.dir*W*.07,ty=H*.86;x+=(tx-x)*.65*dd;y+=(ty-y)*.65*dd;if(s.dart>=1)s.darting=false;}}}
+      s.x=x;s.y=y;s.hist.push([x,y]);if(s.hist.length>5)s.hist.shift();
+      const base=(4+R*.12)*s.size*(mode==='gather'?1+k*.6:1),tw=RM?(.8+.2*Math.sin(now*2+s.ph)):(.7+.3*Math.sin(now*6*s.sp+s.ph)),al=(mode==='gather'?1:(.68+.32*energy))*tw;
+      if(!RM)s.hist.forEach((h,i)=>glim(h[0],h[1],base*2.2*(i+1)/6,al*.25*(i+1)/6,s.col));
+      glim(x,y,base*3.2,al,s.col);});
+    if(mode==='gather')glim(C.x,C.y,60+k*H*.35,k*.85,SG);
+  }
+  const f=(now-flashT)/.6;if(f>=0&&f<1)glim(W/2,H/2,H*(.5+f*.9),(1-f)*.9,SG);
+  if(['open','play','replay'].includes(mode)&&portal.classList.contains('open')){
+    const pr=portal.getBoundingClientRect(),st=stage.getBoundingClientRect(),r={x:pr.left-st.left,y:pr.top-st.top,w:pr.width,h:pr.height};
+    const pts=[[.5,0],[1,.06],[1,.94],[.5,1],[0,.94],[0,.06]].map(q=>[r.x+q[0]*r.w,r.y+q[1]*r.h]);const segs=[];let tot=0;
+    for(let i=0;i<6;i++){const p=pts[i],q=pts[(i+1)%6],l=Math.hypot(q[0]-p[0],q[1]-p[1]);segs.push([p,q,l]);tot+=l;}
+    for(let i=0;i<14;i++){let u=((i/14+(RM?0:now*.035*(i%2?1:-1)))%1+1)%1*tot,j=0;while(u>segs[j][2]&&j<5){u-=segs[j][2];j++;}const sg=segs[j],q=u/sg[2];
+      glim(sg[0][0]+(sg[1][0]-sg[0][0])*q,sg[0][1]+(sg[1][1]-sg[0][1])*q,18+6*Math.sin(now*4+i),.55+.35*Math.sin(now*5+i*1.7),i%3?SG:SB);}
+  }
+  scat.forEach(s=>{const al=1-s.life/1.9,sz=10+6*s.size;s.hist.forEach((h,i)=>glim(h[0],h[1],sz*(i+1)/6,al*.3*(i+1)/7,s.col));glim(s.x,s.y,sz*2.6,al,s.col);});
+  if(keeper){const k=ease(clamp(keeper.t,0,1)),f0=keeper.from,t0=keeper.to,cx=(f0.x+t0.x)/2,cy=Math.min(f0.y,t0.y)-H*.28;
+    const x=(1-k)*(1-k)*f0.x+2*(1-k)*k*cx+k*k*t0.x,y=(1-k)*(1-k)*f0.y+2*(1-k)*k*cy+k*k*t0.y;glim(x,y,44,1,SG);glim(x,y,18,1,SG);}
+  fc.globalAlpha=1;fc.globalCompositeOperation='source-over';
+}
+let last=performance.now();
+function loop(t){const dt=Math.min(.05,(t-last)/1000);last=t;now=t/1000;if(W){update(dt);draw();}requestAnimationFrame(loop);}
+makeSwarm();buildTrail();render();requestAnimationFrame(loop);
+})();
+</script>
+
+<script src="astra-look.js"></script>
+</body></html>

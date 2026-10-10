@@ -1,0 +1,609 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Plan B · Crystal Railways · Astra’s Writing Adventure</title>
+<link rel="icon" type="image/svg+xml" href="../favicon.svg" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Courier+Prime:wght@400;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="../demo/switcher.css" />
+<link rel="stylesheet" href="stage-fit.css" />
+<style>
+  /* Plan B "Crystal Railways": the right panel is a vintage rail ticket. Tuned for 1366x768 (scene sits under the 36px view switcher). */
+  :root {
+    --paper: #fbf3df;
+    --paper-2: #f2e4c4;
+    --brown: #4a2e1a;
+    --brown-soft: #7a5638;
+    --navy: #1d2b4f;
+    --navy-2: #27396b;
+    --ink: rgba(29, 43, 79, .78);
+    --silver: #c9d1dc;
+    --silver-hi: #eef2f7;
+    --gold: #d9a93f;
+    --gold-hi: #f3d68c;
+    --cream: #fff8eb;
+    --display: "Baloo 2", "Nunito", system-ui, sans-serif;
+    --type: "Courier Prime", "Courier New", ui-monospace, monospace;
+    --bite: 5px;      /* scallop bite radius along the long edges */
+    --pitch: 22px;    /* scallop spacing */
+    --notch: 14px;    /* tear-off notch radius */
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; height: 100%; overflow: hidden; }
+  body { font-family: var(--display); color: var(--brown); background: #1a2318; -webkit-font-smoothing: antialiased; }
+
+  /* ---------- Scene (natural framing, same as v2) ---------- */
+  .scene { position: fixed; inset: 0; overflow: hidden; container-type: size; }
+  /* stage = the 1280x720 painting, cover-fitted and top-aligned (same framing as the old object-fit: cover; object-position: 50% 0) */
+  .stage {
+    position: absolute; left: 50%; top: 0; transform: translateX(-50%);
+    width: 1366px; height: 768px;   /* fixed design stage */
+  }
+  .stage > * { position: absolute; }
+  .stage img { display: block; width: 100%; height: auto; }
+  .stage .plate { inset: 0; width: 100%; height: 100%; }
+  /* layers are placed in painting pixels (1280x720) */
+  .L { left: calc(var(--x) * 100% / 1280); top: calc(var(--y) * 100% / 720); width: calc(var(--w) * 100% / 1280); }
+  .train { will-change: transform; }
+  .train .headlamp {
+    position: absolute; left: 8.87%; top: 28.86%; width: 9.5%; aspect-ratio: 1; translate: -50% -50%; border-radius: 50%;
+    background: radial-gradient(circle, rgba(225, 245, 255, .85) 0, rgba(120, 200, 255, .45) 22%, rgba(80, 170, 255, .12) 48%, rgba(80, 170, 255, 0) 70%);
+    mix-blend-mode: screen; opacity: .7; will-change: opacity; pointer-events: none;
+  }
+  .astra { transform-origin: 50% 97%; will-change: transform; }
+  .astra-shadow {
+    left: calc(548 * 100% / 1280); top: calc(646 * 100% / 720); width: calc(170 * 100% / 1280); height: calc(22 * 100% / 720);
+    background: radial-gradient(closest-side, rgba(28, 14, 4, .42), rgba(28, 14, 4, .18) 60%, rgba(28, 14, 4, 0));
+    transform-origin: 50% 50%;
+  }
+  .astra.hop { animation: astraHop 1.15s cubic-bezier(.3, .7, .4, 1) 1; }
+  .astra.sway { animation: astraSway 2s ease-in-out 1; }
+  .astra.boarding { animation: astraBoard .95s cubic-bezier(.45, .05, .55, 1) 1 forwards; }
+  .astra-shadow.hop { animation: shadowHop 1.15s cubic-bezier(.3, .7, .4, 1) 1; }
+  .astra-shadow.boarding { animation: shadowBoard .6s ease-out 1 forwards; }
+  @keyframes astraHop {
+    0% { transform: none; } 28% { transform: translateY(-3.2%) rotate(-2.5deg); }
+    52% { transform: translateY(0) rotate(1.6deg); } 72% { transform: translateY(-.8%) rotate(-.8deg); } 100% { transform: none; }
+  }
+  @keyframes shadowHop { 0%, 100% { transform: none; opacity: 1; } 28% { transform: scaleX(.86); opacity: .65; } 52% { transform: none; opacity: 1; } }
+  @keyframes astraSway { 0%, 100% { transform: none; } 30% { transform: rotate(-2.2deg); } 66% { transform: rotate(1.5deg); } }
+  @keyframes astraBoard {
+    0% { transform: none; opacity: 1; } 22% { transform: translateY(1%) scaleY(.97); opacity: 1; }
+    55% { transform: translate(12%, -22%) scale(.86); opacity: 1; } 78% { transform: translate(18%, -19%) scale(.78); opacity: .8; } 100% { transform: translate(21%, -18%) scale(.72); opacity: 0; }
+  }
+  @keyframes shadowBoard { to { transform: scaleX(.5); opacity: 0; } }
+  .fern { pointer-events: none; }
+  .fx { inset: 0; width: 100%; height: 100%; pointer-events: none; }
+  /* lantern glow (flicker driven from anim.js) */
+  .lampglow {
+    left: calc(var(--x) * 100% / 1280); top: calc(var(--y) * 100% / 720); width: calc(var(--s) * 100% / 1280);
+    aspect-ratio: 1; translate: -50% -50%; border-radius: 50%; pointer-events: none; will-change: opacity;
+    background: radial-gradient(circle, rgba(255, 226, 160, .75) 0, rgba(255, 186, 90, .34) 26%, rgba(255, 160, 60, .12) 48%, rgba(255, 150, 50, 0) 70%);
+    mix-blend-mode: screen; opacity: .8;
+  }
+  /* gold runes: a multiplied groove, a screened gold line and a blurred glow that shimmers (opacity set from anim.js) */
+  .rune { left: calc(var(--x) * 100% / 1280); top: calc(var(--y) * 100% / 720); width: calc(var(--w) * 100% / 1280); aspect-ratio: 1; translate: -50% -50%; pointer-events: none; }
+  .rune svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; rotate: var(--r, 0deg); fill: none; stroke-linecap: round; stroke-linejoin: round; }
+  .rune .carve { mix-blend-mode: multiply; stroke: #3c210c; stroke-width: 3.6; opacity: .62; translate: .4% .9%; }
+  .rune .gold { mix-blend-mode: screen; stroke: #e9b44c; stroke-width: 1.7; opacity: .78; }
+  .rune .glow { mix-blend-mode: screen; stroke: #ffc75a; stroke-width: 4.5; filter: blur(2.6px); opacity: .32; will-change: opacity; transition: opacity 2.4s ease-in-out; }
+  .scene::after {
+    content: ""; position: absolute; inset: 0; pointer-events: none;
+    background:
+      radial-gradient(420px 150px at 0 0, rgba(10, 16, 12, .45), rgba(10, 16, 12, 0) 75%),
+      linear-gradient(270deg, rgba(14, 18, 34, .30) 0, rgba(14, 18, 34, 0) 460px);
+  }
+
+  /* ---------- View switcher (../demo/switcher.js adds html.vs-on and a 36px bar) ---------- */
+  /* the switcher sits above the 1366x768 stage (stage-fit.css/js), so nothing inside is offset for it */
+
+  /* ---------- Title ---------- */
+  .title { position: absolute; left: 14px; top: 8px; z-index: 3; display: flex; align-items: center; gap: 9px; }
+  .title svg { width: 24px; height: 32px; filter: drop-shadow(0 0 6px rgba(120, 200, 255, .7)); }
+  .title h1 {
+    margin: 0; padding-top: 5px; font-weight: 800; font-size: 31px; line-height: 1; letter-spacing: .01em;
+    background: linear-gradient(180deg, #fff6dc 10%, #f2cf7a 85%);
+    -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
+    filter: drop-shadow(0 2px 0 rgba(58, 34, 14, .85)) drop-shadow(0 3px 8px rgba(0, 0, 0, .5));
+  }
+  .title small {
+    display: block; margin-top: 1px; font-size: 14px; font-weight: 700; letter-spacing: .03em;
+    -webkit-text-fill-color: var(--cream); text-shadow: 0 1px 3px rgba(0, 0, 0, .75);
+  }
+
+  /* ---------- Ticket ---------- */
+  .ticket {
+    position: absolute; right: 18px; top: 50%; translate: 0 -50%; width: 440px; z-index: 3;
+    /* card resting on the scene: shadow follows the die-cut silhouette */
+    filter: drop-shadow(0 2px 1.5px rgba(30, 18, 6, .35)) drop-shadow(0 14px 20px rgba(6, 10, 24, .5));
+  }
+  .paper {
+    position: relative;
+    background:
+      /* paper grain (feTurbulence noise, very low alpha) */
+      url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 .32  0 0 0 0 .22  0 0 0 0 .1  0 0 0 .16 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>"),
+      radial-gradient(120% 60% at 20% 0%, rgba(255, 255, 255, .6), rgba(255, 255, 255, 0) 60%),
+      radial-gradient(80% 50% at 100% 100%, rgba(205, 170, 110, .22), rgba(205, 170, 110, 0) 70%),
+      linear-gradient(180deg, var(--paper), var(--paper-2));
+    /* die cut: scalloped long edges (mask layers are intersected) */
+    -webkit-mask-image:
+      radial-gradient(circle at 0 50%, transparent var(--bite), #000 calc(var(--bite) + .5px)),
+      radial-gradient(circle at 100% 50%, transparent var(--bite), #000 calc(var(--bite) + .5px)),
+      var(--cut-a), var(--cut-b), var(--cut-c, linear-gradient(#000, #000)), var(--perf-cut);
+            mask-image:
+      radial-gradient(circle at 0 50%, transparent var(--bite), #000 calc(var(--bite) + .5px)),
+      radial-gradient(circle at 100% 50%, transparent var(--bite), #000 calc(var(--bite) + .5px)),
+      var(--cut-a), var(--cut-b), var(--cut-c, linear-gradient(#000, #000)), var(--perf-cut);
+    -webkit-mask-size: 100% var(--pitch), 100% var(--pitch), 100% 100%, 100% 100%, 100% 100%, 10px 100%;
+            mask-size: 100% var(--pitch), 100% var(--pitch), 100% 100%, 100% 100%, 100% 100%, 10px 100%;
+    -webkit-mask-repeat: repeat-y, repeat-y, no-repeat, no-repeat, no-repeat, repeat-x;
+            mask-repeat: repeat-y, repeat-y, no-repeat, no-repeat, no-repeat, repeat-x;
+    -webkit-mask-position: 0 calc(var(--pitch) / 2), 0 calc(var(--pitch) / 2), 0 0, 0 0, 0 0, 5px 0;
+            mask-position: 0 calc(var(--pitch) / 2), 0 calc(var(--pitch) / 2), 0 0, 0 0, 0 0, 5px 0;
+    -webkit-mask-composite: source-in; mask-composite: intersect;
+  }
+  /* printed double-rule frame */
+  .paper::before {
+    content: ""; position: absolute; inset: 11px 13px; pointer-events: none; z-index: 0;
+    border: 3.5px double var(--ink); border-radius: 9px;
+  }
+  .main {
+    border-radius: 16px 16px 0 0;
+    padding: 17px 21px 12px;
+    --cut-a: radial-gradient(circle at 0 100%, transparent var(--notch), #000 calc(var(--notch) + .5px));
+    --cut-b: radial-gradient(circle at 100% 100%, transparent var(--notch), #000 calc(var(--notch) + .5px));
+    --perf-cut: radial-gradient(circle at 50% 100%, transparent 2.2px, #000 2.7px);
+  }
+  .main::before { bottom: 6px; }
+  .main > * { position: relative; z-index: 1; }
+
+  /* faint guilloche + crystal watermark behind the body */
+  .security {
+    position: absolute !important; z-index: 0 !important; left: 17px; right: 17px; top: 120px; bottom: 10px;
+    pointer-events: none; border-radius: 6px;
+    background:
+      url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='72' height='18'><path d='M0 9 C9 1 18 1 27 9 S45 17 54 9 S63 1 72 9' fill='none' stroke='%231d2b4f' stroke-opacity='.07' stroke-width='1'/><path d='M0 9 C9 17 18 17 27 9 S45 1 54 9 S63 17 72 9' fill='none' stroke='%231d2b4f' stroke-opacity='.05' stroke-width='1'/></svg>");
+    -webkit-mask-image: radial-gradient(75% 60% at 50% 50%, #000 30%, transparent 100%);
+            mask-image: radial-gradient(75% 60% at 50% 50%, #000 30%, transparent 100%);
+  }
+  .watermark {
+    position: absolute !important; z-index: 0 !important; left: 50%; top: 175px; translate: -50% 0;
+    width: 230px; height: 306px; opacity: .05; pointer-events: none;
+  }
+
+  /* header band */
+  .band {
+    position: relative; display: flex; align-items: center; gap: 12px;
+    padding: 9px 14px 9px 10px; border-radius: 6px;
+    background:
+      repeating-linear-gradient(135deg, rgba(255, 255, 255, .04) 0 2px, rgba(255, 255, 255, 0) 2px 7px),
+      linear-gradient(180deg, var(--navy-2), var(--navy));
+    box-shadow: inset 0 0 0 2px var(--navy), inset 0 0 0 3px rgba(201, 209, 220, .7);
+  }
+  .emblem {
+    flex: none; width: 42px; height: 42px; border-radius: 50%; display: grid; place-items: center;
+    background: radial-gradient(circle at 35% 30%, #34497f, #16213f);
+    border: 2px solid var(--silver); box-shadow: 0 0 0 2px var(--navy), 0 0 0 3px rgba(201, 209, 220, .5);
+  }
+  .emblem svg { width: 18px; height: 24px; filter: drop-shadow(0 0 4px rgba(120, 200, 255, .8)); }
+  .brand { flex: 1; min-width: 0; }
+  .brand .rr {
+    margin: 0; font-size: 20px; font-weight: 800; line-height: 1.05; letter-spacing: .2em; color: var(--silver-hi);
+  }
+  .brand .kinds { margin: 3px 0 0; display: flex; gap: 6px; }
+  .kind {
+    font-size: 13px; font-weight: 800; letter-spacing: .14em; line-height: 18px; padding: 0 7px;
+    color: var(--gold-hi); border: 1.25px solid rgba(243, 214, 140, .75); border-radius: 3px;
+  }
+
+  /* printed fields under the band */
+  .fields {
+    display: flex; justify-content: space-between; align-items: baseline;
+    margin: 7px 2px 0; padding-bottom: 6px; border-bottom: 1.5px solid rgba(29, 43, 79, .35);
+    font-family: var(--type); font-weight: 700; font-size: 14px; letter-spacing: .02em; color: var(--navy);
+  }
+  .fields .serial { color: #8a2d1f; letter-spacing: .06em; }
+  .fields .k { font-weight: 400; color: var(--brown-soft); }
+
+  /* next stop */
+  .nextstop { display: flex; align-items: center; gap: 14px; padding: 14px 2px 14px; border-bottom: 1.5px dotted rgba(122, 86, 56, .5); }
+  .nextstop .ico { flex: none; width: 50px; height: 52px; display: block; filter: drop-shadow(0 2px 2px rgba(40, 26, 12, .3)); }
+  .nextstop .kicker { margin: 0; font-size: 14px; font-weight: 800; letter-spacing: .16em; line-height: 1.2; color: #94690f; }
+  .nextstop .place { margin: 1px 0 0; font-size: 30px; font-weight: 800; line-height: 1.02; color: var(--navy); }
+  .nextstop .lesson { margin: 4px 0 0; font-size: 17px; font-weight: 700; line-height: 1.2; color: var(--brown); }
+  .lbl { margin: 0; font-size: 14px; font-weight: 800; letter-spacing: .14em; text-transform: uppercase; color: var(--navy-2); line-height: 1.2; }
+
+  .sec { padding: 10px 2px 11px; border-bottom: 1.5px dotted rgba(122, 86, 56, .5); }
+  .txt { margin: 0; font-size: 16px; font-weight: 700; line-height: 1.25; color: var(--brown); }
+  .goal .txt { margin-top: 3px; }
+
+  /* stops grid */
+  .stops { padding: 10px 2px 0; }
+  .stops .head { display: flex; align-items: baseline; justify-content: space-between; }
+  .count { font-family: var(--type); font-weight: 700; font-size: 14px; color: var(--brown-soft); }
+  .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px 4px; margin-top: 8px; }
+  .world {
+    position: relative; display: grid; justify-items: center; padding: 6px 0 3px;
+    border: 0; border-radius: 12px; background: none; font: inherit; color: var(--brown); cursor: pointer;
+  }
+  .medal { position: relative; width: 64px; height: 66px; }
+  .medal img { width: 64px; height: 66px; display: block; filter: drop-shadow(0 2px 2px rgba(40, 26, 12, .3)); }
+  .wname { margin-top: 3px; font-size: 15px; font-weight: 800; line-height: 1.1; white-space: nowrap; color: var(--navy); }
+  .wmod { font-size: 14px; font-weight: 700; line-height: 1.2; color: var(--brown-soft); }
+  /* finished = conductor's punch: a punched hole ringed in silver with a check */
+  .punch {
+    position: absolute; right: -6px; top: 36px; width: 25px; height: 25px; border-radius: 50%;
+    display: grid; place-items: center;
+    background: radial-gradient(circle at 50% 40%, #2b3d6e, #121b33);
+    box-shadow: 0 0 0 2px #dfe5ee, 0 0 0 3px rgba(29, 43, 79, .55), inset 0 2px 3px rgba(0, 0, 0, .6);
+  }
+  .punch svg { width: 13px; height: 13px; display: block; }
+  .world.next { background: rgba(243, 214, 140, .26); box-shadow: inset 0 0 0 1.5px rgba(217, 169, 63, .6); }
+  .world.next .medal::before {
+    content: ""; position: absolute; left: -4px; top: -4px; width: 72px; height: 72px; border-radius: 50%;
+    border: 3px solid var(--gold); box-shadow: 0 0 9px rgba(243, 214, 140, .8);
+  }
+  .world.next .wmod { color: #94690f; }
+  .nexttag {
+    position: absolute; left: 50%; top: -10px; translate: -50% 0; z-index: 2;
+    padding: 0 8px; border-radius: 999px; white-space: nowrap;
+    font-size: 13px; font-weight: 800; line-height: 18px; letter-spacing: .06em;
+    background: var(--navy); color: var(--gold-hi); border: 1.5px solid var(--gold);
+  }
+
+  /* every stop is live now; .soon (a small "Coming soon" note) is kept for future stops */
+  .world.soon { cursor: default; }
+  .world.soon::after {
+    content: "Coming soon"; position: absolute; left: 50%; top: 22px; translate: -50% 0; z-index: 3; pointer-events: none;
+    padding: 2px 9px; border-radius: 999px; white-space: nowrap; font-size: 13px; font-weight: 800; line-height: 18px; letter-spacing: .03em;
+    background: var(--navy); color: var(--cream); border: 1.5px solid var(--silver);
+    opacity: 0; transition: opacity .18s ease;
+  }
+  .world.soon:hover::after, .world.soon:focus-visible::after, .world.soon.tip::after { opacity: 1; }
+  .world.go { cursor: pointer; }
+  .world.go:focus-visible, .board:focus-visible { outline: 3px solid var(--gold); outline-offset: 2px; }
+  .world.next { box-shadow: inset 0 0 0 1.5px rgba(217, 169, 63, .75), 0 0 12px rgba(243, 214, 140, .45); }
+  .punchring {
+    position: absolute; z-index: 4; width: 30px; height: 30px; translate: -50% -50%; border-radius: 50%; pointer-events: none;
+    border: 2.5px solid rgba(29, 43, 79, .55); opacity: 0;
+  }
+  .punchring.go { animation: punchRing .42s ease-out 1 forwards; }
+  @keyframes punchRing { 0% { transform: scale(1.7); opacity: 0; } 40% { transform: scale(1); opacity: 1; } 100% { transform: scale(.9); opacity: 0; } }
+  .ticket.press .main { animation: ticketPress .3s ease-out 1; }
+  @keyframes ticketPress { 0%, 100% { transform: none; } 35% { transform: translateY(2px) rotate(-.25deg); } }
+  .chad {
+    position: fixed; z-index: 50; width: 16px; height: 16px; translate: -50% -50%; border-radius: 50%; pointer-events: none;
+    background: radial-gradient(circle at 40% 35%, #fffaf0, var(--paper-2)); box-shadow: 0 1px 2px rgba(40, 26, 12, .45);
+    animation: chadFall 1.1s cubic-bezier(.5, 0, .8, .6) 1 forwards;
+  }
+  @keyframes chadFall {
+    0% { transform: translate(0, 0) rotate(0) scaleY(1); opacity: 1; }
+    30% { transform: translate(6px, 26px) rotate(140deg) scaleY(.55); }
+    60% { transform: translate(-4px, 80px) rotate(300deg) scaleY(.9); opacity: 1; }
+    100% { transform: translate(5px, 170px) rotate(480deg) scaleY(.5); opacity: 0; }
+  }
+  .portal { position: absolute; inset: 0; width: 1366px; height: 768px; object-fit: cover; opacity: 0; pointer-events: none;
+    z-index: 880; transition: opacity .3s ease; background: #071426; }
+  .portal.on { opacity: 1; }
+  .depart-fade {
+    position: absolute; inset: 0; z-index: 900; pointer-events: none; opacity: 0; transition: opacity .7s ease;
+    background: radial-gradient(120% 90% at 50% 40%, #f3d9a6, #d9a466 70%, #b77a44);
+  }
+  .depart-fade.on { opacity: 1; pointer-events: auto; }
+  /* video depart: the chosen world's painting (cover, like the world page) fades in over the last 0.8s of the film */
+  .depart-fade.to-world { background: #1a2318 center / cover no-repeat; transition: opacity .8s ease; }
+  @media (prefers-reduced-motion: reduce) {
+    .astra.hop, .astra.sway, .astra-shadow.hop, .punchring.go, .ticket.press .main { animation: none; }
+    .rune .glow { transition: none; }
+    .chad { display: none; }
+  }
+
+  /* ---------- Stub ---------- */
+  .stub {
+    border-radius: 0 0 16px 16px;
+    padding: 15px 21px 15px 20px;
+    display: grid; grid-template-columns: 26px 16px 1fr 64px; align-items: center; gap: 0 10px;
+    --cut-a: radial-gradient(circle at 0 0, transparent var(--notch), #000 calc(var(--notch) + .5px));
+    --cut-b: radial-gradient(circle at 100% 0, transparent var(--notch), #000 calc(var(--notch) + .5px));
+    --perf-cut: radial-gradient(circle at 50% 0, transparent 2.2px, #000 2.7px);
+    /* conductor's punched hole on the stub */
+    --cut-c: radial-gradient(circle at 34px 50%, transparent 7px, #000 7.5px);
+  }
+  .stub::before { top: 6px; }
+  .stub > * { position: relative; z-index: 1; }
+  .perf {
+    position: absolute; left: calc(var(--notch) + 6px); right: calc(var(--notch) + 6px); top: 0; height: 0; z-index: 2;
+    height: 4px; background: linear-gradient(rgba(74, 46, 26, .10), rgba(74, 46, 26, 0));
+  }
+  .admit {
+    justify-self: center; align-self: stretch; display: flex; align-items: center; justify-content: center;
+    writing-mode: vertical-rl; rotate: 180deg;
+    font-size: 13px; font-weight: 800; letter-spacing: .1em; color: var(--navy); line-height: 1;
+  }
+  .board {
+    height: 52px; border-radius: 12px;
+    display: flex; align-items: center; justify-content: center; gap: 10px;
+    background: linear-gradient(180deg, var(--navy-2), var(--navy));
+    border: 2px solid var(--silver);
+    box-shadow: inset 0 0 0 2px var(--navy), inset 0 0 0 3px rgba(238, 242, 247, .35), 0 4px 10px rgba(16, 24, 48, .35);
+    font: inherit; font-size: 20px; font-weight: 800; letter-spacing: .02em; color: var(--cream); cursor: pointer;
+  }
+  .board svg { width: 20px; height: 20px; }
+  .stamp { width: 64px; height: 64px; rotate: -14deg; opacity: .32; justify-self: end; }
+/* ===== Plan B intro drop-in (dash-anim/1_PASTE_INTO_index_html_STYLE.css): video under the ticket UI ===== */
+.stage .intro-bg {
+  position: absolute; inset: 0; width: 100%; height: 100%;
+  object-fit: cover; object-position: 50% 0;
+  z-index: 0; pointer-events: none;
+  background: #1a2318;
+}
+.ticket { z-index: 5 !important; }
+.title { z-index: 5 !important; }
+.scene.intro-playing .plate,
+.scene.intro-playing .train,
+.scene.intro-playing .astra,
+.scene.intro-playing .astra-shadow,
+.scene.intro-playing .fern,
+.scene.intro-playing .fx,
+.scene.intro-playing .lampglow,
+.scene.intro-playing .rune {
+  opacity: 0 !important;
+  visibility: hidden;
+}
+.scene.intro-done .intro-bg { opacity: 1; }
+.scene.intro-done .plate { opacity: 0; }
+/* ===== END PASTE ===== */
+
+  /* Video-mode follow-up (per ANIM_NOTE): once the intro has played, and while the depart video runs, the video IS the scene.
+     Keep the plate-aligned sprite layers hidden so the CSS train/Astra never double up with the filmed ones.
+     anim.js only runs ambient effects (steam from the filmed stack, fireflies, leaves, lantern flicker) after "crystal-intro-done". */
+  .scene.intro-done .train, .scene.intro-done .astra, .scene.intro-done .astra-shadow, .scene.intro-done .fern, .scene.intro-done .rune,
+  .scene.depart-playing .plate, .scene.depart-playing .train, .scene.depart-playing .astra, .scene.depart-playing .astra-shadow,
+  .scene.depart-playing .fern, .scene.depart-playing .rune, .scene.depart-playing .lampglow, .scene.depart-playing .fx,
+  .scene.depart-done .plate, .scene.depart-done .train, .scene.depart-done .astra, .scene.depart-done .astra-shadow,
+  .scene.depart-done .fern, .scene.depart-done .rune, .scene.depart-done .lampglow, .scene.depart-done .fx {
+    opacity: 0 !important; visibility: hidden;
+  }
+  .scene.intro-done .fx, .scene.intro-done .lampglow { transition: opacity .8s ease; }
+  .world.go:not(.next):hover { background: rgba(243, 214, 140, .16); }
+
+  /* ---------- Start gate: the intro waits for a tap so it can play from 0 with sound (speech in sync) ---------- */
+  .intro-gate { position: absolute; inset: 0; z-index: 60; display: grid; place-items: center; transition: opacity .45s ease; }
+  .intro-gate.gone { opacity: 0; pointer-events: none; }
+  .intro-gate[hidden] { display: none; }
+  .start-btn {
+    display: grid; justify-items: center; gap: 2px; padding: 16px 38px 13px; border-radius: 22px; cursor: pointer;
+    background: rgba(255, 248, 235, .82); -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, .95); color: #4a2e1a; font-family: var(--display);
+    box-shadow: 0 14px 34px -12px rgba(20, 12, 4, .6); transition: translate .2s ease, box-shadow .2s ease;
+  }
+  .start-btn svg { width: 22px; height: 30px; filter: drop-shadow(0 0 6px rgba(120, 200, 255, .7)); margin-bottom: 2px; }
+  .start-btn .big { font-size: 34px; font-weight: 800; line-height: 1; }
+  .start-btn .small { font-size: 16px; font-weight: 700; color: #7a5638; line-height: 1.2; }
+  .start-btn:hover { translate: 0 -2px; box-shadow: 0 18px 38px -12px rgba(20, 12, 4, .65); }
+  .start-btn:focus-visible { outline: 3px solid var(--gold); outline-offset: 3px; }
+
+  /* ---------- Ticket + title stay out of the way of the videos ---------- */
+  /* while the intro plays (body.ui-away) they wait off-screen, then slide in when it ends */
+  .ticket, .title { transition: transform .9s cubic-bezier(.22, .8, .3, 1), opacity .7s ease; }
+  body.ui-away .ticket { transform: translateX(calc(100% + 60px)); opacity: 0; pointer-events: none; }
+  body.ui-away .title { transform: translateY(-150%); opacity: 0; pointer-events: none; }
+  /* boarding: the ticket lifts, tilts and swoops off to the upper right, then the depart video runs unobstructed */
+  body.ui-flyoff .ticket { animation: ticketFly .8s cubic-bezier(.45, 0, .7, .2) 1 forwards; pointer-events: none; }
+  body.ui-flyoff .title { transform: translateY(-150%); opacity: 0; pointer-events: none; }
+  @keyframes ticketFly {
+    0% { transform: none; opacity: 1; }
+    22% { transform: translate(-6px, -16px) rotate(-2.5deg) scale(1.02); opacity: 1; }
+    100% { transform: translate(calc(100% + 180px), -320px) rotate(16deg) scale(.88); opacity: 0; }
+  }
+
+  /* ---------- Stop selection (pick a stop, then board) ---------- */
+  .world.sel { background: rgba(39, 57, 107, .10); box-shadow: inset 0 0 0 2px rgba(29, 43, 79, .7); }
+  .world.next.sel { box-shadow: inset 0 0 0 2px rgba(29, 43, 79, .7), 0 0 12px rgba(243, 214, 140, .45); }
+  .world.sel .medal::after {
+    content: ""; position: absolute; left: -4px; top: -4px; width: 72px; height: 72px; border-radius: 50%; pointer-events: none;
+    border: 3px solid var(--navy-2); box-shadow: 0 0 0 1.5px rgba(238, 242, 247, .9), 0 0 8px rgba(39, 57, 107, .45);
+  }
+  .world.sel .wname { text-decoration: underline 2px rgba(29, 43, 79, .45); text-underline-offset: 3px; }
+  .world.pick { animation: pickPress .28s ease-out 1; }
+  @keyframes pickPress { 0%, 100% { transform: none; } 40% { transform: translateY(2px) scale(.97); } }
+  .board { flex-direction: row; }
+  .board .bt { display: grid; justify-items: start; line-height: 1.05; }
+  .board .bt small { font-size: 13px; font-weight: 700; letter-spacing: .02em; color: var(--gold-hi); }
+  .board:disabled { opacity: .55; cursor: default; }
+  @media (prefers-reduced-motion: reduce) {
+    .ticket, .title { transition: opacity .3s ease; }
+    body.ui-away .ticket, body.ui-away .title, body.ui-flyoff .title { transform: none; }
+    body.ui-flyoff .ticket { animation: none; opacity: 0; }
+    .world.pick { animation: none; }
+  }
+
+  /* ---------- Video framing (intro-controller.js): the filmed scene is shown whole (contain-fit, never cover-cropped),
+     so Astra is full-body and the whole locomotive is visible at any window size. Any area the frame doesn't cover is
+     filled by a blurred, darkened copy of the current frame (#vfill), never black bars. After the intro the stage eases
+     (1s, no bounce) so the locomotive and Astra sit left of the ticket. ---------- */
+  .vfill { position: absolute; inset: -40px; width: calc(100% + 80px); height: calc(100% + 80px); z-index: 0; pointer-events: none;
+    filter: blur(26px) brightness(.55) saturate(1.1); opacity: 0; transition: opacity .4s ease; }
+  .scene.vmode .vfill { opacity: 1; }
+  .scene.vmode .stage {
+    left: var(--vx, 0px); top: var(--vy, 0px); width: var(--vw, 100cqw);
+    transform: translate(var(--dx, 0px), var(--dy, 0px)) scale(var(--k, 1)); transform-origin: 0 0;
+    transition: transform 1s cubic-bezier(.33, 0, .2, 1);
+  }
+  .scene.vmode .stage .intro-bg { object-fit: fill; background: transparent; }
+  .scene.vmode.vnoease .stage { transition: none; }
+  @media (prefers-reduced-motion: reduce) { .scene.vmode .stage { transition: none; } }
+
+  /* ---------- "Through the tunnel" loader (tunnel.js): train-window view, then the light opens into the world ---------- */
+  .tunnel { position: absolute; inset: 0; z-index: 850; overflow: hidden; opacity: 0; transition: opacity .35s ease; background: #262350; }
+  .tunnel.on { opacity: 1; }
+  .tunnel canvas { position: absolute; inset: 0; width: 100%; height: 100%; will-change: transform;
+    scale: 1.16; transition: scale .6s cubic-bezier(.2, .7, .3, 1); }
+  .tunnel.on canvas { scale: 1.05; }          /* whoosh: the window view rushes in */
+  .tunnel-art { position: absolute; inset: 0; background: #f6eedb center / cover no-repeat; opacity: 0; transition: opacity .55s ease; }
+  .tunnel.arrive .tunnel-art { opacity: 1; }
+  .tunnel-window {
+    position: absolute; inset: 0; pointer-events: none; transition: opacity .5s ease, scale .55s ease;
+    will-change: transform;
+  }
+  .tunnel-window::before {   /* navy carriage wall around a rounded window opening, brass rim */
+    content: ""; position: absolute; left: 92px; top: 62px; right: 92px; bottom: 62px; border-radius: 54px;
+    border: 7px solid #c9a24a; box-shadow: 0 0 0 3px #7a5a1f, 0 0 0 400px #1f2d5c, inset 0 0 0 3px rgba(255, 230, 160, .55), inset 0 0 26px rgba(10, 12, 40, .45);
+  }
+  .tunnel-window::after {    /* soft sheen on the glass */
+    content: ""; position: absolute; left: 99px; top: 69px; right: 99px; bottom: 69px; border-radius: 48px;
+    background: linear-gradient(115deg, rgba(255, 255, 255, .10), rgba(255, 255, 255, 0) 38%);
+  }
+  .tunnel-window i {          /* brass rivets */
+    position: absolute; width: 14px; height: 14px; border-radius: 50%; translate: -50% -50%;
+    background: radial-gradient(circle at 35% 30%, #fff1c2, #d9ae55 45%, #7a5a1f 100%); box-shadow: 0 1px 2px rgba(0, 0, 0, .5);
+  }
+  .tunnel-window i:nth-child(1) { left: 46px; top: 36px; } .tunnel-window i:nth-child(2) { left: 683px; top: 32px; }
+  .tunnel-window i:nth-child(3) { left: 1320px; top: 36px; } .tunnel-window i:nth-child(4) { left: 1322px; top: 384px; }
+  .tunnel-window i:nth-child(5) { left: 1320px; top: 732px; } .tunnel-window i:nth-child(6) { left: 683px; top: 736px; }
+  .tunnel-window i:nth-child(7) { left: 46px; top: 732px; } .tunnel-window i:nth-child(8) { left: 44px; top: 384px; }
+  .tunnel.arrive .tunnel-window { opacity: 0; scale: 1.08; }
+  .stage-frame.tunnel-on > :not(.tunnel) { visibility: hidden; }
+</style>
+</head>
+<body class="ui-away">
+<script src="../demo/switcher.js" data-page="dashboard-b"></script>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <linearGradient id="gLit" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#bfe9ff"/><stop offset=".45" stop-color="#5bb4f5"/><stop offset="1" stop-color="#1f5fbf"/>
+    </linearGradient>
+    <symbol id="crystal-lit" viewBox="0 0 24 32">
+      <polygon points="12,1 22,10 12,31 2,10" fill="url(#gLit)" stroke="#1b4f9e" stroke-width="1.2" stroke-linejoin="round"/>
+      <polygon points="12,1 22,10 12,13 2,10" fill="#d9f3ff" opacity=".75"/>
+      <polyline points="2,10 12,13 22,10" fill="none" stroke="#1b4f9e" stroke-width=".9" opacity=".6"/>
+      <line x1="12" y1="13" x2="12" y2="31" stroke="#ffffff" stroke-width=".9" opacity=".45"/>
+    </symbol>
+    <symbol id="r-curl" viewBox="0 0 40 40"><path d="M13.0 20.0 L12.9 19.8 L12.8 19.6 L12.8 19.3 L12.9 19.1 L12.9 18.8 L13.1 18.6 L13.3 18.3 L13.6 18.1 L13.9 18.0 L14.2 17.8 L14.6 17.8 L15.0 17.8 L15.4 17.9 L15.8 18.1 L16.2 18.4 L16.6 18.7 L16.9 19.1 L17.1 19.6 L17.2 20.1 L17.3 20.7 L17.2 21.3 L17.1 21.8 L16.8 22.4 L16.4 22.9 L16.0 23.4 L15.4 23.8 L14.8 24.1 L14.1 24.3 L13.4 24.3 L12.6 24.3 L11.9 24.1 L11.1 23.8 L10.5 23.3 L9.9 22.7 L9.4 22.1 L9.0 21.3 L8.7 20.4 L8.6 19.5 L8.6 18.6 L8.8 17.7 L9.2 16.8 L9.7 16.0 L10.4 15.2 L11.2 14.6 L12.1 14.1 L13.1 13.7 L14.1 13.5 L15.2 13.5 L16.3 13.7 L17.4 14.1 L18.4 14.6 L19.3 15.4 L20.1 16.3 L20.8 17.3 L21.3 18.5 L21.5 19.7 L21.6 21.0 L21.4 22.2 L21.1 23.5 L20.5 24.7 M27.0 20.0 L27.1 20.2 L27.2 20.4 L27.2 20.7 L27.1 20.9 L27.1 21.2 L26.9 21.4 L26.7 21.7 L26.4 21.9 L26.1 22.0 L25.8 22.2 L25.4 22.2 L25.0 22.2 L24.6 22.1 L24.2 21.9 L23.8 21.6 L23.4 21.3 L23.1 20.9 L22.9 20.4 L22.8 19.9 L22.7 19.3 L22.8 18.7 L22.9 18.2 L23.2 17.6 L23.6 17.1 L24.0 16.6 L24.6 16.2 L25.2 15.9 L25.9 15.7 L26.6 15.7 L27.4 15.7 L28.1 15.9 L28.9 16.2 L29.5 16.7 L30.1 17.3 L30.6 17.9 L31.0 18.7 L31.3 19.6 L31.4 20.5 L31.4 21.4 L31.2 22.3 L30.8 23.2 L30.3 24.0 L29.6 24.8 L28.8 25.4 L27.9 25.9 L26.9 26.3 L25.9 26.5 L24.8 26.5 L23.7 26.3 L22.6 25.9 L21.6 25.4 L20.7 24.6 L19.9 23.7 L19.2 22.7 L18.7 21.5 L18.5 20.3 L18.4 19.0 L18.6 17.8 L18.9 16.5 L19.5 15.3 M14 12 C20 10 20 30 26 28"/></symbol>
+    <symbol id="r-triskele" viewBox="0 0 40 40"><path d="M20.0 12.8 L19.8 13.0 L19.6 13.1 L19.4 13.1 L19.1 13.1 L18.8 13.1 L18.4 12.9 L18.2 12.7 L17.9 12.4 L17.7 12.0 L17.6 11.6 L17.5 11.1 L17.5 10.6 L17.7 10.1 L17.9 9.6 L18.3 9.2 L18.7 8.8 L19.3 8.4 L19.9 8.2 L20.6 8.1 L21.3 8.1 L22.0 8.2 L22.7 8.5 L23.4 8.9 L24.1 9.4 L24.6 10.1 L25.0 10.9 L25.3 11.7 L25.4 12.7 L25.4 13.7 L25.2 14.6 L24.8 15.6 L24.2 16.5 L23.5 17.3 L22.6 18.0 L21.6 18.5 L20.4 18.8 L19.2 19.0 L18.0 18.9 L16.8 18.6 L15.6 18.1 M26.2 23.6 L26.2 23.4 L26.2 23.1 L26.3 22.9 L26.4 22.6 L26.6 22.4 L26.9 22.2 L27.2 22.1 L27.6 22.0 L28.1 22.0 L28.5 22.1 L28.9 22.3 L29.3 22.5 L29.7 22.9 L30.0 23.4 L30.2 23.9 L30.4 24.5 L30.4 25.1 L30.3 25.8 L30.1 26.5 L29.7 27.1 L29.2 27.7 L28.6 28.2 L27.9 28.5 L27.1 28.8 L26.3 28.9 L25.4 28.9 L24.5 28.7 L23.6 28.4 L22.8 27.9 L22.0 27.2 L21.4 26.4 L20.9 25.4 L20.6 24.4 L20.5 23.3 L20.5 22.1 L20.8 21.0 L21.3 19.9 L22.0 18.8 L22.8 17.9 L23.9 17.1 M13.8 23.6 L14.0 23.7 L14.2 23.8 L14.4 24.0 L14.5 24.2 L14.6 24.5 L14.6 24.9 L14.6 25.2 L14.5 25.6 L14.3 26.0 L14.0 26.3 L13.6 26.6 L13.1 26.8 L12.6 26.9 L12.1 27.0 L11.5 26.9 L10.9 26.7 L10.3 26.4 L9.8 26.0 L9.4 25.5 L9.0 24.9 L8.8 24.2 L8.6 23.4 L8.6 22.6 L8.8 21.8 L9.1 21.0 L9.6 20.2 L10.2 19.5 L10.9 18.9 L11.8 18.5 L12.8 18.2 L13.8 18.1 L14.9 18.1 L15.9 18.3 L16.9 18.8 L17.9 19.4 L18.8 20.2 L19.5 21.2 L20.0 22.3 L20.4 23.5 L20.5 24.8"/></symbol>
+    <symbol id="r-moon" viewBox="0 0 40 40"><path d="M24 6 A14 14 0 1 0 24 34 A11 11 0 1 1 24 6 Z M30 14 L31.5 18 L35.5 19.5 L31.5 21 L30 25 L28.5 21 L24.5 19.5 L28.5 18 Z"/></symbol>
+    <symbol id="r-tree" viewBox="0 0 40 40"><path d="M20 36 L20 6 M20 18 L11 9 M20 18 L29 9 M20 26 L13 20 M20 26 L27 20 M20 36 C16 36 13 34 12 31 M20 36 C24 36 27 34 28 31"/></symbol>
+    <symbol id="r-sun" viewBox="0 0 40 40"><path d="M20.8 20.0 L20.9 20.2 L21.0 20.3 L21.0 20.6 L21.0 20.8 L20.9 21.0 L20.8 21.3 L20.6 21.5 L20.3 21.7 L20.0 21.8 L19.7 21.9 L19.3 22.0 L18.9 21.9 L18.6 21.8 L18.2 21.6 L17.8 21.3 L17.5 21.0 L17.3 20.6 L17.1 20.1 L17.0 19.6 L17.1 19.0 L17.2 18.5 L17.4 18.0 L17.7 17.5 L18.1 17.0 L18.6 16.6 L19.2 16.3 L19.8 16.1 L20.5 16.0 L21.2 16.0 L21.9 16.2 L22.6 16.5 L23.3 16.9 L23.8 17.5 L24.3 18.1 L24.7 18.9 L24.9 19.7 L25.0 20.6 L25.0 21.4 L24.7 22.3 L24.4 23.2 L23.8 24.0 L23.2 24.7 L22.4 25.2 L21.5 25.7 L20.5 26.0 L19.4 26.1 L18.4 26.0 L17.3 25.7 L16.3 25.3 L15.4 24.6 L14.5 23.8 L13.9 22.9 L13.3 21.8 L13.0 20.7 L12.9 19.4 L13.0 18.2 L13.3 17.0 L13.8 15.8 L14.6 14.7 L15.5 13.8 L16.6 13.0 L17.8 12.4 L19.1 12.0 L20.5 11.9 L21.9 12.0 L23.3 12.3 L24.7 12.9 L25.9 13.7 L27.0 14.8 L27.9 16.0 L28.6 17.4 L29.0 18.9 L29.2 20.4 L29.1 22.0 L28.7 23.6 L28.1 25.1 L27.1 26.5 L26.0 27.7 L24.6 28.7 L23.1 29.5 M33.0 20.0 L37.0 20.0 M29.2 29.2 L32.0 32.0 M20.0 33.0 L20.0 37.0 M10.8 29.2 L8.0 32.0 M7.0 20.0 L3.0 20.0 M10.8 10.8 L8.0 8.0 M20.0 7.0 L20.0 3.0 M29.2 10.8 L32.0 8.0"/></symbol>
+    <symbol id="r-leaf" viewBox="0 0 40 40"><path d="M20 4 C30 12 30 26 20 36 C10 26 10 12 20 4 Z M20 8 L20 33 M20 15 L26 11 M20 21 L27 17 M20 27 L25 24 M20 15 L14 11 M20 21 L13 17 M20 27 L15 24"/></symbol>
+    <symbol id="r-wave" viewBox="0 0 40 40"><path d="M4 26 C8 18 14 18 16 24 C18 30 24 30 26 22 C27.5 16 33 13 36 18 M31.5 19.4 L31.7 19.2 L31.9 19.0 L32.0 18.7 L32.0 18.3 L31.8 17.9 L31.5 17.5 L31.0 17.3 L30.4 17.2 L29.8 17.3 L29.2 17.7 L28.7 18.3 L28.4 19.0 L28.4 19.8 L28.7 20.7 L29.2 21.5 L30.0 22.0 L31.0 22.4 L32.1 22.4 L33.2 22.0 L34.1 21.3 L34.8 20.2 L35.2 19.0 L35.1 17.7 L34.6 16.4"/></symbol>
+
+    <symbol id="crystal-line" viewBox="0 0 24 32">
+      <g fill="none" stroke="#1d2b4f" stroke-width=".7" stroke-linejoin="round">
+        <polygon points="12,1 22,10 12,31 2,10"/><polyline points="2,10 12,13 22,10"/><line x1="12" y1="13" x2="12" y2="31"/>
+        <line x1="12" y1="1" x2="12" y2="13"/><line x1="7" y1="5.5" x2="12" y2="13"/><line x1="17" y1="5.5" x2="12" y2="13"/>
+      </g>
+    </symbol>
+  </defs>
+</svg>
+
+<div class="stage-frame" id="frame">
+<div class="scene" aria-hidden="true">
+  <canvas class="vfill" id="vfill" width="160" height="90"></canvas>
+  <div class="stage" id="stage">
+    <img class="plate" src="assets/plate.jpg" alt="" />
+    <div class="rune" style="--x:190;--y:190;--w:30;--r:-30deg"><svg class="carve" viewBox="0 0 40 40"><use href="#r-curl"/></svg><svg class="gold" viewBox="0 0 40 40"><use href="#r-curl"/></svg><svg class="glow" viewBox="0 0 40 40"><use href="#r-curl"/></svg></div>
+    <div class="rune" style="--x:330;--y:112;--w:30;--r:-30deg"><svg class="carve" viewBox="0 0 40 40"><use href="#r-sun"/></svg><svg class="gold" viewBox="0 0 40 40"><use href="#r-sun"/></svg><svg class="glow" viewBox="0 0 40 40"><use href="#r-sun"/></svg></div>
+    <div class="rune" style="--x:437;--y:70;--w:22;--r:0deg"><svg class="carve" viewBox="0 0 40 40"><use href="#r-leaf"/></svg><svg class="gold" viewBox="0 0 40 40"><use href="#r-leaf"/></svg><svg class="glow" viewBox="0 0 40 40"><use href="#r-leaf"/></svg></div>
+    <div class="rune" style="--x:548;--y:170;--w:28;--r:45deg"><svg class="carve" viewBox="0 0 40 40"><use href="#r-triskele"/></svg><svg class="gold" viewBox="0 0 40 40"><use href="#r-triskele"/></svg><svg class="glow" viewBox="0 0 40 40"><use href="#r-triskele"/></svg></div>
+    <div class="rune" style="--x:128;--y:330;--w:26;--r:0deg"><svg class="carve" viewBox="0 0 40 40"><use href="#r-moon"/></svg><svg class="gold" viewBox="0 0 40 40"><use href="#r-moon"/></svg><svg class="glow" viewBox="0 0 40 40"><use href="#r-moon"/></svg></div>
+    <div class="rune" style="--x:262;--y:262;--w:26;--r:90deg"><svg class="carve" viewBox="0 0 40 40"><use href="#r-wave"/></svg><svg class="gold" viewBox="0 0 40 40"><use href="#r-wave"/></svg><svg class="glow" viewBox="0 0 40 40"><use href="#r-wave"/></svg></div>
+    <div class="rune" style="--x:590;--y:95;--w:34;--r:0deg"><svg class="carve" viewBox="0 0 40 40"><use href="#r-tree"/></svg><svg class="gold" viewBox="0 0 40 40"><use href="#r-tree"/></svg><svg class="glow" viewBox="0 0 40 40"><use href="#r-tree"/></svg></div>
+    <div class="rune" style="--x:790;--y:225;--w:30;--r:10deg"><svg class="carve" viewBox="0 0 40 40"><use href="#r-curl"/></svg><svg class="gold" viewBox="0 0 40 40"><use href="#r-curl"/></svg><svg class="glow" viewBox="0 0 40 40"><use href="#r-curl"/></svg></div>
+    <span class="lampglow" id="lamp1" style="--x:70;--y:316;--s:150"></span>
+    <span class="lampglow" id="lamp2" style="--x:197;--y:319;--s:96"></span>
+    <div class="train L" id="train" style="--x:186;--y:204;--w:1071"><img src="assets/train.webp" alt="" width="1071" height="440" /><span class="headlamp" id="headlamp"></span></div>
+    <span class="astra-shadow" id="astraShadow"></span>
+    <div class="astra L" id="astra" style="--x:514;--y:195;--w:234"><img src="assets/astra.webp" alt="" width="234" height="464" /></div>
+    <div class="fern L" style="--x:0;--y:570;--w:215"><img src="assets/fern.webp" alt="" width="215" height="150" /></div>
+    <canvas class="fx" id="fx"></canvas>
+  </div>
+</div>
+
+<header class="title">
+  <svg aria-hidden="true"><use href="#crystal-lit"/></svg>
+  <h1>Crystal Railways<small>Astra’s Writing Adventure</small></h1>
+</header>
+
+<aside class="ticket" aria-label="Your train ticket">
+  <div class="paper main">
+    <div class="security" aria-hidden="true"></div>
+    <svg class="watermark" aria-hidden="true"><use href="#crystal-line"/></svg>
+
+    <div class="band">
+      <span class="emblem"><svg aria-hidden="true"><use href="#crystal-lit"/></svg></span>
+      <div class="brand">
+        <p class="rr">CRYSTAL RAILWAYS</p>
+        <p class="kinds"><span class="kind">ADMIT ONE</span><span class="kind">ONE WAY</span></p>
+      </div>
+    </div>
+
+    <div class="fields" aria-hidden="true">
+      <span class="serial">No. 000303</span>
+      <span><span class="k">CLASS</span> WRITER</span>
+      <span>08 OCT 2026</span>
+    </div>
+
+    <section class="nextstop" aria-label="Next stop">
+      <img class="ico" src="assets/icons/sandstone-canyon.png" alt="" />
+      <div>
+        <p class="kicker">NEXT STOP</p>
+        <p class="place">Sandstone Canyon</p>
+        <p class="lesson">Lesson 3: Details &amp; Evidence</p>
+      </div>
+    </section>
+
+
+    <section class="sec goal">
+      <p class="lbl">Today’s goal</p>
+      <p class="txt">Back up my opinion with strong, specific reasons.</p>
+    </section>
+
+    <section class="stops" aria-label="Choose your stop">
+      <div class="head"><p class="lbl">Choose your stop</p><span class="count">2 of 6 punched</span></div>
+      <div class="grid">
+        <button class="world done go" type="button" data-dest="frostpine-peak/"><span class="medal"><img src="assets/icons/frostpine-peak.png" alt="" /><span class="punch" aria-label="Finished"><svg viewBox="0 0 12 12"><path d="M2.2 6.3 4.8 8.8 9.8 3.4" fill="none" stroke="#eef2f7" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></span></span><span class="wname">Frostpine Peak</span><span class="wmod">M1</span></button>
+        <button class="world done go" type="button" data-dest="mushroom-hollow/"><span class="medal"><img src="assets/icons/mushroom-hollow.png" alt="" /><span class="punch" aria-label="Finished"><svg viewBox="0 0 12 12"><path d="M2.2 6.3 4.8 8.8 9.8 3.4" fill="none" stroke="#eef2f7" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></span></span><span class="wname">Mushroom Hollow</span><span class="wmod">M2</span></button>
+        <button class="world go" type="button" data-dest="moonwater-falls/"><span class="medal"><img src="assets/icons/moonwater-falls.png" alt="" /></span><span class="wname">Moonwater Falls</span><span class="wmod">M3</span></button>
+        <button class="world go" type="button" data-dest="firefly-bayou/"><span class="medal"><img src="assets/icons/firefly-bayou.png" alt="" /></span><span class="wname">Firefly Bayou</span><span class="wmod">M4</span></button>
+        <button class="world go" type="button" data-dest="crystal-caverns/"><span class="medal"><img src="assets/icons/crystal-caverns.png" alt="" /></span><span class="wname">Crystal Caverns</span><span class="wmod">M5</span></button>
+        <button class="world next go" type="button" aria-current="step" id="goSandstone" data-dest="sandstone-canyon/"><span class="nexttag">NEXT</span><span class="medal"><img src="assets/icons/sandstone-canyon.png" alt="" /></span><span class="wname">Sandstone Canyon</span><span class="wmod">M6</span></button>
+      </div>
+    </section>
+  </div>
+
+  <div class="paper stub">
+    <span class="perf" aria-hidden="true"></span>
+    <span class="holegap" aria-hidden="true"></span>
+    <span class="admit" aria-hidden="true">ADMIT ONE</span>
+    <button class="board" type="button" id="board">
+      <span class="bt"><span>Board the train</span><small id="boardDest">to Sandstone Canyon</small></span>
+      <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M4 10h11M11 5.5 15.5 10 11 14.5" fill="none" stroke="#f3d68c" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </button>
+    <svg class="stamp" viewBox="0 0 100 100" aria-hidden="true">
+      <defs><path id="ring" d="M50 50 m-36 0 a36 36 0 1 1 72 0 a36 36 0 1 1 -72 0"/></defs>
+      <g fill="none" stroke="#1d2b4f"><circle cx="50" cy="50" r="47" stroke-width="3"/><circle cx="50" cy="50" r="27" stroke-width="1.6"/></g>
+      <text font-family="Baloo 2, sans-serif" font-weight="800" font-size="11.5" letter-spacing="2.2" fill="#1d2b4f"><textPath href="#ring">CRYSTAL RAILWAYS ★ VALID ★</textPath></text>
+      <text x="50" y="47" text-anchor="middle" font-family="Courier Prime, monospace" font-weight="700" font-size="12" fill="#1d2b4f">08 OCT</text>
+      <text x="50" y="61" text-anchor="middle" font-family="Courier Prime, monospace" font-weight="700" font-size="12" fill="#1d2b4f">2026</text>
+    </svg>
+  </div>
+</aside>
+<div class="intro-gate" id="introGate">
+  <button class="start-btn" type="button" id="introStart">
+    <svg aria-hidden="true"><use href="#crystal-lit"/></svg>
+    <span class="big">All aboard!</span>
+    <span class="small">Tap to start</span>
+  </button>
+</div>
+<video class="portal" id="portal" muted playsinline preload="none" aria-hidden="true"></video>
+<div class="depart-fade" id="departFade" aria-hidden="true"></div>
+</div>
+<script src="stage-fit.js"></script>
+<script src="intro-controller.js"></script>
+<script src="tunnel.js"></script>
+<script src="anim.js"></script>
+</body>
+</html>

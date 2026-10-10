@@ -1,0 +1,35 @@
+/* Version switcher: slim dark-glass bar fixed at the very top of the student dashboard and the lesson.
+   Shared by /dashboard-a/ … /dashboard-d/, /demo/ and /demo/lesson/. switcher.js injects the bar and sets html.vs-on. */
+:root{--vs-h:36px}
+.vswitch{position:fixed;z-index:1000;top:0;left:0;right:0;height:var(--vs-h);box-sizing:border-box;
+  display:flex;align-items:center;justify-content:center;gap:10px;padding:0 14px;
+  background:rgba(16,12,38,.82);backdrop-filter:blur(16px) saturate(120%);-webkit-backdrop-filter:blur(16px) saturate(120%);
+  border-bottom:1px solid rgba(255,210,122,.38);box-shadow:0 6px 18px -12px rgba(0,0,0,.8);
+  font:700 12.5px/1 "Nunito Sans","Manrope",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;color:#fff}
+.vswitch .vs-lbl{display:flex;align-items:center;gap:6px;font-size:10.5px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:#ffd27a}
+.vswitch .vs-lbl::before{content:"\2726";font-size:11px}
+.vswitch .vs-pills{display:flex;gap:4px;padding:3px;border-radius:999px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.18)}
+.vswitch a{display:block;padding:5px 11px;border-radius:999px;color:#fff;text-decoration:none;white-space:nowrap;transition:background .2s,color .2s}
+.vswitch a:hover{background:rgba(255,255,255,.14)}
+.vswitch a[aria-current="page"]{background:rgba(255,253,248,.97);color:#1d1838;box-shadow:inset 0 -2px 0 #ffd27a}
+.vswitch a:focus-visible{outline:2px solid #ffd27a;outline-offset:2px}
+
+/* Student dashboard: push the page below the bar */
+html.vs-on body{padding-top:var(--vs-h)}
+html.vs-on .demo-topbar{top:var(--vs-h)}
+html.vs-on .demo-shell{min-height:calc(100vh - var(--vs-h))}
+/* Plan A React dashboard (/dashboard-a/): full-screen stage under the bar */
+html.vs-on #root > .h-dvh{height:calc(100dvh - var(--vs-h));align-items:start}
+html.vs-on #root > .h-dvh > div{transform-origin:50% 0}
+
+/* Lesson: shift the fixed layers down; the top bar tucks 8px under the switcher (was 12px from the top) */
+html.vs-on .astra .stage{top:var(--vs-h)}
+html.vs-on .astra .topbar{top:calc(var(--vs-h) + 8px)}
+html.vs-on .astra .controls{top:calc(var(--vs-h) + 64px)}
+html.vs-on .astra{--a-top:calc(var(--vs-h) + 68px)}
+html.vs-on .astra .vframe{height:min(100%,calc(100vh - 210px - var(--vs-h)))}
+@media (max-width:860px){
+  html.vs-on .astra .stage{top:auto}
+  html.vs-on .astra .topbar{top:var(--vs-h)}
+  html.vs-on body{padding-top:var(--vs-h)!important}
+}
