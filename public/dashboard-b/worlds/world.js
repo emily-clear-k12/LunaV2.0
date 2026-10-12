@@ -62,7 +62,9 @@
       var t = el("span", "tag frost", b); t.textContent = "Lesson " + (i + 1);
       b.addEventListener("click", function () { say(W.name + " · Lesson " + (i + 1) + " is coming soon"); });
     });
-    sub.textContent = "Crystal Railways · " + W.name + " · " + v.spots.length + " lessons";
+    var MOD = { "frostpine-peak": 1, "mushroom-hollow": 2, "moonwater-falls": 3, "firefly-bayou": 4, "crystal-caverns": 5, "sandstone-canyon": 6 };
+    var slug = location.pathname.replace(/\/(index\.html)?$/, "").split("/").pop(), m = MOD[slug];
+    sub.textContent = "Crystal Railways · " + (m ? "Module " + m + " · " : "") + W.name;
     document.title = W.name + " · Crystal Railways · Astra’s Writing Adventure";
   }
 

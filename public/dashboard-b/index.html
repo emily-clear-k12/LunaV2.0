@@ -213,6 +213,7 @@
   .nextstop .ico { flex: none; width: 50px; height: 52px; display: block; filter: drop-shadow(0 2px 2px rgba(40, 26, 12, .3)); }
   .nextstop .kicker { margin: 0; font-size: 14px; font-weight: 800; letter-spacing: .16em; line-height: 1.2; color: #94690f; }
   .nextstop .place { margin: 1px 0 0; font-size: 30px; font-weight: 800; line-height: 1.02; color: var(--navy); }
+  .nextstop .lesson .mod { color: #94690f; font-weight: 800; }
   .nextstop .lesson { margin: 4px 0 0; font-size: 17px; font-weight: 700; line-height: 1.2; color: var(--brown); }
   .lbl { margin: 0; font-size: 14px; font-weight: 800; letter-spacing: .14em; text-transform: uppercase; color: var(--navy-2); line-height: 1.2; }
 
@@ -232,7 +233,7 @@
   .medal { position: relative; width: 64px; height: 66px; }
   .medal img { width: 64px; height: 66px; display: block; filter: drop-shadow(0 2px 2px rgba(40, 26, 12, .3)); }
   .wname { margin-top: 3px; font-size: 15px; font-weight: 800; line-height: 1.1; white-space: nowrap; color: var(--navy); }
-  .wmod { font-size: 14px; font-weight: 700; line-height: 1.2; color: var(--brown-soft); }
+  .wmod { font-size: 12.5px; font-weight: 700; line-height: 1.2; letter-spacing: .02em; white-space: nowrap; color: var(--brown-soft); }
   /* finished = conductor's punch: a punched hole ringed in silver with a check */
   .punch {
     position: absolute; right: -6px; top: 36px; width: 25px; height: 25px; border-radius: 50%;
@@ -586,7 +587,7 @@
       <div>
         <p class="kicker">NEXT STOP</p>
         <p class="place">Sandstone Canyon</p>
-        <p class="lesson">Lesson 3: Details &amp; Evidence</p>
+        <p class="lesson"><span class="mod">Module 6</span> · Lesson 3: Details &amp; Evidence</p>
       </div>
     </section>
 
@@ -599,12 +600,12 @@
     <section class="stops" aria-label="Choose your stop">
       <div class="head"><p class="lbl">Choose your stop</p><span class="count">2 of 6 punched</span></div>
       <div class="grid">
-        <button class="world done go" type="button" data-dest="frostpine-peak/"><span class="medal"><img src="assets/icons/frostpine-peak.png" alt="" /><span class="punch" aria-label="Finished"><svg viewBox="0 0 12 12"><path d="M2.2 6.3 4.8 8.8 9.8 3.4" fill="none" stroke="#eef2f7" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></span></span><span class="wname">Frostpine Peak</span><span class="wmod">M1</span></button>
-        <button class="world done go" type="button" data-dest="mushroom-hollow/"><span class="medal"><img src="assets/icons/mushroom-hollow.png" alt="" /><span class="punch" aria-label="Finished"><svg viewBox="0 0 12 12"><path d="M2.2 6.3 4.8 8.8 9.8 3.4" fill="none" stroke="#eef2f7" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></span></span><span class="wname">Mushroom Hollow</span><span class="wmod">M2</span></button>
-        <button class="world go" type="button" data-dest="moonwater-falls/"><span class="medal"><img src="assets/icons/moonwater-falls.png" alt="" /></span><span class="wname">Moonwater Falls</span><span class="wmod">M3</span></button>
-        <button class="world go" type="button" data-dest="firefly-bayou/"><span class="medal"><img src="assets/icons/firefly-bayou.png" alt="" /></span><span class="wname">Firefly Bayou</span><span class="wmod">M4</span></button>
-        <button class="world go" type="button" data-dest="crystal-caverns/"><span class="medal"><img src="assets/icons/crystal-caverns.png" alt="" /></span><span class="wname">Crystal Caverns</span><span class="wmod">M5</span></button>
-        <button class="world next go" type="button" aria-current="step" id="goSandstone" data-dest="sandstone-canyon/"><span class="nexttag">NEXT</span><span class="medal"><img src="assets/icons/sandstone-canyon.png" alt="" /></span><span class="wname">Sandstone Canyon</span><span class="wmod">M6</span></button>
+        <button class="world done go" type="button" data-dest="frostpine-peak/"><span class="medal"><img src="assets/icons/frostpine-peak.png" alt="" /><span class="punch" aria-label="Finished"><svg viewBox="0 0 12 12"><path d="M2.2 6.3 4.8 8.8 9.8 3.4" fill="none" stroke="#eef2f7" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></span></span><span class="wname">Frostpine Peak</span><span class="wmod">Module 1</span></button>
+        <button class="world done go" type="button" data-dest="mushroom-hollow/"><span class="medal"><img src="assets/icons/mushroom-hollow.png" alt="" /><span class="punch" aria-label="Finished"><svg viewBox="0 0 12 12"><path d="M2.2 6.3 4.8 8.8 9.8 3.4" fill="none" stroke="#eef2f7" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></span></span><span class="wname">Mushroom Hollow</span><span class="wmod">Module 2</span></button>
+        <button class="world go" type="button" data-dest="moonwater-falls/"><span class="medal"><img src="assets/icons/moonwater-falls.png" alt="" /></span><span class="wname">Moonwater Falls</span><span class="wmod">Module 3</span></button>
+        <button class="world go" type="button" data-dest="firefly-bayou/"><span class="medal"><img src="assets/icons/firefly-bayou.png" alt="" /></span><span class="wname">Firefly Bayou</span><span class="wmod">Module 4</span></button>
+        <button class="world go" type="button" data-dest="crystal-caverns/"><span class="medal"><img src="assets/icons/crystal-caverns.png" alt="" /></span><span class="wname">Crystal Caverns</span><span class="wmod">Module 5</span></button>
+        <button class="world next go" type="button" aria-current="step" id="goSandstone" data-dest="sandstone-canyon/"><span class="nexttag">NEXT</span><span class="medal"><img src="assets/icons/sandstone-canyon.png" alt="" /></span><span class="wname">Sandstone Canyon</span><span class="wmod">Module 6</span></button>
       </div>
     </section>
   </div>

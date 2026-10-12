@@ -15,7 +15,7 @@
   var $ = function (id) { return document.getElementById(id); };
   var scene = $("scene"), intro = $("intro"), gate = $("gate"), startBtn = $("start"), skip = $("skip");
   var layers = [$("layerA"), $("layerB")], front = 0, cur = -1, finished = false, started = false;
-  var ribs = $("ribs"), ride = $("ride"), wl = $("wl"), wlIc = $("wlIc"), wlName = $("wlName"), toast = $("toast");
+  var ribs = $("ribs"), ride = $("ride"), wl = $("wl"), wlIc = $("wlIc"), wlName = $("wlName"), wlMod = $("wlMod"), toast = $("toast");
   // Each clip plays ONCE (at 0.75x) and holds its last frame, cut at Astra's happiest open-eyed moment.
   // poster = that hold frame (also the reduced-motion / error fallback); first = frame 0 shown while the clip loads.
   // The teacup world has no clip of its own: it simply holds the intro's end frame.
@@ -29,7 +29,8 @@
   WORLDS.forEach(function (w, i) {
     var r = document.createElement("button");
     r.type = "button"; r.className = "rib ui"; r.style.setProperty("--c", w.c); r.title = w.name; r.style.left = (w.x - 33) + "px";
-    r.setAttribute("aria-label", "Bookmark: " + w.name);
+    r.setAttribute("aria-label", "Module " + (i + 1) + ": " + w.name);
+    var n = document.createElement("span"); n.className = "num"; n.textContent = i + 1; n.setAttribute("aria-hidden", "true"); r.appendChild(n);
     r.addEventListener("click", function () { select(i); });
     r.addEventListener("pointerenter", function () { warm(i); }); r.addEventListener("focus", function () { warm(i); });
     ribs.appendChild(r); spots.push(r);
@@ -46,7 +47,7 @@
     if (i === cur && !WORLDS[i].vid) return;   // re-selecting a clip world replays it once
     cur = i; var w = WORLDS[i];
     spots.forEach(function (s, k) { s.classList.toggle("active", k === i); s.setAttribute("aria-pressed", k === i ? "true" : "false"); });
-    wl.style.setProperty("--c", w.c); wlIc.textContent = w.ic; wlName.textContent = w.name; ride.setAttribute("aria-label", "Ride to " + w.name);
+    wl.style.setProperty("--c", w.c); wlIc.textContent = w.ic; wlName.textContent = w.name; wlMod.textContent = "Module " + (i + 1); ride.setAttribute("aria-label", "Ride to " + w.name);
     var back = layers[front], next = layers[1 - front]; front = 1 - front;
     next.style.backgroundImage = 'url("' + ((w.vid && !reduce) ? w.first : w.poster) + '")';
     var old = next.querySelector("video"); if (old) old.remove();
