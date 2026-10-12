@@ -84,6 +84,14 @@
   .ridewrap img { opacity: 0; transition: opacity .8s ease; }
   .ridewrap img.on { opacity: 1; }
   .ridewrap .skip { z-index: 2; }
+  .arr { position: absolute; z-index: 15; top: 690px; width: 60px; height: 60px; margin-left: -30px; padding: 0; border: 0; border-radius: 50%; background: transparent; cursor: pointer; transition: box-shadow .25s ease, background .25s ease; }
+  .arr:hover, .arr:focus-visible { background: radial-gradient(circle, rgba(255,228,150,.28) 0 55%, transparent 72%); box-shadow: 0 0 18px 6px rgba(255,214,120,.55); outline: none; }
+  .arr:focus-visible { box-shadow: 0 0 0 3px var(--gold), 0 0 18px 6px rgba(255,214,120,.55); }
+  .arr:active { translate: 0 1px; }
+  .replay { position: absolute; left: 16px; top: 14px; z-index: 20; padding: 5px 13px; border-radius: 999px; font: 700 13px/1.2 "Baloo 2", system-ui, sans-serif; color: #4a2e1a; cursor: pointer;
+    background: rgba(255,248,235,.82); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,.9); box-shadow: 0 2px 8px rgba(40,25,10,.18); }
+  .replay:hover { background: rgba(255,248,235,.95); }
+  .replay:focus-visible { outline: 3px solid var(--gold); outline-offset: 2px; }
   .page-fade { position: absolute; inset: 0; z-index: 95; background: #0b0f0c; opacity: 0; pointer-events: none; transition: opacity .4s ease; }
   .page-fade.on { opacity: 1; pointer-events: auto; }
   .toast.on { opacity: 1; translate: 0 0; }
@@ -125,6 +133,9 @@
   <div class="layer" id="layerB" aria-hidden="true"></div>
 
   <div id="ribs"></div>
+  <button type="button" class="arr ui" id="arrPrev" style="left:237px" aria-label="Previous world"></button>
+  <button type="button" class="arr ui" id="arrNext" style="left:816px" aria-label="Next world"></button>
+  <button type="button" class="replay ui from-top" id="replay"><span aria-hidden="true">↺</span> Replay intro</button>
 
   <div class="top ui from-top">
     <header class="title frost">

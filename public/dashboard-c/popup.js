@@ -161,6 +161,22 @@
   intro.addEventListener("error", function () { if (started) finish(); });
   startBtn.addEventListener("click", startIntro);
   skip.addEventListener("click", function () { skip.blur(); skipIntro(); });
+  // painted book arrows: previous / next world (wraps 1<->6), same as tapping that ribbon
+  function step(d) { select((cur + d + WORLDS.length) % WORLDS.length); }
+  $("arrPrev").addEventListener("click", function () { step(-1); });
+  $("arrNext").addEventListener("click", function () { step(1); });
+  // Replay intro: back to the opening and play v1 from the start (ignores popupIntroSeen)
+  $("replay").addEventListener("click", function () {
+    $("replay").blur();
+    layers.forEach(function (l) { l.classList.remove("on"); var v = l.querySelector("video"); if (v) v.pause(); });
+    scene.classList.remove("ready"); toast.classList.remove("on");
+    finished = false; started = false; seenAtLoad = false; cur = -1;
+    try { sessionStorage.setItem("popupWorld", "0"); } catch (e) {}
+    if (reduce) { finish(true); return; }
+    intro.preload = "auto"; try { intro.currentTime = 0; } catch (e) {}
+    if (intro.readyState === 0) intro.load();
+    gate.hidden = true; startIntro();
+  });
   window.PopUp = { select: select, skip: skipIntro, worlds: WORLDS };
 
   var seenAtLoad = false, seen = false;
