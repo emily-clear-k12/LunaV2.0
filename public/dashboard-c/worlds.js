@@ -44,5 +44,15 @@ window.POPUP_WORLD_PAGES = {
       { x: 650, y: 451, w: 42, h: 60 },    // Lesson 5: on the ledge above the pool
       { x: 626, y: 140, w: 40, h: 60 }     // Lesson 6: top of the golden dome palace
     ]
+  },
+  "candyleaf-grove": {
+    module: 6, name: "Candyleaf Grove", ribbon: "candyleaf", color: "#d8742a", icon: "🍬",
+    video: "assets/world.mp4", poster: "assets/poster.jpg", holdImg: "assets/hold.jpg", hold: null, rate: 0.75,   // blink at 8.25s; end frame eyes open, smiling
+    hotspots: [
+      { x: 503, y: 324, w: 50, h: 82 },    // Lesson 1: left of the bridges
+      { x: 926, y: 440, w: 74, h: 112 },   // Lesson 2: big front-right crystal
+      { x: 794, y: 327, w: 50, h: 82 },    // Lesson 3: right of the bridges
+      { x: 654, y: 229, w: 40, h: 60 }     // Lesson 4: far bridge
+    ]
   }
 };
