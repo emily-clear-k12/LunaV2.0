@@ -130,7 +130,8 @@
     if (started || finished) return; started = true;
     scene.classList.remove("intro-waiting");
     if (gate) gate.classList.add("gone");
-    setTimeout(function () { if (gate) gate.hidden = true; }, 500);
+    if (gateBtn) { gateBtn.classList.add("punched"); setTimeout(function () { gateBtn.classList.add("flying"); }, 160); }  // punch, then fly off
+    setTimeout(function () { if (gate) gate.hidden = true; }, 1450);
     try { intro.currentTime = 0; } catch (e) {}
     window.CrystalIntro.tapAt = performance.now();
     playWithSound(intro);   // inside the tap handler, so sound is allowed

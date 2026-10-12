@@ -374,17 +374,41 @@
   .intro-gate { position: absolute; inset: 0; z-index: 60; display: grid; place-items: center; transition: opacity .45s ease; }
   .intro-gate.gone { opacity: 0; pointer-events: none; }
   .intro-gate[hidden] { display: none; }
+  /* start ticket: same paper, band and die-cut language as the right-side ticket */
   .start-btn {
-    display: grid; justify-items: center; gap: 2px; padding: 16px 38px 13px; border-radius: 22px; cursor: pointer;
-    background: rgba(255, 248, 235, .82); -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, .95); color: #4a2e1a; font-family: var(--display);
-    box-shadow: 0 14px 34px -12px rgba(20, 12, 4, .6); transition: translate .2s ease, box-shadow .2s ease;
+    --bite: 7px; --pitch: 22px; --notch: 0px; --perf-cut: linear-gradient(#000, #000);
+    --cut-a: linear-gradient(#000, #000); --cut-b: linear-gradient(#000, #000);
+    position: relative; width: 396px; padding: 18px 24px 16px; border: 0; border-radius: 14px; cursor: pointer;
+    font-family: var(--display); color: var(--navy); text-align: center;
+    rotate: -2deg; transition: translate .2s ease, filter .2s ease;
+    filter: drop-shadow(0 2px 1.5px rgba(30, 18, 6, .35)) drop-shadow(0 14px 20px rgba(6, 10, 24, .5));
   }
-  .start-btn svg { width: 22px; height: 30px; filter: drop-shadow(0 0 6px rgba(120, 200, 255, .7)); margin-bottom: 2px; }
-  .start-btn .big { font-size: 34px; font-weight: 800; line-height: 1; }
-  .start-btn .small { font-size: 16px; font-weight: 700; color: #7a5638; line-height: 1.2; }
-  .start-btn:hover { translate: 0 -2px; box-shadow: 0 18px 38px -12px rgba(20, 12, 4, .65); }
-  .start-btn:focus-visible { outline: 3px solid var(--gold); outline-offset: 3px; }
+  .start-btn .st-paper { position: absolute; inset: 0; border-radius: 14px; z-index: 0; }
+  .start-btn > :not(.st-paper) { position: relative; z-index: 1; }
+  .start-btn .band { padding: 7px 12px 7px 8px; gap: 10px; }
+  .start-btn .emblem { width: 34px; height: 34px; }
+  .start-btn .emblem svg { width: 15px; height: 20px; }
+  .start-btn .brand { text-align: left; }
+  .start-btn .brand .rr { font-size: 16px; }
+  .start-btn .brand .kinds { margin-top: 2px; }
+  .start-btn .kind { font-size: 11px; line-height: 16px; }
+  .start-btn .st-train { width: 30px; height: 18px; flex: none; opacity: .9; }
+  .start-btn .big { display: block; margin: 12px 0 0; font-size: 44px; font-weight: 800; line-height: 1; color: var(--navy); }
+  .start-btn .small { display: block; margin-top: 4px; font-size: 18px; font-weight: 700; letter-spacing: .04em; color: #7a5638; }
+  .start-btn .st-foot { display: flex; justify-content: space-between; margin: 10px 4px 0; padding-top: 7px;
+    border-top: 1.5px dashed rgba(29, 43, 79, .35); font-family: var(--type); font-size: 13px; font-weight: 700; color: var(--ink); }
+  .start-btn .st-hole { position: absolute; z-index: 2; right: 40px; top: 50%; width: 20px; height: 20px; margin-top: -10px; border-radius: 50%;
+    background: radial-gradient(circle, rgba(10, 16, 30, .9) 55%, rgba(10, 16, 30, 0) 72%); box-shadow: inset 0 1px 2px rgba(0, 0, 0, .6);
+    scale: 0; opacity: 0; transition: scale .12s ease-out, opacity .12s; }
+  .start-btn:hover {
+    translate: 0 -4px;
+    filter: drop-shadow(0 3px 2px rgba(30, 18, 6, .35)) drop-shadow(0 22px 26px rgba(6, 10, 24, .55));
+  }
+  .start-btn:focus-visible { outline: 3px solid var(--gold); outline-offset: 5px; }
+  .start-btn.punched .st-hole { scale: 1; opacity: 1; }
+  .start-btn.flying { animation: ticketFly .8s cubic-bezier(.45, 0, .7, .2) 1 forwards; pointer-events: none; }
+  .intro-gate.gone { transition-delay: .95s; }   /* let the start ticket finish its fly-off first */
+  @media (prefers-reduced-motion: reduce) { .start-btn.flying { animation: none; opacity: 0; } .start-btn { transition: none; } }
 
   /* ---------- Ticket + title stay out of the way of the videos ---------- */
   /* while the intro plays (body.ui-away) they wait off-screen, then slide in when it ends */
@@ -592,10 +616,17 @@
   </div>
 </aside>
 <div class="intro-gate" id="introGate">
-  <button class="start-btn" type="button" id="introStart">
-    <svg aria-hidden="true"><use href="#crystal-lit"/></svg>
+  <button class="start-btn" type="button" id="introStart" aria-label="All aboard! Tap to start">
+    <span class="paper st-paper" aria-hidden="true"></span>
+    <span class="band" aria-hidden="true">
+      <span class="emblem"><svg><use href="#crystal-lit"/></svg></span>
+      <span class="brand"><span class="rr" style="display:block">CRYSTAL RAILWAYS</span><span class="kinds"><span class="kind">ADMIT ONE</span></span></span>
+      <svg class="st-train" viewBox="0 0 30 18"><path d="M2 13h20l4-4V5h-5v4h-3V3H8v4H4v6M2 15h26" fill="none" stroke="#f3d68c" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round"/><circle cx="8" cy="15.5" r="1.8" fill="#f3d68c"/><circle cx="18" cy="15.5" r="1.8" fill="#f3d68c"/></svg>
+    </span>
     <span class="big">All aboard!</span>
     <span class="small">Tap to start</span>
+    <span class="st-foot" aria-hidden="true"><span>No. 000303</span><span>ONE WAY · ✦</span></span>
+    <span class="st-hole" aria-hidden="true"></span>
   </button>
 </div>
 <video class="portal" id="portal" muted playsinline preload="none" aria-hidden="true"></video>
