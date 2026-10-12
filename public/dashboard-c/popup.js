@@ -1,4 +1,4 @@
-/* Plan C "Pop Up Mounts" controller: start plate -> intro (with Astra's audio) -> teacup world loop + six bookmarks. */
+/* Plan C "Pop Up Mounts" controller: start plate -> intro (with Astra's audio) -> teacup world (held frame) + six bookmarks. */
 (function () {
   "use strict";
   // Left-to-right painted ribbons in the video: teapot, purple diamond, wing, pocket watch, kite, gumdrop.
@@ -16,7 +16,13 @@
   var scene = $("scene"), intro = $("intro"), gate = $("gate"), startBtn = $("start"), skip = $("skip");
   var layers = [$("layerA"), $("layerB")], front = 0, cur = -1, finished = false, started = false;
   var ribs = $("ribs"), ride = $("ride"), wl = $("wl"), wlIc = $("wlIc"), wlName = $("wlName"), toast = $("toast");
-  WORLDS.forEach(function (w) { w.vid = "assets/" + w.id + ".mp4"; w.poster = "assets/" + w.id + ".jpg"; });
+  // Each clip plays ONCE (at 0.75x) and holds its last frame, cut at Astra's happiest open-eyed moment.
+  // poster = that hold frame (also the reduced-motion / error fallback); first = frame 0 shown while the clip loads.
+  // The teacup world has no clip of its own: it simply holds the intro's end frame.
+  WORLDS.forEach(function (w) {
+    w.poster = "assets/" + w.id + ".jpg";
+    if (w.id !== "porcelain") { w.vid = "assets/" + w.id + ".mp4"; w.first = "assets/" + w.id + "-start.jpg"; }
+  });
 
   // ---- bookmarks: menu tabs + invisible hotspots over the painted ribbons
   var spots = [];
@@ -31,18 +37,18 @@
 
   var warmed = {};
   function warm(i) {   // preload a world's clip (and poster) before it is picked
-    if (reduce || warmed[i]) return; warmed[i] = true;
+    if (reduce || warmed[i] || !WORLDS[i].vid) return; warmed[i] = true;
     var v = document.createElement("video"); v.muted = true; v.preload = "auto"; v.src = WORLDS[i].vid;
     try { v.load(); } catch (e) {}
   }
 
   function select(i, instant) {
-    if (i === cur) return;
+    if (i === cur && !WORLDS[i].vid) return;   // re-selecting a clip world replays it once
     cur = i; var w = WORLDS[i];
     spots.forEach(function (s, k) { s.classList.toggle("active", k === i); s.setAttribute("aria-pressed", k === i ? "true" : "false"); });
     wl.style.setProperty("--c", w.c); wlIc.textContent = w.ic; wlName.textContent = w.name; ride.setAttribute("aria-label", "Ride to " + w.name);
     var back = layers[front], next = layers[1 - front]; front = 1 - front;
-    next.style.backgroundImage = 'url("' + w.poster + '")';
+    next.style.backgroundImage = 'url("' + ((w.vid && !reduce) ? w.first : w.poster) + '")';
     var old = next.querySelector("video"); if (old) old.remove();
     function show() {
       next.style.zIndex = 3; back.style.zIndex = 2;
@@ -53,15 +59,16 @@
         back.classList.remove("on"); var bv = back.querySelector("video"); if (bv) bv.pause();
       }, 560);
     }
-    if (reduce) { show(); return; }
+    if (reduce || !w.vid) { show(); return; }
     var v = document.createElement("video");
-    v.muted = true; v.defaultMuted = true; v.loop = true; v.playsInline = true; v.autoplay = true;
-    v.setAttribute("playsinline", ""); v.setAttribute("muted", ""); v.preload = "auto"; v.poster = w.poster; v.src = w.vid;
+    v.muted = true; v.defaultMuted = true; v.loop = false; v.playsInline = true; v.autoplay = true;
+    v.setAttribute("playsinline", ""); v.setAttribute("muted", ""); v.preload = "auto"; v.poster = w.first; v.src = w.vid;
     v.defaultPlaybackRate = RATE; v.playbackRate = RATE;
     var shown = false; function once() { if (!shown) { shown = true; show(); } }
     v.addEventListener("loadedmetadata", function () { v.playbackRate = RATE; });
     v.addEventListener("playing", once);
-    v.addEventListener("error", function () { v.remove(); once(); });   // poster stays as the layer background
+    v.addEventListener("ended", function () { next.style.backgroundImage = 'url("' + w.poster + '")'; });   // holds on the last frame
+    v.addEventListener("error", function () { next.style.backgroundImage = 'url("' + w.poster + '")'; v.remove(); once(); });   // poster stays as the layer background
     setTimeout(once, 900);                                              // slow network: fade in on the poster
     next.appendChild(v);
     var p = v.play(); if (p && p.catch) p.catch(function () {});
