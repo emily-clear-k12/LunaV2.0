@@ -83,6 +83,7 @@
   Object.keys(PAGES).forEach(function (slug) { pageFor[PAGES[slug].ribbon] = slug; });
   var prefetched = {};
   function prefetchPage(i) {
+    warmRide(i);
     var slug = pageFor[WORLDS[i].id]; if (!slug || prefetched[slug]) return; prefetched[slug] = true;
     var P = PAGES[slug];
     [[slug + "/", "document"], [slug + "/" + P.poster, "image"], [slug + "/" + P.video, "video"]].forEach(function (a) {
@@ -90,13 +91,40 @@
     });
   }
   window.addEventListener("pageshow", function () { var f = document.getElementById("pageFade"); if (f) f.classList.remove("on"); });
+  // Ride: play the world's "ride off" clip (assets/ride-<id>.mp4) on the stage, crossfade to the world poster, then open the page.
+  // Missing/failed clip or reduced motion -> plain fade straight to the world.
+  var rideWrap = $("rideWrap"), rideVid = $("rideVid"), rideArt = $("rideArt"), rideSkip = $("rideSkip"), riding = false;
+  function warmRide(i) { if (reduce) return; var id = WORLDS[i].id; if (rideVid._warm === id || riding) return; rideVid._warm = id; rideVid.preload = "auto"; rideVid.src = "assets/ride-" + id + ".mp4"; }
+  function plainGo(slug) { var f = $("pageFade"); f.classList.add("on"); setTimeout(function () { location.href = slug + "/"; }, 420); }
+  function rideTo(slug) {
+    var P = PAGES[slug], id = WORLDS[cur].id, done = false, tm;
+    if (reduce) return plainGo(slug);
+    riding = true;
+    try { sessionStorage.setItem("popup-arrive", "1"); } catch (e) {}
+    function go() { if (done) return; done = true; clearTimeout(tm); location.href = slug + "/"; }
+    function land() {   // 0.8s fade into the world's first frame, then navigate (world page skips its own fade)
+      if (rideArt.classList.contains("on")) return;
+      rideSkip.hidden = true; rideArt.classList.add("on"); setTimeout(go, 850);
+    }
+    function fail() { if (done || rideArt.classList.contains("on")) return; land(); }
+    rideArt.classList.remove("on"); rideArt.src = slug + "/" + P.poster;
+    if (rideVid._warm !== id) { rideVid.src = "assets/ride-" + id + ".mp4"; }
+    rideVid.muted = false; rideVid.currentTime = 0;
+    rideWrap.hidden = false; void rideWrap.offsetWidth; rideWrap.classList.add("on");
+    rideSkip.hidden = false; setTimeout(function () { try { rideSkip.focus({ preventScroll: true }); } catch (e) {} }, 50);
+    if (intro && !intro.paused) intro.pause();
+    rideVid.onerror = fail;
+    rideVid.ontimeupdate = function () { if (rideVid.duration && rideVid.currentTime > rideVid.duration - 0.8) land(); };
+    rideVid.onended = land;
+    var pr = rideVid.play(); if (pr && pr.catch) pr.catch(function () { rideVid.muted = true; rideVid.play().catch(fail); });
+    if (rideVid.error) fail();
+    tm = setTimeout(land, 14000);   // safety net
+  }
+  rideSkip.addEventListener("click", function () { if (!rideVid.paused) rideVid.pause(); rideArt.classList.add("on"); rideSkip.hidden = true; setTimeout(function () { location.href = pageFor[WORLDS[cur].id] + "/"; }, 500); });
+  window.addEventListener("pageshow", function (e) { if (e.persisted) { riding = false; rideWrap.classList.remove("on"); rideWrap.hidden = true; rideArt.classList.remove("on"); rideVid.pause(); } });
   ride.addEventListener("click", function () {
     var slug = pageFor[WORLDS[cur].id];
-    if (slug) {
-      var f = document.getElementById("pageFade"); f.classList.add("on");
-      setTimeout(function () { location.href = slug + "/"; }, 420);
-      return;
-    }
+    if (slug) return rideTo(slug);
     toast.textContent = WORLDS[cur].name + " is coming soon!";
     toast.classList.add("on"); clearTimeout(toast._t);
     toast._t = setTimeout(function () { toast.classList.remove("on"); }, 2200);

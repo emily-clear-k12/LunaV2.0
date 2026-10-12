@@ -4,6 +4,7 @@
   "use strict";
   var slug = document.body.getAttribute("data-world"), W = (window.POPUP_WORLD_PAGES || {})[slug];
   if (!W) return;
+  try { if (sessionStorage.getItem("popup-arrive")) { sessionStorage.removeItem("popup-arrive"); document.documentElement.classList.add("from-depart"); } } catch (e) {}
   var reduce = window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches;
   var FRAME = (window.StageFit && window.StageFit.frame()) || document.body;
   function el(tag, cls, parent) { var e = document.createElement(tag); if (cls) e.className = cls; if (parent) parent.appendChild(e); return e; }
