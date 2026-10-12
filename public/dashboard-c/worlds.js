@@ -22,5 +22,15 @@ window.POPUP_WORLD_PAGES = {
       { x: 1038, y: 263, w: 52, h: 76 },    // Lesson 3: top of the stone tower
       { x: 1181, y: 480, w: 64, h: 90 }     // Lesson 4: right ledge
     ]
+  },
+  "clockwork-gearworks-city": {
+    module: 4, name: "Clockwork Gearworks City", ribbon: "clockwork", color: "#8a5426", icon: "⚙️",
+    video: "assets/world.mp4", poster: "assets/poster.jpg", holdImg: "assets/hold.jpg", hold: null, rate: 0.75,   // clip trimmed to 7.63s: Astra looks up smiling (later frames look down at the book)
+    hotspots: [   // Emily's clip shows 4 crystals; Module 4 expects 5
+      { x: 167, y: 496, w: 54, h: 88 },    // Lesson 1: left, on the gear pedestal
+      { x: 424, y: 571, w: 74, h: 108 },   // Lesson 2: big front crystal
+      { x: 820, y: 540, w: 48, h: 74 },    // Lesson 3: by the stream, near the pod
+      { x: 514, y: 157, w: 36, h: 56 }     // Lesson 4: top of the clocktower city
+    ]
   }
 };
