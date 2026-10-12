@@ -54,5 +54,14 @@ window.POPUP_WORLD_PAGES = {
       { x: 794, y: 327, w: 50, h: 82 },    // Lesson 3: right of the bridges
       { x: 654, y: 229, w: 40, h: 60 }     // Lesson 4: far bridge
     ]
+  },
+  "porcelain-tea-gardens": {
+    module: 1, name: "Porcelain Tea Gardens", ribbon: "porcelain", color: "#3f7cc0", icon: "🫖",
+    video: "assets/world.mp4", poster: "assets/poster.jpg", holdImg: "assets/hold.jpg", hold: null, rate: 0.75,
+    hotspots: [   // Emily's clip shows 3 crystals; Module 1 expects 5 (or 4)
+      { x: 117, y: 550, w: 66, h: 100 },   // Lesson 1: left pedestal by the castle
+      { x: 395, y: 595, w: 68, h: 104 },   // Lesson 2: centre, below the waterfalls
+      { x: 804, y: 584, w: 60, h: 92 }     // Lesson 3: by the tea pool
+    ]
   }
 };
