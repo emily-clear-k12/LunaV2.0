@@ -1,6 +1,6 @@
-/* Version switcher: injects a slim top bar with the four dashboard plans (A–D, in order) plus the Lesson.
-   Usage: <script src=".../demo/switcher.js" data-page="dashboard-a|dashboard-b|dashboard-c|dashboard-d|lesson"></script>
-   Links resolve from this script's folder (/demo/), so they work from /dashboard-a/ … /dashboard-d/,
+/* Version switcher: injects a slim top bar with the five dashboard plans (A–E, in order) plus the Lesson.
+   Usage: <script src=".../demo/switcher.js" data-page="dashboard-a|dashboard-b|dashboard-c|dashboard-d|dashboard-e|lesson"></script>
+   Links resolve from this script's folder (/demo/), so they work from /dashboard-a/ … /dashboard-e/,
    /demo/ and /demo/lesson/. */
 (function () {
   var me = document.currentScript;
@@ -11,6 +11,7 @@
     { id: "dashboard-b", label: "Plan B · Crystal Railways", href: new URL("../dashboard-b/", base).href },
     { id: "dashboard-c", label: "Plan C · Pop Up Mounts", href: new URL("../dashboard-c/", base).href },
     { id: "dashboard-d", label: "Plan D · Forest Guides", href: new URL("../dashboard-d/", base).href },
+    { id: "dashboard-e", label: "Plan E · Lost Library", href: new URL("../dashboard-e/", base).href },
     { id: "lesson", label: "Lesson", href: new URL("./lesson/", base).href },
   ];
   document.documentElement.classList.add("vs-on");
