@@ -1,10 +1,10 @@
 /* Plan C world-page registry (shared by the dashboard and every world page).
    To add a world: drop its clip in <slug>/assets/ (world.mp4, poster.jpg = first frame, hold.jpg = hold frame),
    copy windswept-ribbon-highlands/index.html to <slug>/index.html, and add an entry here.
-   hold: seconds into the clip to stop on (null = play to the end). Hotspots are 1366x768 stage px (x, y = crystal centre, w, h). */
+   color/icon: the dashboard bookmark colour + icon (module pill). hold: seconds into the clip to stop on (null = play to the end). Hotspots are 1366x768 stage px (x, y = crystal centre, w, h). */
 window.POPUP_WORLD_PAGES = {
   "windswept-ribbon-highlands": {
-    module: 5, name: "Windswept Ribbon Highlands", ribbon: "highlands",
+    module: 5, name: "Windswept Ribbon Highlands", ribbon: "highlands", color: "#c0414f", icon: "🪁",
     video: "assets/world.mp4", poster: "assets/poster.jpg", holdImg: "assets/hold.jpg", hold: null, rate: 0.75,
     hotspots: [
       { x: 230,  y: 470, w: 84, h: 160 },   // Lesson 1: big crystal on the stump beside Astra
@@ -14,7 +14,7 @@ window.POPUP_WORLD_PAGES = {
     ]
   },
   "thunderpeak-aerie": {
-    module: 3, name: "Thunderpeak Aerie", ribbon: "thunderpeak",
+    module: 3, name: "Thunderpeak Aerie", ribbon: "thunderpeak", color: "#4f7f3c", icon: "⚡",
     video: "assets/world.mp4", poster: "assets/poster.jpg", holdImg: "assets/hold.jpg", hold: null, rate: 0.75,
     hotspots: [
       { x: 483,  y: 467, w: 60, h: 84 },    // Lesson 1: left crystal by the elk

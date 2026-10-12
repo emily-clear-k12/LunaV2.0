@@ -1,26 +1,99 @@
-/* Plan C world pages: 1366x768 stage (stage-fit), clip plays once and holds. */
-:root { --frost: rgba(255, 248, 235, .82); --brown: #4a2e1a; --gold: #d9a93f; --gold-deep: #94690f; --display: "Baloo 2", "Nunito", "Trebuchet MS", system-ui, sans-serif; }
+/* Plan C "Pop Up Mounts" world pages: same look as the Plan B world screens (copied from ../dashboard-b/worlds/world.css), plus the module pill. */
+   Laid out on the fixed 1366x768 stage (../stage-fit.css/js), scaled uniformly and letterboxed to fit the window.
+   Hotspots, fireflies and runes are placed in painting pixels, so they stay on the crystals at any size. */
 * { box-sizing: border-box; }
-body { font-family: var(--display); color: var(--brown); -webkit-font-smoothing: antialiased; }
-.frost { background: var(--frost); -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,.9); color: var(--brown);
-  box-shadow: 0 6px 18px rgba(30,20,8,.28), 0 1px 2px rgba(30,20,8,.18); }
-.wstage { position: absolute; inset: 0; background: #1a2318 center / cover no-repeat; }
-.wstage video { position: absolute; inset: 0; width: 1366px; height: 768px; object-fit: cover; }
-.wfade { position: absolute; inset: 0; z-index: 90; background: #0b0f0c; opacity: 1; transition: opacity .5s ease; pointer-events: none; }
-.wfade.off { opacity: 0; }
-.wtop { position: absolute; top: 12px; left: 14px; z-index: 20; display: flex; align-items: center; gap: 10px; }
-.book { display: flex; align-items: center; gap: 7px; height: 44px; padding: 0 16px 0 12px; border-radius: 999px; font: 800 18px/1 var(--display); text-decoration: none; }
-.book svg { width: 22px; height: 22px; }
-.book:hover { translate: 0 -2px; }
-.book:focus-visible { outline: 3px solid var(--gold); outline-offset: 3px; }
-.wtitle { padding: 6px 20px 6px 18px; border-radius: 999px; }
-.wtitle h1 { margin: 0; font-size: 24px; font-weight: 800; line-height: 1.05; white-space: nowrap; }
-.wtitle p { margin: 1px 0 0; font-size: 13px; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; color: var(--gold-deep); white-space: nowrap; }
-.ls { position: absolute; z-index: 15; translate: -50% -50%; border: 0; padding: 0; cursor: pointer; border-radius: 45% 45% 40% 40%; background: radial-gradient(closest-side, rgba(150,215,255,.28), rgba(120,190,255,0) 75%);
-  box-shadow: 0 0 22px 6px rgba(110, 190, 255, .35); }
-.ls:hover { box-shadow: 0 0 0 2px rgba(255,255,255,.85), 0 0 26px 10px rgba(120, 200, 255, .6); }
-.ls:focus-visible { outline: 3px solid #fff; outline-offset: 3px; }
-.ls b { position: absolute; left: 50%; bottom: -14px; translate: -50% 0; padding: 3px 11px; border-radius: 999px; white-space: nowrap; font: 800 15px/1.1 var(--display); color: var(--brown);
-  background: var(--frost); -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px); border: 1px solid #fff; box-shadow: 0 3px 8px rgba(0,0,0,.3); }
-.toast { position: absolute; left: 50%; bottom: 26px; translate: -50% 8px; z-index: 40; padding: 10px 20px; border-radius: 16px; font-size: 19px; font-weight: 800; opacity: 0; transition: opacity .3s, translate .3s; pointer-events: none; }
-.toast.on { opacity: 1; translate: -50% 0; }
+html, body { margin: 0; height: 100%; overflow: hidden; }
+body { font-family: "Baloo 2", "Nunito", system-ui, sans-serif; color: #4a2e1a; background: #1a2318; -webkit-font-smoothing: antialiased; }
+:root { --frost: rgba(255, 248, 235, .82); --edge: 1px solid rgba(255, 255, 255, .9); --ink: #4a2e1a; }
+
+.scene { position: fixed; inset: 0; overflow: hidden; container-type: size; animation: arrive .7s ease-out both; }
+@keyframes arrive { from { opacity: 0; } }
+.stage { position: absolute; left: 0; top: 0; width: 1366px; height: 768px; }   /* fixed 1366x768 design stage (../stage-fit.css) */
+.stage > * { position: absolute; }
+.art { inset: 0; width: 100%; height: 100%; display: block; object-fit: cover; }
+.fx { inset: 0; width: 100%; height: 100%; pointer-events: none; }
+
+/* frosted chrome (same recipe everywhere) */
+.frost {
+  background: var(--frost); -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px);
+  border: var(--edge); color: var(--ink); box-shadow: 0 6px 18px -8px rgba(20, 12, 4, .45);
+}
+.hud { position: fixed; left: 14px; top: 12px; z-index: 20; display: flex; align-items: center; gap: 10px; }
+.back {
+  display: inline-flex; align-items: center; gap: 6px; height: 36px; padding: 0 14px 0 10px; border-radius: 999px;
+  font: 800 15px/1 "Baloo 2", system-ui, sans-serif; text-decoration: none; transition: translate .18s ease, box-shadow .18s ease;
+}
+.back svg { width: 18px; height: 18px; }
+.back:hover { translate: 0 -1px; box-shadow: 0 9px 20px -8px rgba(20, 12, 4, .5); }
+.back:focus-visible, .hs:focus-visible, .toggle button:focus-visible { outline: 3px solid #d9a93f; outline-offset: 2px; }
+.titlecard { padding: 5px 16px 4px; border-radius: 14px; line-height: 1; }
+.titlecard h1 { margin: 0; font-size: 22px; font-weight: 800; line-height: 1.05; }
+.titlecard p { margin: 1px 0 0; font-size: 13.5px; font-weight: 700; letter-spacing: .02em; color: #7a5638; }
+
+/* Frostpine 4 / 5 lesson toggle */
+.toggle { position: fixed; right: 14px; top: 12px; z-index: 20; display: flex; align-items: center; gap: 4px; padding: 4px; border-radius: 999px; }
+.toggle span { padding: 0 6px 0 8px; font-size: 13px; font-weight: 800; letter-spacing: .06em; color: #7a5638; }
+.toggle button {
+  border: 0; border-radius: 999px; padding: 4px 12px; font: 800 14px/1.2 "Baloo 2", system-ui, sans-serif; color: var(--ink);
+  background: transparent; cursor: pointer;
+}
+.toggle button[aria-pressed="true"] { background: #4a2e1a; color: #fff8eb; }
+
+/* lesson crystals: a soft, steady glow (no pulsing); hover lifts it a touch */
+.hs {
+  position: absolute;
+  left: calc(var(--x) * 100% / 1280); top: calc(var(--y) * 100% / 720);
+  width: calc(var(--w) * 100% / 1280); height: calc(var(--h) * 100% / 720); translate: -50% -50%;
+  padding: 0; border: 0; background: none; cursor: pointer; z-index: 5; border-radius: 45%;
+  transition: transform .22s ease;
+}
+.hs::before {
+  content: ""; position: absolute; left: 50%; top: 50%; width: 190%; height: 150%; translate: -50% -50%; border-radius: 50%;
+  background: radial-gradient(closest-side, rgba(190, 236, 255, .55), rgba(110, 196, 255, .26) 45%, rgba(90, 170, 255, 0) 100%);
+  mix-blend-mode: screen; opacity: .7; pointer-events: none; transition: opacity .25s ease;
+}
+.hs .tag {
+  position: absolute; left: 50%; bottom: calc(100% + 6px); translate: -50% 0; white-space: nowrap;
+  padding: 1px 11px 0; border-radius: 999px; font-size: 14px; font-weight: 800; line-height: 22px; letter-spacing: .02em;
+  transition: box-shadow .22s ease;
+}
+.hs.below .tag { bottom: auto; top: calc(100% + 6px); }
+.hs:hover, .hs:focus-visible { transform: translateY(-3px); }
+.hs:hover::before, .hs:focus-visible::before { opacity: 1; }
+.hs:hover .tag { box-shadow: 0 8px 18px -6px rgba(20, 12, 4, .55); }
+
+/* small note when a lesson is picked (the lessons themselves are not built yet) */
+.toast {
+  position: fixed; left: 50%; bottom: 22px; z-index: 30; translate: -50% 0; padding: 8px 18px; border-radius: 999px;
+  font-size: 17px; font-weight: 800; opacity: 0; transition: opacity .25s ease, translate .25s ease; pointer-events: none;
+}
+.toast.on { opacity: 1; translate: -50% -4px; }
+
+/* gold runes (Crystal Caverns left rock wall): carved groove + gold line + soft glow whose opacity drifts slowly */
+.rune { left: calc(var(--x) * 100% / 1280); top: calc(var(--y) * 100% / 720); width: calc(var(--w) * 100% / 1280); aspect-ratio: 1; translate: -50% -50%; pointer-events: none; }
+.rune svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; rotate: var(--r, 0deg); fill: none; stroke-linecap: round; stroke-linejoin: round; }
+.rune .carve { mix-blend-mode: multiply; stroke: #241205; stroke-width: 3.2; opacity: .5; translate: .4% .9%; }
+.rune .gold { mix-blend-mode: screen; stroke: #d9a443; stroke-width: 1.5; opacity: .42; }
+.rune .glow { mix-blend-mode: screen; stroke: #ffc75a; stroke-width: 4.5; filter: blur(2.6px); opacity: .12; transition: opacity 3s ease-in-out; }
+
+@media (prefers-reduced-motion: reduce) {
+  .scene { animation: none; }
+  .hs, .back, .toast { transition: none; }
+  .rune .glow { transition: none; }
+}
+
+/* arriving from the station's depart film: the painting is already on screen (cross-faded there); only the labels fade in */
+html.from-depart .scene { animation: none; }
+html.from-depart .hud, html.from-depart .toggle, html.from-depart .spots { animation: uiIn .6s ease-out .2s both; }
+@keyframes uiIn { from { opacity: 0; } }
+@media (prefers-reduced-motion: reduce) { html.from-depart .hud, html.from-depart .toggle, html.from-depart .spots { animation: none; } }
+html.vs-on .toggle { top: 50px; }   /* sits under the floating plan switcher (../stage-fit.css) */
+
+/* Plan C: module pill (same as the dashboard's coloured world pill), bottom-left, non-interactive */
+.modpill { position: fixed; left: 14px; bottom: 14px; z-index: 20; display: flex; align-items: center; gap: 9px; height: 50px; padding: 0 18px 0 7px; border-radius: 14px;
+  color: #fffaf0; font: 800 19px/1 "Baloo 2", system-ui, sans-serif; text-shadow: 0 1px 1px rgba(0,0,0,.35); white-space: nowrap; pointer-events: none;
+  background: var(--c); border: 1px solid rgba(255,255,255,.85); box-shadow: inset 0 -3px 0 rgba(0,0,0,.18), 0 6px 16px rgba(30,20,8,.35); }
+.modpill .ic { width: 36px; height: 36px; border-radius: 50%; background: rgba(255,250,240,.92); display: grid; place-items: center; font-size: 20px; text-shadow: none; }
+.modpill .wt { display: flex; flex-direction: column; gap: 1px; }
+.modpill small { font-size: 13px; font-weight: 700; letter-spacing: .06em; opacity: .92; }
+html.from-depart .modpill { animation: uiIn .6s ease-out .2s both; }
