@@ -114,6 +114,8 @@
     drawFill();
     settled = true; layout();   // ease the film left of the ticket (1s)
     showUI();   // ticket + title slide in only now
+    if (skipBtn) { skipBtn.classList.remove("on"); setTimeout(function () { skipBtn.hidden = true; }, 300); }
+    try { sessionStorage.setItem("crystalIntroSeen", "1"); } catch (e) {}
     window.dispatchEvent(new CustomEvent("crystal-intro-done"));
   }
 
@@ -146,10 +148,39 @@
     if (intro.requestVideoFrameCallback) intro.requestVideoFrameCallback(watchHold);
     else requestAnimationFrame(watchHold);
   }
+  // Skip / return: jump straight to the held end frame (silent), then the usual end-of-intro state.
+  var skipBtn = document.getElementById("skipIntro");
+  function skipToEnd() {
+    if (finished) return;
+    started = true;
+    try { intro.muted = true; intro.pause(); } catch (e) {}
+    if (gate) { gate.classList.add("gone"); gate.hidden = true; }
+    scene.classList.remove("intro-waiting");
+    var done = false;
+    function go() { if (done) return; done = true; finishIntro(); setTimeout(getDepart, 600); }
+    intro.addEventListener("seeked", go, { once: true });
+    try { intro.currentTime = HOLD_T; } catch (e) { go(); }
+    setTimeout(go, 1200);   // never wait long on a slow seek
+  }
+  if (skipBtn) {
+    skipBtn.addEventListener("click", function () { skipBtn.blur(); skipToEnd(); });
+    intro.addEventListener("playing", function () {
+      setTimeout(function () { if (!finished) { skipBtn.hidden = false; void skipBtn.offsetWidth; skipBtn.classList.add("on"); } }, 1000);
+    }, { once: true });
+  }
+  window.CrystalIntro_skip = skipToEnd;
   intro.addEventListener("playing", watchHold, { once: true });
   intro.addEventListener("ended", finishIntro);
   intro.addEventListener("error", failIntro);
-  if (gateBtn) { gateBtn.addEventListener("click", startIntro); try { gateBtn.focus({ preventScroll: true }); } catch (e) {} }
+  // coming back from a world (Station button, ?return=1) or intro already seen this session: no ticket, no intro
+  var returning = false;
+  try {
+    var u = new URL(location.href);
+    if (u.searchParams.get("return") === "1") { returning = true; u.searchParams.delete("return"); history.replaceState(null, "", u); }
+    if (sessionStorage.getItem("crystalIntroSeen")) returning = true;
+  } catch (e) {}
+  if (returning) { if (gate) gate.hidden = true; skipToEnd(); }
+  else if (gateBtn) { gateBtn.addEventListener("click", startIntro); try { gateBtn.focus({ preventScroll: true }); } catch (e) {} }
   else startIntro();
 
   /* ---- DEPART (call when the student boards) ---- */

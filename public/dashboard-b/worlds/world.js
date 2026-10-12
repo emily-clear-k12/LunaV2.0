@@ -24,7 +24,7 @@
 
   /* ---------- HUD: back + title ---------- */
   var hud = el("header", "hud", FRAME);
-  var back = el("a", "back frost", hud); back.href = "../";
+  var back = el("a", "back frost", hud); back.href = "../?return=1";
   back.innerHTML = '<svg viewBox="0 0 20 20" aria-hidden="true"><path d="M15 10H5M9 5.5 4.5 10 9 14.5" fill="none" stroke="#4a2e1a" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>Station';
   back.setAttribute("aria-label", "Back to the Crystal Railways station");
   var title = el("div", "titlecard frost", hud);
@@ -47,6 +47,9 @@
       vid.preload = "auto"; vid.poster = v.art; vid.src = v.video;
       vid.addEventListener("error", function () { vid.remove(); });
       stage.insertBefore(vid, art.nextSibling);
+      // Emily: loops felt fast; play at 0.7x (9.3s loop -> ~13.3s). Pitch irrelevant (silent).
+      vid.defaultPlaybackRate = 0.7; vid.playbackRate = 0.7;
+      vid.addEventListener("loadedmetadata", function () { vid.playbackRate = 0.7; });
       var pr = vid.play(); if (pr && pr.catch) pr.catch(function () {});
     }
     spotsLayer.innerHTML = "";
@@ -59,7 +62,7 @@
       var t = el("span", "tag frost", b); t.textContent = "Lesson " + (i + 1);
       b.addEventListener("click", function () { say(W.name + " · Lesson " + (i + 1) + " is coming soon"); });
     });
-    sub.textContent = W.name + " · " + v.spots.length + " lessons";
+    sub.textContent = "Crystal Railways · " + W.name + " · " + v.spots.length + " lessons";
     document.title = W.name + " · Crystal Railways · Astra’s Writing Adventure";
   }
 
