@@ -46,6 +46,7 @@
   function select(i, instant) {
     if (i === cur && !WORLDS[i].vid) return;   // re-selecting a clip world replays it once
     cur = i; var w = WORLDS[i];
+    try { sessionStorage.setItem("popupWorld", String(i)); } catch (e) {}
     spots.forEach(function (s, k) { s.classList.toggle("active", k === i); s.setAttribute("aria-pressed", k === i ? "true" : "false"); });
     wl.style.setProperty("--c", w.c); wlIc.textContent = w.ic; wlName.textContent = w.name; wlMod.textContent = "Module " + (i + 1); ride.setAttribute("aria-label", "Ride to " + w.name);
     var back = layers[front], next = layers[1 - front]; front = 1 - front;
@@ -60,7 +61,7 @@
         back.classList.remove("on"); var bv = back.querySelector("video"); if (bv) bv.pause();
       }, 560);
     }
-    if (reduce || !w.vid) { show(); return; }
+    if (reduce || !w.vid) { show(); prefetchPage(i); return; }
     var v = document.createElement("video");
     v.muted = true; v.defaultMuted = true; v.loop = false; v.playsInline = true; v.autoplay = true;
     v.setAttribute("playsinline", ""); v.setAttribute("muted", ""); v.preload = "auto"; v.poster = w.first; v.src = w.vid;
@@ -74,9 +75,28 @@
     next.appendChild(v);
     var p = v.play(); if (p && p.catch) p.catch(function () {});
     warm((i + 1) % WORLDS.length);
+    prefetchPage(i);
   }
 
+  // world pages (worlds.js): Ride navigates with a short fade; worlds without a page show "coming soon"
+  var PAGES = window.POPUP_WORLD_PAGES || {}, pageFor = {};
+  Object.keys(PAGES).forEach(function (slug) { pageFor[PAGES[slug].ribbon] = slug; });
+  var prefetched = {};
+  function prefetchPage(i) {
+    var slug = pageFor[WORLDS[i].id]; if (!slug || prefetched[slug]) return; prefetched[slug] = true;
+    var P = PAGES[slug];
+    [[slug + "/", "document"], [slug + "/" + P.poster, "image"], [slug + "/" + P.video, "video"]].forEach(function (a) {
+      var l = document.createElement("link"); l.rel = "prefetch"; l.href = a[0]; l.as = a[1]; document.head.appendChild(l);
+    });
+  }
+  window.addEventListener("pageshow", function () { var f = document.getElementById("pageFade"); if (f) f.classList.remove("on"); });
   ride.addEventListener("click", function () {
+    var slug = pageFor[WORLDS[cur].id];
+    if (slug) {
+      var f = document.getElementById("pageFade"); f.classList.add("on");
+      setTimeout(function () { location.href = slug + "/"; }, 420);
+      return;
+    }
     toast.textContent = WORLDS[cur].name + " is coming soon!";
     toast.classList.add("on"); clearTimeout(toast._t);
     toast._t = setTimeout(function () { toast.classList.remove("on"); }, 2200);
@@ -88,7 +108,8 @@
     try { sessionStorage.setItem("popupIntroSeen", "1"); } catch (e) {}
     skip.classList.remove("on"); skip.hidden = true;
     gate.hidden = true;
-    select(0, instant);
+    var last = 0; try { last = +(sessionStorage.getItem("popupWorld") || 0); } catch (e) {}
+    select(seenAtLoad && WORLDS[last] ? last : 0, instant);
     scene.classList.add("ready");
     WORLDS.forEach(function (w) { var im = new Image(); im.src = w.poster; });
   }
@@ -114,9 +135,10 @@
   skip.addEventListener("click", function () { skip.blur(); skipIntro(); });
   window.PopUp = { select: select, skip: skipIntro, worlds: WORLDS };
 
-  var seen = false;
+  var seenAtLoad = false, seen = false;
   try { seen = sessionStorage.getItem("popupIntroSeen") === "1"; } catch (e) {}
   if (/[?&]return=1/.test(location.search)) seen = true;
+  seenAtLoad = seen;
   if (seen || reduce) { intro.preload = "none"; skipIntro(true); }
   else WORLDS.forEach(function (w, i) { if (i < 2) warm(i); });
 })();

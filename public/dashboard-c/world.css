@@ -1,0 +1,26 @@
+/* Plan C world pages: 1366x768 stage (stage-fit), clip plays once and holds. */
+:root { --frost: rgba(255, 248, 235, .82); --brown: #4a2e1a; --gold: #d9a93f; --gold-deep: #94690f; --display: "Baloo 2", "Nunito", "Trebuchet MS", system-ui, sans-serif; }
+* { box-sizing: border-box; }
+body { font-family: var(--display); color: var(--brown); -webkit-font-smoothing: antialiased; }
+.frost { background: var(--frost); -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,.9); color: var(--brown);
+  box-shadow: 0 6px 18px rgba(30,20,8,.28), 0 1px 2px rgba(30,20,8,.18); }
+.wstage { position: absolute; inset: 0; background: #1a2318 center / cover no-repeat; }
+.wstage video { position: absolute; inset: 0; width: 1366px; height: 768px; object-fit: cover; }
+.wfade { position: absolute; inset: 0; z-index: 90; background: #0b0f0c; opacity: 1; transition: opacity .5s ease; pointer-events: none; }
+.wfade.off { opacity: 0; }
+.wtop { position: absolute; top: 12px; left: 14px; z-index: 20; display: flex; align-items: center; gap: 10px; }
+.book { display: flex; align-items: center; gap: 7px; height: 44px; padding: 0 16px 0 12px; border-radius: 999px; font: 800 18px/1 var(--display); text-decoration: none; }
+.book svg { width: 22px; height: 22px; }
+.book:hover { translate: 0 -2px; }
+.book:focus-visible { outline: 3px solid var(--gold); outline-offset: 3px; }
+.wtitle { padding: 6px 20px 6px 18px; border-radius: 999px; }
+.wtitle h1 { margin: 0; font-size: 24px; font-weight: 800; line-height: 1.05; white-space: nowrap; }
+.wtitle p { margin: 1px 0 0; font-size: 13px; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; color: var(--gold-deep); white-space: nowrap; }
+.ls { position: absolute; z-index: 15; translate: -50% -50%; border: 0; padding: 0; cursor: pointer; border-radius: 45% 45% 40% 40%; background: radial-gradient(closest-side, rgba(150,215,255,.28), rgba(120,190,255,0) 75%);
+  box-shadow: 0 0 22px 6px rgba(110, 190, 255, .35); }
+.ls:hover { box-shadow: 0 0 0 2px rgba(255,255,255,.85), 0 0 26px 10px rgba(120, 200, 255, .6); }
+.ls:focus-visible { outline: 3px solid #fff; outline-offset: 3px; }
+.ls b { position: absolute; left: 50%; bottom: -14px; translate: -50% 0; padding: 3px 11px; border-radius: 999px; white-space: nowrap; font: 800 15px/1.1 var(--display); color: var(--brown);
+  background: var(--frost); -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px); border: 1px solid #fff; box-shadow: 0 3px 8px rgba(0,0,0,.3); }
+.toast { position: absolute; left: 50%; bottom: 26px; translate: -50% 8px; z-index: 40; padding: 10px 20px; border-radius: 16px; font-size: 19px; font-weight: 800; opacity: 0; transition: opacity .3s, translate .3s; pointer-events: none; }
+.toast.on { opacity: 1; translate: -50% 0; }
