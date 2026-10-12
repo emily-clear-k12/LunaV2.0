@@ -15,24 +15,17 @@
   var $ = function (id) { return document.getElementById(id); };
   var scene = $("scene"), intro = $("intro"), gate = $("gate"), startBtn = $("start"), skip = $("skip");
   var layers = [$("layerA"), $("layerB")], front = 0, cur = -1, finished = false, started = false;
-  var menu = $("menu"), ribs = $("ribs"), ride = $("ride"), rideName = $("rideName"), toast = $("toast");
+  var ribs = $("ribs"), ride = $("ride"), wl = $("wl"), wlIc = $("wlIc"), wlName = $("wlName"), toast = $("toast");
   WORLDS.forEach(function (w) { w.vid = "assets/" + w.id + ".mp4"; w.poster = "assets/" + w.id + ".jpg"; });
 
   // ---- bookmarks: menu tabs + invisible hotspots over the painted ribbons
-  var tabs = [], spots = [];
+  var spots = [];
   WORLDS.forEach(function (w, i) {
-    var li = document.createElement("li"), b = document.createElement("button");
-    b.type = "button"; b.className = "mk"; b.style.setProperty("--c", w.c);
-    b.innerHTML = '<span class="ic" aria-hidden="true">' + w.ic + "</span><span>" + w.name + "</span>";
-    b.setAttribute("aria-pressed", "false"); b.title = w.name + " · " + w.mount;
-    b.addEventListener("click", function () { select(i); });
-    b.addEventListener("pointerenter", function () { warm(i); }); b.addEventListener("focus", function () { warm(i); });
-    li.appendChild(b); menu.appendChild(li); tabs.push(b);
     var r = document.createElement("button");
-    r.type = "button"; r.className = "rib ui"; r.style.left = (w.x - 33) + "px";
+    r.type = "button"; r.className = "rib ui"; r.style.setProperty("--c", w.c); r.title = w.name; r.style.left = (w.x - 33) + "px";
     r.setAttribute("aria-label", "Bookmark: " + w.name);
     r.addEventListener("click", function () { select(i); });
-    r.addEventListener("pointerenter", function () { warm(i); });
+    r.addEventListener("pointerenter", function () { warm(i); }); r.addEventListener("focus", function () { warm(i); });
     ribs.appendChild(r); spots.push(r);
   });
 
@@ -46,9 +39,8 @@
   function select(i, instant) {
     if (i === cur) return;
     cur = i; var w = WORLDS[i];
-    tabs.forEach(function (t, k) { t.setAttribute("aria-pressed", k === i ? "true" : "false"); });
     spots.forEach(function (s, k) { s.classList.toggle("active", k === i); s.setAttribute("aria-pressed", k === i ? "true" : "false"); });
-    rideName.textContent = "Ride to " + w.name;
+    wl.style.setProperty("--c", w.c); wlIc.textContent = w.ic; wlName.textContent = w.name; ride.setAttribute("aria-label", "Ride to " + w.name);
     var back = layers[front], next = layers[1 - front]; front = 1 - front;
     next.style.backgroundImage = 'url("' + w.poster + '")';
     var old = next.querySelector("video"); if (old) old.remove();
