@@ -296,6 +296,7 @@
   .skip-intro.on { opacity: 1; }
   .skip-intro:hover { translate: 0 -2px; }
   .skip-intro:focus-visible { outline: 3px solid var(--gold); outline-offset: 3px; }
+  .skip-depart { z-index: 950; }
   .skip-intro span { font-size: 20px; line-height: 0; margin-left: 2px; }
   .portal { position: absolute; inset: 0; width: 1366px; height: 768px; object-fit: cover; opacity: 0; pointer-events: none;
     z-index: 880; transition: opacity .3s ease; background: #071426; }
@@ -641,6 +642,7 @@
     <span class="st-hole" aria-hidden="true"></span>
   </button>
 </div>
+<button class="skip-intro skip-depart" type="button" id="skipDepart" hidden>Skip <span aria-hidden="true">›</span></button>
 <button class="skip-intro" type="button" id="skipIntro" hidden>Skip intro <span aria-hidden="true">›</span></button>
 <video class="portal" id="portal" muted playsinline preload="none" aria-hidden="true"></video>
 <div class="depart-fade" id="departFade" aria-hidden="true"></div>

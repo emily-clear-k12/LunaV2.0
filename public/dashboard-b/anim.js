@@ -471,7 +471,7 @@
   function runPortal(dest, art) {
     var done = false, faded = false;
     function tunnel() {
-      if (done) return; done = true;
+      if (done || skipped) return; done = true; hideSkipDepart();
       if (portal) portal.classList.remove("on");
       if (window.CrystalTunnel) window.CrystalTunnel.run({ art: art, onDone: function () { goWorld(dest); } });
       else plainFade(dest, art);
@@ -481,9 +481,9 @@
     portal.addEventListener("error", tunnel, { once: true });
     portal.addEventListener("playing", function () { if (!done) portal.classList.add("on"); }, { once: true });
     portal.addEventListener("timeupdate", function tu() {
-      if (done || faded) return;
+      if (done || faded || skipped) return;
       if (portal.duration && portal.currentTime >= portal.duration - 0.85) {     // light fills the frame: world fades in from it
-        faded = true; done = true;
+        faded = true; done = true; hideSkipDepart();
         fade.style.backgroundImage = 'url("' + art + '")';
         fade.classList.add("to-world"); void fade.offsetWidth; fade.classList.add("on");
         setTimeout(function () { goWorld(dest); }, 860);
@@ -493,11 +493,28 @@
     if (p && p.catch) p.catch(tunnel);
     setTimeout(function () { if (!done && (portal.paused || portal.currentTime < 0.05)) tunnel(); }, 1500); // stalled
   }
+  // Skip during depart + portal: quick 0.6s fade to the chosen world
+  var skipped = false, skipDep = document.getElementById("skipDepart");
+  function showSkipDepart(dest, art) {
+    if (!skipDep) return;
+    skipDep.onclick = function () {
+      if (skipped) return; skipped = true; skipDep.blur(); hideSkipDepart();
+      try { var dv = window.CrystalDepart && window.CrystalDepart.video(); if (dv) { dv.muted = true; dv.pause(); } } catch (e) {}
+      try { if (portal) portal.pause(); } catch (e) {}
+      fade.style.transition = "opacity .6s ease";
+      fade.style.backgroundImage = 'url("' + art + '")';
+      fade.classList.add("to-world"); void fade.offsetWidth; fade.classList.add("on");
+      setTimeout(function () { goWorld(dest); }, 620);
+    };
+    skipDep.hidden = false; void skipDep.offsetWidth; skipDep.classList.add("on");
+  }
+  function hideSkipDepart() { if (skipDep) { skipDep.classList.remove("on"); setTimeout(function () { skipDep.hidden = true; }, 300); } }
   function departVideo(dest) {
     var art = worldArt(dest), next = false, v = null;
     prefetch(dest, art);
+    setTimeout(function () { if (!skipped) showSkipDepart(dest, art); }, 400);
     function afterFilm() {
-      if (next) return; next = true;
+      if (next || skipped) return; next = true;
       if (reduce) { plainFade(dest, art); return; }
       runPortal(dest, art);
       setTimeout(function () { if (v) { try { v.pause(); } catch (e) {} } }, 300);
@@ -519,7 +536,7 @@
         requestAnimationFrame(pace);
       })();
     }
-    function failed() { if (next) return; next = true; plainFade(dest, art); }
+    function failed() { if (next || skipped) return; next = true; plainFade(dest, art); }
     if (v && v.error) failed();                                // already failed while preloading
     else if (v) v.addEventListener("error", failed, { once: true });
     setTimeout(afterFilm, 24000); // never strand the student if the video stalls
