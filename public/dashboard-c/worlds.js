@@ -32,5 +32,17 @@ window.POPUP_WORLD_PAGES = {
       { x: 820, y: 540, w: 48, h: 74 },    // Lesson 3: by the stream, near the pod
       { x: 514, y: 157, w: 36, h: 56 }     // Lesson 4: top of the clocktower city
     ]
+  },
+  "desert-mirage-bazaar": {
+    module: 2, name: "Desert Mirage Bazaar", ribbon: "desert", color: "#7a45b5", icon: "🏜️",
+    video: "assets/world.mp4", poster: "assets/poster.jpg", holdImg: "assets/hold.jpg", hold: null, rate: 0.75,   // short 3.58s clip; Astra smiling, eyes open at the end
+    hotspots: [
+      { x: 215, y: 554, w: 60, h: 88 },    // Lesson 1: left pedestal
+      { x: 535, y: 627, w: 68, h: 88, below: true },   // Lesson 2: big front crystal
+      { x: 607, y: 531, w: 46, h: 66 },    // Lesson 3: in the oasis pool
+      { x: 387, y: 496, w: 46, h: 66 },    // Lesson 4: by the market stalls
+      { x: 650, y: 451, w: 42, h: 60 },    // Lesson 5: on the ledge above the pool
+      { x: 626, y: 140, w: 40, h: 60 }     // Lesson 6: top of the golden dome palace
+    ]
   }
 };
