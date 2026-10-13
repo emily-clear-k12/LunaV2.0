@@ -7,7 +7,7 @@
 <div class="strip"><h1>Astra's Writing Adventure</h1></div>
 <div id="lanterns"></div>
 <div class="goaltile"><b>Today's goal</b>Back up every answer with evidence from the text.</div>
-<div class="bar" id="bar"><div id="tiles" style="display:flex;gap:6px;flex:1;min-width:0"></div><div id="act"></div></div>
+<div class="bar" id="bar"><div id="tiles" style="display:flex;gap:6px;flex:1;min-width:0"></div><div id="act" style="width:104px;flex:none"></div></div>
 </div>
 <script src="stage-fit.js"></script><script src="worlds.js"></script>
 <script>
@@ -21,8 +21,8 @@
   });
   function pick(i){ sel=i; bar.classList.add("show"); document.getElementById("frame").classList.add("sel");
     [].forEach.call(L.children,function(e,j){e.classList.toggle("on",j===i)}); [].forEach.call(tiles.children,function(e,j){e.classList.toggle("on",j===i)});
-    var w=W[i]; act.innerHTML = w.art ? '<button class="go">Go ›</button>' : '<div class="soon"><b>Coming soon!</b>Astra is still exploring</div>';
-    if(w.art) act.firstChild.onclick=function(){ location.href="world.html?w="+w.id; };
+    var w=W[i]; act.innerHTML = '<button class="go">Go ›</button>';
+    act.firstChild.onclick=function(){ location.href="world.html?w="+w.id; };
   }
   var q=new URLSearchParams(location.search).get("m"); if(q){ W.forEach(function(w,i){ if(w.id===q) pick(i); }); }
 })();

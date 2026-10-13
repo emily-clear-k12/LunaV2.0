@@ -12,10 +12,9 @@
 .lantern.on { background:radial-gradient(closest-side, color-mix(in srgb,var(--c) 55%,transparent), transparent); box-shadow:0 0 0 3px var(--c), 0 0 44px 12px color-mix(in srgb,var(--c) 70%,transparent); }
 .bar { position:absolute; left:12px; right:12px; bottom:12px; padding:6px; display:none; align-items:center; gap:6px; border-radius:14px; box-sizing:border-box;
   background:rgba(20,83,140,.45); -webkit-backdrop-filter:blur(10px); backdrop-filter:blur(10px); border:1px solid rgba(255,255,255,.22); }
-.goaltile { position:absolute; left:50%; bottom:14px; transform:translateX(-50%); height:34px; display:flex; align-items:center; padding:0 16px; border-radius:12px;
+.goaltile { position:absolute; right:12px; top:44px; box-sizing:border-box; height:34px; display:flex; align-items:center; padding:0 16px; border-radius:12px;
   background:rgba(20,83,140,.38); -webkit-backdrop-filter:blur(6px); backdrop-filter:blur(6px); border:1px solid rgba(255,255,255,.22); font-size:14px; font-weight:600; white-space:nowrap; }
 .goaltile b { color:#f5b400; font-weight:800; letter-spacing:.08em; font-size:11px; margin-right:8px; text-transform:uppercase; }
-.sel .goaltile { display:none; }
 .bar.show { display:flex; }
 .tile { flex:1 1 0; min-width:0; box-sizing:border-box; height:30px; padding:0 8px !important; display:flex; align-items:center; gap:8px; padding:0 10px; border-radius:11px; border:2px solid var(--c); background:rgba(255,255,255,.12);
   color:#fff; font:600 12px "Source Serif 4",serif; cursor:pointer; white-space:nowrap; overflow:hidden; }
@@ -37,3 +36,6 @@
 @keyframes pulse { 50% { box-shadow:0 0 30px 6px rgba(6,170,222,.55); } }
 .toast { position:absolute; left:50%; bottom:40px; transform:translateX(-50%); padding:10px 20px; border-radius:14px; background:rgba(20,83,140,.9); font:700 15px Manrope; display:none; }
 .empty { position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:10px; font:700 30px "Source Serif 4"; }
+
+.tile { text-overflow:ellipsis; } .bar { height:44px; }
+.bg.blur { filter:blur(6px) brightness(.8); transform:scale(1.04); }

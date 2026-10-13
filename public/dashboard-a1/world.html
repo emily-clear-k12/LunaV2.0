@@ -12,9 +12,9 @@
   if(w.art){ h='<img class="bg" src="'+w.art+'" alt="">'+h;
     w.crystals.forEach(function(c,i){ h+='<a class="crystal" style="left:'+c[0]+'px;top:'+c[1]+'px" href="'+(i===0?'../demo/lesson/':'#')+'" data-l="'+(i+1)+'"><span>Lesson '+(i+1)+'</span></a>'; });
     h+='<div class="toast" id="toast"></div>';
-  } else h+='<div class="empty">Coming soon!<small style="font:600 16px Manrope">Astra is still exploring '+w.name+'.</small></div>';
+  } else h='<img class="bg blur" src="tree.jpg" alt="">'+h;
   f.innerHTML=h;
   [].forEach.call(f.querySelectorAll('.crystal[href="#"]'),function(a){ a.onclick=function(e){ e.preventDefault(); var t=document.getElementById("toast");
-    t.textContent="Lesson "+a.dataset.l+" is coming soon!"; t.style.display="block"; clearTimeout(t._h); t._h=setTimeout(function(){t.style.display="none"},2200); }; });
+    t.textContent="Lesson "+a.dataset.l+" isn't open yet. Try Lesson 1!"; t.style.display="block"; clearTimeout(t._h); t._h=setTimeout(function(){t.style.display="none"},2200); }; });
 })();
 </script></body></html>
