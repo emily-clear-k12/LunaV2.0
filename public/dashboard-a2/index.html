@@ -1,0 +1,49 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1"/><link rel="icon" type="image/svg+xml" href="../favicon.svg"/>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&family=Lilita+One&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="../demo/switcher.css"/><link rel="stylesheet" href="stage-fit.css"/><link rel="stylesheet" href="common.css"/><title>Plan A.2 · Trunk Doors · Astra's Writing Adventure</title></head>
+<body><script src="../demo/switcher.js" data-page="dashboard-a2"></script>
+<div id="frame" class="stage-frame">
+<img class="bg" src="trunk.jpg" alt="Astra waving beside a great tree with six colored doors in its trunk"/>
+<div class="strip"><h1>Astra's Writing Adventure</h1></div>
+<div id="lanterns"></div><div class="toast" id="toast"></div>
+<div class="goaltile"><b>Today's goal</b>Back up every answer with evidence from the text.</div>
+<div class="bar" id="bar"><div id="tiles" style="display:flex;gap:6px;flex:1;min-width:0"></div><div id="act" style="width:104px;flex:none"></div></div>
+</div>
+<script src="stage-fit.js"></script><script>
+/* Plan A.2 doors: x,y = door centre on the 1366x768 stage (from 1024x576 art x1.334). Worlds not built yet. */
+window.A2_WORLDS=[
+ {id:"frostpine-peak",m:1,name:"Frostpine Peak",color:"#4aa3ff",x:664,y:267},
+ {id:"bamboo-lantern-valley",m:2,name:"Bamboo Lantern Valley",color:"#5cc46a",x:846,y:273},
+ {id:"teacup-kingdom",m:3,name:"Teacup Kingdom",color:"#a66bff",x:632,y:416},
+ {id:"thornspire-ruins",m:4,name:"Thornspire Ruins",color:"#ff8a3d",x:843,y:456},
+ {id:"glasswing-marsh",m:5,name:"Glasswing Marsh",color:"#2ec4b6",x:638,y:567},
+ {id:"mushroom-hollow",m:6,name:"Mushroom Hollow",color:"#ff5fa8",x:892,y:598}];
+</script>
+<style>
+.door{position:absolute;width:70px;height:108px;transform:translate(-50%,-50%);border:0;padding:0;cursor:pointer;background:none;border-radius:35px 35px 6px 6px;transition:box-shadow .25s}
+.door:hover,.door:focus-visible{outline:none;box-shadow:0 0 26px 6px color-mix(in srgb,var(--c) 55%,transparent)}
+.door::after{content:"";position:absolute;inset:0;border-radius:inherit;opacity:0;pointer-events:none;transform-origin:left center;
+ background:radial-gradient(ellipse at 50% 60%,color-mix(in srgb,var(--c) 80%,#fff) 0%,color-mix(in srgb,var(--c) 45%,transparent) 55%,transparent 75%)}
+.door.on{box-shadow:0 0 0 3px var(--c),0 0 40px 12px color-mix(in srgb,var(--c) 70%,transparent)}
+.door.pop::after{animation:doorpop .7s ease-out forwards}
+@keyframes doorpop{0%{opacity:0;transform:perspective(300px) rotateY(0) scale(.9)}35%{opacity:.95;transform:perspective(300px) rotateY(-28deg) scale(1.12)}100%{opacity:.45;transform:perspective(300px) rotateY(-12deg) scale(1)}}
+.door.on:not(.pop)::after{opacity:.45;transform:perspective(300px) rotateY(-12deg)}
+</style>
+<script>
+(function(){
+  var W=window.A2_WORLDS, L=document.getElementById("lanterns"), bar=document.getElementById("bar"), tiles=document.getElementById("tiles"), act=document.getElementById("act"), sel=-1;
+  W.forEach(function(w,i){
+    var b=document.createElement("button"); b.className="door"; b.style.cssText="left:"+w.x+"px;top:"+w.y+"px;--c:"+w.color;
+    b.setAttribute("aria-label","M"+w.m+" "+w.name); b.onclick=function(){pick(i)}; L.appendChild(b);
+    var t=document.createElement("button"); t.className="tile"; t.style.setProperty("--c",w.color); t.innerHTML="<em>M"+w.m+"</em>"+w.name.replace(/'/g,"&#39;");
+    t.onclick=function(){pick(i)}; tiles.appendChild(t);
+  });
+  function pick(i){ sel=i; bar.classList.add("show"); document.getElementById("frame").classList.add("sel");
+    [].forEach.call(L.children,function(e,j){e.classList.toggle("on",j===i); e.classList.remove("pop"); if(j===i){ void e.offsetWidth; e.classList.add("pop"); }}); [].forEach.call(tiles.children,function(e,j){e.classList.toggle("on",j===i)});
+    var w=W[i]; act.innerHTML = '<button class="go">Go ›</button>';
+    act.firstChild.onclick=function(){ var t=document.getElementById("toast");
+      t.textContent="Astra is still building "+w.name+". Check back tomorrow!"; t.style.display="block"; clearTimeout(t._h); t._h=setTimeout(function(){t.style.display="none"},2600); };
+  }
+  var q=new URLSearchParams(location.search).get("m"); if(q){ W.forEach(function(w,i){ if(w.id===q) pick(i); }); }
+})();
+</script></body></html>

@@ -9,6 +9,7 @@
   var links = [
     { id: "dashboard-a", label: "Plan A · Portals", href: new URL("../dashboard-a/", base).href },
     { id: "dashboard-a1", label: "Plan A.1 · Lantern Tree", href: new URL("../dashboard-a1/", base).href },
+    { id: "dashboard-a2", label: "Plan A.2 · Trunk Doors", href: new URL("../dashboard-a2/", base).href },
     { id: "dashboard-b", label: "Plan B · Crystal Railways", href: new URL("../dashboard-b/", base).href },
     { id: "dashboard-c", label: "Plan C · Pop Up Mounts", href: new URL("../dashboard-c/", base).href },
     { id: "dashboard-d", label: "Plan D · Forest Guides", href: new URL("../dashboard-d/", base).href },
