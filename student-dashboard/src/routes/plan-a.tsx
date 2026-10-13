@@ -24,7 +24,7 @@ type Module = {
   lessons: Lesson[];
 };
 
-const CLASS_FOCUS = "Today, let's back every answer with evidence from the text!";
+const CLASS_FOCUS = "Back up every answer with evidence from the text.";
 
 /** Demo mastery seeds — not live student data. */
 const DEMO_DONE: Record<string, string[]> = {
@@ -356,7 +356,16 @@ function StudentHome() {
   return (
     <div className="plana-stage flex h-dvh w-full flex-col overflow-hidden">
       <div className="relative min-h-0 w-full min-w-0 flex-1 overflow-hidden">
-          <h1 className="z-sky-title">✦ Astra’s Writing Adventure ✦</h1>
+          <div className="pa-top">
+            <header className="pa-title pa-frost">
+              <svg viewBox="0 0 26 26" aria-hidden="true"><circle cx="13" cy="13" r="9" fill="none" stroke="#94690f" strokeWidth="1.8" /><circle cx="13" cy="13" r="5" fill="#fff3d6" stroke="#c99a2e" strokeWidth="1.5" /></svg>
+              <h1>Astra’s Writing Adventure<small>Plan A · Portals</small></h1>
+            </header>
+            <section className="pa-goal pa-frost" aria-label="Today’s goal">
+              <p className="pa-lbl"><svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="6.2" fill="none" stroke="#d9a93f" strokeWidth="2" /><circle cx="8" cy="8" r="2.6" fill="#d9a93f" /></svg>Today’s goal</p>
+              <p className="pa-txt">{CLASS_FOCUS}</p>
+            </section>
+          </div>
           {overlayOpen ? (
             <button
               type="button"
@@ -430,12 +439,6 @@ function StudentHome() {
                       <source src={asset("portal-hub-loop-v3.webm")} type="video/webm" />
                     </video>
                   ) : null}
-
-                  {/* Astra's tip: always showing so today's focus stays in view */}
-                  <div className="z-tip" role="note" aria-label="Astra’s tip">
-                    <span className="z-tip-k">✦ Astra’s tip</span>
-                    <span className="z-tip-t">{CLASS_FOCUS}</span>
-                  </div>
 
                   {modules.map((mod) => (
                     <button
