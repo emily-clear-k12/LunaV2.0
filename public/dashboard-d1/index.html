@@ -23,7 +23,7 @@
 <div id="glows"></div>
 <div class="bar" id="bar"></div>
 </div>
-<script src="stage-fit.js"></script>
+<script src="stage-fit.js"></script><script src="../demo/badges/badges.js" data-mount="#frame" data-mode="abs"></script>
 <script>
 (function(){
   /* Same module order + buddy pairing as Plan D (arrows 1–6). Positions: 1024x576 source × 1366/1024. */
@@ -42,7 +42,7 @@
   });
   var go=document.createElement("button");go.type="button";go.className="go";go.textContent="Go ›";bar.appendChild(go);
   go.onclick=function(){go.classList.add("soon");go.textContent="Not open yet";};
-  function pick(i){tiles.forEach(function(e,j){e.classList.toggle("on",j===i);e.setAttribute("aria-pressed",j===i)});glows.forEach(function(e,j){e.classList.toggle("on",j===i)});
+  function pick(i){window.lsBadges?lsBadges.select(i):(window.__lsBadgePending=i);tiles.forEach(function(e,j){e.classList.toggle("on",j===i);e.setAttribute("aria-pressed",j===i)});glows.forEach(function(e,j){e.classList.toggle("on",j===i)});
     go.classList.add("show");go.classList.remove("soon");go.textContent="Go ›";}
 })();
 </script></body></html>
