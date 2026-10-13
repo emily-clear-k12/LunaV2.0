@@ -39,3 +39,10 @@
 
 .tile { text-overflow:ellipsis; } .bar { height:44px; }
 .bg.blur { filter:blur(6px) brightness(.8); transform:scale(1.04); }
+
+/* module row always visible; tiles dim until picked; Go disabled until picked */
+.bar{display:flex}
+.tile{opacity:.5;filter:saturate(.45);transition:opacity .2s,filter .2s,box-shadow .2s,background .2s}
+.tile:hover{opacity:.8}
+.tile.on{opacity:1;filter:none;box-shadow:0 0 14px 2px var(--c)}
+.go:disabled{opacity:.4;filter:saturate(.3);cursor:default}

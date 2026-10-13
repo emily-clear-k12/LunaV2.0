@@ -1456,3 +1456,16 @@
 .pa-lbl { margin: 0; display: flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; color: #94690f; }
 .pa-lbl svg { width: 14px; height: 14px; }
 .pa-txt { margin: 0; font-size: 16px; font-weight: 700; line-height: 1.2; white-space: nowrap; }
+
+/* Plan A bottom module row (mirrors Plan A.1/A.2 .bar/.tile/.go) */
+.a-bar{position:absolute;left:12px;right:12px;bottom:12px;height:44px;z-index:5;display:flex;align-items:center;gap:6px;padding:6px;box-sizing:border-box;border-radius:14px;
+  background:rgba(20,83,140,.45);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,.22)}
+.a-tile{flex:1 1 0;min-width:0;height:30px;display:flex;align-items:center;gap:8px;padding:0 8px;border-radius:11px;border:2px solid var(--c);background:rgba(255,255,255,.12);
+  color:#fff;font:600 12px var(--ls-serif,"Source Serif 4",Georgia,serif);cursor:pointer;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+  opacity:.5;filter:saturate(.45);transition:opacity .2s,filter .2s,box-shadow .2s,background .2s}
+.a-tile em{font:800 11px var(--ls-sans,"Manrope",system-ui,sans-serif);font-style:normal}
+.a-tile:hover{opacity:.8}
+.a-tile.on{opacity:1;filter:none;background:var(--c);color:#0b1d33;box-shadow:0 0 14px 2px var(--c)}
+.a-go{width:104px;flex:none;height:30px;border:0;border-radius:999px;background:#f5b400;color:#14538c;font:800 17px var(--ls-sans,"Manrope",system-ui,sans-serif);cursor:pointer}
+.a-go:disabled{opacity:.4;filter:saturate(.3);cursor:default}
+.z-portal.z-picked .z-ring{box-shadow:0 0 0 3px var(--z-accent),0 0 40px 10px var(--z-accent)}

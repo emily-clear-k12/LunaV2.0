@@ -235,6 +235,7 @@ function StudentHome() {
   const [coins, setCoins] = useState<number>(readCoins);
   const [dive, setDive] = useState<{ x: number; y: number; ox: number; oy: number; reduce: boolean } | null>(null);
   const [cameByPortal, setCameByPortal] = useState(false);
+  const [picked, setPicked] = useState<string | null>(null);
   const sceneRef = useRef<HTMLDivElement>(null);
   const reduceMotion = useReducedMotion();
   const [view, setView] = useState<View>(() => parseHash(window.location.hash));
@@ -312,6 +313,16 @@ function StudentHome() {
 
   function lessonDone(modId: string, title: string) {
     return (done[modId] ?? []).includes(title);
+  }
+
+  /** Go: run the portal's existing action (zoom into it, then its world page / Starfall world). */
+  function goTo(id: string) {
+    const el = document.querySelector<HTMLElement>(`[data-portal="${id}"]`);
+    const worlds: Record<string, string> = { scr: "crystal-caverns/", ecr: "sky-harbor/", plan: "ember-forge/", revise: "clockwork-city/", edit: "coral-cove/" };
+    if (!el) return openModule(id);
+    if (id === "sentences") return diveInto(el);
+    if (worlds[id]) return diveInto(el, asset(worlds[id]));
+    openModule(id);
   }
 
   function openModule(id: string) {
@@ -473,10 +484,12 @@ function StudentHome() {
                     <button
                       key={mod.id}
                       type="button"
-                      onClick={(e) => (mod.id === "sentences" ? diveInto(e.currentTarget) : mod.id === "scr" ? diveInto(e.currentTarget, asset("crystal-caverns/")) : mod.id === "edit" ? diveInto(e.currentTarget, asset("coral-cove/")) : mod.id === "ecr" ? diveInto(e.currentTarget, asset("sky-harbor/")) : mod.id === "plan" ? diveInto(e.currentTarget, asset("ember-forge/")) : mod.id === "revise" ? diveInto(e.currentTarget, asset("clockwork-city/")) : openModule(mod.id))}
+                      onClick={() => setPicked(mod.id)}
                       aria-label={`Module ${mod.n}, ${mod.name}, ${mod.world}`}
+                      data-portal={mod.id}
                       className={
                         "z-hotspot z-portal absolute -translate-x-1/2 -translate-y-1/2 " +
+                        (picked === mod.id ? "z-picked " : "") +
                         (focus ? "pointer-events-none opacity-0" : "")
                       }
                       style={{
@@ -531,6 +544,28 @@ function StudentHome() {
               </div>
             </div>
           </div>
+
+          {/* Bottom module row (same look as Plan A.1/A.2): always visible, dim until a portal or tile is picked; Go runs the portal's zoom. */}
+          {!focus && !dive ? (
+            <div className="a-bar" role="group" aria-label="Choose a world">
+              {modules.map((mod) => (
+                <button
+                  key={`tile-${mod.id}`}
+                  type="button"
+                  className={"a-tile" + (picked === mod.id ? " on" : "")}
+                  style={{ ["--c" as string]: mod.accent }}
+                  aria-pressed={picked === mod.id}
+                  onClick={() => setPicked(mod.id)}
+                >
+                  <em>M{mod.n}</em>
+                  {mod.world}
+                </button>
+              ))}
+              <button type="button" className="a-go" disabled={!picked} onClick={() => picked && goTo(picked)}>
+                Go ›
+              </button>
+            </div>
+          ) : null}
 
           {focused && !lesson ? (
             <section className="absolute inset-x-0 bottom-0 z-10 px-3 pb-3 sm:px-6 sm:pb-5">
