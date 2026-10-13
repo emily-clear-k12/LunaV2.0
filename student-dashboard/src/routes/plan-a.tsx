@@ -269,7 +269,7 @@ function StudentHome() {
 
   /** Portal dive: the scene zooms into the tapped portal while its light floods the screen,
       then the world takes over (reduced motion: a plain fade). */
-  function diveInto(el: HTMLElement) {
+  function diveInto(el: HTMLElement, href?: string) {
     const reduce = window.matchMedia?.("(prefers-reduced-motion: reduce)").matches ?? false;
     const r = el.getBoundingClientRect();
     const stage = sceneRef.current?.getBoundingClientRect();
@@ -283,6 +283,7 @@ function StudentHome() {
       reduce,
     });
     window.setTimeout(() => {
+      if (href) { setDive(null); window.location.href = href; return; }
       setCameByPortal(true);
       navigate({ page: "world", id: "starfall" });
       setDive(null);
@@ -444,7 +445,7 @@ function StudentHome() {
                     <button
                       key={mod.id}
                       type="button"
-                      onClick={(e) => (mod.id === "sentences" ? diveInto(e.currentTarget) : openModule(mod.id))}
+                      onClick={(e) => (mod.id === "sentences" ? diveInto(e.currentTarget) : mod.id === "ecr" ? diveInto(e.currentTarget, asset("sky-harbor/")) : openModule(mod.id))}
                       aria-label={`Module ${mod.n}, ${mod.name}, ${mod.world}`}
                       className={
                         "z-hotspot z-portal absolute -translate-x-1/2 -translate-y-1/2 " +
