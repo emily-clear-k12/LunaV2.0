@@ -5,7 +5,9 @@ window.A1_WORLDS = [
   { id: "willow-wisp-marsh", m: 2, name: "Willow Wisp Marsh",        color: "#2ec4b6", x: 397,  y: 275, w: 86, h: 140 },
   { id: "sandstone-canyon",  m: 3, name: "Sandstone Canyon",         color: "#a66bff", x: 294,  y: 387, w: 86, h: 150, art: "worlds/sandstone-canyon.jpg",
     crystals: [[240, 547], [507, 394], [309, 287], [860, 327]] },
-  { id: "bayou-market",      m: 4, name: "Bayou Market",             color: "#ff8a3d", x: 1101, y: 192, w: 92, h: 150 },
-  { id: "lightning-mountain",m: 5, name: "Lightning Mountain",       color: "#f5b400", x: 964,  y: 300, w: 86, h: 140 },
+  { id: "bayou-market",      m: 4, name: "Bayou Market",             color: "#ff8a3d", x: 1101, y: 192, w: 92, h: 150, art: "worlds/bayou-market.jpg",
+    crystals: [[351, 447], [774, 420], [344, 180], [804, 127], [1134, 240]] },
+  { id: "lightning-mountain",m: 5, name: "Lightning Mountain",       color: "#f5b400", x: 964,  y: 300, w: 86, h: 140, art: "worlds/lightning-mountain.jpg",
+    crystals: [[480, 460], [727, 587], [1187, 474], [1043, 256]] },
   { id: "rainforest-canopy", m: 6, name: "Rainforest Canopy Bridges", short: "Canopy Bridges", color: "#ff5fa8", x: 1201, y: 300, w: 86, h: 140 }
 ];
