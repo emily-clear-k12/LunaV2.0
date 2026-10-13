@@ -1,4 +1,4 @@
-import { ArrowLeft, Check, Lock, Sparkles, Volume2, X } from "lucide-react";
+import { ArrowLeft, Check, Lock, Sparkles, X } from "lucide-react";
 import { useCallback, useEffect, useMemo, useRef, useState, type RefObject } from "react";
 import "./world-starfall.css";
 
@@ -106,24 +106,10 @@ const VOICE: Record<string, string> = {
 
 let playing: HTMLAudioElement | null = null;
 
-export function speak(text: string) {
-  const synth = typeof window !== "undefined" ? window.speechSynthesis : undefined;
-  synth?.cancel();
-  if (playing) {
-    playing.pause();
-    playing = null;
-  }
-  const clip = VOICE[text];
-  if (clip) {
-    const a = new Audio(asset(clip));
-    playing = a;
-    a.play().catch(() => {
-      /* autoplay blocked or file missing: fall back to the browser voice */
-      if (playing === a) browserSpeak(text);
-    });
-    return;
-  }
-  browserSpeak(text);
+/* Emily (Oct 13): Starfall Meadow has no voice/narration or music. speak() is a silent no-op that only
+   stops anything still playing; the Read-aloud buttons are not rendered. */
+export function speak(_text: string) {
+  stopSpeech();
 }
 
 export function stopSpeech() {
@@ -134,36 +120,8 @@ export function stopSpeech() {
   }
 }
 
-function browserSpeak(text: string) {
-  const synth = typeof window !== "undefined" ? window.speechSynthesis : undefined;
-  if (!synth) return;
-  const u = new SpeechSynthesisUtterance(text);
-  u.lang = "en-US";
-  u.rate = 0.95;
-  u.pitch = 1.15;
-  const voices = synth.getVoices();
-  const voice =
-    voices.find((v) => /en[-_]US/i.test(v.lang) && /guy|davis|david|mark|aaron|alex|daniel|male|andrew|brian|eric/i.test(v.name) && !/female/i.test(v.name)) ??
-    voices.find((v) => /^en/i.test(v.lang));
-  if (voice) u.voice = voice;
-  synth.speak(u);
-}
-
-function SpeakBtn({ text, label = "Read aloud", className = "" }: { text: string; label?: string; className?: string }) {
-  return (
-    <button
-      type="button"
-      className={`sf-speak ${className}`}
-      aria-label={label}
-      title={label}
-      onClick={(e) => {
-        e.stopPropagation();
-        speak(text);
-      }}
-    >
-      <Volume2 aria-hidden="true" />
-    </button>
-  );
+function SpeakBtn(_props: { text: string; label?: string; className?: string }) {
+  return null;
 }
 
 /* ——— tiny seeded random so particles look organic but render the same every time ——— */
