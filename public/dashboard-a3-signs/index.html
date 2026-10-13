@@ -1,0 +1,39 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1"/><link rel="icon" type="image/svg+xml" href="../favicon.svg"/>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&family=Lilita+One&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="../demo/switcher.css"/><link rel="stylesheet" href="../dashboard-a3/stage-fit.css"/><link rel="stylesheet" href="../dashboard-a3/common.css"/><link rel="stylesheet" href="signs.css"/>
+<title>Plan A.3 Signs (mockup) · Treehouses · Astra's Writing Adventure</title>
+<style>
+.house{position:absolute;transform:translate(-50%,-50%);border:0;padding:0;cursor:pointer;background:none;border-radius:50%}
+.house::after{content:"";position:absolute;inset:-6%;border-radius:50%;pointer-events:none;opacity:0;mix-blend-mode:screen;
+ background:radial-gradient(ellipse at center,color-mix(in srgb,var(--c) 55%,#ffe9b0) 0%,color-mix(in srgb,var(--c) 35%,transparent) 40%,transparent 70%);transition:opacity .25s}
+.house:hover::after{opacity:.45}.house:focus-visible{outline:none}
+.house.on::after{animation:halo 2.2s ease-in-out infinite}
+@keyframes halo{0%,100%{opacity:.55;transform:scale(.96)}50%{opacity:.9;transform:scale(1.04)}}
+.mock{position:absolute;left:12px;bottom:12px;padding:4px 10px;border-radius:999px;background:rgba(11,29,51,.6);font:700 11px var(--ls-sans);color:#ffd27a;letter-spacing:.06em}
+</style></head>
+<body><script src="../demo/switcher.js" data-page="dashboard-a3"></script>
+<!-- MOCKUP: Plan A.3 with hanging wooden signs instead of the bottom module menu. Live A.3 is ../dashboard-a3/. -->
+<div id="frame" class="stage-frame">
+<img class="bg" src="../dashboard-a3/treehouses.jpg" alt="Astra reading on a great tree with six treehouses in its branches"/>
+<div class="strip"><h1>Astra's Writing Adventure</h1></div>
+<div class="goaltile"><b>Today's goal</b>Back up every answer with evidence from the text.</div>
+<div id="houses"></div><div id="signs"></div>
+<div class="mock">MOCKUP · hanging signs</div>
+</div>
+<script src="../dashboard-a3/stage-fit.js"></script><script src="../dashboard-a3/worlds.js"></script>
+<script>
+(function(){
+  /* sign anchor (top-centre, stage px) per module, placed clear of the houses and each other */
+  var SIGN={"lighthouse-grove":[975,548],"sky-cloud-observatory":[452,150],"amber-hive-hollow":[233,436],"candyleaf-grove":[448,560],"desert-mirage-bazaar":[1262,450],"cloud-kite-loft":[960,262]};
+  var W=window.A3_WORLDS,H=document.getElementById("houses"),S=document.getElementById("signs");
+  W.forEach(function(w,i){
+    var h=document.createElement("button");h.className="house";h.style.cssText="left:"+w.x+"px;top:"+w.y+"px;width:"+w.w+"px;height:"+w.h+"px;--c:"+w.color;
+    h.setAttribute("aria-label","Module "+w.m+", "+w.name);h.onclick=function(){pick(i)};H.appendChild(h);
+    var p=SIGN[w.id],s=document.createElement("div");s.className="sign";s.style.cssText="left:"+p[0]+"px;top:"+p[1]+"px;--c:"+w.color;
+    s.innerHTML='<i class="rope l"></i><i class="rope r"></i><button type="button" class="plank" aria-label="Module '+w.m+', '+w.name+'" style="border:0;cursor:pointer;font:inherit"><span class="n">Module '+w.m+'</span><span class="w">'+w.name+'</span></button><a class="gotab" href="../dashboard-a3/world.html?w='+w.id+'">Go ›</a>';
+    s.querySelector(".plank").onclick=function(){pick(i)};S.appendChild(s);
+  });
+  function pick(i){[].forEach.call(H.children,function(e,j){e.classList.toggle("on",j===i)});
+    [].forEach.call(S.children,function(e,j){e.classList.remove("on");if(j===i){void e.offsetWidth;e.classList.add("on")}});}
+})();
+</script></body></html>

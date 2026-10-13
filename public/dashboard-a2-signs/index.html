@@ -1,0 +1,50 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1"/><link rel="icon" type="image/svg+xml" href="../favicon.svg"/>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&family=Lilita+One&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="../demo/switcher.css"/><link rel="stylesheet" href="../dashboard-a2/stage-fit.css"/><link rel="stylesheet" href="../dashboard-a2/common.css"/>
+<title>Plan A.2 Signs (mockup) · Trunk Doors · Astra's Writing Adventure</title>
+<style>.door{position:absolute;width:70px;height:108px;transform:translate(-50%,-50%);border:0;padding:0;cursor:pointer;background:none;border-radius:35px 35px 6px 6px;transition:box-shadow .25s}
+.door:hover,.door:focus-visible{outline:none;box-shadow:0 0 26px 6px color-mix(in srgb,var(--c) 55%,transparent)}
+.door::before{content:"";position:absolute;inset:4px;border-radius:31px 31px 4px 4px;background:var(--art) center/cover;opacity:0;transform:scaleX(.2);transform-origin:left center;transition:opacity .35s,transform .45s cubic-bezier(.2,.8,.3,1.2);pointer-events:none}
+.door.on::before{opacity:1;transform:scaleX(1)}
+.door::after{content:"";position:absolute;inset:0;border-radius:inherit;opacity:0;pointer-events:none;transform-origin:left center;
+ background:radial-gradient(ellipse at 50% 60%,color-mix(in srgb,var(--c) 80%,#fff) 0%,color-mix(in srgb,var(--c) 45%,transparent) 55%,transparent 75%)}
+.door.on{box-shadow:0 0 0 3px var(--c),0 0 40px 12px color-mix(in srgb,var(--c) 70%,transparent)}
+.door.pop::after{animation:doorpop .7s ease-out forwards}
+@keyframes doorpop{0%{opacity:0;transform:perspective(300px) rotateY(0) scale(.9)}35%{opacity:.95;transform:perspective(300px) rotateY(-28deg) scale(1.12)}100%{opacity:.45;transform:perspective(300px) rotateY(-12deg) scale(1)}}
+.door.on:not(.pop)::after{opacity:.45;transform:perspective(300px) rotateY(-12deg)}
+
+.num{position:absolute;left:50%;top:54%;transform:translate(-50%,-50%);font:400 46px/1 var(--ls-game,"Lilita One",sans-serif);color:#f5b400;pointer-events:none;z-index:2;
+ text-shadow:0 2px 0 #7a4c08,0 -1px 0 rgba(255,240,190,.6),0 0 10px rgba(0,0,0,.55);transition:opacity .3s}
+.door.on .num{opacity:.25}
+.dsign{position:absolute;transform:translate(-50%,-100%);padding:3px 10px 4px;border-radius:7px;z-index:3;pointer-events:none;white-space:nowrap;
+ background:linear-gradient(180deg,#a7713f,#7a4c22);box-shadow:inset 0 0 0 2px var(--c),0 4px 10px -4px rgba(0,0,0,.8);font:700 12px/1.1 var(--ls-serif,"Source Serif 4",serif);color:#fff6e6;text-shadow:0 1px 0 rgba(0,0,0,.6)}
+.dsign.on{box-shadow:inset 0 0 0 2px var(--c),0 0 14px 3px color-mix(in srgb,var(--c) 70%,transparent)}
+.gotab{position:absolute;transform:translate(0,-50%);display:none;padding:6px 16px;border-radius:999px;background:#f5b400;color:#14538c;font:800 16px var(--ls-sans,"Manrope",sans-serif);text-decoration:none;z-index:4;box-shadow:0 0 14px 2px rgba(245,180,0,.55),0 4px 10px -4px rgba(0,0,0,.7)}
+.gotab.on{display:block;animation:tabin .35s ease-out}
+@keyframes tabin{from{opacity:0;transform:translate(0,-50%) scale(.7)}to{opacity:1;transform:translate(0,-50%) scale(1)}}
+.mock{position:absolute;left:12px;bottom:12px;padding:4px 10px;border-radius:999px;background:rgba(11,29,51,.6);font:700 11px var(--ls-sans);color:#ffd27a;letter-spacing:.06em}
+</style></head>
+<body><script src="../demo/switcher.js" data-page="dashboard-a2"></script>
+<!-- MOCKUP: Plan A.2 with gold numerals on the doors and name signs above them instead of the bottom module menu. Live A.2 is ../dashboard-a2/. -->
+<div id="frame" class="stage-frame">
+<img class="bg" src="../dashboard-a2/trunk.jpg" alt="Astra waving beside a great tree with six colored doors in its trunk"/>
+<div class="strip"><h1>Astra's Writing Adventure</h1></div>
+<div class="goaltile"><b>Today's goal</b>Back up every answer with evidence from the text.</div>
+<div id="doors"></div>
+<div class="mock">MOCKUP · door numbers + signs</div>
+</div>
+<script src="../dashboard-a2/stage-fit.js"></script><script src="../dashboard-a2/worlds.js"></script>
+<script>
+(function(){
+  var W=window.A2_WORLDS,D=document.getElementById("doors"),doors=[],signs=[],tabs=[];
+  W.forEach(function(w,i){
+    var b=document.createElement("button");b.className="door";b.style.cssText="left:"+w.x+"px;top:"+w.y+"px;--c:"+w.color+";--art:url(../dashboard-a2/"+w.art+")";
+    b.setAttribute("aria-label","Module "+w.m+", "+w.name);b.innerHTML='<span class="num">'+w.m+'</span>';b.onclick=function(){pick(i)};D.appendChild(b);doors.push(b);
+    var s=document.createElement("div");s.className="dsign";s.style.cssText="left:"+w.x+"px;top:"+(w.y-60)+"px;--c:"+w.color;s.textContent=w.name;D.appendChild(s);signs.push(s);
+    var left=w.x<750, t=document.createElement("a");t.className="gotab";t.href="../dashboard-a2/world.html?w="+w.id;t.textContent="Go ›";
+    t.style.cssText="top:"+w.y+"px;"+(left?"right:"+(1366-w.x+46)+"px":"left:"+(w.x+46)+"px");D.appendChild(t);tabs.push(t);
+  });
+  function pick(i){doors.forEach(function(e,j){e.classList.toggle("on",j===i);e.classList.remove("pop");if(j===i){void e.offsetWidth;e.classList.add("pop")}});
+    signs.forEach(function(e,j){e.classList.toggle("on",j===i)});tabs.forEach(function(e,j){e.classList.toggle("on",j===i)});}
+})();
+</script></body></html>
