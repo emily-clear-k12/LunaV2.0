@@ -10,11 +10,11 @@
   document.title=w.name+" · Plan A.2 · Astra's Writing Adventure"; f.style.setProperty("--c",w.color);
   var h='<a class="back" href="./?m='+w.id+'">‹ Back to the doors</a><div class="mod">MODULE '+w.m+' · <span>'+w.name+'</span></div>';
   if(w.art){ h='<img class="bg" src="'+w.art+'" alt="">'+h;
-    w.crystals.forEach(function(c,i){ h+='<a class="crystal'+(w.small?' sm':'')+'" style="left:'+c[0]+'px;top:'+c[1]+'px" href="'+(i===0?'../demo/lesson/':'#')+'" data-l="'+(i+1)+'"><span>'+(w.lessons[i]?(i+1)+' · '+w.lessons[i].replace(/&/g,'&amp;'):'Lesson '+(i+1))+'</span></a>'; });
+    w.crystals.forEach(function(c,i){ h+='<a class="crystal'+(w.small?' sm':'')+'" style="left:'+c[0]+'px;top:'+c[1]+'px" href="'+(i===0?'../demo/lesson/':'#')+'" data-l="'+(i+1)+'"><span>Lesson '+(i+1)+'</span></a>'; });
     h+='<div class="toast" id="toast"></div>';
   }
   f.innerHTML=h;
   [].forEach.call(f.querySelectorAll('.crystal[href="#"]'),function(a){ a.onclick=function(e){ e.preventDefault(); var t=document.getElementById("toast");
-    var n=w.lessons[a.dataset.l-1]; t.textContent=(n||"Lesson "+a.dataset.l)+" isn't open yet. Try Lesson 1!"; t.style.display="block"; clearTimeout(t._h); t._h=setTimeout(function(){t.style.display="none"},2200); }; });
+    t.textContent="Lesson "+a.dataset.l+" isn't open yet. Try Lesson 1!"; t.style.display="block"; clearTimeout(t._h); t._h=setTimeout(function(){t.style.display="none"},2200); }; });
 })();
 </script></body></html>
