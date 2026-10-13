@@ -23,7 +23,7 @@
 <div id="glows"></div>
 <div class="bar" id="bar"></div>
 </div>
-<script src="stage-fit.js"></script><script src="../demo/badges/badges.js" data-mount="#frame" data-mode="abs"></script>
+<script src="stage-fit.js"></script><script src="../demo/badges/progress.js"></script><script src="../demo/badges/badges.js" data-mount="#frame" data-mode="abs"></script>
 <script>
 (function(){
   /* Same module order + buddy pairing as Plan D (arrows 1–6). Positions: 1024x576 source × 1366/1024. */
@@ -40,9 +40,22 @@
     var t=document.createElement("button");t.type="button";t.className="tile";t.style.setProperty("--c",b.c);
     t.innerHTML="<em>Module "+b.m+"</em>"+b.name+" · "+b.place;t.setAttribute("aria-label","Module "+b.m+", "+b.name+", "+b.place);t.onclick=function(){pick(i)};bar.appendChild(t);tiles.push(t);
   });
+  var LP=window.lsProgress, GT=document.querySelector(".goaltile");
+  GT.style.gap="8px"; GT.style.paddingLeft="6px"; GT.insertBefore(LP.speaker("Today's goal: Back up my opinion with strong, specific reasons."),GT.firstChild);
+  var F=document.getElementById("frame"), marks=[];
+  B.forEach(function(b,i){ var t=tiles[i], st=LP.status(b.m);
+    if(st==="done"){ var c=LP.check(); F.appendChild(c); marks.push([c,i,"done"]); t.setAttribute("aria-label",t.getAttribute("aria-label")+", done"); }
+    if(st==="next"){ var s=LP.startTag(); F.appendChild(s); marks.push([s,i,"next"]); t.setAttribute("aria-label",t.getAttribute("aria-label")+", start here"); }
+    t.addEventListener("click",function(){ LP.sayModule(b.m,b.name+" at "+b.place.replace(/^The /,"the ")); });
+  });
+  /* marks live on the stage (tiles are dimmed until picked), positioned from the tile geometry */
+  function place(){ marks.forEach(function(k){ var t=tiles[k[1]], x=bar.offsetLeft+t.offsetLeft, y=bar.offsetTop+t.offsetTop;
+    if(k[2]==="done") k[0].style.cssText="left:"+(x+t.offsetWidth-14)+"px;top:"+(y-8)+"px";
+    else k[0].style.cssText="left:"+(x+t.offsetWidth/2)+"px;top:"+(y-10)+"px"; }); }
   var go=document.createElement("button");go.type="button";go.className="go";go.textContent="Go ›";bar.appendChild(go);
   go.onclick=function(){go.classList.add("soon");go.textContent="Not open yet";};
   function pick(i){window.lsBadges?lsBadges.select(i):(window.__lsBadgePending=i);tiles.forEach(function(e,j){e.classList.toggle("on",j===i);e.setAttribute("aria-pressed",j===i)});glows.forEach(function(e,j){e.classList.toggle("on",j===i)});
-    go.classList.add("show");go.classList.remove("soon");go.textContent="Go ›";}
+    go.classList.add("show");go.classList.remove("soon");go.textContent="Go ›";place();}
+  place();
 })();
 </script></body></html>

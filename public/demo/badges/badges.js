@@ -9,7 +9,7 @@
     ".lsb i{display:flex;flex-direction:column;align-items:center;width:46px;padding:2px 0 3px;border-radius:9px;border:1.5px solid transparent;font-style:normal;transition:background .25s,border-color .25s}" +
     ".lsb img{width:32px;height:32px;object-fit:contain;filter:drop-shadow(0 2px 2px rgba(0,0,0,.45))}" +
     ".lsb b{margin-top:2px;font:800 8.5px/1 var(--ls-sans,'Manrope',sans-serif);letter-spacing:.06em;color:#a9d8f5;padding-bottom:2px;border-bottom:2px solid transparent}" +
-    ".lsb i.on{background:rgba(255,255,255,.1);border-color:#e2b04a}.lsb i.on b{color:#f5c542;border-bottom-color:#f5c542}";
+    ".lsb i{position:relative}.lsb i.todo img{filter:grayscale(.85) brightness(.75) opacity(.6)}.lsb i.todo b{opacity:.6}.lsb i .ls-check{right:3px;top:0;width:15px;height:15px;border-width:1.5px}.lsb i .ls-check svg{width:10px;height:10px}.lsb i.on{background:rgba(255,255,255,.1);border-color:#e2b04a}.lsb i.on b{color:#f5c542;border-bottom-color:#f5c542}";
   var st = document.createElement("style"); st.textContent = css; document.head.appendChild(st);
   function mount() {
     var host = document.querySelector(me.dataset.mount || "#frame"); if (!host) return;
@@ -17,7 +17,9 @@
     row.setAttribute("role", "img"); row.setAttribute("aria-label", "Module badges: " + B.map(function (b) { return b[1]; }).join(", "));
     row.innerHTML = B.map(function (b) { return '<i><img src="' + base + b[0] + '.png" alt=""/><b>' + b[1] + "</b></i>"; }).join("");
     host.appendChild(row);
-    var items = row.children;
+    var items = row.children, P = window.lsProgress;
+    if (P) [].forEach.call(items, function (e, j) { var m = j + 1, st = P.status(m);
+      if (st === "done") { e.classList.add("earned"); e.appendChild(P.check()); e.title = "Earned"; } else e.classList.add("todo"); });
     window.lsBadges = { select: function (i) { [].forEach.call(items, function (e, j) { e.classList.toggle("on", j === i); }); } };
     if (me.dataset.current) window.lsBadges.select(+me.dataset.current - 1);
     if (window.__lsBadgePending != null) window.lsBadges.select(window.__lsBadgePending);

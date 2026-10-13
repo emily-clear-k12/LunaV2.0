@@ -175,6 +175,27 @@
     <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M4 10h11M11 5.5 15.5 10 11 14.5" fill="none" stroke="#fffaf0" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
   </button>
 </aside>
-<script src="../demo/badges/badges.js" data-mount=".top" data-mode="flow" data-current="5"></script>
+<script src="../demo/badges/progress.js"></script><script src="../demo/badges/badges.js" data-mount=".top" data-mode="flow" data-current="2"></script>
+<style>.ls-start.side{transform:translate(-100%,-50%)}.ls-start.side i{left:auto;right:-7px;bottom:auto;top:50%;margin:-7px 0 0;border:7px solid transparent;border-right:0;border-left-color:#f5b400}
+.card .lbl{gap:8px}.card .lbl .ls-say{margin-left:4px;width:24px;height:24px}</style>
+<script>
+(function(){
+  var LP=window.lsProgress, st=document.querySelector(".stage"), hots=[].slice.call(document.querySelectorAll(".hot[data-arrow]"));
+  /* goal read-aloud */
+  document.querySelector(".card .lbl").appendChild(LP.speaker("Today's goal: Back up my opinion with strong, specific reasons."));
+  function box(h){ return ["left","top","width","height"].map(function(k){ return parseFloat(h.style[k]); }); }
+  function poly(h){ var b=box(h), m=h.style.clipPath.match(/[\d.]+% [\d.]+%/g);
+    return m.map(function(pt){ var q=pt.split(" ").map(parseFloat); return (12.8*(b[0]+q[0]*b[2]/100)).toFixed(1)+","+(7.2*(b[1]+q[1]*b[3]/100)).toFixed(1); }).join(" "); }
+  hots.forEach(function(h){ var m=+h.dataset.arrow, name=(h.getAttribute("aria-label").match(/: ([^(—]+?) \(/)||[,"World "+m])[1], b=box(h), status=LP.status(m);
+    h.classList.toggle("is-current",status==="next"); if(status==="next") h.setAttribute("aria-current","true"); else h.removeAttribute("aria-current");
+    h.setAttribute("aria-label","Arrow "+m+": "+name+(status==="done"?", done":status==="next"?", start here":""));
+    if(status==="done"){ var c=LP.check(); c.style.cssText="left:calc("+b[0]+"% - 14px);top:calc("+b[1]+"% - 4px);width:24px;height:24px"; st.appendChild(c); }
+    if(status==="next"){ var t=LP.startTag("side"); t.style.cssText="left:calc("+b[0]+"% - 8px);top:"+(b[1]+b[3]/2)+"%"; st.appendChild(t);
+      var pts=poly(h); [].forEach.call(document.querySelectorAll(".fx polygon"),function(pg){ pg.setAttribute("points",pts); });
+      var A=document.querySelector(".go .place"), L=document.querySelector(".go .lesson"); A.textContent=name; L.textContent="Module "+m+": "+LP.lines[m-1]; }
+    h.addEventListener("click",function(){ window.lsBadges&&lsBadges.select(m-1); LP.sayModule(m,name); });
+  });
+})();
+</script>
 </body>
 </html>

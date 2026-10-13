@@ -9,7 +9,7 @@
 <div class="goaltile"><b>Today's goal</b>Back up every answer with evidence from the text.</div>
 <div class="bar" id="bar"><div id="tiles" style="display:flex;gap:6px;flex:1;min-width:0"></div><div id="act" style="width:104px;flex:none"><button class="go" disabled>Go ›</button></div></div>
 </div>
-<script src="stage-fit.js"></script><script src="../demo/badges/badges.js" data-mount="#frame" data-mode="abs"></script><script src="worlds.js"></script>
+<script src="stage-fit.js"></script><script src="../demo/badges/progress.js"></script><script src="../demo/badges/badges.js" data-mount="#frame" data-mode="abs"></script><script src="worlds.js"></script>
 <script>
 (function(){
   var W=window.A1_WORLDS, L=document.getElementById("lanterns"), bar=document.getElementById("bar"), tiles=document.getElementById("tiles"), act=document.getElementById("act"), sel=-1;
@@ -19,8 +19,16 @@
     var t=document.createElement("button"); t.className="tile"; t.style.setProperty("--c",w.color); t.innerHTML="<em>M"+w.m+"</em>"+w.name.replace(/'/g,"&#39;");
     t.onclick=function(){pick(i)}; tiles.appendChild(t);
   });
+  var LP=window.lsProgress, G=document.querySelector(".goaltile");
+  G.style.gap="8px"; G.style.paddingLeft="6px"; G.insertBefore(LP.speaker("Today's goal: Back up every answer with evidence from the text."),G.firstChild);
+  W.forEach(function(w,i){ var st=LP.status(w.m), lan=L.children[i], tile=tiles.children[i];
+    if(st==="done"){ var c=LP.check(); c.style.cssText="left:"+(w.x+w.w/2-14)+"px;top:"+(w.y-w.h/2+2)+"px"; L.appendChild(c); var c2=LP.check(); c2.style.cssText="position:relative;width:16px;height:16px;margin-left:auto"; tile.appendChild(c2); lan.setAttribute("aria-label",lan.getAttribute("aria-label")+", done"); }
+    if(st==="next"){ var t=LP.startTag(); t.style.cssText="left:"+w.x+"px;top:"+(w.y-w.h/2-6)+"px"; L.appendChild(t); lan.setAttribute("aria-label",lan.getAttribute("aria-label")+", start here"); }
+  });
+  [].forEach.call(L.querySelectorAll(".lantern"),function(b,i){ b.addEventListener("click",function(){ LP.sayModule(W[i].m,W[i].name); }); });
+  [].forEach.call(tiles.children,function(b,i){ b.addEventListener("click",function(){ LP.sayModule(W[i].m,W[i].name); }); });
   function pick(i){ sel=i; window.lsBadges?lsBadges.select(i):(window.__lsBadgePending=i); bar.classList.add("show"); document.getElementById("frame").classList.add("sel");
-    [].forEach.call(L.children,function(e,j){e.classList.toggle("on",j===i)}); [].forEach.call(tiles.children,function(e,j){e.classList.toggle("on",j===i)});
+    [].forEach.call(L.querySelectorAll(".lantern"),function(e,j){e.classList.toggle("on",j===i)}); [].forEach.call(tiles.children,function(e,j){e.classList.toggle("on",j===i)});
     var w=W[i]; act.innerHTML = '<button class="go">Go ›</button>';
     act.firstChild.onclick=function(){ location.href="world.html?w="+w.id; };
   }
