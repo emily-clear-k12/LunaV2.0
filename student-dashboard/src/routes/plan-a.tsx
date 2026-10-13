@@ -116,7 +116,7 @@ const modules: Module[] = [
     n: 5,
     name: "Revision",
     short: "Revision",
-    world: "Sunken Library",
+    world: "Clockwork City",
     blurb: "Make the draft clearer and stronger.",
     x: 78.2,
     y: 60.5,
@@ -440,12 +440,40 @@ function StudentHome() {
                       <source src={asset("portal-hub-loop-v3.webm")} type="video/webm" />
                     </video>
                   ) : null}
+                  {/* M5 portal now opens Clockwork City: its view is painted over the old Sunken Library interior (video + poster). */}
+                  <img
+                    src={asset("portal-clockwork-city.jpg")}
+                    alt=""
+                    aria-hidden="true"
+                    className="pointer-events-none absolute"
+                    style={{
+                      left: "78.8%", top: "65.8%", width: "8.3%", height: "25%", transform: "translate(-50%,-50%)",
+                      objectFit: "cover", borderRadius: "50%",
+                      WebkitMaskImage: "radial-gradient(ellipse at center, #000 58%, transparent 71%)",
+                      maskImage: "radial-gradient(ellipse at center, #000 58%, transparent 71%)",
+                      filter: "saturate(1.05) drop-shadow(0 0 6px rgba(80,220,255,.6))",
+                    }}
+                  />
+                  {/* M1 portal view: Crystal Caverns bridge + crystals (new world art). */}
+                  <img
+                    src={asset("portal-crystal-caverns.jpg")}
+                    alt=""
+                    aria-hidden="true"
+                    className="pointer-events-none absolute"
+                    style={{
+                      left: "26.5%", top: "65.8%", width: "8.3%", height: "25%", transform: "translate(-50%,-50%)",
+                      objectFit: "cover", borderRadius: "50%",
+                      WebkitMaskImage: "radial-gradient(ellipse at center, #000 58%, transparent 71%)",
+                      maskImage: "radial-gradient(ellipse at center, #000 58%, transparent 71%)",
+                      filter: "saturate(1.05) drop-shadow(0 0 6px rgba(80,220,255,.6))",
+                    }}
+                  />
 
                   {modules.map((mod) => (
                     <button
                       key={mod.id}
                       type="button"
-                      onClick={(e) => (mod.id === "sentences" ? diveInto(e.currentTarget) : mod.id === "ecr" ? diveInto(e.currentTarget, asset("sky-harbor/")) : openModule(mod.id))}
+                      onClick={(e) => (mod.id === "sentences" ? diveInto(e.currentTarget) : mod.id === "scr" ? diveInto(e.currentTarget, asset("crystal-caverns/")) : mod.id === "edit" ? diveInto(e.currentTarget, asset("coral-cove/")) : mod.id === "ecr" ? diveInto(e.currentTarget, asset("sky-harbor/")) : mod.id === "plan" ? diveInto(e.currentTarget, asset("ember-forge/")) : mod.id === "revise" ? diveInto(e.currentTarget, asset("clockwork-city/")) : openModule(mod.id))}
                       aria-label={`Module ${mod.n}, ${mod.name}, ${mod.world}`}
                       className={
                         "z-hotspot z-portal absolute -translate-x-1/2 -translate-y-1/2 " +
