@@ -7,5 +7,5 @@ window.A1_WORLDS = [
     crystals: [[240, 547], [507, 394], [309, 287], [860, 327]] },
   { id: "bayou-market",      m: 4, name: "Bayou Market",             color: "#ff8a3d", x: 1101, y: 192, w: 92, h: 150 },
   { id: "lightning-mountain",m: 5, name: "Lightning Mountain",       color: "#f5b400", x: 964,  y: 300, w: 86, h: 140 },
-  { id: "rainforest-canopy", m: 6, name: "Rainforest Canopy Bridges", color: "#ff5fa8", x: 1201, y: 300, w: 86, h: 140 }
+  { id: "rainforest-canopy", m: 6, name: "Rainforest Canopy Bridges", short: "Canopy Bridges", color: "#ff5fa8", x: 1201, y: 300, w: 86, h: 140 }
 ];
