@@ -1,0 +1,48 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1"/><link rel="icon" type="image/svg+xml" href="../favicon.svg"/>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&family=Lilita+One&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="../demo/switcher.css"/><link rel="stylesheet" href="stage-fit.css"/><link rel="stylesheet" href="common.css"/><title>Plan A.3 · Treehouses · Astra's Writing Adventure</title></head>
+<body><script src="../demo/switcher.js" data-page="dashboard-a3"></script>
+<div id="frame" class="stage-frame">
+<img class="bg" src="treehouses.jpg" alt="Astra reading on a great tree with six treehouses in its branches"/>
+<div class="strip"><h1>Astra's Writing Adventure</h1></div>
+<div id="lanterns"></div><div class="toast" id="toast"></div>
+<div class="goaltile"><b>Today's goal</b>Back up every answer with evidence from the text.</div>
+<div class="bar" id="bar"><div id="tiles" style="display:flex;gap:6px;flex:1;min-width:0"></div><div id="act" style="width:104px;flex:none"><button class="go" disabled>Go ›</button></div></div>
+</div>
+<script src="stage-fit.js"></script><script>
+/* Plan A.3 treehouses: hotspot centre x,y and size w,h on the 1366x768 stage (from 1024x576 art x1.334). Worlds come later. */
+window.A3_WORLDS=[
+ {id:"lighthouse-grove",m:1,name:"Lighthouse Grove",color:"#ff6b5e",x:1094,y:574,w:90,h:190},
+ {id:"sky-cloud-observatory",m:2,name:"Sky Cloud Observatory",color:"#4aa3ff",x:304,y:140,w:160,h:150},
+ {id:"amber-hive-hollow",m:3,name:"Amber Hive Hollow",color:"#f5b400",x:233,y:344,w:150,h:125},
+ {id:"candyleaf-grove",m:4,name:"Candyleaf Grove",color:"#ff5fa8",x:253,y:594,w:240,h:150},
+ {id:"desert-mirage-bazaar",m:5,name:"Desert Mirage Bazaar",color:"#a66bff",x:1167,y:340,w:230,h:150},
+ {id:"cloud-kite-loft",m:6,name:"Cloud Kite Loft",color:"#2ec4b6",x:1081,y:147,w:240,h:150}];
+</script>
+<style>
+.house{position:absolute;transform:translate(-50%,-50%);border:0;padding:0;cursor:pointer;background:none;border-radius:50%}
+.house::after{content:"";position:absolute;inset:-6%;border-radius:50%;pointer-events:none;opacity:0;mix-blend-mode:screen;
+ background:radial-gradient(ellipse at center,color-mix(in srgb,var(--c) 55%,#ffe9b0) 0%,color-mix(in srgb,var(--c) 35%,transparent) 40%,transparent 70%);transition:opacity .25s}
+.house:hover::after,.house:focus-visible::after{opacity:.45}
+.house:focus-visible{outline:none}
+.house.on::after{animation:halo 2.2s ease-in-out infinite}
+@keyframes halo{0%,100%{opacity:.55;transform:scale(.96)}50%{opacity:.9;transform:scale(1.04)}}
+</style>
+<script>
+(function(){
+  var W=window.A3_WORLDS, L=document.getElementById("lanterns"), bar=document.getElementById("bar"), tiles=document.getElementById("tiles"), act=document.getElementById("act"), sel=-1;
+  W.forEach(function(w,i){
+    var b=document.createElement("button"); b.className="house"; b.style.cssText="left:"+w.x+"px;top:"+w.y+"px;width:"+w.w+"px;height:"+w.h+"px;--c:"+w.color;
+    b.setAttribute("aria-label","M"+w.m+" "+w.name); b.onclick=function(){pick(i)}; L.appendChild(b);
+    var t=document.createElement("button"); t.className="tile"; t.style.setProperty("--c",w.color); t.innerHTML="<em>M"+w.m+"</em>"+w.name.replace(/'/g,"&#39;");
+    t.onclick=function(){pick(i)}; tiles.appendChild(t);
+  });
+  function pick(i){ sel=i; bar.classList.add("show"); document.getElementById("frame").classList.add("sel");
+    [].forEach.call(L.children,function(e,j){e.classList.toggle("on",j===i);}); [].forEach.call(tiles.children,function(e,j){e.classList.toggle("on",j===i)});
+    var w=W[i]; act.innerHTML = '<button class="go">Go ›</button>';
+    act.firstChild.onclick=function(){ var t=document.getElementById("toast");
+      t.textContent="Astra is still building "+w.name+". Check back tomorrow!"; t.style.display="block"; clearTimeout(t._h); t._h=setTimeout(function(){t.style.display="none"},2600); };
+  }
+  var q=new URLSearchParams(location.search).get("m"); if(q){ W.forEach(function(w,i){ if(w.id===q) pick(i); }); }
+})();
+</script></body></html>
