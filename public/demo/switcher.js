@@ -14,6 +14,7 @@
     { id: "dashboard-b", label: "Plan B · Crystal Railways", href: new URL("../dashboard-b/", base).href },
     { id: "dashboard-c", label: "Plan C · Pop Up Mounts", href: new URL("../dashboard-c/", base).href },
     { id: "dashboard-d", label: "Plan D · Forest Guides", href: new URL("../dashboard-d/", base).href },
+    { id: "dashboard-d1", label: "Plan D.1 · Enchanted Playground", href: new URL("../dashboard-d1/", base).href },
     { id: "dashboard-e", label: "Plan E · Lost Library", href: new URL("../dashboard-e/", base).href },
     { id: "lesson", label: "Lesson", href: new URL("./lesson/", base).href },
   ];
@@ -25,8 +26,9 @@
   var nav = document.createElement("nav");
   nav.className = "vswitch";
   nav.setAttribute("aria-label", "Switch view");
-  // Tabled plans (B–E) live in one "Other ideas" dropdown; Plan A family + Lesson stay as pills.
-  var other = links.filter(function (l) { return /^dashboard-[b-e]$/.test(l.id); });
+  // Main row: Plan A.1, Plan D, Plan D.1 (+ Lesson). Every other plan lives in the "Other ideas" dropdown.
+  var MAIN = ["dashboard-a1", "dashboard-d", "dashboard-d1", "lesson"];
+  var other = links.filter(function (l) { return MAIN.indexOf(l.id) < 0; });
   var main = links.filter(function (l) { return other.indexOf(l) < 0; });
   var esc = function (t) { return t.replace(/&/g, "&amp;").replace(/</g, "&lt;"); };
   var pill = function (l) { return '<a href="' + l.href + '"' + (l.id === page ? ' aria-current="page"' : "") + ">" + esc(l.label) + "</a>"; };
