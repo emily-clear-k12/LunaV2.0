@@ -1,0 +1,40 @@
+/* Lonestar Writing Studio branding for every Astra plan (A–E, world pages, lesson).
+   Source: kennadyscott.github.io/lonestar-writing-studio-v1 — body/UI Manrope (400–800),
+   headings var(--hs-serif) = "Source Serif 4", game callouts Lilita One. Fonts + chrome only:
+   art, video, layout, hotspots and animations are untouched. Injected last by switcher.js. */
+:root{
+  --ls-sans:"Manrope",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --ls-serif:"Source Serif 4",Georgia,"Times New Roman",serif;
+  --ls-game:"Lilita One","Manrope",system-ui,sans-serif;
+  --ls-cyan:#06aade;--ls-ecr:#14538c;--ls-cc:#0a7dba;--ls-gold:#f5b400;--ls-good:#2e9e6b;
+  --ls-card:#fff;--ls-canvas:#eaf3f8;--ls-navy:#02384d;--ls-navy-deep:#01172d;--ls-ink:#14344a;--ls-line:#dde8ee;
+  --ls-gold-line:rgba(245,180,0,.45);
+  --ls-shadow:0 1px 3px rgba(2,56,77,.07),0 8px 24px rgba(2,56,77,.06);
+}
+body,button,input,select,textarea{font-family:var(--ls-sans)}
+/* Headings: title, world names, ticket headline */
+h1,h2,h3,.title h1,.titlecard h1,.z-sky-title,.plate .t,.wl .wt,.start-btn,.font-display{
+  font-family:var(--ls-serif)!important;font-weight:700;letter-spacing:-.01em}
+/* Subtitles / labels / kickers: Manrope caps */
+.title small,.title h1 small,.titlecard p,.plate .k,.plate .s,.wl small,.z-tip-k,.z-portal-tag,.z-portal-world,.goal .k,
+.start-btn .small,.board .bt small,.lbl{font-family:var(--ls-sans)!important}
+.title h1 small{font-weight:800}
+/* Goal / tip cards */
+.goal,.z-tip{font-family:var(--ls-sans)!important}
+.goal .txt,.z-tip-t{font-family:var(--ls-sans)!important;font-weight:600}
+/* Ribbons, ticket numbers, counts: Lilita One game face */
+.rib .num,.count,.z-portal-name,.z-mastery-pill{font-family:var(--ls-game)!important;font-weight:400;letter-spacing:.01em}
+/* Buttons / pills: Lonestar .btn — 10px radius, 600–700 weight, navy + gold hairline */
+.skip,.replay,.skip-intro,.back,.toggle button,.z-back-btn,.z-mastery-btn,.plate .go,.arr{
+  font-family:var(--ls-sans)!important;font-weight:700!important;letter-spacing:-.01em}
+.skip,.replay,.skip-intro,.z-back-btn,.back{
+  background:var(--ls-navy)!important;color:#fff!important;border-radius:999px!important;
+  border:0!important;box-shadow:0 1px 2px rgba(2,56,77,.14),0 0 0 1px var(--ls-gold-line),0 8px 24px rgba(2,56,77,.18)!important}
+.skip:hover,.replay:hover,.skip-intro:hover,.z-back-btn:hover,.back:hover{background:#03415a!important}
+.skip:focus-visible,.replay:focus-visible,.skip-intro:focus-visible{outline:3px solid var(--ls-cyan)!important;outline-offset:3px}
+/* Switcher bar: Lonestar navy chrome with gold hairline and cyan focus */
+.vswitch{font-family:var(--ls-sans)!important}
+.vswitch .vs-lbl{color:var(--ls-gold)!important}
+.vswitch a{font-weight:700}
+.vswitch a[aria-current="page"]{background:#fff!important;color:var(--ls-navy)!important;box-shadow:inset 0 -2px 0 var(--ls-cyan)!important}
+.vswitch a:focus-visible{outline-color:var(--ls-cyan)!important}

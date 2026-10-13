@@ -1,8 +1,8 @@
 @import "tailwindcss";
 
 @theme {
-  --font-sans: "Nunito", ui-sans-serif, system-ui, sans-serif;
-  --font-display: "Fraunces", ui-serif, Georgia, serif;
+  --font-sans: "Manrope", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Source Serif 4", ui-serif, Georgia, serif;
 
   --color-dusk: #14201c;
   --color-ink: #1c2822;
@@ -171,7 +171,7 @@
   .title-heading {
     margin: 0;
     min-width: 0;
-    font-family: "Baloo 2", "Nunito", var(--font-sans);
+    font-family: "Manrope", var(--font-sans);
     font-size: 2.35rem;
     font-weight: 800;
     letter-spacing: -0.015em;
@@ -194,7 +194,7 @@
   }
 
   .mastery-label {
-    font-family: "Baloo 2", "Nunito", var(--font-sans);
+    font-family: "Manrope", var(--font-sans);
     font-size: 0.8rem;
     font-weight: 700;
     color: #fff;
@@ -229,7 +229,7 @@
   }
 
   .medal-label {
-    font-family: "Baloo 2", "Nunito", var(--font-sans);
+    font-family: "Manrope", var(--font-sans);
     font-size: 0.7rem;
     font-weight: 700;
     letter-spacing: 0.01em;
@@ -412,7 +412,7 @@
   }
 
   .portal-plate-mod {
-    font-family: "Baloo 2", "Nunito", var(--font-sans);
+    font-family: "Manrope", var(--font-sans);
     font-size: 0.62rem;
     font-weight: 700;
     letter-spacing: 0.02em;
@@ -422,7 +422,7 @@
   }
 
   .portal-plate-world {
-    font-family: "Baloo 2", "Nunito", var(--font-sans);
+    font-family: "Manrope", var(--font-sans);
     font-size: 0.78rem;
     font-weight: 800;
     line-height: 1.15;
@@ -551,7 +551,7 @@
 
   .tip-hero-label {
     margin: 0;
-    font-family: "Baloo 2", "Nunito", var(--font-sans);
+    font-family: "Manrope", var(--font-sans);
     font-size: 0.68rem;
     font-weight: 800;
     letter-spacing: 0.1em;
@@ -561,7 +561,7 @@
 
   .tip-hero-text {
     margin: 0.2rem 0 0;
-    font-family: "Baloo 2", "Nunito", var(--font-sans);
+    font-family: "Manrope", var(--font-sans);
     font-size: 0.92rem;
     font-weight: 700;
     line-height: 1.28;
@@ -597,7 +597,7 @@
 
   .goal-compass-label {
     margin: 0;
-    font-family: "Baloo 2", "Nunito", var(--font-sans);
+    font-family: "Manrope", var(--font-sans);
     font-size: 0.62rem;
     font-weight: 800;
     letter-spacing: 0.1em;
@@ -607,7 +607,7 @@
 
   .goal-compass-text {
     margin: 0.1rem 0 0;
-    font-family: "Baloo 2", "Nunito", var(--font-sans);
+    font-family: "Manrope", var(--font-sans);
     font-size: 0.86rem;
     font-weight: 700;
     line-height: 1.25;
@@ -652,7 +652,7 @@
 
   .progress-card-label {
     margin: 0;
-    font-family: "Baloo 2", "Nunito", var(--font-sans);
+    font-family: "Manrope", var(--font-sans);
     font-size: 0.62rem;
     font-weight: 800;
     letter-spacing: 0.1em;
@@ -662,7 +662,7 @@
 
   .progress-card-count {
     margin: 0;
-    font-family: "Baloo 2", "Nunito", var(--font-sans);
+    font-family: "Manrope", var(--font-sans);
     font-size: 0.72rem;
     font-weight: 800;
     color: var(--color-ink);
@@ -724,7 +724,7 @@
   }
 
   .progress-gem-cap {
-    font-family: "Baloo 2", "Nunito", var(--font-sans);
+    font-family: "Manrope", var(--font-sans);
     font-size: 0.52rem;
     font-weight: 800;
     line-height: 1.1;
@@ -760,7 +760,7 @@
     background:
       linear-gradient(180deg, #8fd9ff 0%, #3eb4f0 42%, #1a7fc4 100%);
     padding: 0 0.9rem;
-    font-family: "Baloo 2", "Nunito", var(--font-sans);
+    font-family: "Manrope", var(--font-sans);
     font-size: 0.95rem;
     font-weight: 800;
     color: #fff;
@@ -822,7 +822,7 @@
   .guide-toast-title,
   .guide-sheet-label {
     margin: 0;
-    font-family: "Baloo 2", "Nunito", var(--font-sans);
+    font-family: "Manrope", var(--font-sans);
     font-size: 0.62rem;
     font-weight: 800;
     letter-spacing: 0.1em;
@@ -832,7 +832,7 @@
 
   .guide-toast-body {
     margin: 0.35rem 0 0;
-    font-family: "Baloo 2", "Nunito", var(--font-sans);
+    font-family: "Manrope", var(--font-sans);
     font-size: 0.88rem;
     font-weight: 700;
     line-height: 1.3;
@@ -849,7 +849,7 @@
     border-radius: 999px;
     background: #1a7fc4;
     padding: 0 0.8rem;
-    font-family: "Baloo 2", "Nunito", var(--font-sans);
+    font-family: "Manrope", var(--font-sans);
     font-size: 0.78rem;
     font-weight: 800;
     color: #fff;
@@ -872,7 +872,7 @@
 
   .guide-sheet-title {
     margin: 0.15rem 0 0;
-    font-family: "Baloo 2", "Nunito", var(--font-sans);
+    font-family: "Manrope", var(--font-sans);
     font-size: 1.25rem;
     font-weight: 800;
     line-height: 1.15;
@@ -925,7 +925,7 @@
 
   .guide-sheet-mod {
     display: block;
-    font-family: "Baloo 2", "Nunito", var(--font-sans);
+    font-family: "Manrope", var(--font-sans);
     font-size: 0.82rem;
     font-weight: 800;
     line-height: 1.1;
@@ -939,7 +939,7 @@
   }
 
   .guide-sheet-status {
-    font-family: "Baloo 2", "Nunito", var(--font-sans);
+    font-family: "Manrope", var(--font-sans);
     font-size: 0.68rem;
     font-weight: 800;
     color: rgb(28 40 34 / 0.4);
@@ -1048,7 +1048,7 @@
   }
 
   .kingdom-plate-mod {
-    font-family: "Baloo 2", "Nunito", var(--font-sans);
+    font-family: "Manrope", var(--font-sans);
     font-size: 0.58rem;
     font-weight: 700;
     letter-spacing: 0.02em;
@@ -1058,7 +1058,7 @@
   }
 
   .kingdom-plate-world {
-    font-family: "Baloo 2", "Nunito", var(--font-sans);
+    font-family: "Manrope", var(--font-sans);
     font-size: 0.72rem;
     font-weight: 800;
     line-height: 1.15;
@@ -1104,7 +1104,7 @@
 
   .planb-tip-label {
     margin: 0;
-    font-family: "Baloo 2", "Nunito", var(--font-sans);
+    font-family: "Manrope", var(--font-sans);
     font-size: 0.58rem;
     font-weight: 800;
     letter-spacing: 0.1em;
@@ -1114,7 +1114,7 @@
 
   .planb-tip-text {
     margin: 0.12rem 0 0;
-    font-family: "Baloo 2", "Nunito", var(--font-sans);
+    font-family: "Manrope", var(--font-sans);
     font-size: 0.78rem;
     font-weight: 700;
     line-height: 1.25;
@@ -1132,7 +1132,7 @@
 
   .planb-quest-label {
     margin: 0;
-    font-family: "Baloo 2", "Nunito", var(--font-sans);
+    font-family: "Manrope", var(--font-sans);
     font-size: 0.62rem;
     font-weight: 800;
     letter-spacing: 0.08em;
@@ -1142,7 +1142,7 @@
 
   .planb-quest-title {
     margin: 0.15rem 0 0;
-    font-family: "Baloo 2", "Nunito", var(--font-sans);
+    font-family: "Manrope", var(--font-sans);
     font-size: 1.15rem;
     font-weight: 800;
     line-height: 1.15;
@@ -1219,7 +1219,7 @@
     top: 8px;
     max-width: none;
     margin: 0;
-    font-family: "Baloo 2", "Nunito", var(--font-sans);
+    font-family: "Manrope", var(--font-sans);
     font-size: 30px;
     font-weight: 800;
     line-height: 1;
@@ -1289,7 +1289,7 @@
     border: 1.5px solid rgb(255 255 255 / 0.75);
     background: rgb(255 248 235 / 0.9);
     padding: 0.45rem 1rem;
-    font-family: "Baloo 2", "Nunito", var(--font-sans);
+    font-family: "Manrope", var(--font-sans);
     font-size: 0.9rem;
     font-weight: 800;
     color: #4a2e1a;
@@ -1350,7 +1350,7 @@
     border: 1px solid rgb(255 255 255 / 0.55);
     background: rgb(255 251 243 / 0.58);
     padding: 1px 10px 2px;
-    font-family: "Baloo 2", "Nunito", var(--font-sans);
+    font-family: "Manrope", var(--font-sans);
     color: #4a2e1a;
     white-space: nowrap;
     text-shadow: 0 0 5px rgb(255 248 235 / 0.65);
@@ -1427,7 +1427,7 @@
 
   .z-tip-k {
     display: block;
-    font-family: "Baloo 2", "Nunito", var(--font-sans);
+    font-family: "Manrope", var(--font-sans);
     font-size: 11px;
     font-weight: 800;
     letter-spacing: 0.12em;
@@ -1438,7 +1438,7 @@
   .z-tip-t {
     display: block;
     margin-top: 2px;
-    font-family: "Baloo 2", "Nunito", var(--font-sans);
+    font-family: "Manrope", var(--font-sans);
     font-size: 13px;
     font-weight: 700;
     line-height: 1.25;

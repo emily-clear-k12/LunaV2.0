@@ -12,7 +12,7 @@
   overflow: hidden;
   background: #1e0c3a;
   color: var(--sf-ink);
-  font-family: "Baloo 2", "Nunito", ui-sans-serif, system-ui, sans-serif;
+  font-family: "Manrope", ui-sans-serif, system-ui, sans-serif;
   user-select: none;
   font-variant-ligatures: no-common-ligatures;
 }
@@ -524,7 +524,7 @@ html.vs-on .sf-world { top: var(--vs-h); }
   border: 2px solid rgb(255 255 255 / 0.55);
   background: linear-gradient(180deg, #a35d24, #7a3f12);
   color: #fff !important;
-  font-family: "Baloo 2", "Nunito", sans-serif;
+  font-family: "Manrope", sans-serif;
   font-size: 22px;
   font-weight: 800;
   text-decoration: none;

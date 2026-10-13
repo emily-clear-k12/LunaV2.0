@@ -14,6 +14,10 @@
     { id: "dashboard-e", label: "Plan E · Lost Library", href: new URL("../dashboard-e/", base).href },
     { id: "lesson", label: "Lesson", href: new URL("./lesson/", base).href },
   ];
+  // Lonestar Writing Studio branding (fonts + chrome), appended last so it wins over page styles.
+  var brand = document.createElement("link");
+  brand.rel = "stylesheet"; brand.href = new URL("./lonestar-brand.css", base).href;
+  (document.head || document.documentElement).appendChild(brand);
   document.documentElement.classList.add("vs-on");
   var nav = document.createElement("nav");
   nav.className = "vswitch";
