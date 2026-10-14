@@ -25,7 +25,7 @@
       ui: ".strip, .goaltile, #lanterns, .bar, .selected-module, .lsb, .ls-start, .ls-check",
       caption: { text: "Oh, hi! Every lantern leads to a new world. Which one will we explore today?", at: 13.1, hold: 6.5, x: 760, y: 360 },
       startLabel: "Let’s begin!",
-      introStars: 8,
+      introStars: 4.5,
       replayCss: "left:12px;top:86px"
     },
     d: {
