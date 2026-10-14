@@ -35,7 +35,7 @@
       loop: "assets/loop", loopRect: null,
       overlay: { src: "assets/signpost.png", rect: [674, 52, 190, 545] },
       ui: ".top, .go, .hop, .hot, .ls-start, .ls-check, .fx, .lsb",
-      caption: { text: "Are you ready to go on an adventure?", at: 8.5, hold: 5.5, x: 540, y: 110 },
+      caption: { text: "Are you ready to go on an adventure?", at: 8.5, hold: 5.5, x: 215, y: 165, tail: "right" },
       startLabel: "Let’s begin!",
       replayCss: "left:14px;bottom:14px"
     }
@@ -68,12 +68,13 @@
     ".intro-skip{right:16px;bottom:16px} .intro-replay{z-index:30} .intro-skip:hover,.intro-replay:hover{background:rgba(16,12,38,.75)}",
     ".astra-say{position:absolute;z-index:47;max-width:380px;padding:12px 40px 12px 16px;border-radius:18px;",
     "  font:700 19px/1.3 'Baloo 2','Manrope',system-ui,sans-serif;color:#fff;text-shadow:0 1px 3px rgba(0,0,0,.7);",
-    "  background:rgba(255,255,255,.14);border:1.5px solid rgba(255,255,255,.55);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);",
+    "  background:rgba(18,12,36,.30);border:1.5px solid rgba(255,255,255,.55);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);",
     "  box-shadow:0 8px 24px rgba(0,0,0,.25);opacity:0;transform:translateY(6px) scale(.98);transition:opacity .4s ease,transform .4s ease}",
     ".astra-say.on{opacity:1;transform:none}",
     ".astra-say::after{content:'';position:absolute;left:28px;bottom:-11px;width:18px;height:18px;transform:rotate(45deg);",
     "  background:inherit;border-right:1.5px solid rgba(255,255,255,.55);border-bottom:1.5px solid rgba(255,255,255,.55);",
     "  -webkit-backdrop-filter:inherit;backdrop-filter:inherit}",
+    ".astra-say.tail-right::after{left:auto;right:28px}",
     ".astra-say b{display:block;font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:#ffd77a;margin-bottom:2px}",
     ".astra-say .x{position:absolute;top:6px;right:8px;width:26px;height:26px;border-radius:50%;border:0;cursor:pointer;",
     "  font:700 18px/26px system-ui,sans-serif;color:#fff;background:rgba(0,0,0,.25)} .astra-say .x:hover{background:rgba(0,0,0,.45)}"
@@ -121,7 +122,7 @@
   function showCaption() {
     if (!P.caption) return;
     closeCaption(true);
-    say = document.createElement("div"); say.className = "astra-say"; say.setAttribute("role", "status");
+    say = document.createElement("div"); say.className = "astra-say" + (P.caption.tail === "right" ? " tail-right" : ""); say.setAttribute("role", "status");
     say.innerHTML = "<b>Astra</b>" + P.caption.text + '<button class="x" type="button" aria-label="Close">×</button>';
     place(say, P.caption.x, P.caption.y);
     host.appendChild(say);
@@ -150,7 +151,7 @@
     if (loop) loop.pause();
     film = document.createElement("video");
     film.className = "intro-film"; film.playsInline = true; film.setAttribute("playsinline", ""); film.preload = "auto";
-    film.poster = P.poster; film.src = src(P.intro);
+    film.poster = P.poster; film.style.background = "#000 url(\"" + P.poster + "\") center / cover no-repeat"; film.src = src(P.intro);
     host.appendChild(film);
     var shown = false;
     film.addEventListener("timeupdate", function () { if (!shown && film && film.currentTime >= P.caption.at) { shown = true; showCaption(); } });
