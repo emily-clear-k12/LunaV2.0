@@ -46,3 +46,13 @@
 .tile:hover{opacity:.8}
 .tile.on{opacity:1;filter:none;box-shadow:0 0 14px 2px var(--c)}
 .go:disabled{opacity:.4;filter:saturate(.3);cursor:default}
+
+/* Full module titles wrap inside the dashboard controls. */
+.bar { height:auto; min-height:84px; align-items:stretch; }
+.tile { height:auto; min-height:68px; flex-direction:column; justify-content:center; gap:4px; padding:6px 8px !important; white-space:normal; text-align:center; font:700 14px/1.2 var(--ls-sans); overflow:visible; opacity:.85; }
+.tile em { font-size:11px; }
+.tile .module-title { display:block; }
+.tile .ls-check { position:absolute !important; top:4px; right:4px; margin:0 !important; }
+.tile { position:relative; }
+#act { display:flex; align-items:center; }
+.go { height:48px; }
