@@ -7,7 +7,7 @@
 <link rel="icon" type="image/svg+xml" href="../favicon.svg" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&display=swap" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&family=Lilita+One&display=swap" rel="stylesheet" />
 <link rel="stylesheet" href="../demo/switcher.css" />
 <link rel="stylesheet" href="stage-fit.css" />
 <link rel="preload" as="image" href="assets/intro-poster.jpg" />
@@ -17,7 +17,7 @@
   :root {
     --frost: rgba(255, 248, 235, .82); --brown: #4a2e1a; --brown-soft: #7a5638;
     --gold: #d9a93f; --gold-deep: #94690f; --cream: #fff8eb;
-    --display: "Baloo 2", "Nunito", "Trebuchet MS", system-ui, sans-serif;
+    --display: "Manrope", system-ui, sans-serif;
   }
   * { box-sizing: border-box; }
   body { font-family: var(--display); color: var(--brown); -webkit-font-smoothing: antialiased; }
@@ -78,6 +78,22 @@
   .ride:focus-visible { outline: 3px solid var(--gold); outline-offset: 3px; }
 
   .toast { position: absolute; right: 18px; bottom: 80px; z-index: 40; padding: 10px 18px; font-size: 19px; font-weight: 800; opacity: 0; translate: 0 8px; transition: opacity .3s, translate .3s; pointer-events: none; }
+  .ridewrap { position: absolute; inset: 0; z-index: 90; background: #0b0f0c; opacity: 0; pointer-events: none; transition: opacity .3s ease; }
+  .ridewrap.on { opacity: 1; pointer-events: auto; }
+  .ridewrap video, .ridewrap img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+  .ridewrap img { opacity: 0; transition: opacity .8s ease; }
+  .ridewrap img.on { opacity: 1; }
+  .ridewrap .skip { z-index: 2; }
+  .arr { position: absolute; z-index: 15; top: 690px; width: 60px; height: 60px; margin-left: -30px; padding: 0; border: 0; border-radius: 50%; background: transparent; cursor: pointer; transition: box-shadow .25s ease, background .25s ease; }
+  .arr:hover, .arr:focus-visible { background: radial-gradient(circle, rgba(255,228,150,.28) 0 55%, transparent 72%); box-shadow: 0 0 18px 6px rgba(255,214,120,.55); outline: none; }
+  .arr:focus-visible { box-shadow: 0 0 0 3px var(--gold), 0 0 18px 6px rgba(255,214,120,.55); }
+  .arr:active { translate: 0 1px; }
+  .replay { position: absolute; left: 16px; top: 14px; z-index: 20; padding: 5px 13px; border-radius: 999px; font: 700 13px/1.2 "Manrope", system-ui, sans-serif; color: #4a2e1a; cursor: pointer;
+    background: rgba(255,248,235,.82); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,.9); box-shadow: 0 2px 8px rgba(40,25,10,.18); }
+  .replay:hover { background: rgba(255,248,235,.95); }
+  .replay:focus-visible { outline: 3px solid var(--gold); outline-offset: 2px; }
+  .page-fade { position: absolute; inset: 0; z-index: 95; background: #0b0f0c; opacity: 0; pointer-events: none; transition: opacity .4s ease; }
+  .page-fade.on { opacity: 1; pointer-events: auto; }
   .toast.on { opacity: 1; translate: 0 0; }
 
   /* Start: a book-cover nameplate with a ribbon bookmark hanging from it */
@@ -117,6 +133,9 @@
   <div class="layer" id="layerB" aria-hidden="true"></div>
 
   <div id="ribs"></div>
+  <button type="button" class="arr ui" id="arrPrev" style="left:237px" aria-label="Previous world"></button>
+  <button type="button" class="arr ui" id="arrNext" style="left:816px" aria-label="Next world"></button>
+  <button type="button" class="replay ui from-top" id="replay"><span aria-hidden="true">↺</span> Replay intro</button>
 
   <div class="top ui from-top">
     <header class="title frost">
@@ -135,6 +154,12 @@
   </div>
   <div class="toast frost" id="toast" role="status" aria-live="polite"></div>
 
+  <div class="ridewrap" id="rideWrap" hidden>
+    <video id="rideVid" playsinline preload="none" aria-hidden="true"></video>
+    <img id="rideArt" alt="">
+    <button type="button" class="skip on" id="rideSkip">Skip <span aria-hidden="true">›</span></button>
+  </div>
+  <div class="page-fade" id="pageFade" aria-hidden="true"></div>
   <div class="gate" id="gate">
     <button class="plate" type="button" id="start" autofocus>
       <span class="k">Astra’s Writing Adventure</span>
@@ -148,6 +173,7 @@
 </main>
 </div>
 <script src="stage-fit.js"></script>
+<script src="worlds.js"></script>
 <script src="popup.js"></script>
 </body>
 </html>

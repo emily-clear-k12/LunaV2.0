@@ -46,6 +46,7 @@
   function select(i, instant) {
     if (i === cur && !WORLDS[i].vid) return;   // re-selecting a clip world replays it once
     cur = i; var w = WORLDS[i];
+    try { sessionStorage.setItem("popupWorld", String(i)); } catch (e) {}
     spots.forEach(function (s, k) { s.classList.toggle("active", k === i); s.setAttribute("aria-pressed", k === i ? "true" : "false"); });
     wl.style.setProperty("--c", w.c); wlIc.textContent = w.ic; wlName.textContent = w.name; wlMod.textContent = "Module " + (i + 1); ride.setAttribute("aria-label", "Ride to " + w.name);
     var back = layers[front], next = layers[1 - front]; front = 1 - front;
@@ -60,7 +61,7 @@
         back.classList.remove("on"); var bv = back.querySelector("video"); if (bv) bv.pause();
       }, 560);
     }
-    if (reduce || !w.vid) { show(); return; }
+    if (reduce || !w.vid) { show(); prefetchPage(i); return; }
     var v = document.createElement("video");
     v.muted = true; v.defaultMuted = true; v.loop = false; v.playsInline = true; v.autoplay = true;
     v.setAttribute("playsinline", ""); v.setAttribute("muted", ""); v.preload = "auto"; v.poster = w.first; v.src = w.vid;
@@ -74,9 +75,56 @@
     next.appendChild(v);
     var p = v.play(); if (p && p.catch) p.catch(function () {});
     warm((i + 1) % WORLDS.length);
+    prefetchPage(i);
   }
 
+  // world pages (worlds.js): Ride navigates with a short fade; worlds without a page show "coming soon"
+  var PAGES = window.POPUP_WORLD_PAGES || {}, pageFor = {};
+  Object.keys(PAGES).forEach(function (slug) { pageFor[PAGES[slug].ribbon] = slug; });
+  var prefetched = {};
+  function prefetchPage(i) {
+    warmRide(i);
+    var slug = pageFor[WORLDS[i].id]; if (!slug || prefetched[slug]) return; prefetched[slug] = true;
+    var P = PAGES[slug];
+    [[slug + "/", "document"], [slug + "/" + P.poster, "image"], [slug + "/" + P.video, "video"]].forEach(function (a) {
+      var l = document.createElement("link"); l.rel = "prefetch"; l.href = a[0]; l.as = a[1]; document.head.appendChild(l);
+    });
+  }
+  window.addEventListener("pageshow", function () { var f = document.getElementById("pageFade"); if (f) f.classList.remove("on"); });
+  // Ride: play the world's "ride off" clip (assets/ride-<id>.mp4) on the stage, crossfade to the world poster, then open the page.
+  // Missing/failed clip or reduced motion -> plain fade straight to the world.
+  var rideWrap = $("rideWrap"), rideVid = $("rideVid"), rideArt = $("rideArt"), rideSkip = $("rideSkip"), riding = false;
+  function warmRide(i) { if (reduce) return; var id = WORLDS[i].id; if (rideVid._warm === id || riding) return; rideVid._warm = id; rideVid.preload = "auto"; rideVid.src = "assets/ride-" + id + ".mp4"; }
+  function plainGo(slug) { var f = $("pageFade"); f.classList.add("on"); setTimeout(function () { location.href = slug + "/"; }, 420); }
+  function rideTo(slug) {
+    var P = PAGES[slug], id = WORLDS[cur].id, done = false, tm;
+    if (reduce) return plainGo(slug);
+    riding = true;
+    try { sessionStorage.setItem("popup-arrive", "1"); } catch (e) {}
+    function go() { if (done) return; done = true; clearTimeout(tm); location.href = slug + "/"; }
+    function land() {   // 0.8s fade into the world's first frame, then navigate (world page skips its own fade)
+      if (rideArt.classList.contains("on")) return;
+      rideSkip.hidden = true; rideArt.classList.add("on"); setTimeout(go, 850);
+    }
+    function fail() { if (done || rideArt.classList.contains("on")) return; land(); }
+    rideArt.classList.remove("on"); rideArt.src = slug + "/" + P.poster;
+    if (rideVid._warm !== id) { rideVid.src = "assets/ride-" + id + ".mp4"; }
+    rideVid.muted = false; rideVid.currentTime = 0;
+    rideWrap.hidden = false; void rideWrap.offsetWidth; rideWrap.classList.add("on");
+    rideSkip.hidden = false; setTimeout(function () { try { rideSkip.focus({ preventScroll: true }); } catch (e) {} }, 50);
+    if (intro && !intro.paused) intro.pause();
+    rideVid.onerror = fail;
+    rideVid.ontimeupdate = function () { if (rideVid.duration && rideVid.currentTime > rideVid.duration - 0.8) land(); };
+    rideVid.onended = land;
+    var pr = rideVid.play(); if (pr && pr.catch) pr.catch(function () { rideVid.muted = true; rideVid.play().catch(fail); });
+    if (rideVid.error) fail();
+    tm = setTimeout(land, 14000);   // safety net
+  }
+  rideSkip.addEventListener("click", function () { if (!rideVid.paused) rideVid.pause(); rideArt.classList.add("on"); rideSkip.hidden = true; setTimeout(function () { location.href = pageFor[WORLDS[cur].id] + "/"; }, 500); });
+  window.addEventListener("pageshow", function (e) { if (e.persisted) { riding = false; rideWrap.classList.remove("on"); rideWrap.hidden = true; rideArt.classList.remove("on"); rideVid.pause(); } });
   ride.addEventListener("click", function () {
+    var slug = pageFor[WORLDS[cur].id];
+    if (slug) return rideTo(slug);
     toast.textContent = WORLDS[cur].name + " is coming soon!";
     toast.classList.add("on"); clearTimeout(toast._t);
     toast._t = setTimeout(function () { toast.classList.remove("on"); }, 2200);
@@ -88,7 +136,8 @@
     try { sessionStorage.setItem("popupIntroSeen", "1"); } catch (e) {}
     skip.classList.remove("on"); skip.hidden = true;
     gate.hidden = true;
-    select(0, instant);
+    var last = 0; try { last = +(sessionStorage.getItem("popupWorld") || 0); } catch (e) {}
+    select(seenAtLoad && WORLDS[last] ? last : 0, instant);
     scene.classList.add("ready");
     WORLDS.forEach(function (w) { var im = new Image(); im.src = w.poster; });
   }
@@ -112,11 +161,28 @@
   intro.addEventListener("error", function () { if (started) finish(); });
   startBtn.addEventListener("click", startIntro);
   skip.addEventListener("click", function () { skip.blur(); skipIntro(); });
+  // painted book arrows: previous / next world (wraps 1<->6), same as tapping that ribbon
+  function step(d) { select((cur + d + WORLDS.length) % WORLDS.length); }
+  $("arrPrev").addEventListener("click", function () { step(-1); });
+  $("arrNext").addEventListener("click", function () { step(1); });
+  // Replay intro: back to the opening and play v1 from the start (ignores popupIntroSeen)
+  $("replay").addEventListener("click", function () {
+    $("replay").blur();
+    layers.forEach(function (l) { l.classList.remove("on"); var v = l.querySelector("video"); if (v) v.pause(); });
+    scene.classList.remove("ready"); toast.classList.remove("on");
+    finished = false; started = false; seenAtLoad = false; cur = -1;
+    try { sessionStorage.setItem("popupWorld", "0"); } catch (e) {}
+    if (reduce) { finish(true); return; }
+    intro.preload = "auto"; try { intro.currentTime = 0; } catch (e) {}
+    if (intro.readyState === 0) intro.load();
+    gate.hidden = true; startIntro();
+  });
   window.PopUp = { select: select, skip: skipIntro, worlds: WORLDS };
 
-  var seen = false;
+  var seenAtLoad = false, seen = false;
   try { seen = sessionStorage.getItem("popupIntroSeen") === "1"; } catch (e) {}
   if (/[?&]return=1/.test(location.search)) seen = true;
+  seenAtLoad = seen;
   if (seen || reduce) { intro.preload = "none"; skipIntro(true); }
   else WORLDS.forEach(function (w, i) { if (i < 2) warm(i); });
 })();

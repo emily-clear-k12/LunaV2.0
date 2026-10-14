@@ -3,7 +3,7 @@
    Hotspots, fireflies and runes are placed in painting pixels, so they stay on the crystals at any size. */
 * { box-sizing: border-box; }
 html, body { margin: 0; height: 100%; overflow: hidden; }
-body { font-family: "Baloo 2", "Nunito", system-ui, sans-serif; color: #4a2e1a; background: #1a2318; -webkit-font-smoothing: antialiased; }
+body { font-family: "Manrope", system-ui, sans-serif; color: #4a2e1a; background: #1a2318; -webkit-font-smoothing: antialiased; }
 :root { --frost: rgba(255, 248, 235, .82); --edge: 1px solid rgba(255, 255, 255, .9); --ink: #4a2e1a; }
 
 .scene { position: fixed; inset: 0; overflow: hidden; container-type: size; animation: arrive .7s ease-out both; }
@@ -21,7 +21,7 @@ body { font-family: "Baloo 2", "Nunito", system-ui, sans-serif; color: #4a2e1a; 
 .hud { position: fixed; left: 14px; top: 12px; z-index: 20; display: flex; align-items: center; gap: 10px; }
 .back {
   display: inline-flex; align-items: center; gap: 6px; height: 36px; padding: 0 14px 0 10px; border-radius: 999px;
-  font: 800 15px/1 "Baloo 2", system-ui, sans-serif; text-decoration: none; transition: translate .18s ease, box-shadow .18s ease;
+  font: 800 15px/1 "Manrope", system-ui, sans-serif; text-decoration: none; transition: translate .18s ease, box-shadow .18s ease;
 }
 .back svg { width: 18px; height: 18px; }
 .back:hover { translate: 0 -1px; box-shadow: 0 9px 20px -8px rgba(20, 12, 4, .5); }
@@ -34,7 +34,7 @@ body { font-family: "Baloo 2", "Nunito", system-ui, sans-serif; color: #4a2e1a; 
 .toggle { position: fixed; right: 14px; top: 12px; z-index: 20; display: flex; align-items: center; gap: 4px; padding: 4px; border-radius: 999px; }
 .toggle span { padding: 0 6px 0 8px; font-size: 13px; font-weight: 800; letter-spacing: .06em; color: #7a5638; }
 .toggle button {
-  border: 0; border-radius: 999px; padding: 4px 12px; font: 800 14px/1.2 "Baloo 2", system-ui, sans-serif; color: var(--ink);
+  border: 0; border-radius: 999px; padding: 4px 12px; font: 800 14px/1.2 "Manrope", system-ui, sans-serif; color: var(--ink);
   background: transparent; cursor: pointer;
 }
 .toggle button[aria-pressed="true"] { background: #4a2e1a; color: #fff8eb; }

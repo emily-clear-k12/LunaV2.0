@@ -24,7 +24,7 @@ type Module = {
   lessons: Lesson[];
 };
 
-const CLASS_FOCUS = "Today, let's back every answer with evidence from the text!";
+const CLASS_FOCUS = "Back up every answer with evidence from the text.";
 
 /** Demo mastery seeds — not live student data. */
 const DEMO_DONE: Record<string, string[]> = {
@@ -116,7 +116,7 @@ const modules: Module[] = [
     n: 5,
     name: "Revision",
     short: "Revision",
-    world: "Sunken Library",
+    world: "Clockwork City",
     blurb: "Make the draft clearer and stronger.",
     x: 78.2,
     y: 60.5,
@@ -235,6 +235,7 @@ function StudentHome() {
   const [coins, setCoins] = useState<number>(readCoins);
   const [dive, setDive] = useState<{ x: number; y: number; ox: number; oy: number; reduce: boolean } | null>(null);
   const [cameByPortal, setCameByPortal] = useState(false);
+  const [picked, setPicked] = useState<string | null>(null);
   const sceneRef = useRef<HTMLDivElement>(null);
   const reduceMotion = useReducedMotion();
   const [view, setView] = useState<View>(() => parseHash(window.location.hash));
@@ -269,7 +270,7 @@ function StudentHome() {
 
   /** Portal dive: the scene zooms into the tapped portal while its light floods the screen,
       then the world takes over (reduced motion: a plain fade). */
-  function diveInto(el: HTMLElement) {
+  function diveInto(el: HTMLElement, href?: string) {
     const reduce = window.matchMedia?.("(prefers-reduced-motion: reduce)").matches ?? false;
     const r = el.getBoundingClientRect();
     const stage = sceneRef.current?.getBoundingClientRect();
@@ -283,6 +284,7 @@ function StudentHome() {
       reduce,
     });
     window.setTimeout(() => {
+      if (href) { setDive(null); window.location.href = href; return; }
       setCameByPortal(true);
       navigate({ page: "world", id: "starfall" });
       setDive(null);
@@ -311,6 +313,16 @@ function StudentHome() {
 
   function lessonDone(modId: string, title: string) {
     return (done[modId] ?? []).includes(title);
+  }
+
+  /** Go: run the portal's existing action (zoom into it, then its world page / Starfall world). */
+  function goTo(id: string) {
+    const el = document.querySelector<HTMLElement>(`[data-portal="${id}"]`);
+    const worlds: Record<string, string> = { scr: "crystal-caverns/", ecr: "sky-harbor/", plan: "ember-forge/", revise: "clockwork-city/", edit: "coral-cove/" };
+    if (!el) return openModule(id);
+    if (id === "sentences") return diveInto(el);
+    if (worlds[id]) return diveInto(el, asset(worlds[id]));
+    openModule(id);
   }
 
   function openModule(id: string) {
@@ -356,7 +368,16 @@ function StudentHome() {
   return (
     <div className="plana-stage flex h-dvh w-full flex-col overflow-hidden">
       <div className="relative min-h-0 w-full min-w-0 flex-1 overflow-hidden">
-          <h1 className="z-sky-title">✦ Astra’s Writing Adventure ✦</h1>
+          <div className="pa-top">
+            <header className="pa-title pa-frost">
+              <svg viewBox="0 0 26 26" aria-hidden="true"><circle cx="13" cy="13" r="9" fill="none" stroke="#94690f" strokeWidth="1.8" /><circle cx="13" cy="13" r="5" fill="#fff3d6" stroke="#c99a2e" strokeWidth="1.5" /></svg>
+              <h1>Astra’s Writing Adventure<small>Plan A · Portals</small></h1>
+            </header>
+            <section className="pa-goal pa-frost" aria-label="Today’s goal">
+              <p className="pa-lbl"><svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="6.2" fill="none" stroke="#d9a93f" strokeWidth="2" /><circle cx="8" cy="8" r="2.6" fill="#d9a93f" /></svg>Today’s goal</p>
+              <p className="pa-txt">{CLASS_FOCUS}</p>
+            </section>
+          </div>
           {overlayOpen ? (
             <button
               type="button"
@@ -430,21 +451,45 @@ function StudentHome() {
                       <source src={asset("portal-hub-loop-v3.webm")} type="video/webm" />
                     </video>
                   ) : null}
-
-                  {/* Astra's tip: always showing so today's focus stays in view */}
-                  <div className="z-tip" role="note" aria-label="Astra’s tip">
-                    <span className="z-tip-k">✦ Astra’s tip</span>
-                    <span className="z-tip-t">{CLASS_FOCUS}</span>
-                  </div>
+                  {/* M5 portal now opens Clockwork City: its view is painted over the old Sunken Library interior (video + poster). */}
+                  <img
+                    src={asset("portal-clockwork-city.jpg")}
+                    alt=""
+                    aria-hidden="true"
+                    className="pointer-events-none absolute"
+                    style={{
+                      left: "78.8%", top: "65.8%", width: "8.3%", height: "25%", transform: "translate(-50%,-50%)",
+                      objectFit: "cover", borderRadius: "50%",
+                      WebkitMaskImage: "radial-gradient(ellipse at center, #000 58%, transparent 71%)",
+                      maskImage: "radial-gradient(ellipse at center, #000 58%, transparent 71%)",
+                      filter: "saturate(1.05) drop-shadow(0 0 6px rgba(80,220,255,.6))",
+                    }}
+                  />
+                  {/* M1 portal view: Crystal Caverns bridge + crystals (new world art). */}
+                  <img
+                    src={asset("portal-crystal-caverns.jpg")}
+                    alt=""
+                    aria-hidden="true"
+                    className="pointer-events-none absolute"
+                    style={{
+                      left: "26.5%", top: "65.8%", width: "8.3%", height: "25%", transform: "translate(-50%,-50%)",
+                      objectFit: "cover", borderRadius: "50%",
+                      WebkitMaskImage: "radial-gradient(ellipse at center, #000 58%, transparent 71%)",
+                      maskImage: "radial-gradient(ellipse at center, #000 58%, transparent 71%)",
+                      filter: "saturate(1.05) drop-shadow(0 0 6px rgba(80,220,255,.6))",
+                    }}
+                  />
 
                   {modules.map((mod) => (
                     <button
                       key={mod.id}
                       type="button"
-                      onClick={(e) => (mod.id === "sentences" ? diveInto(e.currentTarget) : openModule(mod.id))}
+                      onClick={() => setPicked(mod.id)}
                       aria-label={`Module ${mod.n}, ${mod.name}, ${mod.world}`}
+                      data-portal={mod.id}
                       className={
                         "z-hotspot z-portal absolute -translate-x-1/2 -translate-y-1/2 " +
+                        (picked === mod.id ? "z-picked " : "") +
                         (focus ? "pointer-events-none opacity-0" : "")
                       }
                       style={{
@@ -499,6 +544,28 @@ function StudentHome() {
               </div>
             </div>
           </div>
+
+          {/* Bottom module row (same look as Plan A.1/A.2): always visible, dim until a portal or tile is picked; Go runs the portal's zoom. */}
+          {!focus && !dive ? (
+            <div className="a-bar" role="group" aria-label="Choose a world">
+              {modules.map((mod) => (
+                <button
+                  key={`tile-${mod.id}`}
+                  type="button"
+                  className={"a-tile" + (picked === mod.id ? " on" : "")}
+                  style={{ ["--c" as string]: mod.accent }}
+                  aria-pressed={picked === mod.id}
+                  onClick={() => setPicked(mod.id)}
+                >
+                  <em>M{mod.n}</em>
+                  {mod.world}
+                </button>
+              ))}
+              <button type="button" className="a-go" disabled={!picked} onClick={() => picked && goTo(picked)}>
+                Go ›
+              </button>
+            </div>
+          ) : null}
 
           {focused && !lesson ? (
             <section className="absolute inset-x-0 bottom-0 z-10 px-3 pb-3 sm:px-6 sm:pb-5">
