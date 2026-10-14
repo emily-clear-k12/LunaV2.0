@@ -47,12 +47,15 @@
 .tile.on{opacity:1;filter:none;box-shadow:0 0 14px 2px var(--c)}
 .go:disabled{opacity:.4;filter:saturate(.3);cursor:default}
 
-/* Full module titles wrap inside the dashboard controls. */
-.bar { height:auto; min-height:84px; align-items:stretch; }
-.tile { height:auto; min-height:68px; flex-direction:column; justify-content:center; gap:4px; padding:6px 8px !important; white-space:normal; text-align:center; font:700 14px/1.2 var(--ls-sans); overflow:visible; opacity:.85; }
-.tile em { font-size:11px; }
-.tile .module-title { display:block; }
-.tile .ls-check { position:absolute !important; top:4px; right:4px; margin:0 !important; }
-.tile { position:relative; }
+/* Compact dashboard controls leave the character and foreground visible. */
+.bar { height:46px; padding:4px; align-items:center; }
+.tile { position:relative; height:36px; padding:0 8px !important; justify-content:center; gap:5px; font:700 13px/1.1 var(--ls-sans); opacity:.85; }
+.tile .module-title { white-space:nowrap; }
+.tile .ls-check { position:absolute !important; top:2px; right:2px; width:12px !important; height:12px !important; margin:0 !important; }
 #act { display:flex; align-items:center; }
-.go { height:48px; }
+.go { height:36px; }
+.selected-module { position:absolute; left:12px; bottom:66px; max-width:460px; padding:6px 10px; border-radius:10px; background:rgba(11,29,51,.88); border:1px solid rgba(255,255,255,.3); font:700 14px/1.25 var(--ls-sans); color:#fff; }
+.selected-module[hidden] { display:none; }
+.goaltile { height:30px; padding:0 10px; font-size:13px; }
+.strip > * { height:30px; padding:0 10px; }
+.strip h1 { font-size:16px; }
