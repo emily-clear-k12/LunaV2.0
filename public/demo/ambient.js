@@ -57,7 +57,7 @@
         }
         var p = 0.5 + 0.5 * Math.sin(t * f.pr * 2.2 + f.ph); p = p * p;           // long dim, short bright
         var s = f.s * (0.55 + p * 0.9);
-        g.globalAlpha = 0.18 + p * 0.82;
+        g.globalAlpha = 0.32 + p * 0.68;
         g.drawImage(glow(f.c), f.x - s, f.y - s, s * 2, s * 2);
       });
       g.globalAlpha = 1; g.globalCompositeOperation = "source-over";
@@ -98,27 +98,30 @@
     };
   }
 
-  // Shooting stars launched from sky zones every few seconds.
-  function shootingStars(zones, every) {
-    var live = [], next = rnd(1, 2.5);
+  // Shooting stars: glide slowly across the sky with a long glowing tail, every couple of seconds.
+  function shootingStars(zones, every, opts) {
+    opts = opts || {};
+    var live = [], next = rnd(0.6, 1.5), maxLive = opts.max || 3;
     return function (g, t, dt) {
       next -= dt;
-      if (next <= 0 && live.length < 2) {
-        var z = pick(zones), ang = z.ang + rnd(-0.12, 0.12), sp = rnd(420, 620);
+      if (next <= 0 && live.length < maxLive) {
+        var z = pick(zones), ang = z.ang + rnd(-0.1, 0.1), sp = rnd(opts.speed ? opts.speed[0] : 230, opts.speed ? opts.speed[1] : 340);
         live.push({ x: rnd(z.x, z.x + z.w), y: rnd(z.y, z.y + z.h), vx: Math.cos(ang) * sp, vy: Math.sin(ang) * sp,
-          life: 0, max: rnd(0.7, 1.1), len: rnd(70, 130) });
+          life: 0, max: rnd(2.0, 3.0), len: rnd(170, 290), w: rnd(2.2, 3.2) });
         next = rnd(every[0], every[1]);
       }
       g.globalCompositeOperation = "lighter"; g.lineCap = "round";
       live = live.filter(function (s) {
         s.life += dt; s.x += s.vx * dt; s.y += s.vy * dt;
         var k = s.life / s.max; if (k >= 1) return false;
-        var a = Math.sin(Math.PI * k), n = Math.hypot(s.vx, s.vy), ux = s.vx / n, uy = s.vy / n;
-        var tx = s.x - ux * s.len * a, ty = s.y - uy * s.len * a;
+        var a = Math.min(1, k * 5) * Math.min(1, (1 - k) * 2.2);            // quick fade-in, long glide, soft fade-out
+        var n = Math.hypot(s.vx, s.vy), ux = s.vx / n, uy = s.vy / n;
+        var L = s.len * Math.min(1, k * 3), tx = s.x - ux * L, ty = s.y - uy * L;
         var gr = g.createLinearGradient(tx, ty, s.x, s.y);
-        gr.addColorStop(0, "rgba(255,230,250,0)"); gr.addColorStop(1, "rgba(255,248,255," + (0.9 * a) + ")");
-        g.strokeStyle = gr; g.lineWidth = 2.2; g.beginPath(); g.moveTo(tx, ty); g.lineTo(s.x, s.y); g.stroke();
-        g.globalAlpha = a; g.drawImage(glow("#fff1ff"), s.x - 7, s.y - 7, 14, 14); g.globalAlpha = 1;
+        gr.addColorStop(0, "rgba(200,170,255,0)"); gr.addColorStop(0.7, "rgba(255,225,250," + (0.45 * a) + ")"); gr.addColorStop(1, "rgba(255,255,255," + a + ")");
+        g.strokeStyle = gr; g.lineWidth = s.w; g.beginPath(); g.moveTo(tx, ty); g.lineTo(s.x, s.y); g.stroke();
+        g.lineWidth = s.w * 3.2; g.globalAlpha = 0.25; g.stroke(); g.globalAlpha = 1;   // soft outer glow on the tail
+        g.globalAlpha = a; g.drawImage(glow("#fff6ff"), s.x - 13, s.y - 13, 26, 26); g.drawImage(glow("#ffffff"), s.x - 5, s.y - 5, 10, 10); g.globalAlpha = 1;
         return true;
       });
       g.globalCompositeOperation = "source-over";
@@ -295,7 +298,33 @@
       g.globalAlpha = 1; g.globalCompositeOperation = "source-over";
     };
   }
-  window.AmbientFX = { burst: function (x, y, color, n) {
+  window.AmbientFX = {
+  // Shooting stars drawn over the intro film's sky for its first few seconds (A.1). Returns a stop() function.
+  introStars: function (host, W, H, seconds) {
+    if (mq && mq.matches) return function () {};
+    var c = document.createElement("canvas"); c.className = "intro-stars"; c.setAttribute("aria-hidden", "true");
+    c.style.cssText = "position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:41;transition:opacity 1s ease";
+    host.appendChild(c);
+    var g = c.getContext("2d"), layer = shootingStars([
+      { x: W * 0.55, y: 0, w: W * 0.45, h: H * 0.12, ang: 2.6 },
+      { x: 0, y: 0, w: W * 0.4, h: H * 0.12, ang: 0.55 },
+      { x: W * 0.3, y: 0, w: W * 0.4, h: H * 0.08, ang: 2.35 }
+    ], [0.7, 1.5], { max: 3, speed: [300, 420] });
+    var t0 = performance.now(), last = t0, raf, stopped = false;
+    function size() { var r = c.getBoundingClientRect(), d = Math.min(window.devicePixelRatio || 1, 2); c.width = Math.max(1, r.width * d); c.height = Math.max(1, r.height * d); }
+    size();
+    function frame(now) {
+      var dt = Math.min(0.05, (now - last) / 1000); last = now;
+      g.setTransform(1, 0, 0, 1, 0, 0); g.clearRect(0, 0, c.width, c.height); g.setTransform(c.width / W, 0, 0, c.height / H, 0, 0);
+      if (!stopped && (now - t0) / 1000 < seconds) layer(g, (now - t0) / 1000, dt); else layer(g, (now - t0) / 1000, dt * 1);
+      if ((now - t0) / 1000 > seconds + 3) { stop(); return; }
+      raf = requestAnimationFrame(frame);
+    }
+    raf = requestAnimationFrame(frame);
+    function stop() { stopped = true; cancelAnimationFrame(raf); c.style.opacity = "0"; setTimeout(function () { c.remove(); }, 1000); }
+    return stop;
+  },
+  burst: function (x, y, color, n) {
     for (var i = 0; i < (n || 14); i++) bursts.push({ x: x + rnd(-18, 18), y: y + rnd(-20, 30), vx: rnd(-14, 14), vy: rnd(-55, -20),
       life: 0, max: rnd(0.9, 1.6), s: rnd(3, 6), c: Math.random() < 0.5 ? color : "#fff6d0" });
   } };
@@ -320,13 +349,14 @@
           dragons([
             { x: 40, y: 330, w: 380, h: 70, s: [9, 13], a: 0.75 },     // over the left mountains
             { x: 980, y: 380, w: 360, h: 70, s: [8, 12], a: 0.75 }     // over the right mountains
-          ], "#24133f", [9, 16]),
+          ], "#24133f", [6, 11]),
           runes(art.runes, null, 0.10, 0.38),
           shootingStars([
-            { x: 840, y: 60, w: 420, h: 220, ang: 2.55 },   // right sky, falling down-left toward the mountains
-            { x: 40, y: 70, w: 360, h: 200, ang: 0.62 },    // left sky, falling down-right
-            { x: 900, y: 300, w: 380, h: 120, ang: 0.42 }   // lower right, matching the painted streaks
-          ], [3.5, 7]),
+            { x: 900, y: 20, w: 460, h: 120, ang: 2.62 },   // from the top-right, gliding down-left across the sky
+            { x: 0, y: 30, w: 380, h: 120, ang: 0.52 },     // from the top-left, gliding down-right
+            { x: 760, y: 220, w: 560, h: 100, ang: 2.75 },  // right sky toward the mountains
+            { x: 20, y: 200, w: 340, h: 110, ang: 0.40 }    // left sky toward the mountains
+          ], [1.4, 3.2], { max: 3 }),
           lights(lanterns),
           lights([   // tree-house windows and the lamp halfway up the trunk
             { x: 600, y: 108, r: 20, c: "#ffb347", lo: 0.10, hi: 0.35, flicker: true },
@@ -350,8 +380,13 @@
             [900, 560, 440, 190],    // right meadow
             [430, 600, 140, 140],    // near Astra (left)
             [820, 600, 160, 130],    // near the book stack
-            [470, 420, 420, 140]     // around the trunk
-          ], 34, ["#fff3a0", "#e9ff8a", "#ffe07a"], 7),
+            [470, 420, 420, 140],    // around the trunk
+            [60, 70, 470, 300],      // left branches, among the lanterns
+            [860, 60, 470, 300],     // right branches, among the lanterns
+            [430, 20, 520, 170],     // high in the crown
+            [380, 260, 160, 170],    // where the left boughs meet the trunk
+            [850, 260, 160, 170]     // where the right boughs meet the trunk
+          ], 78, ["#fff3a0", "#e9ff8a", "#ffe07a", "#fff8c8"], 8.5),
           sparkleBursts()
         ];
       }
@@ -370,7 +405,7 @@
           dragons([
             { x: 880, y: 60, w: 380, h: 90, s: [10, 14], a: 0.42 },    // high in the blue sky, right of the signpost
             { x: 470, y: 150, w: 200, h: 70, s: [8, 11], a: 0.38 }     // small gap of sky left of the signpost
-          ], "#2c3e5c", [10, 18]),
+          ], "#2c3e5c", [6, 11]),
           runes(art.runes, null, 0.12, 0.42),
           sunbeam(1000, -20, 640, 700, 260, "#fff2c4", 0.03, 0.11, 9),
           sunbeam(870, -20, 470, 700, 150, "#fff6d8", 0.02, 0.08, 12),
@@ -387,10 +422,12 @@
             { x: 300, y: -20, w: 340, h: 60, dir: 0.4 },      // top-left canopy
             { x: 980, y: -20, w: 260, h: 30, dir: -0.3 },     // top-right canopy
             { x: 920, y: 130, w: 200, h: 60, dir: 0.2 }       // right tree's leafy branch
-          ], [0.9, 2], ["#f4cc4e", "#ec9a38", "#c8dc5a", "#e07636", "#ffe08a"], [680, 40, 180, 470]),
+          ], [0.6, 1.4], ["#f4cc4e", "#ec9a38", "#c8dc5a", "#e07636", "#ffe08a"], [680, 40, 180, 470]),
           butterflies([
             { x: 120, y: 600, rx: 60, ry: 26, speed: 0.35, s: 15, c: "#ffcf4a", c2: "#ff9f2e" },
-            { x: 1190, y: 560, rx: 50, ry: 30, speed: 0.42, s: 13, c: "#9ad7ff", c2: "#5fb2ee" }
+            { x: 1190, y: 560, rx: 50, ry: 30, speed: 0.42, s: 13, c: "#9ad7ff", c2: "#5fb2ee" },
+            { x: 560, y: 300, rx: 70, ry: 40, speed: 0.3, s: 12, c: "#ff9fd0", c2: "#e86aa8" },
+            { x: 1000, y: 240, rx: 80, ry: 35, speed: 0.38, s: 12, c: "#fff1a0", c2: "#f2c94c" }
           ]),
           fireflies([
             [0, 600, 120, 120],       // shady plants, bottom-left

@@ -23,8 +23,9 @@
       intro: "intro", poster: "intro-poster.jpg",
       loop: "astra-loop", loopRect: [442, 436, 512, 288], loopFeather: true,
       ui: ".strip, .goaltile, #lanterns, .bar, .selected-module, .lsb, .ls-start, .ls-check",
-      caption: { text: "Oh, hi! Every lantern leads to a new world. Which one will we explore today?", at: 8.6, hold: 7, x: 760, y: 360 },
+      caption: { text: "Oh, hi! Every lantern leads to a new world. Which one will we explore today?", at: 13.1, hold: 6.5, x: 760, y: 360 },
       startLabel: "Let’s begin!",
+      introStars: 8,
       replayCss: "left:12px;top:86px"
     },
     d: {
@@ -35,7 +36,7 @@
       loop: "assets/loop", loopRect: null,
       overlay: { src: "assets/signpost.png", rect: [674, 52, 190, 545] },
       ui: ".top, .go, .hop, .hot, .ls-start, .ls-check, .fx, .lsb",
-      caption: { text: "Are you ready to go on an adventure?", at: 8.5, hold: 5.5, x: 215, y: 165, tail: "right" },
+      caption: { text: "Are you ready to go on an adventure?", at: 15.9, hold: 4.5, x: 215, y: 165, tail: "right" },
       startLabel: "Let’s begin!",
       replayCss: "left:14px;bottom:14px"
     }
@@ -138,11 +139,12 @@
   }
 
   /* ---------- intro ---------- */
-  var film = null, gate = null, skip = null, replay = null;
+  var film = null, gate = null, skip = null, replay = null, stopStars = null;
   function finish() {
     if (film) { var f = film; film = null; f.classList.add("gone"); setTimeout(function () { f.remove(); }, 750); }
     if (gate) { gate.remove(); gate = null; }
     if (skip) { skip.remove(); skip = null; }
+    if (stopStars) { stopStars(); stopStars = null; }
     markSeen(); showUI(); buildLoop(); startLoop(); addReplay();
     setTimeout(function () { closeCaption(); }, 2500);
   }
@@ -160,7 +162,10 @@
     skip = document.createElement("button"); skip.type = "button"; skip.className = "intro-skip"; skip.innerHTML = "Skip intro ›";
     skip.onclick = function () { if (film) film.pause(); closeCaption(true); finish(); };
     host.appendChild(skip);
-    function go() { if (gate) { gate.remove(); gate = null; } var p = film.play(); if (p && p.catch) p.catch(function () { film.muted = true; film.play(); }); }
+    function go() {
+      if (gate) { gate.remove(); gate = null; }
+      if (P.introStars && window.AmbientFX && AmbientFX.introStars) stopStars = AmbientFX.introStars(host, P.W, P.H, P.introStars);
+      var p = film.play(); if (p && p.catch) p.catch(function () { film.muted = true; film.play(); }); }
     if (withGate) {
       gate = document.createElement("div"); gate.className = "intro-gate";
       gate.innerHTML = '<button type="button" class="intro-btn">▶ ' + P.startLabel + "</button>";
