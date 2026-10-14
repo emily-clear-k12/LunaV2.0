@@ -1,0 +1,22 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Coral Cove · Plan A · Astra's Writing Adventure</title><link rel="icon" type="image/svg+xml" href="../../favicon.svg"/>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&family=Lilita+One&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="../../demo/switcher.css"/><link rel="stylesheet" href="stage-fit.css"/><link rel="stylesheet" href="common.css"/></head>
+<body><script src="../../demo/switcher.js" data-page="dashboard-a"></script>
+<!-- Plan A (original, Portals) world page for Module 6 · Coral Cove (Edit). Opened from the Coral Cove portal on /dashboard-a/. -->
+<div id="frame" class="stage-frame" style="--c:#ff6fa8">
+<img class="bg" src="coral-cove.jpg" alt="Coral Cove: a tropical lagoon with glowing crystals"/>
+<a class="back" href="../">‹ Back to portals</a>
+<div class="mod">MODULE 6 · <span>Coral Cove</span></div>
+<div id="cr"></div><div class="toast" id="toast"></div>
+</div>
+<script src="stage-fit.js"></script>
+<script>
+(function(){
+  var C=[[140,487],[578,447],[915,467],[1191,287],[1245,494]], N=["Capitals and stops","Spelling that counts","Read it through","Lesson 4","Lesson 5"], h="";
+  C.forEach(function(c,i){ h+='<a class="crystal" style="left:'+c[0]+'px;top:'+c[1]+'px" href="'+(i===0?'../../demo/lesson/':'#')+'" data-l="'+(i+1)+'"><span>'+(/^Lesson/.test(N[i])?N[i]:(i+1)+' · '+N[i])+'</span></a>'; });
+  var cr=document.getElementById("cr"); cr.innerHTML=h;
+  [].forEach.call(cr.querySelectorAll('a[href="#"]'),function(a){ a.onclick=function(e){ e.preventDefault(); var t=document.getElementById("toast");
+    t.textContent=N[a.dataset.l-1].replace("&amp;","&")+" isn't open yet. Try Lesson 1!"; t.style.display="block"; clearTimeout(t._h); t._h=setTimeout(function(){t.style.display="none"},2200); }; });
+})();
+</script></body></html>

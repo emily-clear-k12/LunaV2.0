@@ -1,0 +1,195 @@
+/* Astra look, Part 2: step content in the locked tile style (from demo/tile-preview).
+   Typing tiles = deep frost -> solid on tap (stays solid). Reading tiles = cream frost. */
+.astra .head-box .dir{color:rgba(255,255,255,.95)!important}
+.astra .card-body{display:flex;flex-direction:column}
+
+/* ---------- writing tiles ---------- */
+.astra .wtile{display:flex;flex-direction:column;padding:14px 16px 12px;cursor:text;min-height:0}
+.astra .wtile label{display:flex;align-items:baseline;gap:8px;font:800 21px/1.1 var(--display);color:#fff;cursor:text}
+.astra .wtile label span{font:700 14px var(--body);color:rgba(255,255,255,.78);transition:color .35s}
+.astra .wtile textarea{flex:1;width:100%;min-height:52px;margin-top:8px;resize:none;border:0;outline:0;background:transparent;
+  color:inherit;font:600 18px/1.5 var(--body);padding:2px 0;border-radius:0}
+.astra .wtile textarea:focus{outline:0}
+.astra .wtile textarea::placeholder{color:rgba(255,255,255,.72);font-weight:600}
+.astra .wtile .line{flex:none;height:2px;border-radius:2px;background:rgba(255,255,255,.35);transition:background .35s}
+.astra .wtile.solid label{color:var(--a-solid-accent)}
+.astra .wtile.solid label span{color:var(--a-solid-muted)}
+.astra .wtile.solid textarea{color:var(--a-solid-ink)}
+.astra .wtile.solid textarea::placeholder{color:#9a94b4}
+.astra .wtile.solid .line{background:rgba(90,63,176,.22)}
+.astra .wtile:focus-within{box-shadow:0 0 0 3px rgba(255,210,122,.9),0 18px 40px -18px rgba(0,0,0,.8)}
+.astra .wtile:focus-within .line{background:#e9a23b}
+.astra .wtile .done{position:absolute;top:12px;right:14px;width:22px;height:22px;border-radius:50%;background:var(--a-good);color:#fff;
+  display:grid;place-items:center;font:800 13px var(--body);opacity:0;transform:scale(.6);transition:opacity .25s,transform .25s}
+.astra .wtile.filled .done{opacity:1;transform:none}
+
+/* A1: 2x2 grid that fills the content area */
+.astra .agrid{flex:1;min-height:0;display:grid;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr;gap:16px;max-height:420px}
+
+/* A3/A4: reading tile beside the writing tiles */
+.astra .asplit{flex:1;min-height:0;display:grid;grid-template-columns:minmax(0,5fr) minmax(0,6fr);gap:16px;align-items:stretch}
+.astra .asplit.top{align-items:start}
+.astra .acol{display:flex;flex-direction:column;gap:8px;min-width:0;min-height:0}
+.astra .ctx{padding:14px 18px;display:flex;flex-direction:column;gap:7px;overflow:auto;max-height:100%}
+.astra .ctx .tag{margin:0;font:800 11.5px var(--body);letter-spacing:.12em;text-transform:uppercase;color:var(--a-cream-muted)}
+.astra .ctx h4{margin:0;font:800 20px/1.15 var(--display);color:var(--a-cream-ink)}
+.astra .ctx p{margin:0;font-size:15.5px;line-height:1.5;font-weight:600}
+.astra .ctx p b{font-weight:800}
+.astra .ctx .bp2{padding:5px 10px 6px;margin:0 -10px;border-radius:10px;background:rgba(233,162,59,.2);box-shadow:inset 3px 0 0 #d08a1e}
+.astra .given{margin:0;padding:9px 14px;font-weight:700;font-size:15.5px;border-radius:14px}
+.astra .given small{display:block;font:800 11px var(--body);letter-spacing:.12em;text-transform:uppercase;color:var(--a-cream-muted);margin-bottom:1px}
+.astra .wtile.big{flex:1;min-height:0}
+.astra .wtile.big textarea{background:repeating-linear-gradient(transparent 0 30px,rgba(255,255,255,.14) 30px 31px);background-attachment:local;line-height:31px}
+.astra .wtile.big.solid textarea{background:repeating-linear-gradient(transparent 0 30px,rgba(90,63,176,.12) 30px 31px);background-attachment:local}
+.astra .wtile.slim{padding:9px 14px 8px}
+.astra .wtile.slim label{font-size:17px}
+.astra .wtile.slim textarea{min-height:46px;margin-top:3px;font-size:16.5px}
+
+/* Intro + End */
+.astra .intro-tile{max-width:560px;padding:14px 20px}
+.astra .intro-tile h4{margin:0 0 4px;font:800 20px/1.15 var(--display);color:var(--a-cream-ink)}
+.astra .intro-tile p{margin:0 0 4px;font-weight:700;color:var(--a-cream-ink)}
+.astra .intro-tile p.meta{color:var(--a-cream-muted);font-weight:600;margin:0}
+.astra .end-stats{display:grid;grid-template-columns:1fr 1fr;gap:16px;max-width:640px}
+.astra .end-stats .stat{padding:16px 18px;text-align:center;border-radius:var(--a-r)}
+.astra .end-stats .stat b{display:block;font:800 40px/1.05 var(--display);color:#a8551b;font-variant-numeric:tabular-nums}
+.astra .end-stats .stat span{font-size:15px;font-weight:700;color:var(--a-cream-muted)}
+.astra .end-note{margin:0;font-weight:700;font-size:15px;color:#fff;text-shadow:0 1px 3px #000,0 0 10px rgba(0,0,0,.6)}
+
+/* ---------- sorts (A2, A5): pool of chips + bins, all dark tiles ---------- */
+.astra .asort{flex:1;min-height:0;display:flex;flex-direction:column;gap:12px}
+.astra .asort .hint{margin:0;font-weight:700;font-size:14.5px;color:#fff!important;text-shadow:0 1px 3px #000,0 0 10px rgba(0,0,0,.6);text-align:center}
+.astra .asort .pool{flex:none;display:grid;grid-template-columns:repeat(3,1fr);gap:10px;align-content:start}
+.astra .asort .pool.empty::after{content:"All sorted. Press Check.";grid-column:1/-1;align-self:center;text-align:center;font-weight:700;color:rgba(255,255,255,.85);text-shadow:0 1px 3px #000}
+.astra .asort .pool.done{display:none}
+.astra .asort .chip{appearance:none;-webkit-appearance:none;margin:0;text-align:left;width:100%;display:block;border-radius:14px;padding:10px 13px;
+  font:700 15px/1.35 var(--body);cursor:grab;user-select:none;-webkit-user-select:none;touch-action:none;text-shadow:0 1px 2px rgba(0,0,0,.35);color:#fff}
+.astra .asort .chip::before{display:none}
+.astra .asort .chip.solid{text-shadow:none;color:var(--a-solid-ink)}
+.astra .asort .chip:focus-visible{outline:3px solid var(--crystal);outline-offset:2px}
+.astra .asort .chip.sel{box-shadow:0 0 0 3px var(--gold),0 14px 26px -12px rgba(0,0,0,.85);transform:translateY(-2px)}
+.astra .asort .chip.right{box-shadow:inset 5px 0 0 var(--a-good),0 10px 22px -14px rgba(0,0,0,.8)}
+.astra .asort .chip.wrong{box-shadow:inset 5px 0 0 var(--a-try),0 10px 22px -14px rgba(0,0,0,.8)}
+.astra .asort .chip[aria-disabled="true"]{cursor:default}
+.astra .asort .chip.lifting{opacity:.35}
+.astra .chip.ghost{position:fixed;z-index:50;pointer-events:none;transform:rotate(-1.5deg);margin:0;border-radius:14px;padding:10px 13px;
+  font:700 15px/1.35 var(--body);text-align:left;box-shadow:0 0 0 3px var(--gold),0 24px 40px -16px rgba(0,0,0,.9)!important}
+.astra .asort .bins{flex:1;min-height:0;display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.astra .asort .bin{display:flex;flex-direction:column;gap:8px;padding:12px;cursor:pointer;min-height:0;border-style:solid;border-width:1px;overflow:auto;scrollbar-width:thin}
+.astra .asort .bin .bhead{flex:none;padding:2px 4px 8px;border-bottom:1.5px dashed rgba(255,255,255,.45)}
+.astra .asort .bin .bhead small{display:block;font:800 11.5px var(--body);letter-spacing:.12em;color:var(--gold)}
+.astra .asort .bin .bhead b{display:block;font:800 18px/1.15 var(--display);color:inherit;text-transform:none;letter-spacing:0}
+.astra .asort .bin .drop{flex:1;display:flex;flex-direction:column;gap:8px;border-radius:12px;min-height:50px}
+.astra .asort .bin .drop:empty::before{content:"";flex:1;border:2px dashed rgba(255,255,255,.35);border-radius:12px}
+.astra .asort .bin.ready{border-color:var(--gold);box-shadow:0 0 0 2px rgba(255,210,122,.7),0 14px 34px -18px rgba(0,0,0,.75)}
+.astra .asort .bin.ready .drop:empty::before{border-color:rgba(255,210,122,.85)}
+.astra .asort .bin.over{background:var(--a-solid);color:var(--a-solid-ink);border-color:var(--gold);box-shadow:0 0 0 3px var(--gold),0 18px 40px -18px rgba(0,0,0,.8)}
+.astra .asort .bin.solid .bhead,.astra .asort .bin.over .bhead{border-color:rgba(90,63,176,.25)}
+.astra .asort .bin.solid .bhead small,.astra .asort .bin.over .bhead small{color:#a8551b}
+.astra .asort .bin.solid .drop:empty::before,.astra .asort .bin.over .drop:empty::before{border-color:rgba(90,63,176,.25)}
+.astra .asort .bin.solid .chip.solid{background:#f2eefc;border-color:rgba(90,63,176,.18);box-shadow:none}
+.astra .asort .bin.solid .chip.solid.sel{box-shadow:0 0 0 3px var(--gold)}
+.astra .asort .bin.solid .chip.right{background:#e6f6ec;box-shadow:inset 5px 0 0 var(--a-good)}
+.astra .asort .bin.solid .chip.wrong{background:#fff0e6;box-shadow:inset 5px 0 0 var(--a-try)}
+.astra .asort.dense .chip{font-size:14px;padding:8px 11px;line-height:1.33}
+.astra .asort.dense .bin .bhead b{font-size:16.5px}
+.astra .asort .bin .chip{font-size:14px;padding:8px 11px}
+
+/* ---------- video message (V1-V5): portrait in ornamental mirror ---------- */
+.astra .vstage{flex:1;min-height:0;display:flex;justify-content:center;align-items:flex-start}
+.astra .vframe{position:relative;flex:none;height:min(100%,calc(100vh - 210px));aspect-ratio:780/1260;max-height:520px}
+.astra .vf{position:absolute;inset:0;width:100%;height:100%;overflow:visible;pointer-events:none;
+  filter:drop-shadow(0 0 16px rgba(134,214,255,.25)) drop-shadow(0 22px 26px rgba(0,0,0,.55))}
+.astra .vscreen{position:absolute;left:calc(120 / 780 * 100%);top:calc(200 / 1260 * 100%);width:calc(540 / 780 * 100%);height:calc(960 / 1260 * 100%);
+  border-radius:0 0 4px 4px;overflow:hidden;background:#0c0a1e;isolation:isolate}
+.astra .vscreen::after{content:"";position:absolute;inset:0;pointer-events:none;box-shadow:inset 0 0 0 1px rgba(0,0,0,.5),inset 0 4px 10px rgba(0,0,0,.45)}
+.astra .vscreen video{display:block;width:100%;height:100%;object-fit:contain;background:#0c0a1e}
+.astra .vplay{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);z-index:2;cursor:pointer;border:0;display:flex;align-items:center;gap:10px;white-space:nowrap;
+  font:800 18px/1 var(--display);padding:14px 22px 12px;border-radius:999px;background:var(--gold);color:var(--night);box-shadow:0 14px 30px -10px rgba(0,0,0,.8)}
+.astra .vplay svg{flex:none}
+.astra .vplay:focus-visible{outline:3px solid var(--crystal);outline-offset:3px}
+.astra .vnote{margin:0 0 0 auto;font-weight:700;font-size:14px;color:rgba(255,255,255,.85);text-shadow:0 1px 3px #000}
+.astra .vx{position:absolute;z-index:3;top:calc(200 / 1260 * 100% + 8px);right:calc(120 / 780 * 100% + 6px);width:34px;height:34px;border:0;border-radius:999px;
+  background:var(--gold);color:var(--night);font:700 18px/34px var(--body);cursor:pointer;box-shadow:0 4px 14px -4px #000;padding:0}
+.astra .vsound{position:absolute;z-index:3;left:50%;bottom:12%;transform:translateX(-50%);border:0;border-radius:999px;padding:8px 14px;
+  background:var(--gold);color:var(--night);font:700 13px var(--body);cursor:pointer;box-shadow:0 4px 14px -4px #000}
+/* Hide the old crystal portal completely */
+.astra .portal{display:none!important}
+.astra .stage.dim #scene{filter:none} /* no dimming under the mirror card */
+@media (max-height:720px){.astra .vframe{max-height:460px}}
+@media (prefers-reduced-motion:reduce){.astra .vf{filter:drop-shadow(0 14px 20px rgba(0,0,0,.55))}}
+/* pouch, replays and toast sit above the card layer */
+.astra > .pouch,.astra > .replay-list,.astra > .toast{position:fixed}
+.astra .vscreen .vx{top:8px;right:8px}
+.astra .vframe{max-height:600px}
+
+/* ---------- Part 3: A6-A11 ---------- */
+/* shared reading tiles (The Text, claim, prompts) */
+.astra .rtext{padding:12px 16px 13px;display:flex;flex-direction:column;gap:5px;min-height:0}
+.astra .rtext h4{margin:0;font:800 19px/1.15 var(--display);color:var(--a-cream-ink)}
+.astra .rtext .sub{margin:0;font:700 13px var(--body);color:var(--a-cream-muted)}
+.astra .rtext p{margin:0;font-size:15.5px;line-height:1.55;font-weight:600;color:var(--a-cream-ink)}
+.astra .rtext .tag{margin:0;font:800 11.5px var(--body);letter-spacing:.12em;text-transform:uppercase;color:var(--a-cream-muted)}
+.astra .rclaim{padding:10px 16px 11px;font-weight:800;font-size:16px;line-height:1.4;box-shadow:inset 4px 0 0 #d08a1e,inset 0 1px 0 rgba(255,255,255,.6),0 14px 34px -18px rgba(0,0,0,.7)}
+.astra .rclaim small,.astra .rstem small{display:block;font:800 11px var(--body);letter-spacing:.12em;text-transform:uppercase;color:var(--a-cream-muted);margin-bottom:2px}
+.astra .rstem{margin:0;padding:9px 16px 10px;font-weight:800;font-size:16px;line-height:1.35}
+/* two-column layout: reading on the left, answer on the right */
+.astra .aevi{flex:1;min-height:0;display:grid;grid-template-columns:minmax(0,5fr) minmax(0,6fr);gap:16px;align-items:start}
+.astra .aevi.wide{grid-template-columns:minmax(0,6fr) minmax(0,5fr)}
+.astra .aevi > .acol{gap:10px}
+.astra .aevi .tag-cue{margin:0;font:800 13px var(--body);letter-spacing:.06em;color:#fff;text-shadow:0 1px 3px #000,0 0 10px rgba(0,0,0,.6)}
+/* dark choice tiles (A6 single pick, A8/A9 multi pick): solid near-white + gold ring when chosen */
+.astra .opts{display:flex;flex-direction:column;gap:8px;min-height:0}
+.astra .opts.two{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.astra .opt{appearance:none;-webkit-appearance:none;margin:0;width:100%;text-align:left;cursor:pointer;display:flex;align-items:flex-start;gap:12px;
+  padding:11px 14px;font:700 15.5px/1.4 var(--body);color:#fff;text-shadow:0 1px 2px rgba(0,0,0,.35);border-radius:16px}
+.astra .opts.two .opt{padding:14px 16px;font-size:16.5px;min-height:76px;align-items:center}
+.astra .opt .tick{flex:none;width:22px;height:22px;margin-top:1px;border-radius:7px;border:2px solid rgba(255,255,255,.7);display:grid;place-items:center;
+  font:800 13px var(--body);color:#fff;background:transparent;transition:background .25s,border-color .25s}
+.astra .opt.radio .tick{border-radius:50%}
+.astra .opt:hover:not(:disabled){border-color:rgba(255,255,255,.55)}
+.astra .opt:focus-visible{outline:3px solid var(--crystal);outline-offset:2px}
+.astra .opt[aria-pressed="true"],.astra .opt[aria-checked="true"]{background:var(--a-solid);border-color:#fff;color:var(--a-solid-ink);text-shadow:none;
+  box-shadow:0 0 0 3px rgba(255,210,122,.95),0 18px 40px -18px rgba(0,0,0,.8);backdrop-filter:none;-webkit-backdrop-filter:none}
+.astra .opt[aria-pressed="true"] .tick,.astra .opt[aria-checked="true"] .tick{background:#e9a23b;border-color:#e9a23b}
+.astra .opt.right{box-shadow:inset 5px 0 0 var(--a-good),0 0 0 3px rgba(63,174,115,.85),0 18px 40px -18px rgba(0,0,0,.8)!important}
+.astra .opt.right .tick{background:var(--a-good)!important;border-color:var(--a-good)!important}
+.astra .opt.wrong{box-shadow:inset 5px 0 0 var(--a-try),0 0 0 3px rgba(232,128,63,.85),0 18px 40px -18px rgba(0,0,0,.8)!important}
+.astra .opt.wrong .tick{background:var(--a-try)!important;border-color:var(--a-try)!important}
+.astra .opt:disabled{cursor:default}
+/* A7: tappable passage on cream, gold highlight */
+.astra .rtext.passage p{font-size:16.5px;line-height:1.75}
+.astra .rtext.passage .s{cursor:pointer;border-radius:6px;padding:2px 3px;transition:background .2s,box-shadow .2s}
+.astra .rtext.passage .s:hover{background:rgba(233,162,59,.18)}
+.astra .rtext.passage .s[aria-pressed="true"]{background:#ffd27a;box-shadow:0 0 0 2px #e9a23b;color:#2a1e08}
+.astra .rtext.passage .s.right{background:rgba(63,174,115,.32);box-shadow:0 0 0 2px var(--a-good)}
+.astra .rtext.passage .s.wrong{background:rgba(232,128,63,.3);box-shadow:0 0 0 2px var(--a-try)}
+.astra .rtext.passage .s:focus-visible{outline:3px solid #2e66a8;outline-offset:1px}
+.astra .tapcue{display:flex;align-items:center;gap:10px;margin:0;align-self:flex-start;padding:7px 14px;border-radius:999px;font:800 14.5px var(--body);color:#fff}
+.astra .tapcue b{font:800 16px var(--display);color:var(--gold)}
+.astra .tapcue .dots{display:flex;gap:5px}
+.astra .tapcue .dots i{width:11px;height:11px;border-radius:50%;border:2px solid rgba(255,255,255,.7)}
+.astra .tapcue .dots i.on{background:var(--gold);border-color:var(--gold)}
+.astra .rtext .bp2{padding:5px 10px 6px;margin:0 -10px;border-radius:10px;background:rgba(233,162,59,.2);box-shadow:inset 3px 0 0 #d08a1e}
+.astra .rtext .bp2 small{display:block;font:800 10.5px var(--body);letter-spacing:.12em;text-transform:uppercase;color:#a8551b}
+/* A9: essay on cream with the highlighted sentence */
+.astra .rtext.essay p{font-size:14.5px;line-height:1.55}
+.astra .rtext .hl{background:#ffd27a;box-shadow:0 0 0 2px #e9a23b;border-radius:4px;padding:1px 3px;color:#2a1e08;box-decoration-break:clone;-webkit-box-decoration-break:clone}
+/* inline feedback under an answer (A10, A11) */
+.astra .feedback.inline{margin:0;max-width:none;padding:7px 12px;font-size:14px;line-height:1.4;border-radius:12px}
+.astra .feedback.inline ul{margin:2px 0 0;padding-left:18px}
+.astra .feedback.inline b + ul{margin-top:2px}
+/* A10/A11: answer tiles */
+.astra .wtile.ans{padding:10px 14px 9px}
+.astra .wtile.ans label{font-size:17px}
+.astra .wtile.ans textarea{min-height:0;margin-top:4px;font-size:16.5px;line-height:1.45}
+.astra .qpairs{flex:1;min-height:0;display:flex;flex-direction:column;gap:14px}
+.astra .qpair{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,6fr);gap:16px;align-items:start}
+.astra .qpair .rtext p{font-size:15.5px}
+.astra .qpair .acol{gap:6px}
+@media (max-width:860px){
+  .astra .aevi,.astra .aevi.wide,.astra .qpair,.astra .opts.two{grid-template-columns:1fr}
+}
+.astra .wtile.ans .done{display:none} /* a filled answer is not a correct answer */
+.astra .feedback.inline.try{box-shadow:inset 4px 0 0 var(--a-try),0 10px 22px -14px rgba(0,0,0,.6)}
+.astra .feedback.inline.good{box-shadow:inset 4px 0 0 var(--a-good),0 10px 22px -14px rgba(0,0,0,.6)}

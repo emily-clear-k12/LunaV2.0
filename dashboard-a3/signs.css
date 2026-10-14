@@ -1,0 +1,16 @@
+/* Hanging wooden signs. --c = world colour. */
+.sign{position:absolute;transform:translate(-50%,0);transform-origin:50% -26px;border:0;padding:0;background:none;cursor:pointer;z-index:3;text-align:center}
+.sign .rope{position:absolute;top:-26px;width:2px;height:28px;background:repeating-linear-gradient(180deg,#d9b27a 0 4px,#7a5233 4px 6px);box-shadow:0 0 2px rgba(0,0,0,.6)}
+.sign .rope.l{left:22%}.sign .rope.r{right:22%}
+.sign .plank{display:block;position:relative;padding:5px 14px 6px;border-radius:9px;
+ background:linear-gradient(180deg,#a7713f 0%,#8a5a30 45%,#74491f 100%);
+ box-shadow:inset 0 0 0 2px color-mix(in srgb,var(--c) 70%,#3b2412),inset 0 2px 0 rgba(255,255,255,.18),0 6px 14px -6px rgba(0,0,0,.8)}
+.sign .plank::before{content:"";position:absolute;inset:0;border-radius:inherit;opacity:.18;pointer-events:none;
+ background:repeating-linear-gradient(90deg,transparent 0 9px,rgba(0,0,0,.5) 9px 10px,transparent 10px 23px)}
+.sign .n{display:block;font:800 10px var(--ls-sans,"Manrope",sans-serif);letter-spacing:.14em;text-transform:uppercase;color:color-mix(in srgb,var(--c) 55%,#fff)}
+.sign .w{display:block;font:700 15px/1.1 var(--ls-serif,"Source Serif 4",serif);color:#fff6e6;white-space:nowrap;text-shadow:0 1px 0 rgba(0,0,0,.55)}
+.sign .gotab{display:none;margin:5px auto 0;width:max-content;padding:3px 16px;border-radius:0 0 10px 10px;background:#f5b400;color:#14538c;font:800 14px var(--ls-sans,"Manrope",sans-serif);box-shadow:0 4px 10px -4px rgba(0,0,0,.7)}
+.sign.on .plank{box-shadow:inset 0 0 0 2px var(--c),0 0 18px 4px color-mix(in srgb,var(--c) 70%,transparent),0 6px 14px -6px rgba(0,0,0,.8)}
+.sign.on .gotab{display:block}
+.sign.on{animation:swing 1.6s ease-in-out 1}
+@keyframes swing{0%{transform:translate(-50%,0) rotate(0)}20%{transform:translate(-50%,0) rotate(6deg)}45%{transform:translate(-50%,0) rotate(-4deg)}70%{transform:translate(-50%,0) rotate(2deg)}100%{transform:translate(-50%,0) rotate(0)}}
