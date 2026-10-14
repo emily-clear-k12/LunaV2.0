@@ -211,19 +211,117 @@
     };
   }
 
+  // Runes carved in the art: a mask of their own pixels, breathing softly with a glow that drifts up the trunk.
+  function runes(mask, color, lo, hi) {
+    if (!mask) return function () {};
+    var tmp = document.createElement("canvas"); tmp.width = mask.w; tmp.height = mask.h;
+    var tg = tmp.getContext("2d");
+    return function (g, t) {
+      var k = 0.5 + 0.5 * Math.sin(t * TAU / 6);
+      // steady soft breath over every rune
+      g.globalCompositeOperation = "lighter";
+      g.globalAlpha = lo + (hi - lo) * k;
+      g.drawImage(mask.glow, mask.x, mask.y);
+      // a brighter band that travels slowly upward
+      tg.globalCompositeOperation = "source-over"; tg.clearRect(0, 0, mask.w, mask.h);
+      tg.drawImage(mask.glow, 0, 0);
+      tg.globalCompositeOperation = "destination-in";
+      var cy = mask.h * (1.25 - ((t / 9) % 1) * 1.5), band = mask.h * 0.22;
+      var gr = tg.createLinearGradient(0, cy - band, 0, cy + band);
+      gr.addColorStop(0, "rgba(0,0,0,0)"); gr.addColorStop(0.5, "rgba(0,0,0,1)"); gr.addColorStop(1, "rgba(0,0,0,0)");
+      tg.fillStyle = gr; tg.fillRect(0, 0, mask.w, mask.h);
+      g.globalAlpha = hi * 1.2;
+      g.drawImage(tmp, mask.x, mask.y);
+      g.globalAlpha = 1; g.globalCompositeOperation = "source-over";
+    };
+  }
+
+  // Tiny dragon silhouettes gliding far away across the sky, every so often.
+  function dragons(zones, color, every) {
+    var live = [], next = rnd(2, 5);
+    function drawDragon(g, d, t) {
+      var s = d.s, flap = Math.sin(t * d.fr + d.ph);
+      g.save(); g.translate(d.x, d.y); g.scale(d.dir, 1); g.rotate(Math.sin(t * 0.7 + d.ph) * 0.05);
+      g.fillStyle = color; g.strokeStyle = color; g.lineCap = "round"; g.lineJoin = "round";
+      // body + neck + head
+      g.beginPath(); g.ellipse(0, 0, s * 0.55, s * 0.16, 0, 0, TAU); g.fill();
+      g.lineWidth = s * 0.12; g.beginPath(); g.moveTo(s * 0.45, -s * 0.02); g.quadraticCurveTo(s * 0.75, -s * 0.18, s * 0.92, -s * 0.12); g.stroke();
+      g.beginPath(); g.ellipse(s * 0.98, -s * 0.1, s * 0.12, s * 0.07, 0.2, 0, TAU); g.fill();
+      // long curling tail
+      g.lineWidth = s * 0.08; g.beginPath(); g.moveTo(-s * 0.5, 0);
+      g.quadraticCurveTo(-s * 0.95, s * (0.12 + flap * 0.05), -s * 1.3, -s * 0.05 + flap * s * 0.06); g.stroke();
+      // two bat wings, flapping
+      var wy = -s * (0.15 + 0.75 * flap);
+      g.beginPath(); g.moveTo(-s * 0.15, -s * 0.05); g.lineTo(s * 0.05, wy); g.lineTo(s * 0.32, wy * 0.6); g.lineTo(s * 0.25, -s * 0.05); g.closePath(); g.fill();
+      g.globalAlpha *= 0.75;
+      g.beginPath(); g.moveTo(-s * 0.05, -s * 0.02); g.lineTo(s * 0.18, wy * 0.8 - s * 0.05); g.lineTo(s * 0.4, wy * 0.45); g.lineTo(s * 0.3, -s * 0.02); g.closePath(); g.fill();
+      g.restore();
+    }
+    return function (g, t, dt) {
+      next -= dt;
+      if (next <= 0 && live.length < 2) {
+        var z = pick(zones), dir = Math.random() < 0.5 ? 1 : -1, sp = rnd(16, 26);
+        var n = Math.random() < 0.35 ? 2 : 1;            // sometimes a pair
+        for (var i = 0; i < n; i++) live.push({ z: z, dir: dir, x: dir > 0 ? z.x - 30 - i * 26 : z.x + z.w + 30 + i * 26,
+          y0: rnd(z.y, z.y + z.h) + i * 8, y: 0, vx: sp * dir, s: rnd(z.s[0], z.s[1]) * (i ? 0.8 : 1), fr: rnd(4.5, 6), ph: rnd(0, TAU), bob: rnd(4, 9) });
+        next = rnd(every[0], every[1]);
+      }
+      live = live.filter(function (d) {
+        d.x += d.vx * dt; d.y = d.y0 + Math.sin(t * 0.6 + d.ph) * d.bob;
+        var z = d.z, u = (d.x - z.x) / z.w; if (u < -0.15 || u > 1.15) return false;
+        var edge = Math.min(1, Math.min(u + 0.15, 1.15 - u) / 0.2);     // fade in/out at the zone edges
+        g.globalAlpha = z.a * Math.max(0, edge);
+        drawDragon(g, d, t);
+        return true;
+      });
+      g.globalAlpha = 1;
+    };
+  }
+
+  // Sparkles that rise from a point (lantern hover). Call AmbientFX.burst(x, y, color) in art pixels.
+  var bursts = [];
+  function sparkleBursts() {
+    return function (g, t, dt) {
+      if (!bursts.length) return;
+      g.globalCompositeOperation = "lighter";
+      bursts = bursts.filter(function (p) {
+        p.life += dt; if (p.life > p.max) return false;
+        p.x += p.vx * dt; p.y += p.vy * dt; p.vy -= 6 * dt;
+        var k = 1 - p.life / p.max;
+        g.globalAlpha = k;
+        g.drawImage(glow(p.c), p.x - p.s, p.y - p.s, p.s * 2, p.s * 2);
+        return true;
+      });
+      g.globalAlpha = 1; g.globalCompositeOperation = "source-over";
+    };
+  }
+  window.AmbientFX = { burst: function (x, y, color, n) {
+    for (var i = 0; i < (n || 14); i++) bursts.push({ x: x + rnd(-18, 18), y: y + rnd(-20, 30), vx: rnd(-14, 14), vy: rnd(-55, -20),
+      life: 0, max: rnd(0.9, 1.6), s: rnd(3, 6), c: Math.random() < 0.5 ? color : "#fff6d0" });
+  } };
+
   /* ---------- presets ---------- */
 
   var PRESETS = {
     /* Plan A.1 Lantern Tree — night: fireflies, shooting stars, twinkling sky, lantern + window + mushroom glow */
     a1: {
       W: 1366, H: 768,
-      mount: function (c) { var f = document.getElementById("frame"), bg = f && f.querySelector(".bg"); if (!f) return false; bg ? bg.after(c) : f.prepend(c); return true; },
+      mount: function (c) { var f = document.getElementById("frame"); if (!f) return false; var ref = f.querySelector(".fx-loop") || f.querySelector(".bg"); ref ? ref.after(c) : f.prepend(c); return true; },
+      art: function () { return document.querySelector("#frame .bg"); },
       skySample: { y0: 20, y1: 560, n: 70 },
-      layers: function (sky) {
+      runeBoxes: [[470, 40, 900, 640]],
+      runeTest: function (r, g, b) { return r + g + b > 400 && r >= b - 8 && b > 90; },   // pale-gold rune strokes (and lit windows)
+      layers: function (art) {
+        var sky = art.sky;
         var W = window.A1_WORLDS || [];
         var lanterns = W.map(function (w) { return { x: w.x, y: w.y + 6, r: w.w * 0.95, sy: 1.25, c: w.color, lo: 0.10, hi: 0.32, flicker: true, f: rnd(0.3, 0.55) }; });
         return [
           twinkles(sky, "#fbe9ff"),
+          dragons([
+            { x: 40, y: 330, w: 380, h: 70, s: [9, 13], a: 0.75 },     // over the left mountains
+            { x: 980, y: 380, w: 360, h: 70, s: [8, 12], a: 0.75 }     // over the right mountains
+          ], "#24133f", [9, 16]),
+          runes(art.runes, null, 0.10, 0.38),
           shootingStars([
             { x: 840, y: 60, w: 420, h: 220, ang: 2.55 },   // right sky, falling down-left toward the mountains
             { x: 40, y: 70, w: 360, h: 200, ang: 0.62 },    // left sky, falling down-right
@@ -253,7 +351,8 @@
             [430, 600, 140, 140],    // near Astra (left)
             [820, 600, 160, 130],    // near the book stack
             [470, 420, 420, 140]     // around the trunk
-          ], 34, ["#fff3a0", "#e9ff8a", "#ffe07a"], 7)
+          ], 34, ["#fff3a0", "#e9ff8a", "#ffe07a"], 7),
+          sparkleBursts()
         ];
       }
     },
@@ -262,9 +361,17 @@
        Nothing is drawn over the signpost (x 680–860) so the arrows stay crisp. */
     d: {
       W: 1280, H: 720,
-      mount: function (c) { var s = document.querySelector(".stage"); if (!s) return false; s.prepend(c); return true; },
-      layers: function () {
+      mount: function (c) { var s = document.querySelector(".stage"); if (!s) return false; var v = s.querySelector(".fx-loop"); v ? v.after(c) : s.prepend(c); return true; },
+      art: function () { var i = new Image(); i.src = "assets/scene.jpg"; return i; },
+      runeBoxes: [[200, 60, 320, 190], [1215, 180, 1262, 242]],
+      runeTest: function (r, g, b) { return r > 165 && g > 115 && b < 140 && r - b > 60; },   // warm gold carvings
+      layers: function (art) {
         return [
+          dragons([
+            { x: 880, y: 60, w: 380, h: 90, s: [10, 14], a: 0.42 },    // high in the blue sky, right of the signpost
+            { x: 470, y: 150, w: 200, h: 70, s: [8, 11], a: 0.38 }     // small gap of sky left of the signpost
+          ], "#2c3e5c", [10, 18]),
+          runes(art.runes, null, 0.12, 0.42),
           sunbeam(1000, -20, 640, 700, 260, "#fff2c4", 0.03, 0.11, 9),
           sunbeam(870, -20, 470, 700, 150, "#fff6d8", 0.02, 0.08, 12),
           lights([   // tree-house windows and the porch lamp
@@ -273,8 +380,7 @@
             { x: 400, y: 236, r: 22, c: "#ffb347", lo: 0.08, hi: 0.28, flicker: true },
             { x: 228, y: 306, r: 16, c: "#ffc266", lo: 0.10, hi: 0.36, flicker: true },
             { x: 1210, y: 298, r: 26, c: "#ffb347", lo: 0.08, hi: 0.28, flicker: true },
-            { x: 1233, y: 440, r: 22, c: "#ffb347", lo: 0.08, hi: 0.26, flicker: true },
-            { x: 256, y: 128, r: 40, c: "#ffd27a", lo: 0.04, hi: 0.16, f: 0.2 }   // carved rune on the trunk
+            { x: 1233, y: 440, r: 22, c: "#ffb347", lo: 0.08, hi: 0.26, flicker: true }
           ]),
           motes([0, 80, 1280, 560], 60, "#fff4c8"),
           leaves([
@@ -298,33 +404,53 @@
 
   var P = PRESETS[preset]; if (!P) return;
 
-  function sampleSky(cfg, done) {
-    var img = document.querySelector("#frame .bg");
-    if (!img || !cfg) { done([]); return; }
+  /* Read the art once: pick open-sky points for twinkles and build a soft glow mask of the rune strokes. */
+  function prepArt(done) {
+    var img = P.art && P.art(), out = { sky: [], runes: null };
+    if (!img) { done(out); return; }
     function go() {
-      var pts = [];
       try {
         var c = document.createElement("canvas"); c.width = P.W; c.height = P.H;
         var g = c.getContext("2d"); g.drawImage(img, 0, 0, P.W, P.H);
-        var d = g.getImageData(0, 0, P.W, P.H).data, tries = 0;
-        while (pts.length < cfg.n && tries++ < 6000) {
+        var d = g.getImageData(0, 0, P.W, P.H).data;
+        var cfg = P.skySample, tries = 0;
+        while (cfg && out.sky.length < cfg.n && tries++ < 6000) {
           var x = (Math.random() * P.W) | 0, y = (cfg.y0 + Math.random() * (cfg.y1 - cfg.y0)) | 0, i = (y * P.W + x) * 4;
           var r = d[i], gg = d[i + 1], b = d[i + 2];
-          if (b > 95 && b > gg + 35 && r + gg + b > 230) pts.push([x, y]);   // open purple sky only (not leaves, not trunk)
+          if (b > 95 && b > gg + 35 && r + gg + b > 230) out.sky.push([x, y]);   // open purple sky only
         }
-      } catch (e) { /* tainted canvas etc. — just skip twinkles */ }
-      done(pts);
+        if (P.runeBoxes) {
+          var bx = P.runeBoxes, x0 = 1e9, y0 = 1e9, x1 = 0, y1 = 0;
+          bx.forEach(function (q) { x0 = Math.min(x0, q[0]); y0 = Math.min(y0, q[1]); x1 = Math.max(x1, q[2]); y1 = Math.max(y1, q[3]); });
+          var pad = 12; x0 -= pad; y0 -= pad; x1 += pad; y1 += pad;
+          var w = x1 - x0, h = y1 - y0, m = document.createElement("canvas"); m.width = w; m.height = h;
+          var mg = m.getContext("2d"), md = mg.createImageData(w, h);
+          bx.forEach(function (q) {
+            for (var yy = q[1]; yy < q[3]; yy++) for (var xx = q[0]; xx < q[2]; xx++) {
+              var k = (yy * P.W + xx) * 4;
+              if (P.runeTest(d[k], d[k + 1], d[k + 2])) { var o = ((yy - y0) * w + (xx - x0)) * 4; md.data[o] = 255; md.data[o + 1] = 214; md.data[o + 2] = 120; md.data[o + 3] = 255; }
+            }
+          });
+          mg.putImageData(md, 0, 0);
+          var gl = document.createElement("canvas"); gl.width = w; gl.height = h;
+          var gg2 = gl.getContext("2d");
+          gg2.filter = "blur(4px)"; gg2.drawImage(m, 0, 0); gg2.drawImage(m, 0, 0);   // soft halo
+          gg2.filter = "blur(1px)"; gg2.drawImage(m, 0, 0);                         // crisp core
+          out.runes = { glow: gl, x: x0, y: y0, w: w, h: h };
+        }
+      } catch (e) { /* tainted canvas etc. — skip twinkles/runes */ }
+      done(out);
     }
     if (img.complete && img.naturalWidth) go(); else img.addEventListener("load", go, { once: true });
   }
 
-  function start(sky) {
+  function start(art) {
     var c = document.createElement("canvas");
     c.className = "ambient-fx"; c.setAttribute("aria-hidden", "true");
     c.style.cssText = "position:absolute;left:0;top:0;width:100%;height:100%;pointer-events:none;z-index:0;";
     if (preset === "a1") c.style.cssText = "position:absolute;left:0;top:0;width:" + P.W + "px;height:" + P.H + "px;pointer-events:none;";
     if (!P.mount(c)) return;
-    var g = c.getContext("2d"), layers = P.layers(sky), last = performance.now(), t0 = last;
+    var g = c.getContext("2d"), layers = P.layers(art), last = performance.now(), t0 = last;
 
     function size() {
       var rect = c.getBoundingClientRect(), dpr = Math.min(window.devicePixelRatio || 1, 2);
@@ -345,6 +471,16 @@
     if (mq && mq.addEventListener) mq.addEventListener("change", function (e) { if (e.matches) { cancelAnimationFrame(raf); c.remove(); } });
   }
 
-  function boot() { sampleSky(P.skySample, start); }
+  function boot() {
+    prepArt(start);
+    // A.1: a puff of sparkles rises from a lantern when it's hovered or focused
+    if (preset === "a1" && window.A1_WORLDS) {
+      [].forEach.call(document.querySelectorAll("#lanterns .lantern"), function (b, i) {
+        var w = A1_WORLDS[i]; if (!w) return;
+        function puff() { window.AmbientFX.burst(w.x, w.y, w.color, 16); }
+        b.addEventListener("mouseenter", puff); b.addEventListener("focus", puff);
+      });
+    }
+  }
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", boot); else boot();
 })();
