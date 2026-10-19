@@ -27,7 +27,7 @@
     menu: PAGE === "d" ? "sign" : "bottom",
     badgePos: "goal", badgeSize: "m", badgeLbl: "on", earned: "full",
     stColor: "gold", stShape: "tag", stMotion: "bob",
-    speaker: "off", lanShape: "cur", scene: "a1", tap: "menu", pose: "cur", spot: "cur", signIc: "cur", badgeIc: "off", tint: "built", art: "normal", magic: "live"
+    speaker: "off", lanShape: "cur", scene: "a1", tap: "menu", pstyle: "rune", tod: "cur", pose: "cur", spot: "cur", signIc: "cur", badgeIc: "off", tint: "built", art: "normal", magic: "live"
   };
   var KEYS = Object.keys(D);
   KEYS.forEach(function (k) { if (s[k] === undefined) s[k] = D[k]; });
@@ -70,7 +70,7 @@
         var st = document.querySelector(".ls-start"); if (st) st.style.setProperty("--mc", w2.color);
       }
     },
-    layout: function () { astra(); this.scene(); this.place(); this.leftStack(); this.lan(); if (s.tap !== "portal") this.closePortal(); },
+    layout: function () { astra(); tod(); this.scene(); this.place(); this.leftStack(); this.lan(); if (s.tap !== "portal") this.closePortal(); },
     /* top-left column: title, goal (when top-left), badges (when under it), Replay intro, side-left menu — stacked, never overlapping */
     leftStack: function () {
       var bar = document.getElementById("bar"), rp = document.querySelector(".intro-replay"), g = document.querySelector(".goaltile"), lsb = document.querySelector(".lsb"), strip = document.querySelector(".strip");
@@ -124,7 +124,14 @@
         document.addEventListener("keydown", function (e) { if (e.key === "Escape") this.closePortal(); }.bind(this));
         fr.appendChild(p);
       }
-      var pa = s.scene === "pa", R = pa ? 100 : 115, cx = pa ? 1210 : 1200, cy = pa ? 250 : 520;
+      var pa = s.scene === "pa", R = pa ? 100 : 115, cx = pa ? 1210 : 1200, cy = pa ? 250 : 520, ps = s.pstyle === "pa";
+      if (ps) { var PH = pa ? 192 : 290; p.style.setProperty("--pw", PH * .6 + "px"); p.style.setProperty("--ph", PH + "px"); R = PH * .3; if (pa) cy = 248; }
+      p.classList.toggle("pa-ps", ps);
+      var vid = p.querySelector(".pa-pvid");
+      if (ps) { if (!vid) { vid = el("video", "pa-pvid"); vid.muted = true; vid.loop = true; vid.playsInline = true; vid.setAttribute("playsinline", ""); vid.setAttribute("aria-hidden", "true"); p.querySelector(".pa-pring").insertBefore(vid, p.querySelector(".pa-pwin")); }
+        vid.poster = "portals/p" + w.m + ".jpg"; if (vid.dataset.m !== String(w.m)) { vid.src = "portals/p" + w.m + ".mp4"; vid.dataset.m = w.m; }
+        if (!matchMedia("(prefers-reduced-motion: reduce)").matches) { var pv = vid.play(); if (pv && pv.catch) pv.catch(function () {}); } }
+      else if (vid) vid.pause();
       p.style.setProperty("--r", R + "px"); p.style.left = cx + "px"; p.style.top = cy + "px";
       p.classList.toggle("info-left", true);
       p.style.setProperty("--mc", w.color);
@@ -236,7 +243,7 @@
       }, this);
     },
     layout: function () {
-      astra(); this.signs();
+      astra(); this.signs(); tod();
       var self = this; (s.menu === "float" ? this.fl : this.bar).append.apply(s.menu === "float" ? this.fl : this.bar, this.btns);
       var card = document.querySelector(".card"), top = document.querySelector(".top"), go = document.querySelector(".go"), lsb = document.querySelector(".lsb");
       if (!card || !lsb) return;
@@ -298,7 +305,7 @@
   var SIGN_IC = [[107, 68], [105, 136], [105, 199], [97, 271], [101, 337], [100, 407]];
 
   /* ---------------- Astra pose + spot (both pages): clean-plate patch hides the painted Astra, a cut-out pose stands on a soft shadow ---------------- */
-  var POSE = { writing: { ar: .7372, h: 605 }, waving: { ar: .3648, h: 932 }, reading: { ar: .3282, h: 911 }, pointing: { ar: .3684, h: 912 }, books: { ar: .4806, h: 876 } };
+  var POSE = { writing: { ar: .7372, h: 605 }, waving: { ar: .3648, h: 932 }, reading: { ar: .3282, h: 911 }, pointing: { ar: .3684, h: 912 }, books: { ar: .4806, h: 876 }, plana: { ar: .5098, h: 935, anim: 1 } };
   var ASTRA = {
     a1: { u: 1, W: 1366, H: 768, k: .37, plate: [542, 422, 307, 302, "astra-plate.webp"], fallback: "writing",
           spots: { cur: [690, 705, 1, 0], left: [150, 705, 1, 0], near: [1085, 705, 1, 1] } },
@@ -322,11 +329,31 @@
     var key = s.pose + "|" + s.spot; if (!on || astra.key === key) return; astra.key = key;
     var pose = s.pose === "cur" ? C.fallback : s.pose, P = POSE[pose], sp = C.spots[s.spot], px2 = astra.px;
     var h = P.h * C.k * sp[2], w = h * P.ar, x = sp[0] - w / 2, y = sp[1] - h;
-    var im2 = b.querySelector(".pa-astra"); im2.src = "../demo/astra/" + pose + ".webp";
-    im2.style.cssText = "left:" + px2(x, C.W) + ";top:" + px2(y, C.H) + ";width:" + px2(w, C.W) + ";height:" + px2(h, C.H) + (sp[3] && pose === "pointing" ? ";transform:scaleX(-1)" : "");
+    var im2 = b.querySelector(".pa-astra"), safari = /^((?!chrome|android|crios|fxios).)*safari/i.test(navigator.userAgent), vd = b.querySelector(".pa-astra-v");
+    if (P.anim && !safari) {   // Plan A's animated Astra: VP9-alpha WebM (Chrome, Edge, Firefox); Safari gets the animated WebP
+      if (!vd) { vd = el("video", "pa-astra pa-astra-v"); vd.muted = true; vd.loop = true; vd.playsInline = true; vd.setAttribute("playsinline", ""); vd.autoplay = true; b.appendChild(vd); }
+      if (!vd.getAttribute("src")) vd.src = "../demo/astra/plana.webm";
+      var pv = vd.play(); if (pv && pv.catch) pv.catch(function () {}); im2.style.display = "none"; im2 = vd; vd.style.display = "";
+    } else { if (vd) { vd.pause(); vd.style.display = "none"; } im2.style.display = ""; im2.src = "../demo/astra/" + (P.anim ? "plana.webp" : pose + ".webp"); }
+    im2.style.cssText = (im2.style.display === "none" ? "display:none;" : "") + "left:" + px2(x, C.W) + ";top:" + px2(y, C.H) + ";width:" + px2(w, C.W) + ";height:" + px2(h, C.H) + (sp[3] && pose === "pointing" ? ";transform:scaleX(-1)" : "");
     var sh = b.querySelector(".pa-ashadow"), sw = w * (pose === "writing" || pose === "books" ? .95 : .8), shh = 22 * sp[2];
     sh.style.cssText = "left:" + px2(sp[0] - sw / 2, C.W) + ";top:" + px2(sp[1] - shh * .6, C.H) + ";width:" + px2(sw, C.W) + ";height:" + px2(shh, C.H);
     b.classList.toggle("plate", s.spot !== "cur" || s.pose !== "cur");
+  }
+
+  /* ---------------- Time of day: Emily's stills (aligned to the built art), per-time clean plates ---------------- */
+  function tod() {
+    var t = s.tod, a1 = PAGE === "a1", host = a1 ? document.getElementById("frame") : document.querySelector(".stage"); if (!host) return;
+    var on = t !== "cur";
+    if (!tod.img) { tod.img = el("img", "pa-tod"); tod.img.alt = ""; tod.img.setAttribute("aria-hidden", "true"); }
+    var anchor = a1 ? host.querySelector(".bg") : (host.querySelector(".fx-loop") || host.querySelector(".pa-art"));
+    if (anchor && anchor.nextSibling !== tod.img) anchor.after(tod.img); else if (!anchor && !tod.img.parentNode) host.insertBefore(tod.img, host.firstChild);
+    root.classList.toggle("pa-tod-on", on);
+    if (on) tod.img.src = a1 ? "tod-" + t + ".jpg" : "assets/tod-" + t + ".jpg";
+    var suf = on ? "-" + t : "";
+    if (astra.box) { var pl = astra.box.querySelector(".pa-aplate"); if (pl) pl.src = ASTRA[PAGE].plate[4].replace(".webp", suf + ".webp"); }
+    if (a1) root.style.setProperty("--pa-clean", 'url("../../dashboard-a1/tree-clean' + suf + '.jpg")');
+    else if (AD.signc) AD.signc.src = "../dashboard-d/assets/signpost-clean" + suf + ".png";
   }
 
   var AD = A[PAGE];
@@ -335,7 +362,7 @@
   function apply() {
     KEYS.forEach(function (k) { root.setAttribute("data-p-" + k.toLowerCase(), s[k]); });
     var lvl = s.magic === "live" ? 0 : +s.magic;
-    window.__magicLevel = lvl;
+    window.__magicLevel = lvl; window.__tod = s.tod;
     if (window.AmbientFX && AmbientFX.setLevel) AmbientFX.setLevel(lvl);
     if (AD && AD.ready) { AD.layout(); requestAnimationFrame(function () { AD.layout(); }); }
     var p = document.getElementById("paPanel");
@@ -379,10 +406,10 @@
         head(isD ? "Signpost" : "Lanterns") +
         (isD ? row("Sign icons", "signIc", [["cur", "Current"], ["none", "None"], ["buddy", "Buddies"], ["symbol", "Symbols"], ["badge", "Badges"]])
              : row("Lantern shape", "lanShape", [["cur", "Current"], ["round", "Round"], ["hex", "Hexagon"], ["tall", "Tall"], ["star", "Star"], ["flower", "Flower"], ["mixed", "Mixed"], ["moroccan", "Moroccan"]])) +
-        (isD ? "" : row("Scene", "scene", [["a1", "A.1 Lantern Tree (current)"], ["pa", "Plan A Portals"]]) + row("Lantern tap", "tap", [["menu", "Bottom menu (current)"], ["portal", "Open portal"]])) +
+        (isD ? "" : row("Scene", "scene", [["a1", "A.1 Lantern Tree (current)"], ["pa", "Plan A Portals"]]) + row("Lantern tap", "tap", [["menu", "Bottom menu (current)"], ["portal", "Open portal"]]) + row("Portal style", "pstyle", [["rune", "Gold rune ring"], ["pa", "Plan A portal"]])) +
         row("Badges as icons" + (isD ? " (arrows + buttons)" : " (lanterns + buttons)"), "badgeIc", [["off", "Off"], ["on", "On"]]) +
         head("Astra") +
-        row("Astra pose", "pose", [["cur", "Current"], ["writing", "Writing"], ["waving", "Waving"], ["reading", "Reading"], ["pointing", "Pointing"], ["books", "On books"]]) +
+        row("Astra pose", "pose", [["cur", "Current"], ["writing", "Writing"], ["waving", "Waving"], ["reading", "Reading"], ["pointing", "Pointing"], ["books", "On books"], ["plana", "Plan A (animated)"]]) +
         row("Astra spot", "spot", [["cur", "Current spot"], ["left", "Left"], ["near", isD ? "Right, by Let's go" : "Right, under the goal"]]) +
         head("Menu &amp; badges") +
         row("Menu placement", "menu", (isD ? [["sign", "Signpost only"]] : [["bottom", "Bottom bar"]]).concat(isD ? [["bottom", "Bottom bar"]] : []).concat([["left", "Side left"], ["right", "Side right"], ["float", isD ? "On the arrows" : "On the lanterns"]])) +
@@ -395,6 +422,7 @@
         row("Shape", "stShape", [["tag", "Tag"], ["arrow", "Arrow"], ["ring", "Glowing ring"]]) +
         row("Motion", "stMotion", [["bob", "Bob"], ["pulse", "Pulse"], ["still", "Still"]]) +
         head("Look &amp; magic") +
+        row("Time of day", "tod", [["cur", "Current"], ["sunrise", "Sunrise"], ["day", "Day"], ["dusk", "Dusk"], ["night", "Night"]]) +
         row("UI tint", "tint", [["built", "As built"], ["warm", "Warm gold"], ["cool", "Cool blue"], ["forest", "Forest"]]) +
         row("Art brightness", "art", [["dim", "Dim"], ["normal", "Normal"], ["bright", "Bright"]]) +
         row("Magic meter", "magic", [["live", "As built"], ["1", "1"], ["2", "2"], ["3", "3"], ["4", "4"], ["5", "5"]]) +

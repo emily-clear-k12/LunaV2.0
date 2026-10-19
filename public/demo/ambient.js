@@ -42,7 +42,7 @@
     for (var i = 0; i < n; i++) {
       var b = boxes[i % boxes.length];
       list.push({ b: b, x: rnd(b[0], b[0] + b[2]), y: rnd(b[1], b[1] + b[3]), a: rnd(0, TAU), sp: rnd(6, 16),
-        ph: rnd(0, TAU), pr: rnd(0.5, 1.1), c: pick(colors), s: rnd(size * 0.7, size * 1.3), turn: rnd(-0.6, 0.6) });
+        ph: rnd(0, TAU), pr: rnd(0.5, 1.1), c: pick(colors), s: rnd(size * 0.5, size * 0.85), turn: rnd(-0.6, 0.6) });
     }
     return function (g, t, dt) {
       g.globalCompositeOperation = "lighter";
@@ -57,7 +57,7 @@
         }
         var p = 0.5 + 0.5 * Math.sin(t * f.pr * 2.2 + f.ph); p = p * p;           // long dim, short bright
         var s = f.s * (0.55 + p * 0.9);
-        g.globalAlpha = 0.32 + p * 0.68;
+        g.globalAlpha = 0.22 + p * 0.5;
         g.drawImage(glow(f.c), f.x - s, f.y - s, s * 2, s * 2);
       });
       g.globalAlpha = 1; g.globalCompositeOperation = "source-over";
@@ -431,7 +431,7 @@
             [430, 20, 520, 170],     // high in the crown
             [380, 260, 160, 170],    // where the left boughs meet the trunk
             [850, 260, 160, 170]     // where the right boughs meet the trunk
-          ], 78, ["#fff3a0", "#e9ff8a", "#ffe07a", "#fff8c8"], 8.5),
+          ], 8, ["#fff3a0", "#e9ff8a", "#ffe07a", "#fff8c8"], 8.5),
           sparkleBursts()
         ];
       }
@@ -499,7 +499,7 @@
             [0, 600, 120, 120],       // shady plants, bottom-left
             [1150, 600, 130, 120],    // bush, bottom-right
             [960, 560, 160, 90]       // under the rope bridge
-          ], 10, ["#fff6a8", "#eaff9a"], 6)
+          ], 6, ["#fff6a8", "#eaff9a"], 6)
         ];
       }
     }
@@ -507,21 +507,34 @@
 
   /* ---------- Magic meter (prototype panel): levels 1–5, each adds to the one before ---------- */
   function scatter(box, n) { var o = []; for (var i = 0; i < n; i++) o.push([rnd(box[0], box[0] + box[2]), rnd(box[1], box[1] + box[3])]); return o; }
+  /* Time of day (prototype panel) only restyles the effects; the level still sets the amount. */
+  function dim(fn, k) {
+    var d = Object.getOwnPropertyDescriptor(CanvasRenderingContext2D.prototype, "globalAlpha");
+    return function (g, t, dt) {
+      Object.defineProperty(g, "globalAlpha", { configurable: true, get: function () { return d.get.call(g) / k; }, set: function (v) { d.set.call(g, v * k); } });
+      try { fn(g, t, dt); } finally { delete g.globalAlpha; }
+    };
+  }
   function magicLayers(art, L) {
     var M = P.magic, out = [], sky = art.sky || [], fl = art.flowers || [];
-    var ff = [0, 10, 26, 34, 42, 60][L];
-    out.push(twinkles(sky.slice(0, [0, 22, 30, 40, 48, 64][L]), M.star));                       // 1: gentle stars, sky only
-    if (M.lamps) out.push(lights(M.lamps()));                                                       // the art's own lamps keep breathing
+    var tod = window.__tod || "cur", day = tod === "sunrise" || tod === "day";
+    var ff = [0, 5, 8, 12, 16, 20][L];
+    var starC = day ? "#fffbe6" : M.star, starK = day ? 0.55 : 1;
+    out.push(dim(twinkles(sky.slice(0, [0, 22, 30, 40, 48, 64][L]), starC), starK));             // 1: stars (day: faint sparkles)
+    if (M.lamps) out.push(lights(M.lamps()));
     if (L >= 2 && fl.length) out.push(twinkles(fl.slice(0, [0, 0, 22, 30, 38, 48][L]), M.flower)); // 2: flower shimmer
-    if (L >= 3) { out.push(lights(M.mushrooms.map(function (m) { return Object.assign({}, m); })));    // 3: mushroom glow
-      out.push(twinkles(scatter(M.mid, [0, 0, 0, 26, 36, 54][L]), M.sparkle));                       //    floating sparkles
+    if (L >= 3) { out.push(dim(lights(M.mushrooms.map(function (m) { return Object.assign({}, m); })), day ? 0.6 : 1));   // 3: glows
+      out.push(twinkles(scatter(M.mid, [0, 0, 0, 26, 36, 54][L]), M.sparkle));
       if (art.runes) out.push(runes(art.runes, null, 0.08, 0.30)); }
     if (L >= 3) out.push(shootingStars(M.shoot, [[0], [0], [0], [7, 13], [3.2, 6], [2, 4]][L], { max: [0, 0, 0, 1, 2, 3][L] }));
-    if (L >= 4) { out.push(leaves(M.petalFrom, L >= 5 ? [0.7, 1.5] : [1.4, 2.8], M.petals, M.avoid));  // 4: drifting petals
-      out.push(motes(M.motes, L >= 5 ? 46 : 26, M.mote)); }                                          //    rising light motes
-    if (L >= 5) { out.unshift(aurora(M.aurora, M.auroraSpans));                                      // 5: aurora ribbons + dragons
+    if (L >= 4) { out.push(leaves(M.petalFrom, L >= 5 ? [0.7, 1.5] : [1.4, 2.8], M.petals, M.avoid));
+      out.push(motes(M.motes, L >= 5 ? 46 : 26, M.mote)); }
+    if (L >= 5) {
+      var bands = day ? M.aurora.map(function (b) { return Object.assign({}, b, { cols: ["#ffb3b3", "#ffe39a", "#b8f5a8", "#a8dcff", "#d9b8ff"] }); }) : M.aurora;
+      out.unshift(dim(aurora(bands, M.auroraSpans), day ? 0.6 : 1));                              // 5: aurora (day: soft rainbow shimmer)
       out.push(dragons(M.dragons, M.dragonColor, [2.5, 4.5])); }
-    out.push(fireflies(M.ff, ff, M.ffColors, M.ffSize));                                              // glowing dots only
+    out.push(day ? dim(fireflies(M.ff, ff, ["#ffe9a8", "#fff3c4", "#ffd98a"], M.ffSize * 1.15), 0.6)   // day: soft golden motes
+                 : fireflies(M.ff, ff, M.ffColors, M.ffSize));
     out.push(sparkleBursts());
     return out;
   }

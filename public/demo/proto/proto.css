@@ -250,7 +250,7 @@ html[data-p-shape=circle] .pa-mb .pa-ml{font-size:7px;letter-spacing:.02em}
 
 /* ---- Lantern shape (A.1) ---- */
 .pa-lanw{position:absolute;inset:0;pointer-events:none}
-.pa-patch{position:absolute;background:url("../../dashboard-a1/tree-clean.jpg") no-repeat;background-size:1366px 768px;
+.pa-patch{position:absolute;background-image:var(--pa-clean,url("../../dashboard-a1/tree-clean.jpg"));background-repeat:no-repeat;background-size:1366px 768px;
   -webkit-mask:linear-gradient(90deg,transparent,#000 12px,#000 calc(100% - 12px),transparent),linear-gradient(transparent,#000 12px,#000 calc(100% - 12px),transparent);
   -webkit-mask-composite:source-in;mask:linear-gradient(90deg,transparent,#000 12px,#000 calc(100% - 12px),transparent),linear-gradient(transparent,#000 12px,#000 calc(100% - 12px),transparent);mask-composite:intersect}
 html.pa-a1[data-p-art=dim] .pa-patch{filter:brightness(.72) saturate(.92)}
@@ -323,3 +323,30 @@ html.pa-d[data-p-art=dim] .pa-astra-wrap{filter:brightness(.72) saturate(.92)}
 html.pa-d[data-p-art=bright] .pa-astra-wrap{filter:brightness(1.14) saturate(1.06)}
 html.pa-a1 .pa-astra{filter:brightness(.62) saturate(.85) drop-shadow(0 0 1px rgba(0,0,0,.4))}
 html.pa-a1[data-p-art=bright] .pa-astra{filter:brightness(.7) saturate(.9)}
+/* ---- Portal style: Plan A portal (per-module crop of Plan A's hub loop, arch masked out of its background) ---- */
+.pa-pvid{display:none}
+.pa-portal.pa-ps .pa-pring{left:calc(var(--pw) / -2);top:calc(var(--ph) / -2);width:var(--pw);height:var(--ph);border-radius:0;box-shadow:none;
+  filter:drop-shadow(0 0 14px color-mix(in srgb,var(--mc) 70%,transparent)) drop-shadow(0 0 34px color-mix(in srgb,var(--mc) 40%,transparent))}
+.pa-portal.pa-ps .pa-pvid{display:block;position:absolute;inset:0;width:100%;height:100%;object-fit:cover;
+  -webkit-mask-image:radial-gradient(47% 48% at 48% 50%,#000 88%,transparent 100%);mask-image:radial-gradient(47% 48% at 48% 50%,#000 88%,transparent 100%)}
+.pa-portal.pa-ps .pa-prunes{display:none}
+.pa-portal.pa-ps .pa-pwin{inset:auto;left:48%;top:49.5%;width:62%;height:72%;transform:translate(-50%,-50%);background:none;
+  -webkit-mask-image:radial-gradient(closest-side,#000 80%,transparent 100%);mask-image:radial-gradient(closest-side,#000 80%,transparent 100%)}
+.pa-portal.pa-ps .pa-pwin::after{background:radial-gradient(closest-side,transparent 55%,color-mix(in srgb,var(--mc) 55%,transparent) 100%)}
+.pa-portal.pa-ps .pa-pwin img{animation:paShim 6s ease-in-out infinite alternate}
+@keyframes paShim{from{transform:scale(1.04)}to{transform:scale(1.12) rotate(1.5deg)}}
+@media (prefers-reduced-motion:reduce){.pa-portal.pa-ps .pa-pwin img{animation:none}}
+.pa-portal.pa-ps .pa-pinfo{right:calc(var(--pw) / 2 + 14px)}
+.pa-portal.pa-ps .pa-px{right:-6px;top:4%}
+.pa-portal.pa-ps.open .pa-pring{animation:paRise .5s cubic-bezier(.2,.9,.3,1.1) both}
+@keyframes paRise{from{transform:scale(.3);opacity:0}to{transform:none;opacity:1}}
+/* ---- Time of day ---- */
+.pa-tod{display:none}
+html.pa-tod-on .pa-tod{display:block;position:absolute;inset:0;width:100%;height:100%;object-fit:fill;pointer-events:none}
+html.pa-a1.pa-tod-on #frame .fx-loop,html.pa-d.pa-tod-on .stage > :is(.fx-loop,.fx-overlay){visibility:hidden}
+html.pa-d.pa-tod-on .stage > .pa-art{display:none}
+html.pa-a1[data-p-art=dim] .pa-tod,html.pa-d[data-p-art=dim] .pa-tod{filter:brightness(.72) saturate(.92)}
+html.pa-a1[data-p-art=bright] .pa-tod{filter:brightness(1.16) saturate(1.08)}
+html.pa-d[data-p-art=bright] .pa-tod{filter:brightness(1.14) saturate(1.06)}
+html.pa-a1.pa-tod-on:not([data-p-tod=night]):not([data-p-tod=dusk]) .pa-astra{filter:drop-shadow(0 0 1px rgba(0,0,0,.35))}
+html.pa-a1[data-p-scene=pa] .pa-tod{display:none}
