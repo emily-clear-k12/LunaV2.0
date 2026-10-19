@@ -13,7 +13,7 @@
   function put(s) { try { localStorage.setItem(KEY, JSON.stringify(s)); } catch (e) {} }
   var q = new URLSearchParams(location.search), s = get();
   if (q.get("proto") === "off") { s.on = false; put(s); }
-  else if (q.has("proto")) { s.on = true; put(s); }
+  else if (q.has("proto") || q.has("p")) { s.on = true; put(s); }
   if (s.on === false) return;
 
   var css = document.createElement("link"); css.rel = "stylesheet"; css.href = base + "proto.css"; document.head.appendChild(css);
@@ -27,9 +27,11 @@
     menu: PAGE === "d" ? "sign" : "bottom",
     badgePos: "goal", badgeSize: "m", badgeLbl: "on", earned: "full",
     stColor: "gold", stShape: "tag", stMotion: "bob",
-    speaker: "off", lanShape: "cur", scene: "a1", tap: "menu", pstyle: "rune", tod: "cur", pose: "cur", spot: "cur", signIc: "cur", badgeIc: "off", tint: "built", art: "normal", magic: "live"
+    speaker: "off", lanShape: "cur", scene: "a1", tap: "menu", pstyle: "rune", tod: "cur", pose: "cur", spot: "cur", signIc: "cur", badgeIc: "off", tint: "built", art: "normal", magic: "live",
+    badgeIn: "off", reveal: "always", preview: "off", trail: "off", prog: "none", tapfx: "none", zoom: "off", bubble: "off", sound: "off", vol: "3", weather: "none", season: "summer"
   };
   var KEYS = Object.keys(D);
+  if (q.get("p")) { try { var qp = JSON.parse(atob(q.get("p"))); s.on = true; KEYS.forEach(function (k) { s[k] = qp[k] !== undefined ? String(qp[k]) : D[k]; }); } catch (e) {} }
   KEYS.forEach(function (k) { if (s[k] === undefined) s[k] = D[k]; });
 
   var SHORT = ["SCR", "ECR", "Stellar Writers", "Writing Process", "Revision", "Editing"];
@@ -37,6 +39,7 @@
   var BUDDY = [["Bear", "#e0703a"], ["Raccoon", "#9b7bea"], ["Owl", "#3fb6e8"], ["Fox", "#f5a524"], ["Squirrel", "#4cc28a"], ["Bunny", "#ef6fa8"]];   // Plan D arrows 1–6
   var LP = window.lsProgress, NEXT = (LP && LP.next) || 2;
 
+  function fl() { return s.menu === "float" || s.menu === "arc"; }
   function el(tag, cls, html) { var e = document.createElement(tag); if (cls) e.className = cls; if (html != null) e.innerHTML = html; return e; }
   /* the inner parts every module button gets (hidden ones are switched on by the panel) */
   function dress(btn, i, name) {
@@ -203,7 +206,7 @@
         b.setAttribute("aria-label", h.getAttribute("aria-label") || ("Module " + (i + 1)));
         dress(b, i, BUDDY[i][0]);
         var bx = ["left", "top", "width", "height"].map(function (k) { return parseFloat(h.style[k]); });
-        b.style.setProperty("--fx", (bx[0] + bx[2] / 2) + "%"); b.style.setProperty("--fy", (bx[1] + bx[3]) + "%");
+        b.dataset.fx = (bx[0] + bx[2] / 2) + "%"; b.dataset.fy = (bx[1] + bx[3]) + "%"; b.style.setProperty("--fx", b.dataset.fx); b.style.setProperty("--fy", b.dataset.fy);
         b.addEventListener("click", function () { h.click(); });
         h.addEventListener("click", function () { self.btns.forEach(function (o, j) { o.classList.toggle("on", j === i); }); });
         if (i + 1 === NEXT) b.classList.add("on");
@@ -244,7 +247,7 @@
     },
     layout: function () {
       astra(); this.signs(); tod();
-      var self = this; (s.menu === "float" ? this.fl : this.bar).append.apply(s.menu === "float" ? this.fl : this.bar, this.btns);
+      var self = this; (fl() ? this.fl : this.bar).append.apply(fl() ? this.fl : this.bar, this.btns);
       var card = document.querySelector(".card"), top = document.querySelector(".top"), go = document.querySelector(".go"), lsb = document.querySelector(".lsb");
       if (!card || !lsb) return;
       root.style.setProperty("--pa-goal-h", card.offsetHeight + "px");
@@ -357,6 +360,274 @@
   }
 
   var AD = A[PAGE];
+  /* ================= Extra play options (both pages): arc menu, menu reveal, preview card, path trail, progress,
+     tap effects + zoom, Astra speech bubble, ambient sound, weather, season ================= */
+  var KID = ["Answer a question in a few strong sentences.", "Build a longer answer with reasons and proof.", "Write sentences that really shine.",
+    "Plan, draft and polish your ideas.", "Make your writing clearer and stronger.", "Fix spelling, capitals and commas."];
+  var TIP = ["Tip: say the question back in your answer!", "Tip: give a reason, then prove it with the text.", "Tip: one big idea in every sentence.",
+    "Tip: make a quick plan before you write.", "Tip: read it out loud, then make it better.", "Tip: check each capital and comma."];
+  var X = {};
+  function isA1() { return PAGE === "a1"; }
+  function hostEl() { return isA1() ? document.getElementById("frame") : document.querySelector(".stage"); }
+  /* module centre in host coordinates: A.1 stage px; D art px (1280x720) */
+  function modPt(i) {
+    if (isA1()) { var g = AD.geo(i); return { x: g.x, y: g.y, w: g.w, h: g.h }; }
+    var h = document.querySelectorAll(".hot[data-arrow]")[i]; if (!h) return { x: 0, y: 0, w: 0, h: 0 };
+    var b = ["left", "top", "width", "height"].map(function (k) { return parseFloat(h.style[k]); });
+    return { x: (b[0] + b[2] / 2) * 12.8, y: (b[1] + b[3] / 2) * 7.2, w: b[2] * 12.8, h: b[3] * 7.2 };
+  }
+  function hostToScreen(x, y) {   // host coords -> viewport px
+    var hst = hostEl(), r = hst.getBoundingClientRect(), W = isA1() ? 1366 : 1280, H = isA1() ? 768 : 720;
+    return { x: r.left + x / W * r.width, y: r.top + y / H * r.height, k: r.width / W };
+  }
+  function status(m) { return LP && LP.status ? LP.status(m) : ""; }
+  function doneCount() { var n = 0; for (var m = 1; m <= 6; m++) if (status(m) === "done") n++; return n; }
+
+  /* ---- arc menu ---- */
+  X.arc = function () {
+    if (s.menu !== "arc") { if (X.wasArc) { X.wasArc = false; if (isA1()) { var bt = document.querySelectorAll("#tiles .tile"); [].forEach.call(bt, function (b, i) { var g = AD.geo(i); b.style.setProperty("--fx", g.x + "px"); b.style.setProperty("--fy", (g.y + g.h / 2 + 4) + "px"); }); } else (AD.btns || []).forEach(function (b) { b.style.setProperty("--fx", b.dataset.fx); b.style.setProperty("--fy", b.dataset.fy); }); } return; }
+    X.wasArc = true;
+    var btns = isA1() ? [].slice.call(document.querySelectorAll("#tiles .tile")) : AD.btns || [];
+    var cx, cy, rx, ry, a0 = 200, a1 = 340;
+    if (isA1()) { if (s.scene === "pa") { cx = 683; cy = 735; rx = 470; ry = 150; } else { cx = 690; cy = 690; rx = 330; ry = 250; } }
+    else { cx = 640; cy = 760; rx = 470; ry = 180; }
+    btns.forEach(function (b, i) {
+      var a = (a0 + (a1 - a0) * i / (btns.length - 1)) * Math.PI / 180, x = cx + rx * Math.cos(a), y = cy + ry * Math.sin(a);
+      if (isA1()) { b.style.setProperty("--fx", x + "px"); b.style.setProperty("--fy", y + "px"); }
+      else { b.style.setProperty("--fx", (x / 12.8) + "%"); b.style.setProperty("--fy", (y / 7.2) + "%"); }
+    });
+  };
+  /* ---- menu reveal ---- */
+  X.reveal = function () {
+    if (!X.handle) {
+      var hb = X.handle = el("button", "pa-handle"); hb.type = "button"; hb.innerHTML = "<span>&#9650;</span> Modules";
+      hb.setAttribute("aria-expanded", "false");
+      hb.onclick = function () { var o = !root.classList.contains("pa-menu-open"); root.classList.toggle("pa-menu-open", o); hb.setAttribute("aria-expanded", o); setTimeout(X.reveal, 380); };
+      document.body.appendChild(hb);
+    }
+    var m = s.menu === "bottom" ? document.querySelector(isA1() ? ".bar" : ".pa-menu") : null, hb2 = 10;
+    if (m && root.classList.contains("pa-menu-open")) { var r = m.getBoundingClientRect(); hb2 = innerHeight - r.top + 6; }
+    root.style.setProperty("--pa-hb", hb2 + "px");
+  };
+  /* ---- preview card ---- */
+  X.preview = function (i, elx, sticky) {
+    if (s.preview !== "on") return;
+    var c = X.card; if (!c) { c = X.card = el("div", "pa-card"); c.setAttribute("role", "status"); document.body.appendChild(c); }
+    var W = window.A1_WORLDS || [], name = isA1() ? (W[i] && (W[i].short || W[i].name)) : BUDDY[i][0] + "'s world";
+    var img = isA1() ? (W[i] && W[i].art) : "../dashboard-a1/portals/p" + (i + 1) + ".jpg";
+    c.innerHTML = '<img alt="" src="' + img + '"><div><b>Module ' + (i + 1) + " · " + SHORT[i] + "</b><span>" + name + "</span><p>" + KID[i] + "</p></div>";
+    var r = elx.getBoundingClientRect(), cw = 250, ch = 92;
+    var x = Math.min(Math.max(8, r.left + r.width / 2 - cw / 2), innerWidth - cw - 8), y = r.top - ch - 10; if (y < 44) y = r.bottom + 10;
+    c.style.left = x + "px"; c.style.top = Math.min(y, innerHeight - ch - 8) + "px"; c.classList.add("show");
+    clearTimeout(X.cardT); if (sticky) X.cardT = setTimeout(function () { c.classList.remove("show"); }, 3500);
+  };
+  X.unpreview = function () { if (X.card) X.card.classList.remove("show"); };
+  /* ---- path trail ---- */
+  X.trail = function () {
+    var hst = hostEl(); if (!hst) return;
+    var key = s.trail + "|" + s.scene + "|" + s.lanShape;
+    if (!X.tr) { X.tr = document.createElementNS("http://www.w3.org/2000/svg", "svg"); X.tr.setAttribute("class", "pa-trail"); X.tr.setAttribute("aria-hidden", "true"); }
+    var anchor = isA1() ? document.getElementById("lanterns") : (hst.querySelector(".pa-sics") || hst.querySelector(".hot"));
+    if (anchor && anchor.previousSibling !== X.tr) anchor.before(X.tr);
+    if (s.trail === "off" || X.trKey === key) return; X.trKey = key;
+    var W = isA1() ? 1366 : 1280, H = isA1() ? 768 : 720; X.tr.setAttribute("viewBox", "0 0 " + W + " " + H); X.tr.setAttribute("preserveAspectRatio", "none");
+    var pts = [0, 1, 2, 3, 4, 5].map(modPt), out = "";
+    for (var i = 0; i < 5; i++) {
+      var a = pts[i], b = pts[i + 1], mx = (a.x + b.x) / 2, my = Math.max(a.y, b.y) + (isA1() ? 60 : 0) , ox = isA1() ? 0 : 70;
+      var d = "M" + a.x + " " + a.y + " Q" + (mx + ox) + " " + my + " " + b.x + " " + b.y;
+      var lit = status(i + 1) === "done";
+      out += '<path d="' + d + '" class="' + (lit ? "lit" : "dim") + '"/>';
+    }
+    pts.forEach(function (p, i) { out += '<circle cx="' + p.x + '" cy="' + p.y + '" r="5" class="' + (status(i + 1) === "done" ? "lit" : status(i + 1) === "next" ? "nx" : "dim") + '"/>'; });
+    X.tr.innerHTML = out;
+  };
+  /* ---- progress near the goal ---- */
+  X.progress = function () {
+    var g = document.querySelector(isA1() ? ".goaltile" : ".card"); if (!g) return;
+    var p = g.querySelector(".pa-prog"); if (s.prog === "none") { if (p) p.remove(); return; }
+    if (!p) { p = el("div", "pa-prog"); g.appendChild(p); }
+    var n = doneCount(), html = "";
+    if (s.prog === "bar") html = '<i style="--p:' + (n / 6 * 100) + '%"></i><span>' + n + " of 6 done</span>";
+    else if (s.prog === "stars") { for (var k = 0; k < 6; k++) html += '<em class="' + (k < n ? "on" : "") + '">&#9733;</em>'; }
+    else html = '<svg viewBox="0 0 20 24" aria-hidden="true"><path d="M10 1 18 8 10 23 2 8z" fill="#7fe3ff" stroke="#2a7fb8" stroke-width="1.4"/><path d="M2 8h16M10 1 7 8l3 15 3-15z" fill="none" stroke="#2a7fb8" stroke-width="1"/></svg><span>' + (n * 3) + " crystals</span>";
+    p.className = "pa-prog pa-prog-" + s.prog; p.innerHTML = html;
+    p.setAttribute("aria-label", n + " of 6 modules done");
+  };
+  /* ---- tap effect + zoom + speech bubble ---- */
+  X.pick = function (i, elx) {
+    root.classList.add("pa-menu-open"); if (X.handle) X.handle.setAttribute("aria-expanded", "true");
+    var p = modPt(i), col = isA1() ? ((window.A1_WORLDS || [])[i] || {}).color : BUDDY[i][1];
+    if (s.tapfx === "sparkle" && window.AmbientFX && AmbientFX.burst) AmbientFX.burst(p.x, p.y, col || "#ffd27a", 26);
+    if (s.tapfx === "swing") {
+      var t = isA1() ? (document.querySelectorAll("#lanterns .pa-lanw")[5 - i] || null) : document.querySelectorAll(".pa-si")[i];
+      var tgt = t && (t.querySelector ? (t.querySelector(".pa-lan") || t) : t);
+      if (tgt && tgt.getClientRects().length) { tgt.classList.remove("pa-swing"); void tgt.offsetWidth; tgt.classList.add("pa-swing"); }
+      else X.glow(p, col);
+    }
+    if (s.tapfx === "glow") X.glow(p, col);
+    if (s.zoom === "on") X.zoomTo(p);
+    if (s.bubble === "on") X.say(TIP[i]);
+    X.preview(i, elx, true);
+  };
+  X.glow = function (p, col) {
+    var hst = hostEl(), g = el("div", "pa-burst"); g.style.setProperty("--c", col || "#ffd27a");
+    if (isA1()) { g.style.left = p.x + "px"; g.style.top = p.y + "px"; } else { g.style.left = p.x / 12.8 + "%"; g.style.top = p.y / 7.2 + "%"; }
+    hst.appendChild(g); setTimeout(function () { g.remove(); }, 900);
+  };
+  X.zoomTo = function (p) {
+    if (matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    var hst = hostEl(), W = isA1() ? 1366 : 1280, H = isA1() ? 768 : 720;
+    var list = isA1() ? [].filter.call(hst.children, function (c) { return !c.matches(".strip,.goaltile,.bar,.lsb,.selected-module,.intro-replay,.pa-portal,.intro-film,.astra-say"); }) : [hst];
+    list.forEach(function (c) { c.style.transformOrigin = (isA1() ? p.x + "px " + p.y + "px" : (p.x / W * 100) + "% " + (p.y / H * 100) + "%"); c.classList.add("pa-zoom"); });
+    clearTimeout(X.zT); X.zT = setTimeout(function () { list.forEach(function (c) { c.classList.add("pa-zback"); c.classList.remove("pa-zoom"); setTimeout(function () { c.classList.remove("pa-zback"); }, 950); }); }, 1400);
+  };
+  X.say = function (txt) {
+    var b = X.bub; if (!b) { b = X.bub = el("div", "pa-bubble"); b.setAttribute("role", "status"); document.body.appendChild(b); }
+    var a = document.querySelector(".pa-astra-on .pa-astra-wrap .pa-astra:not([style*='display:none'])"), x, y;
+    if (a && a.getClientRects().length) { var r = a.getBoundingClientRect(); x = r.left + r.width * .5; y = r.top + r.height * .08; }
+    else { var c = isA1() ? (s.scene === "pa" ? [190, 150] : [655, 462]) : [570, 215], q = hostToScreen(c[0], c[1]); x = q.x; y = q.y; }
+    b.textContent = txt; b.classList.remove("show"); void b.offsetWidth;
+    var bw = 230; b.style.left = Math.min(Math.max(8, x - 30), innerWidth - bw - 8) + "px"; b.style.top = Math.max(44, y - 70) + "px"; b.classList.add("show");
+    clearTimeout(X.bT); X.bT = setTimeout(function () { b.classList.remove("show"); }, 6000);
+  };
+  X.bind = function () {
+    var els = isA1() ? [[].slice.call(document.querySelectorAll("#lanterns .lantern")), [].slice.call(document.querySelectorAll("#tiles .tile"))]
+                     : [[].slice.call(document.querySelectorAll(".hot[data-arrow]")), AD.btns || []];
+    els.forEach(function (list, li) { list.forEach(function (e, i) {
+      if (li === 0 || isA1()) e.addEventListener("click", function () { X.pick(i, e); });
+      e.addEventListener("mouseenter", function () { X.preview(i, e, false); });
+      e.addEventListener("mouseleave", X.unpreview);
+      e.addEventListener("focus", function () { X.preview(i, e, false); }); e.addEventListener("blur", X.unpreview);
+    }); });
+  };
+  /* ---- ambient sound (WebAudio synthesis; starts only after a tap) ---- */
+  var SND = { ctx: null, gain: null, timer: null };
+  function sndKind() { var t = s.tod === "cur" ? (isA1() ? "night" : "day") : s.tod; return t === "dusk" || t === "night" ? "night" : "day"; }
+  function sndStart() {
+    if (SND.ctx) { SND.ctx.resume && SND.ctx.resume(); return; }
+    var AC = window.AudioContext || window.webkitAudioContext; if (!AC) return;
+    var c = SND.ctx = new AC(), g = SND.gain = c.createGain(); g.gain.value = 0; g.connect(c.destination);
+    // soft wind bed: filtered noise
+    var len = c.sampleRate * 2, buf = c.createBuffer(1, len, c.sampleRate), d = buf.getChannelData(0), last = 0;
+    for (var i = 0; i < len; i++) { last = (last + 0.02 * (Math.random() * 2 - 1)) / 1.02; d[i] = last * 3.5; }
+    var n = c.createBufferSource(); n.buffer = buf; n.loop = true; var f = c.createBiquadFilter(); f.type = "lowpass"; f.frequency.value = 500;
+    var ng = c.createGain(); ng.gain.value = 0.18; n.connect(f); f.connect(ng); ng.connect(g); n.start();
+    function tone(freq, t0, dur, vol, type, glide) {
+      var o = c.createOscillator(), e = c.createGain(); o.type = type || "sine"; o.frequency.setValueAtTime(freq, t0);
+      if (glide) o.frequency.exponentialRampToValueAtTime(glide, t0 + dur);
+      e.gain.setValueAtTime(0, t0); e.gain.linearRampToValueAtTime(vol, t0 + Math.min(.02, dur / 4)); e.gain.exponentialRampToValueAtTime(0.0001, t0 + dur);
+      o.connect(e); e.connect(g); o.start(t0); o.stop(t0 + dur + .05);
+    }
+    function tick() {
+      if (!SND.ctx || s.sound !== "on") return;
+      var t = c.currentTime + 0.05, k = sndKind();
+      if (k === "day") {   // birds: a few quick chirps with falling or rising pitch
+        if (Math.random() < .55) { var b = 2200 + Math.random() * 1800, nn = 2 + (Math.random() * 4 | 0);
+          for (var j = 0; j < nn; j++) tone(b, t + j * .11, .08, .05, "sine", b * (Math.random() < .5 ? 1.35 : .7)); }
+      } else {             // crickets: fast pulsed high tone
+        if (Math.random() < .7) { var cf = 4300 + Math.random() * 500; for (var q = 0; q < 6; q++) tone(cf, t + q * .045, .03, .018, "triangle"); }
+      }
+      if (Math.random() < .12) { var root0 = [523.25, 659.25, 783.99, 987.77][Math.random() * 4 | 0]; tone(root0, t, 2.4, .035, "sine"); tone(root0 * 2, t + .02, 1.6, .012, "sine"); }   // soft chime
+      SND.timer = setTimeout(tick, 380 + Math.random() * 700);
+    }
+    SND.tick = tick; tick();
+  }
+  X.sound = function () {
+    var v = (+s.vol || 3) / 5 * 0.9;
+    if (s.sound !== "on") { if (SND.gain) SND.gain.gain.setTargetAtTime(0, SND.ctx.currentTime, .3); clearTimeout(SND.timer); return; }
+    if (!SND.ctx) { if (X.userTapped) sndStart(); else return; }
+    SND.ctx.resume && SND.ctx.resume(); SND.gain.gain.setTargetAtTime(v, SND.ctx.currentTime, .4);
+    clearTimeout(SND.timer); SND.tick && SND.tick();
+  };
+  ["pointerdown", "keydown"].forEach(function (ev) { document.addEventListener(ev, function () { if (X.userTapped) return; X.userTapped = true; if (s.sound === "on") { sndStart(); X.sound(); } }, { capture: true }); });
+  /* ---- weather + season particles (one canvas inside the stage, above the art, below the UI) ---- */
+  var WX = { c: null, g: null, parts: [], kind: "", raf: 0 };
+  X.weather = function () {
+    var hst = hostEl(); if (!hst) return;
+    var reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+    var kinds = []; if (s.weather !== "none") kinds.push(s.weather);
+    if (s.season === "spring") kinds.push("blossom"); if (s.season === "winter") kinds.push("frost"); if (s.season === "autumn" && s.weather !== "leaves") kinds.push("fewleaves");
+    var kind = reduce ? "" : kinds.join(",");
+    if (!WX.c) { WX.c = el("canvas", "pa-weather"); WX.c.setAttribute("aria-hidden", "true"); WX.g = WX.c.getContext("2d"); }
+    var anchor = isA1() ? (hst.querySelector(".ambient-fx") || document.getElementById("lanterns")) : (hst.querySelector(".ambient-fx") || hst.querySelector(".pa-sics"));
+    if (anchor && anchor.nextSibling !== WX.c) anchor.after(WX.c); else if (!anchor && !WX.c.parentNode) hst.appendChild(WX.c);
+    if (kind === WX.kind) return; WX.kind = kind;
+    var W = isA1() ? 1366 : 1280, H = isA1() ? 768 : 720; WX.c.width = W; WX.c.height = H; WX.parts = [];
+    function R(a, b) { return a + Math.random() * (b - a); }
+    kinds.forEach(function (k) {
+      var n = { rain: 140, leaves: 26, snow: 110, blossom: 30, frost: 40, fewleaves: 10 }[k] || 0;
+      for (var i = 0; i < n; i++) WX.parts.push({ k: k, x: R(0, W), y: R(-H, H), v: k === "rain" ? R(620, 900) : k === "snow" || k === "frost" ? R(18, 46) : R(30, 70),
+        s: k === "rain" ? R(10, 18) : k === "snow" ? R(1.5, 3.4) : k === "frost" ? R(1, 2.2) : R(5, 9), ph: R(0, 6.3), r: R(0, 6.3), vr: R(-2, 2),
+        c: k === "blossom" ? ["#ffc6dc", "#ffd9e6", "#ffb0cc"][i % 3] : ["#e9772c", "#d4542a", "#f2a93b", "#b8461f"][i % 4] });
+    });
+    cancelAnimationFrame(WX.raf); var last = performance.now(), g = WX.g;
+    function frame(now) {
+      var dt = Math.min(.05, (now - last) / 1000); last = now; g.clearRect(0, 0, W, H);
+      WX.parts.forEach(function (p) {
+        if (p.k === "rain") { p.y += p.v * dt; p.x -= p.v * .18 * dt; if (p.y > H) { p.y = R(-60, 0); p.x = R(0, W + 120); }
+          g.strokeStyle = "rgba(200,220,255,.45)"; g.lineWidth = 1.2; g.beginPath(); g.moveTo(p.x, p.y); g.lineTo(p.x + p.s * .18, p.y - p.s); g.stroke(); return; }
+        p.y += p.v * dt; p.ph += dt; p.r += p.vr * dt; p.x += Math.sin(p.ph * 1.3) * (p.k === "snow" || p.k === "frost" ? 12 : 30) * dt;
+        if (p.y > H + 20) { p.y = R(-40, -10); p.x = R(0, W); }
+        if (p.k === "snow" || p.k === "frost") { g.fillStyle = p.k === "frost" ? "rgba(235,248,255,.75)" : "rgba(255,255,255,.85)"; g.beginPath(); g.arc(p.x, p.y, p.s, 0, 6.283); g.fill();
+          if (p.k === "frost" && Math.sin(p.ph * 3) > .9) { g.fillStyle = "rgba(255,255,255,.9)"; g.fillRect(p.x - p.s * 2, p.y - .4, p.s * 4, .8); g.fillRect(p.x - .4, p.y - p.s * 2, .8, p.s * 4); } return; }
+        g.save(); g.translate(p.x, p.y); g.rotate(p.r); g.scale(1, .55 + .45 * Math.sin(p.ph * 2)); g.fillStyle = p.c; g.globalAlpha = .9;
+        g.beginPath(); g.ellipse(0, 0, p.s, p.s * .55, 0, 0, 6.283); g.fill(); g.restore();
+      });
+      if (WX.parts.length) WX.raf = requestAnimationFrame(frame);
+    }
+    if (WX.parts.length) WX.raf = requestAnimationFrame(frame);
+  };
+  /* ---- season: masked foliage colour grade built from the current background still ---- */
+  var SEA = { c: null, key: "" };
+  X.season = function () {
+    var hst = hostEl(); if (!hst) return;
+    if (!SEA.c) { SEA.c = el("canvas", "pa-season"); SEA.c.setAttribute("aria-hidden", "true"); }
+    var a1 = isA1(), anchor = hst.querySelector(".pa-tod") || (a1 ? hst.querySelector(".bg") : (hst.querySelector(".fx-loop") || hst.querySelector(".pa-art")));
+    if (a1 && s.scene === "pa") anchor = hst.querySelector(".pa-pa");
+    if (anchor && anchor.nextSibling !== SEA.c) anchor.after(SEA.c);
+    var src = s.scene === "pa" && a1 ? "../dashboard-a/portal-hub-poster-v3.jpg" : s.tod !== "cur" ? (a1 ? "tod-" + s.tod + ".jpg" : "assets/tod-" + s.tod + ".jpg") : (a1 ? "tree.jpg" : "assets/scene.jpg");
+    var key = s.season + "|" + src; if (s.season === "summer") { SEA.key = key; SEA.c.style.display = "none"; return; }
+    SEA.c.style.display = ""; if (SEA.key === key) return; SEA.key = key;
+    var im = new Image(); im.onload = function () {
+      if (SEA.key !== key) return;
+      var W = a1 ? 1366 : 1280, H = a1 ? 768 : 720, c = SEA.c; c.width = W; c.height = H; var g = c.getContext("2d");
+      g.drawImage(im, 0, 0, W, H); var d = g.getImageData(0, 0, W, H), p = d.data, sea = s.season;
+      for (var i = 0; i < p.length; i += 4) {
+        var r = p[i] / 255, gg = p[i + 1] / 255, b = p[i + 2] / 255, mx = Math.max(r, gg, b), mn = Math.min(r, gg, b), v = mx, sat = mx ? (mx - mn) / mx : 0, h = 0;
+        if (mx !== mn) { if (mx === r) h = ((gg - b) / (mx - mn) + 6) % 6; else if (mx === gg) h = (b - r) / (mx - mn) + 2; else h = (r - gg) / (mx - mn) + 4; h *= 60; }
+        var m = (h > 62 && h < 165 && sat > .16 && v > .07) ? Math.min(1, (sat - .16) * 4) * Math.min(1, (v - .07) * 6) : 0;
+        if (!m) { p[i + 3] = 0; continue; }
+        var nr, ng, nb, x = (i / 4) % W, y = (i / 4 / W) | 0, nz = Math.sin(x * .021 + y * .013) + Math.sin(x * .007 - y * .019);
+        if (sea === "autumn") { var hh = nz > .3 ? 8 : nz > -.6 ? 24 : 40; var q = hsv(hh, Math.min(1, sat * 1.15 + .1), v * 1.02); nr = q[0]; ng = q[1]; nb = q[2]; }
+        else if (sea === "winter") { var l = Math.min(1, v * .7 + .32); nr = l * .9; ng = l * .96; nb = l * 1.0; }
+        else { var q2 = hsv(h * .92 + 6, sat * .9, Math.min(1, v * 1.08)); nr = q2[0]; ng = q2[1]; nb = q2[2];
+          if (nz > 1.2 && ((x * 7 + y * 13) % 11) < 3) { nr = Math.min(1, .98); ng = .72 + v * .2; nb = .84; } }
+        p[i] = nr * 255; p[i + 1] = ng * 255; p[i + 2] = nb * 255; p[i + 3] = m * (sea === "winter" ? 215 : 235);
+      }
+      g.putImageData(d, 0, 0);
+    };
+    im.src = src;
+  };
+  function hsv(h, s2, v) { var c = v * s2, x = c * (1 - Math.abs((h / 60) % 2 - 1)), m = v - c, r = 0, g = 0, b = 0;
+    if (h < 60) { r = c; g = x; } else if (h < 120) { r = x; g = c; } else if (h < 180) { g = c; b = x; } else if (h < 240) { g = x; b = c; } else if (h < 300) { r = x; b = c; } else { r = c; b = x; }
+    return [r + m, g + m, b + m]; }
+  X.unclash = function () {
+    if (!isA1()) return; var st = document.querySelector(".strip"), g = document.querySelector(".goaltile"); if (!st || !g) return;
+    st.style.translate = ""; var a = st.getBoundingClientRect(), b = g.getBoundingClientRect(), k = hostToScreen(0, 0).k || 1;
+    if (Math.min(a.right, b.right) - Math.max(a.left, b.left) > 2 && Math.min(a.bottom, b.bottom) - Math.max(a.top, b.top) > 2) st.style.translate = "0 " + ((b.bottom - a.top + 8) / k) + "px";
+  };
+  X.layout = function () { X.unclash(); X.badgeIn(); X.arc(); X.reveal(); X.trail(); X.progress(); X.weather(); X.season(); X.sound(); };
+
+  X.badgeIn = function () {
+    var imgs = [].slice.call(document.querySelectorAll(".lsb i")), btns = isA1() ? [].slice.call(document.querySelectorAll("#tiles .tile")) : AD.btns || [];
+    btns.forEach(function (b, i) {
+      var bi = b.querySelector(".pa-bin"), src = imgs[i] && imgs[i].querySelector("img");
+      if (s.badgeIn !== "on") { if (bi) bi.remove(); return; }
+      if (!src) return;
+      if (!bi) { bi = el("img", "pa-bin"); bi.alt = ""; b.insertBefore(bi, b.firstChild); }
+      bi.src = src.currentSrc || src.src; bi.classList.toggle("earned", imgs[i].classList.contains("earned"));
+    });
+  };
 
   /* ---------------- apply ---------------- */
   function apply() {
@@ -364,7 +635,8 @@
     var lvl = s.magic === "live" ? 0 : +s.magic;
     window.__magicLevel = lvl; window.__tod = s.tod;
     if (window.AmbientFX && AmbientFX.setLevel) AmbientFX.setLevel(lvl);
-    if (AD && AD.ready) { AD.layout(); requestAnimationFrame(function () { AD.layout(); }); }
+    root.setAttribute("data-p-menux", fl() ? "float" : s.menu);
+    if (AD && AD.ready) { AD.layout(); X.layout(); requestAnimationFrame(function () { AD.layout(); X.layout(); }); }
     var p = document.getElementById("paPanel");
     if (p) p.querySelectorAll("[data-k]").forEach(function (b) { b.classList.toggle("on", String(s[b.getAttribute("data-k")]) === b.getAttribute("data-v")); });
     put(s);
@@ -373,8 +645,7 @@
 
   function seg(k, opts) { return '<div class="pa-seg">' + opts.map(function (o) { return '<button type="button" data-k="' + k + '" data-v="' + o[0] + '">' + o[1] + "</button>"; }).join("") + "</div>"; }
   function row(label, k, opts) { return '<div class="pa-row"><small>' + label + "</small>" + seg(k, opts) + "</div>"; }
-  function head(t) { return '<h4 class="pa-h">' + t + "</h4>"; }
-  var isD = PAGE === "d";
+    var isD = PAGE === "d";
 
   function boot() {
     if (AD) { AD.init(); AD.ready = true; }
@@ -382,18 +653,40 @@
     if (s.min === undefined && window.innerWidth < 700) s.min = true;
     p.id = "paPanel"; p.setAttribute("role", "region"); p.setAttribute("aria-label", "Dashboard prototype");
     var reduce = window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches;
+    var A1 = !isD, sec = s.open || (s.open = { scene: 1 });
+    function S(id, title, body) { return '<section class="pa-sec' + (sec[id] ? " open" : "") + '" data-sec="' + id + '"><button type="button" class="pa-sh" data-sec-t="' + id + '" aria-expanded="' + !!sec[id] + '">' + title + '</button><div class="pa-sb">' + body + "</div></section>"; }
+    var menuOpts = (isD ? [["sign", "Signpost only"], ["bottom", "Bottom bar"]] : [["bottom", "Bottom bar"]]).concat([["left", "Side left"], ["right", "Side right"], ["float", isD ? "On the arrows" : "On the lanterns"], ["arc", isD ? "Arc at the bottom" : "Arc (Astra / tree base)"]]);
     p.innerHTML =
       '<div class="pa-top"><b>Dashboard prototype</b><button type="button" data-min aria-label="Collapse or expand">&#8211;</button></div>' +
       '<div class="pa-body">' +
-        head("Goal &amp; title") +
-        row("Goal placement", "goalPos", [["tl", "Top-left"], ["tc", "Top-center"], ["tr", "Top-right"]]) +
-        row("Goal style", "goalStyle", [["cur", "Current"], ["wood", "Wood sign"], ["glass", "Frosted"], ["parch", "Parchment"], ["navy", "Navy"]]) +
-        row("Goal size", "goalSize", [["compact", "Compact"], ["large", "Large"]]) +
-        row("Speaker button", "speaker", [["off", "Off (as built)"], ["gold", "Gold"], ["wood", "Wood"], ["icon", "Icon only"]]) +
-        row("Title", "title", [["on", "Show"], ["off", "Hide"]]) +
-        row("Title placement", "titlePos", [["tl", "Top-left"], ["center", "Centered"]]) +
-        row("Ribbon banner", "ribbon", [["off", "Off"], ["on", "On"]]) +
-        head("Module buttons") + (isD ? '<p class="pa-hint">Plan D: the painted arrows stay as they are; these style the added menu (bottom, side or tags on the arrows). Picking one while on "Signpost only" switches to tags on the arrows.</p>' : "") +
+      '<div class="pa-tools"><button type="button" data-rand>&#127922; Randomize</button><button type="button" data-reset>Reset all</button><button type="button" data-copy>Copy link</button></div>' +
+      '<div class="pa-tools pa-slots">' + ["A", "B", "C"].map(function (x) { return '<span><button type="button" data-save="' + x + '">Save ' + x + '</button><button type="button" data-load="' + x + '"' + (localStorage.getItem(KEY + "_slot_" + x) ? "" : " disabled") + '>Load</button></span>'; }).join("") + "</div>" +
+      S("scene", "Scene &amp; sky",
+        (A1 ? row("Scene", "scene", [["a1", "Lantern Tree"], ["pa", "Plan A Portals"]]) : "") +
+        row("Time of day", "tod", [["cur", "Current"], ["sunrise", "Sunrise"], ["day", "Day"], ["dusk", "Dusk"], ["night", "Night"]]) +
+        row("Season", "season", [["spring", "Spring"], ["summer", "Summer (current)"], ["autumn", "Autumn"], ["winter", "Winter"]]) +
+        row("Weather", "weather", [["none", "None"], ["rain", "Light rain"], ["leaves", "Falling leaves"], ["snow", "Snow"]]) +
+        row("Magic meter", "magic", [["live", "As built"], ["1", "1"], ["2", "2"], ["3", "3"], ["4", "4"], ["5", "5"]]) +
+        '<p class="pa-hint">1 = a few fireflies and stars · 3 = glows, sparkles, a shooting star · 5 = dragons and aurora.' + (reduce ? " Reduce motion is on, so effects stay off." : "") + "</p>" +
+        row("Art brightness", "art", [["dim", "Dim"], ["normal", "Normal"], ["bright", "Bright"]]) +
+        row("UI tint", "tint", [["built", "As built"], ["warm", "Warm gold"], ["cool", "Cool blue"], ["forest", "Forest"]]) +
+        row("Ambient sound", "sound", [["off", "Off"], ["on", "On"]]) +
+        '<div class="pa-row"><small>Volume</small><input type="range" min="1" max="5" step="1" data-range="vol" value="' + s.vol + '" aria-label="Volume"></div>') +
+      S("astra", "Astra",
+        row("Pose", "pose", [["cur", "Current"], ["writing", "Writing"], ["waving", "Waving"], ["reading", "Reading"], ["pointing", "Pointing"], ["books", "On books"], ["plana", "Plan A (animated)"]]) +
+        row("Spot", "spot", [["cur", "Current spot"], ["left", "Left"], ["near", isD ? "Right, by Let's go" : "Right, under the goal"]]) +
+        row("Speech bubble", "bubble", [["off", "Off"], ["on", "Tip on tap"]])) +
+      S("lan", isD ? "Signpost" : "Lanterns",
+        (isD ? row("Sign icons", "signIc", [["cur", "Current"], ["none", "None"], ["buddy", "Buddies"], ["symbol", "Symbols"], ["badge", "Badges"]])
+             : row("Lantern shape", "lanShape", [["cur", "Current"], ["round", "Round"], ["hex", "Hexagon"], ["tall", "Tall"], ["star", "Star"], ["flower", "Flower"], ["mixed", "Mixed"], ["moroccan", "Moroccan"]])) +
+        row("Badges as icons", "badgeIc", [["off", "Off"], ["on", "On"]]) +
+        row("Tap effect", "tapfx", [["none", "None"], ["swing", "Swing"], ["glow", "Glow burst"], ["sparkle", "Sparkle"]]) +
+        row("Camera zoom on tap", "zoom", [["off", "Off"], ["on", "On"]]) +
+        (A1 ? row("Lantern tap", "tap", [["menu", "Bottom menu (current)"], ["portal", "Open portal"]]) + row("Portal style", "pstyle", [["rune", "Gold rune ring"], ["pa", "Plan A portal"]]) : "")) +
+      S("menu", "Menu",
+        row("Placement", "menu", menuOpts) +
+        row("Reveal", "reveal", [["always", "Always"], ["handle", "Slide-up handle"], ["tap", "After a tap"]]) +
+        (isD ? '<p class="pa-hint">Painted arrows stay as they are; these style the added menu.</p>' : "") +
         row("Shape", "shape", [["cur", "Current"], ["tile", "Tiles"], ["pill", "Pills"], ["plank", "Planks"], ["circle", "Circles"]]) +
         row("Color", "color", [["mod", "Per module"], ["navy", "Navy + edge"], ["gold", "All gold"]]) +
         row("Size", "size", [["s", "S"], ["m", "M"], ["l", "L"]]) +
@@ -403,45 +696,61 @@
         row("Module title", "mt", [["on", "Show"], ["off", "Hide"]]) +
         row(isD ? "Buddy name" : "World name", "nm", [["off", "Hide"], ["on", "Show"]]) +
         row("Border", "border", [["cur", "Current"], ["none", "None"], ["gold", "Gold rim"], ["glow", "Glow"]]) +
-        head(isD ? "Signpost" : "Lanterns") +
-        (isD ? row("Sign icons", "signIc", [["cur", "Current"], ["none", "None"], ["buddy", "Buddies"], ["symbol", "Symbols"], ["badge", "Badges"]])
-             : row("Lantern shape", "lanShape", [["cur", "Current"], ["round", "Round"], ["hex", "Hexagon"], ["tall", "Tall"], ["star", "Star"], ["flower", "Flower"], ["mixed", "Mixed"], ["moroccan", "Moroccan"]])) +
-        (isD ? "" : row("Scene", "scene", [["a1", "A.1 Lantern Tree (current)"], ["pa", "Plan A Portals"]]) + row("Lantern tap", "tap", [["menu", "Bottom menu (current)"], ["portal", "Open portal"]]) + row("Portal style", "pstyle", [["rune", "Gold rune ring"], ["pa", "Plan A portal"]])) +
-        row("Badges as icons" + (isD ? " (arrows + buttons)" : " (lanterns + buttons)"), "badgeIc", [["off", "Off"], ["on", "On"]]) +
-        head("Astra") +
-        row("Astra pose", "pose", [["cur", "Current"], ["writing", "Writing"], ["waving", "Waving"], ["reading", "Reading"], ["pointing", "Pointing"], ["books", "On books"], ["plana", "Plan A (animated)"]]) +
-        row("Astra spot", "spot", [["cur", "Current spot"], ["left", "Left"], ["near", isD ? "Right, by Let's go" : "Right, under the goal"]]) +
-        head("Menu &amp; badges") +
-        row("Menu placement", "menu", (isD ? [["sign", "Signpost only"]] : [["bottom", "Bottom bar"]]).concat(isD ? [["bottom", "Bottom bar"]] : []).concat([["left", "Side left"], ["right", "Side right"], ["float", isD ? "On the arrows" : "On the lanterns"]])) +
+        row("Badges in buttons", "badgeIn", [["off", "Off"], ["on", "On (hides badge row)"]])) +
+      S("goal", "Goal &amp; title",
+        row("Goal placement", "goalPos", [["tl", "Top-left"], ["tc", "Top-center"], ["tr", "Top-right"]]) +
+        row("Goal style", "goalStyle", [["cur", "Current"], ["wood", "Wood sign"], ["glass", "Frosted"], ["parch", "Parchment"], ["navy", "Navy"]]) +
+        row("Goal size", "goalSize", [["compact", "Compact"], ["large", "Large"]]) +
+        row("Title", "title", [["on", "Show"], ["off", "Hide"]]) +
+        row("Title placement", "titlePos", [["tl", "Top-left"], ["center", "Centered"]]) +
+        row("Ribbon banner", "ribbon", [["off", "Off"], ["on", "On"]])) +
+      S("prog", "Progress &amp; guidance",
+        row("Start here color", "stColor", [["gold", "Gold"], ["white", "White"], ["mod", "Module color"]]) +
+        row("Start here shape", "stShape", [["tag", "Tag"], ["arrow", "Arrow"], ["ring", "Glowing ring"]]) +
+        row("Start here motion", "stMotion", [["bob", "Bob"], ["pulse", "Pulse"], ["still", "Still"]]) +
+        row("Progress by goal", "prog", [["none", "None"], ["bar", "Fill bar"], ["stars", "Six stars"], ["crystals", "Crystals"]]) +
+        row("Path trail", "trail", [["off", "Off"], ["on", "On"]]) +
+        row("Preview card", "preview", [["off", "Off"], ["on", "On hover / tap"]]) +
         row("Badge placement", "badgePos", [["goal", "Under goal"], ["corner", "Bottom corner"], ["tr", "Top-right"]]) +
         row("Badge size", "badgeSize", [["s", "S"], ["m", "M"], ["l", "L"]]) +
         row("Badge labels", "badgeLbl", [["on", "On"], ["off", "Off"]]) +
         row("Earned look", "earned", [["full", "Full color"], ["ring", "Gold ring"], ["sparkle", "Sparkle"]]) +
-        head("Start here") +
-        row("Color", "stColor", [["gold", "Gold"], ["white", "White"], ["mod", "Module color"]]) +
-        row("Shape", "stShape", [["tag", "Tag"], ["arrow", "Arrow"], ["ring", "Glowing ring"]]) +
-        row("Motion", "stMotion", [["bob", "Bob"], ["pulse", "Pulse"], ["still", "Still"]]) +
-        head("Look &amp; magic") +
-        row("Time of day", "tod", [["cur", "Current"], ["sunrise", "Sunrise"], ["day", "Day"], ["dusk", "Dusk"], ["night", "Night"]]) +
-        row("UI tint", "tint", [["built", "As built"], ["warm", "Warm gold"], ["cool", "Cool blue"], ["forest", "Forest"]]) +
-        row("Art brightness", "art", [["dim", "Dim"], ["normal", "Normal"], ["bright", "Bright"]]) +
-        row("Magic meter", "magic", [["live", "As built"], ["1", "1"], ["2", "2"], ["3", "3"], ["4", "4"], ["5", "5"]]) +
-        '<p class="pa-hint">1 = a few fireflies and stars · 3 = glows, sparkles, a shooting star · 5 = dragons and aurora.' + (reduce ? " Reduce motion is on, so effects stay off." : "") + "</p>" +
-        '<button type="button" class="pa-reset" data-reset>Reset to default</button>' +
-        '<p class="pa-note">This page only, saved in this browser. Add ?proto=off to the address to hide this panel and see the page as built; ?proto brings it back.</p>' +
+        row("Speaker button", "speaker", [["off", "Off (as built)"], ["gold", "Gold"], ["wood", "Wood"], ["icon", "Icon only"]])) +
+      '<p class="pa-note">Saved in this browser for this page. Copy link shares the exact combo. ?proto=off hides the panel; ?proto brings it back.</p>' +
       "</div>";
     if (s.min) p.classList.add("min");
     document.body.appendChild(p);
+    function fix(k) {
+      if (PAGE === "d" && s.menu === "sign" && ["shape", "color", "size", "finish", "icon", "ml", "mt", "nm", "border", "badgeIn", "reveal"].indexOf(k) >= 0) s.menu = "float";
+      if (s.mt === "off" && s.ml === "off" && s.nm === "off") s.ml = "on";
+    }
+    function flash(b, txt) { var o = b.textContent; b.textContent = txt; setTimeout(function () { b.textContent = o; }, 1300); }
+    p.addEventListener("input", function (e) { var r = e.target.closest("[data-range]"); if (r) { s[r.getAttribute("data-range")] = r.value; apply(); } });
     p.addEventListener("click", function (e) {
       var b = e.target.closest("button"); if (!b) return;
       if (b.hasAttribute("data-min")) { s.min = !s.min; p.classList.toggle("min", s.min); put(s); return; }
-      if (b.hasAttribute("data-reset")) { KEYS.forEach(function (k) { s[k] = D[k]; }); apply(); return; }
+      var st = b.getAttribute("data-sec-t");
+      if (st) { sec[st] = sec[st] ? 0 : 1; b.parentNode.classList.toggle("open", !!sec[st]); b.setAttribute("aria-expanded", !!sec[st]); put(s); return; }
+      if (b.hasAttribute("data-reset")) { KEYS.forEach(function (k) { s[k] = D[k]; }); apply(); syncRange(); return; }
+      if (b.hasAttribute("data-rand")) {
+        var groups = {}; p.querySelectorAll(".pa-seg [data-k]").forEach(function (x) { (groups[x.getAttribute("data-k")] = groups[x.getAttribute("data-k")] || []).push(x.getAttribute("data-v")); });
+        Object.keys(groups).forEach(function (k) { if (k === "sound") return; var v = groups[k]; s[k] = v[Math.random() * v.length | 0]; });
+        fix("shape"); apply(); return;
+      }
+      if (b.hasAttribute("data-copy")) {
+        var o = {}; KEYS.forEach(function (k) { if (s[k] !== D[k]) o[k] = s[k]; });
+        var u = new URL(location.href); u.searchParams.delete("proto"); u.searchParams.set("p", btoa(JSON.stringify(o)));
+        (navigator.clipboard ? navigator.clipboard.writeText(u.href) : Promise.reject()).then(function () { flash(b, "Copied!"); }, function () { window.prompt("Copy this link", u.href); });
+        return;
+      }
+      var sv = b.getAttribute("data-save"), ld = b.getAttribute("data-load");
+      if (sv) { var o2 = {}; KEYS.forEach(function (k) { o2[k] = s[k]; }); try { localStorage.setItem(KEY + "_slot_" + sv, JSON.stringify(o2)); } catch (er) {} p.querySelector('[data-load="' + sv + '"]').disabled = false; flash(b, "Saved"); return; }
+      if (ld) { try { var o3 = JSON.parse(localStorage.getItem(KEY + "_slot_" + ld)) || {}; KEYS.forEach(function (k) { if (o3[k] !== undefined) s[k] = o3[k]; }); } catch (er) {} apply(); syncRange(); return; }
       var k = b.getAttribute("data-k"); if (!k) return;
-      s[k] = b.getAttribute("data-v");
-      if (PAGE === "d" && s.menu === "sign" && ["shape", "color", "size", "finish", "icon", "ml", "mt", "nm", "border"].indexOf(k) >= 0) s.menu = "float";   // D: show the buttons so the change is visible
-      if (k === "mt" || k === "ml" || k === "nm") { if (s.mt === "off" && s.ml === "off" && s.nm === "off") s.ml = "on"; }   // never an empty button
-      apply();
+      s[k] = b.getAttribute("data-v"); fix(k); apply();
     });
+    function syncRange() { var r = p.querySelector("[data-range=vol]"); if (r) r.value = s.vol; }
+    X.bind();
     window.addEventListener("resize", function () { AD && AD.layout(); });
     var host = document.getElementById("frame") || document.querySelector(".stage");
     if (host && window.MutationObserver) new MutationObserver(function (m) { if (m.some(function (r) { return [].some.call(r.addedNodes, function (n) { return n.classList && n.classList.contains("intro-replay"); }); })) AD.layout(); }).observe(host, { childList: true });
