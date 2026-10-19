@@ -313,7 +313,7 @@
     a1: { u: 1, W: 1366, H: 768, k: .37, plate: [542, 422, 307, 302, "astra-plate.webp"], fallback: "writing",
           spots: { cur: [690, 705, 1, 0], left: [150, 705, 1, 0], near: [1085, 705, 1, 1] } },
     d:  { u: 0, W: 1280, H: 720, k: .461, plate: [482, 192, 237, 465, "assets/astra-plate.webp"], fallback: "pointing",
-          spots: { cur: [583, 632, 1, 0], left: [55, 712, .8, 0], near: [1212, 652, .7, 1] } }
+          spots: { cur: [1188, 708, 1.05, 0], left: [1188, 708, 1.05, 0], near: [1188, 708, 1.05, 0] } }
   };
   function astra() {
     var C = ASTRA[PAGE], host = PAGE === "a1" ? document.getElementById("frame") : document.querySelector(".stage"); if (!host) return;
@@ -676,7 +676,7 @@
         '<div class="pa-row"><small>Volume</small><input type="range" min="1" max="5" step="1" data-range="vol" value="' + s.vol + '" aria-label="Volume"></div>') +
       S("astra", "Astra",
         row("Pose", "pose", [["cur", "Current"], ["writing", "Writing"], ["waving", "Waving"], ["reading", "Reading"], ["pointing", "Pointing"], ["books", "On books"], ["plana", "Plan A (animated)"]]) +
-        (isD ? '<p class="pa-hint">She stays in the middle of the bridge. The picture behind her stays as painted.</p>' : row("Spot", "spot", [["cur", "Current spot"], ["left", "Left"], ["near", "Right, under the goal"]])) +
+        (isD ? '<p class="pa-hint">She stands with the group, in the spot she was painted, so she doesn’t cover the sign.</p>' : row("Spot", "spot", [["cur", "Current spot"], ["left", "Left"], ["near", "Right, under the goal"]])) +
         row("Speech bubble", "bubble", [["off", "Off"], ["on", "Tip on tap"]])) +
       S("lan", isD ? "Signpost" : "Lanterns",
         (isD ? row("Sign icons", "signIc", [["cur", "Current"], ["none", "None"], ["buddy", "Buddies"], ["symbol", "Symbols"], ["badge", "Badges"]])
