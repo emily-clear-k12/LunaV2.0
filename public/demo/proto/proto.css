@@ -394,9 +394,9 @@ html[data-p-badgein=on] .lsb{display:none !important}
 /* ================= path trail ================= */
 .pa-trail{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;display:none;overflow:visible}
 html[data-p-trail=on] .pa-trail{display:block}
-.pa-trail path{fill:none;stroke-linecap:round;stroke-width:4;stroke-dasharray:0 12}
-.pa-trail path.lit{stroke:#ffd76a;filter:drop-shadow(0 0 4px #ffcf4a)}
-.pa-trail path.dim{stroke:rgba(255,255,255,.35)}
+.pa-trail path{fill:none;stroke-linecap:round;stroke-width:6;stroke-dasharray:3 14}
+.pa-trail path.lit{stroke:#ffe7a3;filter:drop-shadow(0 0 6px #ffcf4a)}
+.pa-trail path.dim{stroke:rgba(255,248,220,.62)}
 .pa-trail circle.lit{fill:#ffd76a}.pa-trail circle.nx{fill:#fff;filter:drop-shadow(0 0 5px #fff)}.pa-trail circle.dim{fill:rgba(255,255,255,.35)}
 html.pa-d .pa-trail path{stroke-width:3.5}
 

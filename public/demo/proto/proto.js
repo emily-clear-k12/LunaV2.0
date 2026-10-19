@@ -602,7 +602,9 @@
         else if (sea === "winter") { var l = Math.min(1, v * .7 + .32); nr = l * .9; ng = l * .96; nb = l * 1.0; }
         else { var q2 = hsv(h * .92 + 6, sat * .9, Math.min(1, v * 1.08)); nr = q2[0]; ng = q2[1]; nb = q2[2];
           if (nz > 1.2 && ((x * 7 + y * 13) % 11) < 3) { nr = Math.min(1, .98); ng = .72 + v * .2; nb = .84; } }
-        p[i] = nr * 255; p[i + 1] = ng * 255; p[i + 2] = nb * 255; p[i + 3] = m * (sea === "winter" ? 215 : 235);
+        var todNow = s.tod === "cur" ? (isA1() ? "dusk" : "day") : s.tod, darkSky = todNow === "dusk" || todNow === "night";
+        if (darkSky) { nr = Math.min(1, nr * .55 + .34); ng = Math.min(1, ng * .55 + .26); nb = Math.min(1, nb * .55 + .2); }
+        p[i] = nr * 255; p[i + 1] = ng * 255; p[i + 2] = nb * 255; p[i + 3] = m * (darkSky ? 250 : sea === "winter" ? 220 : 235);
       }
       g.putImageData(d, 0, 0);
     };
@@ -661,13 +663,13 @@
       '<div class="pa-body">' +
       '<div class="pa-tools"><button type="button" data-rand>&#127922; Randomize</button><button type="button" data-reset>Reset all</button><button type="button" data-copy>Copy link</button></div>' +
       '<div class="pa-tools pa-slots">' + ["A", "B", "C"].map(function (x) { return '<span><button type="button" data-save="' + x + '">Save ' + x + '</button><button type="button" data-load="' + x + '"' + (localStorage.getItem(KEY + "_slot_" + x) ? "" : " disabled") + '>Load</button></span>'; }).join("") + "</div>" +
-      S("scene", "Scene &amp; sky",
+      S("scene", "Atmosphere",
         (A1 ? row("Scene", "scene", [["a1", "Lantern Tree"], ["pa", "Plan A Portals"]]) : "") +
         row("Time of day", "tod", [["cur", "Current"], ["sunrise", "Sunrise"], ["day", "Day"], ["dusk", "Dusk"], ["night", "Night"]]) +
         row("Season", "season", [["spring", "Spring"], ["summer", "Summer (current)"], ["autumn", "Autumn"], ["winter", "Winter"]]) +
         row("Weather", "weather", [["none", "None"], ["rain", "Light rain"], ["leaves", "Falling leaves"], ["snow", "Snow"]]) +
         row("Magic meter", "magic", [["live", "As built"], ["1", "1"], ["2", "2"], ["3", "3"], ["4", "4"], ["5", "5"]]) +
-        '<p class="pa-hint">1 = a few fireflies and stars · 3 = glows, sparkles, a shooting star · 5 = dragons and aurora.' + (reduce ? " Reduce motion is on, so effects stay off." : "") + "</p>" +
+        '<p class="pa-hint">Each level adds to the last, and only in the open sky where it belongs. 1 = a few fireflies and twinkles · 3 = soft glows and a rare shooting star · 5 = a slow sky ribbon and one far-off dragon.' + (reduce ? " Reduce motion is on, so effects stay off." : "") + "</p>" +
         row("Art brightness", "art", [["dim", "Dim"], ["normal", "Normal"], ["bright", "Bright"]]) +
         row("UI tint", "tint", [["built", "As built"], ["warm", "Warm gold"], ["cool", "Cool blue"], ["forest", "Forest"]]) +
         row("Ambient sound", "sound", [["off", "Off"], ["on", "On"]]) +
