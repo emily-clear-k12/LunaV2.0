@@ -281,6 +281,31 @@
     };
   }
 
+  // Aurora-like colour ribbons: soft wavy bands in the open sky (fade out over the band's masked x-ranges).
+  function aurora(bands, spans) {
+    var R = bands.map(function (b) { return { y: b.y, h: b.h, amp: b.amp, k: b.k, sp: b.sp, a: b.a, cols: b.cols, ph: rnd(0, TAU) }; });
+    return function (g, t) {
+      g.globalCompositeOperation = "lighter";
+      R.forEach(function (r) {
+        spans.forEach(function (sp) {
+          var x0 = sp[0], x1 = sp[1], step = 16;
+          var gr = g.createLinearGradient(x0, 0, x1, 0), n = r.cols.length;
+          gr.addColorStop(0, "rgba(0,0,0,0)");
+          r.cols.forEach(function (c, i) { gr.addColorStop(0.12 + 0.76 * i / Math.max(1, n - 1), hexA(c, r.a * (0.75 + 0.25 * Math.sin(t * 0.4 + i + r.ph)))); });
+          gr.addColorStop(1, "rgba(0,0,0,0)");
+          for (var layer = 0; layer < 3; layer++) {
+            var th = r.h * (0.45 + layer * 0.35), al = [1, 0.55, 0.3][layer];
+            g.globalAlpha = al; g.fillStyle = gr; g.beginPath();
+            for (var x = x0; x <= x1; x += step) { var y = r.y + Math.sin(x * r.k + t * r.sp + r.ph) * r.amp + Math.sin(x * r.k * 2.3 - t * r.sp * 0.7) * r.amp * 0.35; x === x0 ? g.moveTo(x, y - th / 2) : g.lineTo(x, y - th / 2); }
+            for (x = x1; x >= x0; x -= step) { var y2 = r.y + Math.sin(x * r.k + t * r.sp + r.ph) * r.amp + Math.sin(x * r.k * 2.3 - t * r.sp * 0.7) * r.amp * 0.35; g.lineTo(x, y2 + th / 2 + Math.sin(x * 0.02 + t) * 4); }
+            g.closePath(); g.fill();
+          }
+        });
+      });
+      g.globalAlpha = 1; g.globalCompositeOperation = "source-over";
+    };
+  }
+
   // Sparkles that rise from a point (lantern hover). Call AmbientFX.burst(x, y, color) in art pixels.
   var bursts = [];
   function sparkleBursts() {
@@ -338,6 +363,26 @@
       mount: function (c) { var f = document.getElementById("frame"); if (!f) return false; var ref = f.querySelector(".fx-loop") || f.querySelector(".bg"); ref ? ref.after(c) : f.prepend(c); return true; },
       art: function () { return document.querySelector("#frame .bg"); },
       skySample: { y0: 20, y1: 560, n: 70 },
+      flowerSample: { box: [0, 600, 1366, 168], n: 60, test: function (r, g, b) { return b > 150 && b > r + 10 && b > g + 30 && r + g + b > 330; } },
+      magic: {
+        star: "#fbe9ff", flower: "#d9c6ff", sparkle: "#fff2ff", mote: "#ffe9b8", dragonColor: "#1a0f2e",
+        ffColors: ["#fff3a0", "#e9ff8a", "#ffe07a", "#fff8c8"], ffSize: 7.5,
+        ff: [[20, 560, 420, 190], [900, 560, 440, 190], [60, 70, 470, 300], [860, 60, 470, 300], [470, 420, 420, 140]],
+        lamps: function () { return (window.A1_WORLDS || []).map(function (w) { return { x: w.x, y: w.y + 6, r: w.w * 0.95, sy: 1.25, c: w.color, lo: 0.08, hi: 0.26, flicker: true, f: rnd(0.3, 0.55) }; }); },
+        mushrooms: [{ x: 60, y: 640, r: 46, c: "#c77dff", lo: 0.12, hi: 0.42, f: 0.25 }, { x: 122, y: 690, r: 32, c: "#c77dff", lo: 0.10, hi: 0.36, f: 0.3 },
+          { x: 180, y: 620, r: 26, c: "#b388ff", lo: 0.08, hi: 0.32, f: 0.28 }, { x: 212, y: 700, r: 24, c: "#b388ff", lo: 0.08, hi: 0.30, f: 0.33 },
+          { x: 1288, y: 645, r: 40, c: "#c77dff", lo: 0.12, hi: 0.40, f: 0.27 }, { x: 1228, y: 700, r: 28, c: "#b388ff", lo: 0.09, hi: 0.32, f: 0.31 },
+          { x: 1150, y: 692, r: 24, c: "#b388ff", lo: 0.08, hi: 0.30, f: 0.29 }],
+        mid: [40, 120, 1290, 460],
+        shoot: [{ x: 900, y: 20, w: 460, h: 120, ang: 2.62 }, { x: 0, y: 30, w: 380, h: 120, ang: 0.52 }, { x: 760, y: 220, w: 560, h: 100, ang: 2.75 }],
+        petalFrom: [{ x: 60, y: -20, w: 420, h: 60, dir: 0.3 }, { x: 900, y: -20, w: 420, h: 60, dir: -0.3 }],
+        petals: ["#ffc6e6", "#e7c6ff", "#ffd8ef", "#cfe3ff"], avoid: null,
+        motes: [0, 380, 1366, 380],
+        aurora: [{ y: 70, h: 46, amp: 18, k: 0.006, sp: 0.25, a: 0.34, cols: ["#5cffc8", "#62d6ff", "#b48bff"] },
+          { y: 150, h: 34, amp: 14, k: 0.008, sp: -0.2, a: 0.26, cols: ["#b48bff", "#ff8fd8", "#5cffc8"] }],
+        auroraSpans: [[0, 470], [900, 1366]],
+        dragons: [{ x: 0, y: 350, w: 430, h: 60, s: [10, 13], a: 0.85 }, { x: 960, y: 370, w: 406, h: 60, s: [9, 12], a: 0.85 }]
+      },
       runeBoxes: [[470, 40, 900, 640]],
       runeTest: function (r, g, b) { return r + g + b > 400 && r >= b - 8 && b > 90; },   // pale-gold rune strokes (and lit windows)
       layers: function (art) {
@@ -400,6 +445,27 @@
       art: function () { var i = new Image(); i.src = "assets/scene.jpg"; return i; },
       runeBoxes: [[200, 60, 320, 190], [1215, 180, 1262, 242]],
       runeTest: function (r, g, b) { return r > 165 && g > 115 && b < 140 && r - b > 60; },   // warm gold carvings
+      skySample: { y0: 0, y1: 230, n: 60, test: function (r, g, b, x) { return (x < 660 || x > 880) && b > 200 && b > r + 40 && g > 150; } },
+      flowerSample: { box: [0, 560, 1280, 160], n: 40, test: function (r, g, b, x) { return (x < 650 || x > 890) && r > 200 && (g < 150 || b > 180) && r - Math.min(g, b) > 70; } },
+      magic: {
+        star: "#ffffff", flower: "#fff3c0", sparkle: "#fffbe0", mote: "#fff4c8", dragonColor: "#2c3e5c",
+        ffColors: ["#fff6a8", "#eaff9a"], ffSize: 6,
+        ff: [[0, 600, 140, 120], [1140, 600, 140, 120], [960, 560, 160, 90], [0, 330, 160, 230], [1110, 330, 170, 230]],
+        lamps: function () { return [{ x: 84, y: 196, r: 30, c: "#ffb347", lo: 0.08, hi: 0.26, flicker: true }, { x: 400, y: 236, r: 22, c: "#ffb347", lo: 0.06, hi: 0.22, flicker: true },
+          { x: 1210, y: 298, r: 26, c: "#ffb347", lo: 0.06, hi: 0.22, flicker: true }]; },
+        /* Plan D's art has no mushrooms: level 3's soft pulse glows sit on the treehouse windows, porch lamp and door instead */
+        mushrooms: [{ x: 33, y: 197, r: 26, c: "#ffcf70", lo: 0.12, hi: 0.40, f: 0.25 }, { x: 228, y: 306, r: 24, c: "#ffd27a", lo: 0.12, hi: 0.40, f: 0.3 },
+          { x: 1233, y: 440, r: 30, c: "#ffc266", lo: 0.10, hi: 0.36, f: 0.28 }, { x: 160, y: 410, r: 40, c: "#ffd890", lo: 0.06, hi: 0.24, f: 0.22 }],
+        mid: [20, 150, 640, 420],
+        shoot: [{ x: 900, y: 10, w: 360, h: 80, ang: 2.75 }, { x: 420, y: 20, w: 220, h: 80, ang: 0.45 }],
+        petalFrom: [{ x: 300, y: -20, w: 340, h: 60, dir: 0.4 }, { x: 980, y: -20, w: 260, h: 30, dir: -0.3 }, { x: 920, y: 130, w: 200, h: 60, dir: 0.2 }],
+        petals: ["#ffc6e6", "#ffe08a", "#ffd8ef", "#f7b2d3"], avoid: [680, 40, 180, 470],
+        motes: [0, 300, 1280, 420],
+        aurora: [{ y: 60, h: 40, amp: 14, k: 0.008, sp: 0.22, a: 0.22, cols: ["#7dffd4", "#9ad8ff", "#e1a8ff"] },
+          { y: 120, h: 28, amp: 10, k: 0.01, sp: -0.18, a: 0.18, cols: ["#e1a8ff", "#ffb3e0", "#7dffd4"] }],
+        auroraSpans: [[420, 670], [880, 1280]],
+        dragons: [{ x: 880, y: 120, w: 380, h: 70, s: [9, 12], a: 0.6 }, { x: 440, y: 140, w: 230, h: 60, s: [7, 10], a: 0.55 }]
+      },
       layers: function (art) {
         return [
           dragons([
@@ -439,6 +505,27 @@
     }
   };
 
+  /* ---------- Magic meter (prototype panel): levels 1–5, each adds to the one before ---------- */
+  function scatter(box, n) { var o = []; for (var i = 0; i < n; i++) o.push([rnd(box[0], box[0] + box[2]), rnd(box[1], box[1] + box[3])]); return o; }
+  function magicLayers(art, L) {
+    var M = P.magic, out = [], sky = art.sky || [], fl = art.flowers || [];
+    var ff = [0, 10, 26, 34, 42, 60][L];
+    out.push(twinkles(sky.slice(0, [0, 22, 30, 40, 48, 64][L]), M.star));                       // 1: gentle stars, sky only
+    if (M.lamps) out.push(lights(M.lamps()));                                                       // the art's own lamps keep breathing
+    if (L >= 2 && fl.length) out.push(twinkles(fl.slice(0, [0, 0, 22, 30, 38, 48][L]), M.flower)); // 2: flower shimmer
+    if (L >= 3) { out.push(lights(M.mushrooms.map(function (m) { return Object.assign({}, m); })));    // 3: mushroom glow
+      out.push(twinkles(scatter(M.mid, [0, 0, 0, 26, 36, 54][L]), M.sparkle));                       //    floating sparkles
+      if (art.runes) out.push(runes(art.runes, null, 0.08, 0.30)); }
+    if (L >= 3) out.push(shootingStars(M.shoot, [[0], [0], [0], [7, 13], [3.2, 6], [2, 4]][L], { max: [0, 0, 0, 1, 2, 3][L] }));
+    if (L >= 4) { out.push(leaves(M.petalFrom, L >= 5 ? [0.7, 1.5] : [1.4, 2.8], M.petals, M.avoid));  // 4: drifting petals
+      out.push(motes(M.motes, L >= 5 ? 46 : 26, M.mote)); }                                          //    rising light motes
+    if (L >= 5) { out.unshift(aurora(M.aurora, M.auroraSpans));                                      // 5: aurora ribbons + dragons
+      out.push(dragons(M.dragons, M.dragonColor, [2.5, 4.5])); }
+    out.push(fireflies(M.ff, ff, M.ffColors, M.ffSize));                                              // glowing dots only
+    out.push(sparkleBursts());
+    return out;
+  }
+
   var P = PRESETS[preset]; if (!P) return;
 
   /* Read the art once: pick open-sky points for twinkles and build a soft glow mask of the rune strokes. */
@@ -454,7 +541,13 @@
         while (cfg && out.sky.length < cfg.n && tries++ < 6000) {
           var x = (Math.random() * P.W) | 0, y = (cfg.y0 + Math.random() * (cfg.y1 - cfg.y0)) | 0, i = (y * P.W + x) * 4;
           var r = d[i], gg = d[i + 1], b = d[i + 2];
-          if (b > 95 && b > gg + 35 && r + gg + b > 230) out.sky.push([x, y]);   // open purple sky only
+          if (cfg.test ? cfg.test(r, gg, b, x) : (b > 95 && b > gg + 35 && r + gg + b > 230)) out.sky.push([x, y]);   // open sky only
+        }
+        var fs = P.flowerSample; out.flowers = []; tries = 0;
+        while (fs && out.flowers.length < fs.n && tries++ < 20000) {
+          var fx = (fs.box[0] + Math.random() * fs.box[2]) | 0, fy = (fs.box[1] + Math.random() * fs.box[3]) | 0;
+          if (fx >= P.W || fy >= P.H) continue; var fi = (fy * P.W + fx) * 4;
+          if (fs.test(d[fi], d[fi + 1], d[fi + 2], fx)) out.flowers.push([fx, fy]);
         }
         if (P.runeBoxes) {
           var bx = P.runeBoxes, x0 = 1e9, y0 = 1e9, x1 = 0, y1 = 0;
@@ -487,7 +580,10 @@
     c.style.cssText = "position:absolute;left:0;top:0;width:100%;height:100%;pointer-events:none;z-index:0;";
     if (preset === "a1") c.style.cssText = "position:absolute;left:0;top:0;width:" + P.W + "px;height:" + P.H + "px;pointer-events:none;";
     if (!P.mount(c)) return;
-    var g = c.getContext("2d"), layers = P.layers(art), last = performance.now(), t0 = last;
+    var g = c.getContext("2d"), layers, last = performance.now(), t0 = last;
+    function setLevel(L) { L = +L || 0; layers = L >= 1 && L <= 5 && P.magic ? magicLayers(art, L) : P.layers(art); c.setAttribute("data-magic", L || "live"); }
+    window.AmbientFX.setLevel = setLevel; window.AmbientFX.level = function () { return c.getAttribute("data-magic"); };
+    setLevel(window.__magicLevel);
 
     function size() {
       var rect = c.getBoundingClientRect(), dpr = Math.min(window.devicePixelRatio || 1, 2);
