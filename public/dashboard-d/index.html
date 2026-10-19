@@ -8,6 +8,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&family=Lilita+One&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="../demo/lonestar-brand.css" />
 <link rel="stylesheet" href="../demo/switcher.css" />
 <style>
   /* Plan D "Forest Guides": treehouse porch + numbered signpost. Full-bleed scene + frosted cream overlays.
@@ -18,6 +19,9 @@
     --brown-soft: #7a5638;
     --gold: #d9a93f;
     --gold-deep: #94690f;
+    --ls-sans: "Manrope", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    --ls-serif: "Source Serif 4", Georgia, "Times New Roman", serif;
+    --ls-game: "Lilita One", "Manrope", system-ui, sans-serif;
     --display: "Manrope", system-ui, sans-serif;
   }
   * { box-sizing: border-box; }
@@ -72,7 +76,7 @@
     padding: 5px 16px 4px 12px; border-radius: 999px;
   }
   .title svg { width: 18px; height: 24px; flex: none; filter: drop-shadow(0 0 4px rgba(120, 200, 255, .7)); }
-  .title h1 { margin: 0; font-size: 25px; font-weight: 800; line-height: 1.15; letter-spacing: .01em; white-space: nowrap; }
+  .title h1 { margin: 0; font-family: var(--ls-serif); font-size: 25px; font-weight: 700; line-height: 1.15; letter-spacing: -0.01em; white-space: nowrap; }
   .card { padding: 8px 14px 10px; }
   .lbl {
     margin: 0; display: flex; align-items: center; gap: 6px;
@@ -89,7 +93,7 @@
   }
   .world .kicker { margin: 0; display: flex; align-items: center; gap: 6px; font-size: 13.5px; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; line-height: 1.2; color: var(--gold-deep); }
   .world .kicker svg { width: 15px; height: 15px; flex: none; filter: drop-shadow(0 0 3px rgba(255, 196, 60, .8)); }
-  .world .place { margin: 0; font-size: 23px; font-weight: 800; line-height: 1.1; white-space: nowrap; }
+  .world .place { margin: 0; font-family: var(--ls-serif); font-size: 23px; font-weight: 700; line-height: 1.1; letter-spacing: -0.01em; white-space: nowrap; }
   .world .lesson { margin: 1px 0 0; font-size: 16px; font-weight: 700; line-height: 1.2; color: var(--brown-soft); white-space: nowrap; }
   .hop {
     display: flex; align-items: center; gap: 10px;

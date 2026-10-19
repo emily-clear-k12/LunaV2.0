@@ -2,27 +2,28 @@
    Default values have no rules here, so the defaults are the pages as built. Fonts are never changed. */
 
 /* ================= panel ================= */
-.pa-panel{position:fixed;right:12px;bottom:72px;z-index:20000;width:304px;max-height:min(470px,calc(100vh - 124px));display:flex;flex-direction:column;
-  border-radius:16px;background:rgba(9,22,43,.96);border:1px solid rgba(255,210,122,.38);box-shadow:0 18px 40px -12px rgba(0,0,0,.75);
-  color:#e9f2fa;font:600 12px/1.3 "Manrope",system-ui,sans-serif;-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px)}
-.pa-top{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:9px 10px 9px 14px;border-bottom:1px solid rgba(255,255,255,.1);cursor:default}
-.pa-top b{font:800 13px "Manrope",sans-serif;letter-spacing:.02em;color:#ffd27a}
-.pa-top button{width:26px;height:26px;border-radius:8px;border:1px solid rgba(255,255,255,.22);background:rgba(255,255,255,.06);color:#fff;font:800 15px/1 "Manrope",sans-serif;cursor:pointer}
-.pa-panel.min{width:auto}.pa-panel.min .pa-body{display:none}.pa-panel.min .pa-top{border-bottom:0}.pa-panel.min .pa-top button{transform:rotate(90deg)}
-.pa-body{overflow-y:auto;overscroll-behavior:contain;padding:4px 12px 12px;scrollbar-width:thin;scrollbar-color:rgba(255,210,122,.4) transparent}
-.pa-h{margin:12px 0 4px;font:800 10px "Manrope",sans-serif;letter-spacing:.14em;text-transform:uppercase;color:#7fc6ef;border-top:1px solid rgba(255,255,255,.08);padding-top:9px}
-.pa-h:first-child{border-top:0;padding-top:4px}
-.pa-row{margin:6px 0}.pa-row small{display:block;margin:0 0 3px;font:700 10.5px "Manrope",sans-serif;color:#b9cde0}
-.pa-seg{display:flex;flex-wrap:wrap;gap:3px}
-.pa-seg button{flex:1 1 auto;min-width:0;padding:5px 7px;border-radius:8px;border:1px solid rgba(255,255,255,.16);background:rgba(255,255,255,.05);color:#e9f2fa;
-  font:700 11px "Manrope",sans-serif;cursor:pointer;white-space:nowrap}
-.pa-seg button:hover{background:rgba(255,255,255,.12)}
-.pa-seg button.on{background:#f5b400;border-color:#f5b400;color:#0b1d33}
-.pa-seg button:focus-visible,.pa-reset:focus-visible,.pa-top button:focus-visible{outline:2px solid #7fc6ef;outline-offset:1px}
-.pa-hint{margin:4px 0 0;font:600 10.5px/1.35 "Manrope",sans-serif;color:#9fb6cb}
-.pa-reset{margin-top:12px;width:100%;padding:8px;border-radius:10px;border:1px solid rgba(255,210,122,.5);background:rgba(245,180,0,.12);color:#ffd27a;font:800 12px "Manrope",sans-serif;cursor:pointer}
-.pa-reset:hover{background:rgba(245,180,0,.22)}
-.pa-note{margin:10px 0 0;font:600 10.5px/1.4 "Manrope",sans-serif;color:#8ea6bb}
+.pa-panel{position:fixed;top:96px;right:14px;bottom:78px;z-index:20000;width:min(236px,calc(100vw - 28px));height:auto;max-height:none;display:flex;flex-direction:column;
+  border-radius:16px;background:#f4e7cc;border:1px solid #cbb892;box-shadow:-8px 8px 24px rgba(48,30,8,.16);
+  color:#1a140c;font:600 12.5px/1.35 "Manrope",system-ui,sans-serif}
+.pa-top{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:12px 12px 12px 16px;border-bottom:1px solid #d9c7a4;cursor:default;background:#efe0c0;flex:none}
+.pa-top b{font:800 15px "Manrope",sans-serif;letter-spacing:.01em;color:#1a140c}
+.pa-top button{width:32px;height:32px;border-radius:8px;border:1.5px solid #1a140c;background:#fffaf1;color:#1a140c;font:800 16px/1 "Manrope",sans-serif;cursor:pointer}
+.pa-panel.min{top:auto;bottom:16px;right:12px;width:auto;height:auto;border-radius:14px;border:1px solid #cbb892}
+.pa-panel.min .pa-body{display:none}.pa-panel.min .pa-top{border-bottom:0;background:transparent}.pa-panel.min .pa-top button{transform:rotate(90deg)}
+.pa-body{flex:1;min-height:0;overflow-y:auto;overscroll-behavior:contain;padding:6px 14px 20px;scrollbar-width:thin;scrollbar-color:#b89a6a transparent}
+.pa-h{margin:14px 0 6px;font:800 12px "Manrope",sans-serif;letter-spacing:.08em;text-transform:uppercase;color:#1a140c;border-top:1px solid #d9c7a4;padding-top:12px}
+.pa-h:first-child{border-top:0;padding-top:6px}
+.pa-row{margin:8px 0}.pa-row small{display:block;margin:0 0 4px;font:700 12px "Manrope",sans-serif;color:#1a140c}
+.pa-seg{display:flex;flex-wrap:wrap;gap:4px}
+.pa-seg button{flex:1 1 auto;min-width:0;padding:7px 8px;border-radius:8px;border:1px solid #c9b48a;background:#fffaf1;color:#1a140c;
+  font:700 12.5px "Manrope",sans-serif;cursor:pointer;white-space:nowrap}
+.pa-seg button:hover{background:#fff;border-color:#1a140c}
+.pa-seg button.on{background:#e7b423;border-color:#8d6a12;color:#1a140c}
+.pa-seg button:focus-visible,.pa-reset:focus-visible,.pa-top button:focus-visible,.pa-tools button:focus-visible,.pa-sh:focus-visible{outline:2px solid #1a140c;outline-offset:2px}
+.pa-hint{margin:5px 0 0;font:600 12.5px/1.4 "Manrope",sans-serif;color:#1a140c}
+.pa-reset{margin-top:14px;width:100%;padding:10px;border-radius:10px;border:1.5px solid #1a140c;background:#fffaf1;color:#1a140c;font:800 13px "Manrope",sans-serif;cursor:pointer}
+.pa-reset:hover{background:#fff}
+.pa-note{margin:12px 0 0;font:600 12.5px/1.45 "Manrope",sans-serif;color:#1a140c}
 
 /* ================= shared module-button parts ================= */
 .pa-ic,.pa-ml,.pa-nm{display:none}
@@ -182,7 +183,7 @@ html[data-p-badgesize=l] .lsb i{width:58px}html[data-p-badgesize=l] .lsb img{wid
 html[data-p-badgelbl=off] .lsb b{display:none}
 html[data-p-earned=ring] .lsb i.earned img{border-radius:50%;box-shadow:0 0 0 2px #f5c542,0 0 10px 2px rgba(245,197,66,.75);background:rgba(245,197,66,.18)}
 html[data-p-earned=sparkle] .lsb i.earned::before,html[data-p-earned=sparkle] .lsb i.earned::after{content:"\2726";position:absolute;color:#fff3b0;text-shadow:0 0 6px #f5c542;
-  font:400 10px/1 sans-serif;animation:paTw 1.8s ease-in-out infinite;pointer-events:none}
+  font:400 10px/1 var(--ls-sans,"Manrope",sans-serif);animation:paTw 1.8s ease-in-out infinite;pointer-events:none}
 html[data-p-earned=sparkle] .lsb i.earned::before{left:3px;top:4px}
 html[data-p-earned=sparkle] .lsb i.earned::after{left:auto;right:6px;bottom:12px;font-size:8px;animation-delay:.9s}
 html[data-p-earned=sparkle] .lsb i.earned img{filter:drop-shadow(0 0 5px rgba(255,230,140,.9)) drop-shadow(0 2px 2px rgba(0,0,0,.45))}
@@ -297,7 +298,7 @@ html.pa-a1[data-p-art=bright] .pa-pa{filter:brightness(1.16) saturate(1.08)}
 .pa-pwin{position:absolute;inset:12%;border-radius:50%;overflow:hidden;background:#120a24}
 .pa-pwin img{width:100%;height:100%;object-fit:cover;display:block}
 .pa-pwin::after{content:"";position:absolute;inset:0;border-radius:50%;background:radial-gradient(circle,transparent 55%,color-mix(in srgb,var(--mc) 45%,rgba(20,10,40,.6)) 100%)}
-.pa-prunes{position:absolute;inset:-4%;width:108%;height:108%;font-family:serif}
+.pa-prunes{position:absolute;inset:-4%;width:108%;height:108%;font-family:var(--ls-serif,"Source Serif 4",serif)}
 @media (prefers-reduced-motion:no-preference){.pa-prunes{animation:paSpin 28s linear infinite}}
 @media (prefers-reduced-motion:reduce){.pa-portal.open .pa-pring{animation:none}}
 @keyframes paSpin{to{transform:rotate(360deg)}}
@@ -352,15 +353,15 @@ html.pa-a1.pa-tod-on:not([data-p-tod=night]):not([data-p-tod=dusk]) .pa-astra{fi
 html.pa-a1[data-p-scene=pa] .pa-tod{display:none}
 
 /* ================= panel sections + tools ================= */
-.pa-tools{display:flex;gap:5px;margin:6px 0 4px;flex-wrap:wrap}
-.pa-tools button{flex:1 1 auto;font:700 11px "Manrope",sans-serif;color:#eaf6ff;background:rgba(127,198,239,.14);border:1px solid rgba(127,198,239,.35);border-radius:8px;padding:5px 6px;cursor:pointer}
-.pa-tools button:hover{background:rgba(127,198,239,.28)}.pa-tools button:disabled{opacity:.35;cursor:default}
-.pa-slots span{display:flex;flex:1 1 0;gap:2px}.pa-slots span button{padding:4px 3px}
-.pa-sec{border-top:1px solid rgba(255,255,255,.09)}
-.pa-sh{display:flex;width:100%;align-items:center;justify-content:space-between;background:none;border:0;padding:8px 2px;cursor:pointer;font:800 10px "Manrope",sans-serif;letter-spacing:.14em;text-transform:uppercase;color:#7fc6ef}
-.pa-sh::after{content:"\25B8";font-size:11px;transition:transform .2s}.pa-sec.open .pa-sh::after{transform:rotate(90deg)}
-.pa-sb{display:none;padding-bottom:6px}.pa-sec.open .pa-sb{display:block}
-.pa-row input[type=range]{width:100%;accent-color:#f5c542}
+.pa-tools{display:flex;gap:6px;margin:8px 0 6px;flex-wrap:wrap}
+.pa-tools button{flex:1 1 auto;font:700 12.5px "Manrope",sans-serif;color:#1a140c;background:#fffaf1;border:1px solid #c9b48a;border-radius:8px;padding:7px 8px;cursor:pointer}
+.pa-tools button:hover{background:#fff;border-color:#1a140c}.pa-tools button:disabled{opacity:.35;cursor:default}
+.pa-slots span{display:flex;flex:1 1 0;gap:2px}.pa-slots span button{padding:6px 4px}
+.pa-sec{border-top:1px solid #d9c7a4}
+.pa-sh{display:flex;width:100%;align-items:center;justify-content:space-between;background:none;border:0;padding:11px 2px;cursor:pointer;font:800 12px "Manrope",sans-serif;letter-spacing:.08em;text-transform:uppercase;color:#1a140c}
+.pa-sh::after{content:"\25B8";font-size:12px;transition:transform .2s}.pa-sec.open .pa-sh::after{transform:rotate(90deg)}
+.pa-sb{display:none;padding-bottom:8px}.pa-sec.open .pa-sb{display:block}
+.pa-row input[type=range]{width:100%;accent-color:#8d6a12;height:22px}
 
 /* ================= menu reveal ================= */
 .pa-handle{display:none}

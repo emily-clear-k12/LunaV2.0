@@ -101,33 +101,64 @@
     };
   }
 
-  // Shooting stars: glide slowly across the sky with a long glowing tail, every couple of seconds.
+  // Shooting stars: a short, soft streak that only lives in open sky.
   function shootingStars(zones, every, opts) {
     opts = opts || {};
-    var live = [], next = rnd(0.6, 1.5), maxLive = opts.max || 3;
+    var live = [], next = rnd(0.3, 0.8), maxLive = opts.max || 1;
+    var sp0 = opts.speed ? opts.speed[0] : 70, sp1 = opts.speed ? opts.speed[1] : 110;
+    function openSky(x, y) {
+      var hit = sceneArt.skyHit, W = P.W, H = P.H;
+      var xi = x | 0, yi = y | 0;
+      if (xi < 1 || yi < 1 || xi >= W - 1 || yi >= H - 1) return false;
+      if (!hit) return yi < H * 0.42;
+      return hit[yi * W + xi] > 200;
+    }
+    function pathClear(x, y, ang, dist) {
+      var n = Math.max(3, (dist / 14) | 0), c = Math.cos(ang), s = Math.sin(ang);
+      for (var i = 0; i <= n; i++) if (!openSky(x + c * dist * i / n, y + s * dist * i / n)) return false;
+      return true;
+    }
     return function (g, t, dt) {
       next -= dt;
       if (next <= 0 && live.length < maxLive) {
-        var z = pick(zones), ang = z.ang + rnd(-0.1, 0.1), sp = rnd(opts.speed ? opts.speed[0] : 230, opts.speed ? opts.speed[1] : 340);
-        live.push({ x: rnd(z.x, z.x + z.w), y: rnd(z.y, z.y + z.h), vx: Math.cos(ang) * sp, vy: Math.sin(ang) * sp,
-          life: 0, max: rnd(2.0, 3.0), len: rnd(170, 290), w: rnd(2.2, 3.2) });
-        next = rnd(every[0], every[1]);
+        var placed = false;
+        for (var tryN = 0; tryN < 10 && !placed; tryN++) {
+          var z = pick(zones), ang = z.ang + rnd(-0.08, 0.08);
+          var x = rnd(z.x + 16, z.x + z.w - 16), y = rnd(z.y + 8, z.y + z.h - 8);
+          var sp = rnd(sp0, sp1), max = rnd(1.15, 1.7), len = rnd(46, 72);
+          if (pathClear(x, y, ang, sp * max * 0.85) && pathClear(x, y, ang + Math.PI, len * 0.7)) {
+            live.push({ x: x, y: y, vx: Math.cos(ang) * sp, vy: Math.sin(ang) * sp, life: 0, max: max, len: len, w: rnd(1.3, 2.0) });
+            placed = true;
+          }
+        }
+        next = placed ? rnd(every[0], every[1]) : rnd(0.4, 0.9);
       }
-      g.globalCompositeOperation = "lighter"; g.lineCap = "round";
+      g.save();
+      g.globalCompositeOperation = "lighter";
+      g.lineCap = "round";
       live = live.filter(function (s) {
         s.life += dt; s.x += s.vx * dt; s.y += s.vy * dt;
-        var k = s.life / s.max; if (k >= 1) return false;
-        var a = Math.min(1, k * 5) * Math.min(1, (1 - k) * 2.2);            // quick fade-in, long glide, soft fade-out
-        var n = Math.hypot(s.vx, s.vy), ux = s.vx / n, uy = s.vy / n;
-        var L = s.len * Math.min(1, k * 3), tx = s.x - ux * L, ty = s.y - uy * L;
+        var k = s.life / s.max; if (k >= 1 || !openSky(s.x, s.y)) return false;
+        var a = Math.min(1, k * 4) * Math.min(1, (1 - k) * 3);
+        var n = Math.hypot(s.vx, s.vy) || 1, ux = s.vx / n, uy = s.vy / n;
+        var L = s.len * Math.min(1, k * 2.4);
+        var tx = s.x - ux * L, ty = s.y - uy * L;
+        if (!openSky(tx, ty)) { tx = s.x - ux * L * 0.45; ty = s.y - uy * L * 0.45; }
         var gr = g.createLinearGradient(tx, ty, s.x, s.y);
-        gr.addColorStop(0, "rgba(200,170,255,0)"); gr.addColorStop(0.7, "rgba(255,225,250," + (0.45 * a) + ")"); gr.addColorStop(1, "rgba(255,255,255," + a + ")");
-        g.strokeStyle = gr; g.lineWidth = s.w; g.beginPath(); g.moveTo(tx, ty); g.lineTo(s.x, s.y); g.stroke();
-        g.lineWidth = s.w * 3.2; g.globalAlpha = 0.25; g.stroke(); g.globalAlpha = 1;   // soft outer glow on the tail
-        g.globalAlpha = a; g.drawImage(glow("#fff6ff"), s.x - 13, s.y - 13, 26, 26); g.drawImage(glow("#ffffff"), s.x - 5, s.y - 5, 10, 10); g.globalAlpha = 1;
+        gr.addColorStop(0, "rgba(255,255,255,0)");
+        gr.addColorStop(0.62, "rgba(214,196,255," + (0.28 * a) + ")");
+        gr.addColorStop(1, "rgba(255,250,240," + (0.9 * a) + ")");
+        g.strokeStyle = gr; g.lineWidth = s.w * 3.2; g.globalAlpha = 0.22; 
+        g.beginPath(); g.moveTo(tx, ty); g.lineTo(s.x, s.y); g.stroke();
+        g.globalAlpha = 1; g.lineWidth = s.w; g.stroke();
+        g.globalAlpha = a * 0.85;
+        g.drawImage(glow("#fff4dd"), s.x - 8, s.y - 8, 16, 16);
+        g.globalAlpha = a;
+        g.drawImage(glow("#ffffff"), s.x - 3, s.y - 3, 6, 6);
+        g.globalAlpha = 1;
         return true;
       });
-      g.globalCompositeOperation = "source-over";
+      g.restore();
     };
   }
 
@@ -284,35 +315,44 @@
     };
   }
 
-  // Aurora: slow ribbons that breathe in and out. Drawn only where the sky mask allows.
+  // Aurora: a few thin glowing ribbons, slow and low, clipped to open sky.
   function aurora(bands, spans) {
     var R = bands.map(function (b) { return { y: b.y, h: b.h, amp: b.amp, k: b.k, sp: b.sp, a: b.a, cols: b.cols, ph: rnd(0, TAU) }; });
+    function curve(r, x0, x1, t, yOff) {
+      var pts = [], step = 14;
+      for (var x = x0; x <= x1; x += step) {
+        pts.push([x, r.y + yOff
+          + Math.sin(x * r.k + t * r.sp + r.ph) * r.amp
+          + Math.sin(x * r.k * 0.47 - t * r.sp * 0.4) * r.amp * 0.28]);
+      }
+      return pts;
+    }
+    function stroke(g, pts, color, width, alpha, blur) {
+      if (!pts || pts.length < 2) return;
+      g.save();
+      g.globalAlpha = alpha;
+      g.strokeStyle = color;
+      g.lineWidth = width;
+      g.lineCap = "round";
+      g.lineJoin = "round";
+      g.shadowColor = color;
+      g.shadowBlur = blur;
+      g.beginPath();
+      g.moveTo(pts[0][0], pts[0][1]);
+      for (var i = 1; i < pts.length; i++) g.lineTo(pts[i][0], pts[i][1]);
+      g.stroke();
+      g.restore();
+    }
     return function (g, t) {
       g.save();
-      g.globalCompositeOperation = "source-over";
+      g.globalCompositeOperation = "lighter";
       R.forEach(function (r) {
-        var breathe = 0.35 + 0.65 * (0.5 + 0.5 * Math.sin(t * 0.11 + r.ph));
+        var breathe = 0.72 + 0.28 * (0.5 + 0.5 * Math.sin(t * 0.07 + r.ph));
         spans.forEach(function (sp) {
-          var x0 = sp[0], x1 = sp[1], step = 20, pts = [], x, i;
-          for (x = x0; x <= x1; x += step) {
-            var y = r.y
-              + Math.sin(x * r.k + t * r.sp + r.ph) * r.amp
-              + Math.sin(x * r.k * 0.41 - t * r.sp * 0.33) * r.amp * 0.4;
-            pts.push([x, y]);
-          }
-          if (pts.length < 2) return;
-          var half = r.h * (0.72 + 0.12 * Math.sin(t * 0.17 + r.ph));
-          var gr = g.createLinearGradient(0, r.y - half * 1.2, 0, r.y + half * 1.5);
-          gr.addColorStop(0, "rgba(255,255,255,0)");
-          r.cols.forEach(function (c, ci) {
-            gr.addColorStop(0.28 + 0.4 * ci / Math.max(1, r.cols.length - 1), hexA(c, r.a * breathe * (ci === 0 ? 1 : 0.72)));
+          r.cols.forEach(function (col, i) {
+            var pts = curve(r, sp[0], sp[1], t, (i - 1) * (r.h * 0.55));
+            stroke(g, pts, col, i === 1 ? 2.4 : 1.7, r.a * breathe * (i === 1 ? 1 : 0.65), 10);
           });
-          gr.addColorStop(1, "rgba(255,255,255,0)");
-          g.globalAlpha = 1; g.fillStyle = gr; g.beginPath();
-          g.moveTo(pts[0][0], pts[0][1] - half * 0.35);
-          for (i = 1; i < pts.length; i++) g.lineTo(pts[i][0], pts[i][1] - half * 0.35);
-          for (i = pts.length - 1; i >= 0; i--) g.lineTo(pts[i][0], pts[i][1] + half);
-          g.closePath(); g.fill();
         });
       });
       g.restore();
@@ -394,38 +434,55 @@
   function buildSkyMask(img) {
     var W = P.W, H = P.H, c = document.createElement("canvas"); c.width = W; c.height = H;
     var g = c.getContext("2d"); g.drawImage(img, 0, 0, W, H);
-    var src = g.getImageData(0, 0, W, H).data;
-    var hard = document.createElement("canvas"); hard.width = W; hard.height = H;
-    var id = hard.getContext("2d").createImageData(W, H), o = id.data, a1 = preset === "a1";
+    var src = g.getImageData(0, 0, W, H).data, a1 = preset === "a1";
+    var hardA = new Uint8Array(W * H);
     for (var y = 0; y < H; y++) {
       for (var x = 0; x < W; x++) {
         var i = (y * W + x) * 4, r = src[i], gg = src[i + 1], b = src[i + 2];
         var mx = r > gg ? (r > b ? r : b) : (gg > b ? gg : b);
         var mn = r < gg ? (r < b ? r : b) : (gg < b ? gg : b);
-        var sat = mx ? (mx - mn) / mx : 0;
-        var foliage = gg > r + 6 && gg > b - 5 && gg > 28 && gg > b * 0.85;
-        var wood = r > gg + 4 && gg > b * 0.75 && r < 120 && sat < 0.65 && mx < 110;
-        var sky;
+        var sat = mx ? (mx - mn) / mx : 0, sky = false;
         if (a1) {
-          var blue = b > r + 8 && b > 50, warm = r > 80 && r >= gg && b > 40 && gg < r + 10 && sat > 0.12 && y < H * 0.62;
-          var pale = mx > 150 && sat < 0.28 && y < H * 0.55;
-          sky = y < H * 0.78 && y <= H * 0.72 && !foliage && !wood && mx >= 28 && (blue || warm || pale);
-        } else {
-          var blue2 = b > r + 15 && b > 90, cloud = mx > 200 && sat < 0.18 && y < H * 0.45;
-          sky = y < H * 0.58 && y <= H * 0.62 && !foliage && (blue2 || cloud);
+          if (!(gg > r + 12 && gg > b - 8 && gg > 35 && !(b > r + 25 && b > 140)) && mx >= 48 && !(r > gg + 8 && r > b + 15 && gg < 130 && y > 80)) {
+            var blue = b > 80 && b > r + 12 && b + 8 >= gg && y < H * 0.72;
+            var pale = mx > 190 && b > 170 && b >= gg - 6 && b > r + 8 && sat < 0.35 && y < H * 0.55;
+            sky = blue || pale;
+          }
+        } else if (!(gg > r + 12 && gg > 50 && !(b > r + 30 && b > 160)) && mx >= 60) {
+          sky = (b > 150 && b > r + 25 && y < H * 0.48) || (mx > 215 && sat < 0.14 && b > 190 && y < H * 0.40);
         }
-        o[i] = o[i + 1] = o[i + 2] = 255; o[i + 3] = sky ? 255 : 0;
+        hardA[y * W + x] = sky ? 255 : 0;
       }
     }
+    var rad = a1 ? 7 : 4, tmp = new Uint8Array(W * H), eroded = new Uint8Array(W * H);
+    for (y = 0; y < H; y++) {
+      for (x = 0; x < W; x++) {
+        var m = 255, x0 = x - rad < 0 ? 0 : x - rad, x1 = x + rad >= W ? W - 1 : x + rad;
+        for (var xx = x0; xx <= x1; xx++) if (hardA[y * W + xx] < m) m = hardA[y * W + xx];
+        tmp[y * W + x] = m;
+      }
+    }
+    for (y = 0; y < H; y++) {
+      var y0 = y - rad < 0 ? 0 : y - rad, y1 = y + rad >= H ? H - 1 : y + rad;
+      for (x = 0; x < W; x++) {
+        m = 255;
+        for (var yy = y0; yy <= y1; yy++) if (tmp[yy * W + x] < m) m = tmp[yy * W + x];
+        eroded[y * W + x] = m;
+      }
+    }
+    sceneArt.skyHit = eroded;
+    var hard = document.createElement("canvas"); hard.width = W; hard.height = H;
+    var id = hard.getContext("2d").createImageData(W, H), o = id.data;
+    for (var p = 0; p < eroded.length; p++) { var q = p * 4; o[q] = o[q + 1] = o[q + 2] = 255; o[q + 3] = eroded[p]; }
     hard.getContext("2d").putImageData(id, 0, 0);
     var soft = document.createElement("canvas"); soft.width = W; soft.height = H;
     var sg = soft.getContext("2d");
-    sg.filter = "blur(6px)"; sg.drawImage(hard, 0, 0); sg.filter = "none";
-    var sd = sg.getImageData(0, 0, W, H), p = sd.data;
-    for (var k = 0; k < p.length; k += 4) {
-      var al = p[k + 3];
-      al = al < 120 ? 0 : Math.min(255, (al - 120) * 2);
-      p[k] = p[k + 1] = p[k + 2] = 255; p[k + 3] = al;
+    sg.filter = "blur(5px)"; sg.drawImage(hard, 0, 0); sg.filter = "none";
+    var sd = sg.getImageData(0, 0, W, H), pix = sd.data;
+    for (var k = 3; k < pix.length; k += 4) {
+      var al = pix[k];
+      pix[k - 3] = pix[k - 2] = pix[k - 1] = 255;
+      pix[k] = al < 36 ? 0 : Math.min(255, (al - 36) * 1.2);
     }
     sg.putImageData(sd, 0, 0);
     return soft;
@@ -451,13 +508,12 @@
           { x: 1288, y: 645, r: 40, c: "#c77dff", lo: 0.12, hi: 0.40, f: 0.27 }, { x: 1228, y: 700, r: 28, c: "#b388ff", lo: 0.09, hi: 0.32, f: 0.31 },
           { x: 1150, y: 692, r: 24, c: "#b388ff", lo: 0.08, hi: 0.30, f: 0.29 }],
         mid: [40, 120, 1290, 460],
-        shoot: [{ x: 900, y: 20, w: 460, h: 120, ang: 2.62 }, { x: 0, y: 30, w: 380, h: 120, ang: 0.52 }, { x: 760, y: 220, w: 560, h: 100, ang: 2.75 }],
+        shoot: [{ x: 20, y: 140, w: 360, h: 180, ang: 0.38 }, { x: 1000, y: 120, w: 320, h: 170, ang: 2.74 }],
         petalFrom: [{ x: 60, y: -20, w: 420, h: 60, dir: 0.3 }, { x: 900, y: -20, w: 420, h: 60, dir: -0.3 }],
         petals: ["#ffc6e6", "#e7c6ff", "#ffd8ef", "#cfe3ff"], avoid: null,
         motes: [0, 380, 1366, 380],
-        aurora: [{ y: 250, h: 78, amp: 20, k: 0.0032, sp: 0.07, a: 0.28, cols: ["#7dffe0", "#8fd6ff", "#c9b6ff"] },
-          { y: 330, h: 56, amp: 14, k: 0.0042, sp: -0.05, a: 0.18, cols: ["#d7c4ff", "#ffc4ea", "#9af6e4"] }],
-        auroraSpans: [[0, 470], [900, 1366]],
+        aurora: [{ y: 188, h: 16, amp: 8, k: 0.0038, sp: 0.045, a: 0.55, cols: ["#5ee6c8", "#8eb6ff", "#c9a6ff"] }],
+        auroraSpans: [[0, 1366]],
         dragons: [{ x: 0, y: 300, w: 430, h: 70, s: [7, 10], a: 0.55 }, { x: 960, y: 320, w: 406, h: 70, s: [6, 9], a: 0.5 }]
       },
       runeBoxes: [[470, 40, 900, 640]],
@@ -474,11 +530,9 @@
           ], "#24133f", [8, 14])),
           runes(art.runes, null, 0.10, 0.38),
           skyMasked(shootingStars([
-            { x: 900, y: 20, w: 460, h: 120, ang: 2.62 },
-            { x: 0, y: 30, w: 380, h: 120, ang: 0.52 },
-            { x: 760, y: 160, w: 500, h: 90, ang: 2.75 },
-            { x: 20, y: 150, w: 340, h: 90, ang: 0.40 }
-          ], [2.2, 4.4], { max: 2, speed: [180, 260] })),
+            { x: 20, y: 140, w: 360, h: 180, ang: 0.38 },
+            { x: 1000, y: 120, w: 320, h: 170, ang: 2.74 }
+          ], [4.5, 8], { max: 1, speed: [80, 120] })),
           lights(lanterns),
           lights([   // tree-house windows and the lamp halfway up the trunk
             { x: 600, y: 108, r: 20, c: "#ffb347", lo: 0.10, hi: 0.35, flicker: true },
@@ -534,13 +588,12 @@
         mushrooms: [{ x: 33, y: 197, r: 26, c: "#ffcf70", lo: 0.12, hi: 0.40, f: 0.25 }, { x: 228, y: 306, r: 24, c: "#ffd27a", lo: 0.12, hi: 0.40, f: 0.3 },
           { x: 1233, y: 440, r: 30, c: "#ffc266", lo: 0.10, hi: 0.36, f: 0.28 }, { x: 160, y: 410, r: 40, c: "#ffd890", lo: 0.06, hi: 0.24, f: 0.22 }],
         mid: [20, 150, 640, 420],
-        shoot: [{ x: 900, y: 10, w: 360, h: 80, ang: 2.75 }, { x: 420, y: 20, w: 220, h: 80, ang: 0.45 }],
+        shoot: [{ x: 540, y: 12, w: 460, h: 100, ang: 0.32 }, { x: 680, y: 18, w: 360, h: 90, ang: 2.82 }],
         petalFrom: [{ x: 300, y: -20, w: 340, h: 60, dir: 0.4 }, { x: 980, y: -20, w: 260, h: 30, dir: -0.3 }, { x: 920, y: 130, w: 200, h: 60, dir: 0.2 }],
         petals: ["#ffc6e6", "#ffe08a", "#ffd8ef", "#f7b2d3"], avoid: [680, 40, 180, 470],
         motes: [0, 300, 1280, 420],
-        aurora: [{ y: 36, h: 52, amp: 12, k: 0.004, sp: 0.07, a: 0.22, cols: ["#bfffea", "#c7e6ff", "#edd4ff"] },
-          { y: 88, h: 40, amp: 10, k: 0.005, sp: -0.05, a: 0.16, cols: ["#edd4ff", "#ffd6ee", "#c8fff0"] }],
-        auroraSpans: [[420, 670], [880, 1280]],
+        aurora: [{ y: 52, h: 14, amp: 6, k: 0.0044, sp: 0.04, a: 0.5, cols: ["#9af0e4", "#b9d4ff", "#e4c8ff"] }],
+        auroraSpans: [[520, 1020]],
         dragons: [{ x: 880, y: 40, w: 380, h: 80, s: [6, 9], a: 0.4 }, { x: 440, y: 50, w: 230, h: 70, s: [5, 7], a: 0.34 }]
       },
       layers: function (art) {
@@ -604,13 +657,13 @@
     if (L >= 3) { out.push(dim(lights(M.mushrooms.map(function (m) { return Object.assign({}, m); })), day ? 0.6 : 1));   // 3: glows
       out.push(twinkles(scatter(M.mid, [0, 0, 0, 26, 36, 54][L]), M.sparkle));
       if (art.runes) out.push(runes(art.runes, null, 0.08, 0.30)); }
-    if (L >= 3 && nightSky) out.push(skyMasked(shootingStars(M.shoot, [[0], [0], [0], [8, 14], [4.5, 8], [3.2, 5.5]][L], { max: [0, 0, 0, 1, 1, 2][L], speed: [170, 250] })));
+    if (L >= 3 && nightSky) out.push(skyMasked(shootingStars(M.shoot, [[0], [0], [0], [9, 14], [6, 10], [4.5, 8]][L], { max: 1, speed: [80, 130] })));
     if (L >= 4) { out.push(leaves(M.petalFrom, L >= 5 ? [0.9, 1.8] : [1.6, 3.2], M.petals, M.avoid));
       out.push(motes(M.motes, L >= 5 ? 36 : 20, M.mote)); }
     if (L >= 5) {
-      var bands = day ? M.aurora.map(function (b) { return Object.assign({}, b, { a: Math.min(0.34, b.a * 1.35), cols: ["#ffd0d0", "#ffe7b0", "#d7f5c4", "#cfe8ff", "#ead4ff"] }); }) : M.aurora;
+      var bands = day ? M.aurora.map(function (b) { return Object.assign({}, b, { a: 0.28, cols: ["#ffc8c8", "#ffe0a8", "#d4f0bc", "#cfe4ff", "#e6d0ff"] }); }) : M.aurora;
       out.unshift(skyMasked(dragons(M.dragons, M.dragonColor, [6, 11])));
-      out.unshift(skyMasked(aurora(bands, M.auroraSpans), day ? "source-over" : "screen"));
+      out.unshift(skyMasked(aurora(bands, M.auroraSpans), "lighter"));
     }
     out.push(day ? dim(fireflies(M.ff, ff, ["#ffe9a8", "#fff3c4", "#ffd98a"], M.ffSize * 1.15), 0.6)   // day: soft golden motes
                  : fireflies(M.ff, ff, M.ffColors, M.ffSize));

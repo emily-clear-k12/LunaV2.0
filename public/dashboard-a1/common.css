@@ -1,3 +1,8 @@
+:root {
+  --ls-sans: "Manrope", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --ls-serif: "Source Serif 4", Georgia, "Times New Roman", serif;
+  --ls-game: "Lilita One", "Manrope", system-ui, sans-serif;
+}
 .stage-frame { background:#120c26; font-family:var(--ls-sans); color:#fff; }
 .bg { position:absolute; inset:0; width:1366px; height:768px; object-fit:cover; display:block; }
 .strip { position:absolute; left:12px; top:44px; display:flex; gap:10px; pointer-events:none; }

@@ -1,6 +1,7 @@
 /* Lonestar Writing Studio branding for every Astra plan (A–E, world pages, lesson).
-   Source: kennadyscott.github.io/lonestar-writing-studio-v1 — body/UI Manrope (400–800),
-   headings var(--hs-serif) = "Source Serif 4", game callouts Lilita One. Fonts + chrome only:
+   Master type — the same on every plan and every prototype option:
+   body/UI Manrope (400–800), titles and signs Source Serif 4 at 700,
+   Lilita One only for A.2 door numbers. Fonts + chrome only:
    art, video, layout, hotspots and animations are untouched. Injected last by switcher.js. */
 :root{
   --ls-sans:"Manrope",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
@@ -13,17 +14,19 @@
 }
 body,button,input,select,textarea{font-family:var(--ls-sans)}
 /* Headings: title, world names, ticket headline */
-h1,h2,h3,.title h1,.titlecard h1,.z-sky-title,.plate .t,.wl .wt,.start-btn,.font-display{
-  font-family:var(--ls-serif)!important;font-weight:700;letter-spacing:-.01em}
+h1,h2,h3,.title h1,.titlecard h1,.z-sky-title,.plate .t,.wl .wt,.start-btn,.font-display,
+.strip h1,.world .place,.sign .w,.empty,.pa-pt{
+  font-family:var(--ls-serif)!important;font-weight:700!important;letter-spacing:-.01em}
 /* Subtitles / labels / kickers: Manrope caps */
 .title small,.title h1 small,.titlecard p,.plate .k,.plate .s,.wl small,.z-tip-k,.z-portal-tag,.z-portal-world,.goal .k,
-.start-btn .small,.board .bt small,.lbl{font-family:var(--ls-sans)!important}
+.start-btn .small,.board .bt small,.lbl,.txt,.kicker,.goaltile,.goaltile b,.tile,.module-title,.selected-module,.go,.hop,.back,.pa-ml{
+  font-family:var(--ls-sans)!important}
 .title h1 small{font-weight:800}
 /* Goal / tip cards */
 .goal,.z-tip{font-family:var(--ls-sans)!important}
 .goal .txt,.z-tip-t{font-family:var(--ls-sans)!important;font-weight:600}
-/* Ribbons, ticket numbers, counts: Lilita One game face */
-.rib .num,.count,.z-portal-name,.z-mastery-pill{font-family:var(--ls-game)!important;font-weight:400;letter-spacing:.01em}
+/* Ribbons, ticket numbers, counts, A.2 door numbers: Lilita One */
+.rib .num,.count,.z-portal-name,.z-mastery-pill,.num{font-family:var(--ls-game)!important;font-weight:400;letter-spacing:.01em}
 /* Buttons / pills: Lonestar .btn — 10px radius, 600–700 weight, navy + gold hairline */
 .skip,.replay,.skip-intro,.back,.toggle button,.z-back-btn,.z-mastery-btn,.plate .go,.arr{
   font-family:var(--ls-sans)!important;font-weight:700!important;letter-spacing:-.01em}
