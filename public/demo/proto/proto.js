@@ -317,7 +317,7 @@
   };
   function astra() {
     var C = ASTRA[PAGE], host = PAGE === "a1" ? document.getElementById("frame") : document.querySelector(".stage"); if (!host) return;
-    var on = s.pose !== "cur" || s.spot !== "cur";
+    var on = s.pose !== "cur" || (PAGE !== "d" && s.spot !== "cur");
     if (!astra.box) {
       var box = astra.box = el("div", "pa-astra-wrap"); box.setAttribute("aria-hidden", "true");
       var pl = el("img", "pa-aplate"); pl.alt = ""; pl.src = C.plate[4]; box.appendChild(pl);
@@ -330,7 +330,7 @@
     if (anchor) { if (anchor.nextSibling !== b) anchor.after(b); } else if (!b.parentNode) host.insertBefore(b, host.firstChild);
     root.classList.toggle("pa-astra-on", on);
     var key = s.pose + "|" + s.spot; if (!on || astra.key === key) return; astra.key = key;
-    var pose = s.pose === "cur" ? C.fallback : s.pose, P = POSE[pose], sp = C.spots[s.spot], px2 = astra.px;
+    var pose = s.pose === "cur" ? C.fallback : s.pose, P = POSE[pose], sp = PAGE === "d" ? C.spots.cur : C.spots[s.spot], px2 = astra.px;
     var h = P.h * C.k * sp[2], w = h * P.ar, x = sp[0] - w / 2, y = sp[1] - h;
     var im2 = b.querySelector(".pa-astra"), safari = /^((?!chrome|android|crios|fxios).)*safari/i.test(navigator.userAgent), vd = b.querySelector(".pa-astra-v");
     if (P.anim && !safari) {   // Plan A's animated Astra: VP9-alpha WebM (Chrome, Edge, Firefox); Safari gets the animated WebP
@@ -676,7 +676,7 @@
         '<div class="pa-row"><small>Volume</small><input type="range" min="1" max="5" step="1" data-range="vol" value="' + s.vol + '" aria-label="Volume"></div>') +
       S("astra", "Astra",
         row("Pose", "pose", [["cur", "Current"], ["writing", "Writing"], ["waving", "Waving"], ["reading", "Reading"], ["pointing", "Pointing"], ["books", "On books"], ["plana", "Plan A (animated)"]]) +
-        row("Spot", "spot", [["cur", "Current spot"], ["left", "Left"], ["near", isD ? "Right, by Let's go" : "Right, under the goal"]]) +
+        (isD ? '<p class="pa-hint">She stays in the middle of the bridge. The picture behind her stays as painted.</p>' : row("Spot", "spot", [["cur", "Current spot"], ["left", "Left"], ["near", "Right, under the goal"]])) +
         row("Speech bubble", "bubble", [["off", "Off"], ["on", "Tip on tap"]])) +
       S("lan", isD ? "Signpost" : "Lanterns",
         (isD ? row("Sign icons", "signIc", [["cur", "Current"], ["none", "None"], ["buddy", "Buddies"], ["symbol", "Symbols"], ["badge", "Badges"]])

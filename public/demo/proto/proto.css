@@ -314,6 +314,7 @@ html.pa-a1[data-p-art=bright] .pa-pa{filter:brightness(1.16) saturate(1.08)}
 html.pa-astra-on .pa-astra-wrap{display:block;position:absolute;inset:0;pointer-events:none}
 .pa-astra-wrap > *{position:absolute}
 .pa-aplate{object-fit:fill}
+html.pa-d .pa-aplate{display:none}
 html.pa-a1.pa-astra-on #frame .fx-loop{visibility:hidden}
 html.pa-a1[data-p-scene=pa] .pa-astra-wrap{display:none}
 .pa-ashadow{border-radius:50%;background:radial-gradient(closest-side,rgba(0,0,0,.55),rgba(0,0,0,.25) 60%,transparent)}
