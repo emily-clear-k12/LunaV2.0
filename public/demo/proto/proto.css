@@ -2,9 +2,9 @@
    Default values have no rules here, so the defaults are the pages as built. Fonts are never changed. */
 
 /* ================= panel ================= */
-.pa-panel{position:fixed;top:96px;left:14px;bottom:78px;z-index:20000;width:min(236px,calc(100vw - 28px));height:auto;max-height:none;display:flex;flex-direction:column;
+.pa-panel{position:fixed;top:96px;left:14px;bottom:78px;z-index:20000;width:min(280px,calc(100vw - 28px));height:auto;max-height:none;display:flex;flex-direction:column;
   border-radius:16px;background:#f4e7cc;border:1px solid #cbb892;box-shadow:8px 8px 24px rgba(48,30,8,.16);
-  color:#1a140c;font:600 12.5px/1.35 "Manrope",system-ui,sans-serif}
+  color:#1a140c;font:600 13px/1.35 "Manrope",system-ui,sans-serif}
 .pa-top{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:12px 12px 12px 16px;border-bottom:1px solid #d9c7a4;cursor:default;background:#efe0c0;flex:none}
 .pa-top b{font:800 15px "Manrope",sans-serif;letter-spacing:.01em;color:#1a140c}
 .pa-top button{width:32px;height:32px;border-radius:8px;border:1.5px solid #1a140c;background:#fffaf1;color:#1a140c;font:800 16px/1 "Manrope",sans-serif;cursor:pointer}
@@ -13,10 +13,11 @@
 .pa-body{flex:1;min-height:0;overflow-y:auto;overscroll-behavior:contain;padding:6px 14px 20px;scrollbar-width:thin;scrollbar-color:#b89a6a transparent}
 .pa-h{margin:14px 0 6px;font:800 12px "Manrope",sans-serif;letter-spacing:.08em;text-transform:uppercase;color:#1a140c;border-top:1px solid #d9c7a4;padding-top:12px}
 .pa-h:first-child{border-top:0;padding-top:6px}
-.pa-row{margin:8px 0}.pa-row small{display:block;margin:0 0 4px;font:700 12px "Manrope",sans-serif;color:#1a140c}
-.pa-seg{display:flex;flex-wrap:wrap;gap:4px}
-.pa-seg button{flex:1 1 auto;min-width:0;padding:7px 8px;border-radius:8px;border:1px solid #c9b48a;background:#fffaf1;color:#1a140c;
-  font:700 12.5px "Manrope",sans-serif;cursor:pointer;white-space:nowrap}
+.pa-row{margin:10px 0}.pa-row small{display:block;margin:0 0 6px;font:800 11px "Manrope",sans-serif;letter-spacing:.08em;text-transform:uppercase;color:#5c4a32}
+.pa-seg{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.pa-seg[data-n="3"],.pa-seg[data-n="5"],.pa-seg[data-n="6"]{grid-template-columns:repeat(3,1fr)}
+.pa-seg button{min-width:0;min-height:36px;padding:7px 6px;border-radius:10px;border:1px solid #c9b48a;background:#fffaf1;color:#1a140c;
+  font:700 13px/1.15 "Manrope",sans-serif;cursor:pointer;text-align:center}
 .pa-seg button:hover{background:#fff;border-color:#1a140c}
 .pa-seg button.on{background:#e7b423;border-color:#8d6a12;color:#1a140c}
 .pa-seg button:focus-visible,.pa-reset:focus-visible,.pa-top button:focus-visible,.pa-tools button:focus-visible,.pa-sh:focus-visible{outline:2px solid #1a140c;outline-offset:2px}
@@ -421,4 +422,5 @@ html.pa-d .pa-trail path{stroke-width:3.5}
 
 /* ================= weather + season ================= */
 .pa-weather,.pa-season{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+.pa-season{filter:blur(.4px)}
 html.pa-a1[data-p-scene=pa] .pa-season{display:block}

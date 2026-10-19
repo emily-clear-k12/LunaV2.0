@@ -555,7 +555,7 @@
     var W = isA1() ? 1366 : 1280, H = isA1() ? 768 : 720; WX.c.width = W; WX.c.height = H; WX.parts = [];
     function R(a, b) { return a + Math.random() * (b - a); }
     kinds.forEach(function (k) {
-      var n = { rain: 140, leaves: 26, snow: 110, blossom: 30, frost: 40, fewleaves: 10 }[k] || 0;
+      var n = { rain: 64, leaves: 12, snow: 48, blossom: 14, frost: 16, fewleaves: 5 }[k] || 0;
       for (var i = 0; i < n; i++) WX.parts.push({ k: k, x: R(0, W), y: R(-H, H), v: k === "rain" ? R(620, 900) : k === "snow" || k === "frost" ? R(18, 46) : R(30, 70),
         s: k === "rain" ? R(10, 18) : k === "snow" ? R(1.5, 3.4) : k === "frost" ? R(1, 2.2) : R(5, 9), ph: R(0, 6.3), r: R(0, 6.3), vr: R(-2, 2),
         c: k === "blossom" ? ["#ffc6dc", "#ffd9e6", "#ffb0cc"][i % 3] : ["#e9772c", "#d4542a", "#f2a93b", "#b8461f"][i % 4] });
@@ -565,13 +565,12 @@
       var dt = Math.min(.05, (now - last) / 1000); last = now; g.clearRect(0, 0, W, H);
       WX.parts.forEach(function (p) {
         if (p.k === "rain") { p.y += p.v * dt; p.x -= p.v * .18 * dt; if (p.y > H) { p.y = R(-60, 0); p.x = R(0, W + 120); }
-          g.strokeStyle = "rgba(200,220,255,.45)"; g.lineWidth = 1.2; g.beginPath(); g.moveTo(p.x, p.y); g.lineTo(p.x + p.s * .18, p.y - p.s); g.stroke(); return; }
+          g.strokeStyle = "rgba(214,228,242,.38)"; g.lineWidth = 1; g.beginPath(); g.moveTo(p.x, p.y); g.lineTo(p.x + p.s * .12, p.y - p.s); g.stroke(); return; }
         p.y += p.v * dt; p.ph += dt; p.r += p.vr * dt; p.x += Math.sin(p.ph * 1.3) * (p.k === "snow" || p.k === "frost" ? 12 : 30) * dt;
         if (p.y > H + 20) { p.y = R(-40, -10); p.x = R(0, W); }
-        if (p.k === "snow" || p.k === "frost") { g.fillStyle = p.k === "frost" ? "rgba(235,248,255,.75)" : "rgba(255,255,255,.85)"; g.beginPath(); g.arc(p.x, p.y, p.s, 0, 6.283); g.fill();
-          if (p.k === "frost" && Math.sin(p.ph * 3) > .9) { g.fillStyle = "rgba(255,255,255,.9)"; g.fillRect(p.x - p.s * 2, p.y - .4, p.s * 4, .8); g.fillRect(p.x - .4, p.y - p.s * 2, .8, p.s * 4); } return; }
-        g.save(); g.translate(p.x, p.y); g.rotate(p.r); g.scale(1, .55 + .45 * Math.sin(p.ph * 2)); g.fillStyle = p.c; g.globalAlpha = .9;
-        g.beginPath(); g.ellipse(0, 0, p.s, p.s * .55, 0, 0, 6.283); g.fill(); g.restore();
+        if (p.k === "snow" || p.k === "frost") { g.fillStyle = p.k === "frost" ? "rgba(232,244,255,.55)" : "rgba(255,255,255,.7)"; g.beginPath(); g.arc(p.x, p.y, p.s * .8, 0, 6.283); g.fill(); return; }
+        g.save(); g.translate(p.x, p.y); g.rotate(p.r); g.fillStyle = p.c; g.globalAlpha = .72;
+        g.beginPath(); g.ellipse(0, 0, p.s * .7, p.s * .32, 0, 0, 6.283); g.fill(); g.restore();
       });
       if (WX.parts.length) WX.raf = requestAnimationFrame(frame);
     }
@@ -598,13 +597,12 @@
         var m = (h > 62 && h < 165 && sat > .16 && v > .07) ? Math.min(1, (sat - .16) * 4) * Math.min(1, (v - .07) * 6) : 0;
         if (!m) { p[i + 3] = 0; continue; }
         var nr, ng, nb, x = (i / 4) % W, y = (i / 4 / W) | 0, nz = Math.sin(x * .021 + y * .013) + Math.sin(x * .007 - y * .019);
-        if (sea === "autumn") { var hh = nz > .3 ? 8 : nz > -.6 ? 24 : 40; var q = hsv(hh, Math.min(1, sat * 1.15 + .1), v * 1.02); nr = q[0]; ng = q[1]; nb = q[2]; }
-        else if (sea === "winter") { var l = Math.min(1, v * .7 + .32); nr = l * .9; ng = l * .96; nb = l * 1.0; }
-        else { var q2 = hsv(h * .92 + 6, sat * .9, Math.min(1, v * 1.08)); nr = q2[0]; ng = q2[1]; nb = q2[2];
-          if (nz > 1.2 && ((x * 7 + y * 13) % 11) < 3) { nr = Math.min(1, .98); ng = .72 + v * .2; nb = .84; } }
+        if (sea === "autumn") { var hh = nz > .3 ? 18 : nz > -.6 ? 28 : 36; var q = hsv(hh, Math.min(.85, sat * .85 + .08), v); nr = q[0]; ng = q[1]; nb = q[2]; }
+        else if (sea === "winter") { var l = Math.min(1, v * .82 + .16); nr = l * .9; ng = l * .95; nb = Math.min(1, l * 1.02); }
+        else { var q2 = hsv(h * .95 + 4, sat * .85, Math.min(1, v * 1.04)); nr = q2[0]; ng = q2[1]; nb = q2[2]; }
         var todNow = s.tod === "cur" ? (isA1() ? "dusk" : "day") : s.tod, darkSky = todNow === "dusk" || todNow === "night";
         if (darkSky) { nr = Math.min(1, nr * .55 + .34); ng = Math.min(1, ng * .55 + .26); nb = Math.min(1, nb * .55 + .2); }
-        p[i] = nr * 255; p[i + 1] = ng * 255; p[i + 2] = nb * 255; p[i + 3] = m * (darkSky ? 250 : sea === "winter" ? 220 : 235);
+        p[i] = nr * 255; p[i + 1] = ng * 255; p[i + 2] = nb * 255; p[i + 3] = m * (darkSky ? 150 : sea === "winter" ? 140 : 160);
       }
       g.putImageData(d, 0, 0);
     };
@@ -645,7 +643,7 @@
   }
   apply();
 
-  function seg(k, opts) { return '<div class="pa-seg">' + opts.map(function (o) { return '<button type="button" data-k="' + k + '" data-v="' + o[0] + '">' + o[1] + "</button>"; }).join("") + "</div>"; }
+  function seg(k, opts) { return '<div class="pa-seg" data-n="' + opts.length + '">' + opts.map(function (o) { return '<button type="button" data-k="' + k + '" data-v="' + o[0] + '">' + o[1] + "</button>"; }).join("") + "</div>"; }
   function row(label, k, opts) { return '<div class="pa-row"><small>' + label + "</small>" + seg(k, opts) + "</div>"; }
     var isD = PAGE === "d";
 
@@ -654,7 +652,6 @@
     var p = el("div", "pa-panel" + (s.min === undefined && window.innerWidth < 700 ? " min" : s.min ? " min" : ""));
     if (s.min === undefined && window.innerWidth < 700) s.min = true;
     p.id = "paPanel"; p.setAttribute("role", "region"); p.setAttribute("aria-label", "Dashboard prototype");
-    var reduce = window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches;
     var A1 = !isD, sec = s.open || (s.open = { scene: 1 });
     function S(id, title, body) { return '<section class="pa-sec' + (sec[id] ? " open" : "") + '" data-sec="' + id + '"><button type="button" class="pa-sh" data-sec-t="' + id + '" aria-expanded="' + !!sec[id] + '">' + title + '</button><div class="pa-sb">' + body + "</div></section>"; }
     var menuOpts = (isD ? [["sign", "Signpost only"], ["bottom", "Bottom bar"]] : [["bottom", "Bottom bar"]]).concat([["left", "Side left"], ["right", "Side right"], ["float", isD ? "On the arrows" : "On the lanterns"], ["arc", isD ? "Arc at the bottom" : "Arc (Astra / tree base)"]]);
@@ -665,11 +662,11 @@
       '<div class="pa-tools pa-slots">' + ["A", "B", "C"].map(function (x) { return '<span><button type="button" data-save="' + x + '">Save ' + x + '</button><button type="button" data-load="' + x + '"' + (localStorage.getItem(KEY + "_slot_" + x) ? "" : " disabled") + '>Load</button></span>'; }).join("") + "</div>" +
       S("scene", "Atmosphere",
         (A1 ? row("Scene", "scene", [["a1", "Lantern Tree"], ["pa", "Plan A Portals"]]) : "") +
-        row("Time of day", "tod", [["cur", "Current"], ["sunrise", "Sunrise"], ["day", "Day"], ["dusk", "Dusk"], ["night", "Night"]]) +
-        row("Season", "season", [["spring", "Spring"], ["summer", "Summer (current)"], ["autumn", "Autumn"], ["winter", "Winter"]]) +
-        row("Weather", "weather", [["none", "None"], ["rain", "Light rain"], ["leaves", "Falling leaves"], ["snow", "Snow"]]) +
-        row("Magic meter", "magic", [["live", "As built"], ["1", "1"], ["2", "2"], ["3", "3"], ["4", "4"], ["5", "5"]]) +
-        '<p class="pa-hint">Each level adds to the last, and only in the open sky where it belongs. 1 = a few fireflies and twinkles · 3 = soft glows and a rare shooting star · 5 = a slow sky ribbon and one far-off dragon.' + (reduce ? " Reduce motion is on, so effects stay off." : "") + "</p>" +
+        row("Time of day", "tod", [["cur", "Now"], ["sunrise", "Sunrise"], ["day", "Day"], ["dusk", "Dusk"], ["night", "Night"]]) +
+        row("Season", "season", [["spring", "Spring"], ["summer", "Summer"], ["autumn", "Autumn"], ["winter", "Winter"]]) +
+        row("Weather", "weather", [["none", "Clear"], ["rain", "Rain"], ["leaves", "Leaves"], ["snow", "Snow"]]) +
+        row("Magic", "magic", [["live", "As built"], ["1", "1"], ["2", "2"], ["3", "3"], ["4", "4"], ["5", "5"]]) +
+        '<p class="pa-hint">Magic builds in the open sky only. 1 is a few lights, 5 adds a slow ribbon.</p>' +
         row("Art brightness", "art", [["dim", "Dim"], ["normal", "Normal"], ["bright", "Bright"]]) +
         row("UI tint", "tint", [["built", "As built"], ["warm", "Warm gold"], ["cool", "Cool blue"], ["forest", "Forest"]]) +
         row("Ambient sound", "sound", [["off", "Off"], ["on", "On"]]) +
