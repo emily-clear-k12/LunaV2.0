@@ -576,41 +576,15 @@
     }
     if (WX.parts.length) WX.raf = requestAnimationFrame(frame);
   };
-  /* ---- season: masked foliage colour grade built from the current background still ---- */
+  /* ---- season: the painted leaves stay as they are. Recoloring them flattened the illustration. ---- */
   var SEA = { c: null, key: "" };
   X.season = function () {
     var hst = hostEl(); if (!hst) return;
     if (!SEA.c) { SEA.c = el("canvas", "pa-season"); SEA.c.setAttribute("aria-hidden", "true"); }
-    var a1 = isA1(), anchor = hst.querySelector(".pa-tod") || (a1 ? hst.querySelector(".bg") : (hst.querySelector(".fx-loop") || hst.querySelector(".pa-art")));
-    if (a1 && s.scene === "pa") anchor = hst.querySelector(".pa-pa");
-    if (anchor && anchor.nextSibling !== SEA.c) anchor.after(SEA.c);
-    var src = s.scene === "pa" && a1 ? "../dashboard-a/portal-hub-poster-v3.jpg" : s.tod !== "cur" ? (a1 ? "tod-" + s.tod + ".jpg" : "assets/tod-" + s.tod + ".jpg") : (a1 ? "tree.jpg" : "assets/scene.jpg");
-    var key = s.season + "|" + src; if (s.season === "summer") { SEA.key = key; SEA.c.style.display = "none"; return; }
-    SEA.c.style.display = ""; if (SEA.key === key) return; SEA.key = key;
-    var im = new Image(); im.onload = function () {
-      if (SEA.key !== key) return;
-      var W = a1 ? 1366 : 1280, H = a1 ? 768 : 720, c = SEA.c; c.width = W; c.height = H; var g = c.getContext("2d");
-      g.drawImage(im, 0, 0, W, H); var d = g.getImageData(0, 0, W, H), p = d.data, sea = s.season;
-      for (var i = 0; i < p.length; i += 4) {
-        var r = p[i] / 255, gg = p[i + 1] / 255, b = p[i + 2] / 255, mx = Math.max(r, gg, b), mn = Math.min(r, gg, b), v = mx, sat = mx ? (mx - mn) / mx : 0, h = 0;
-        if (mx !== mn) { if (mx === r) h = ((gg - b) / (mx - mn) + 6) % 6; else if (mx === gg) h = (b - r) / (mx - mn) + 2; else h = (r - gg) / (mx - mn) + 4; h *= 60; }
-        var m = (h > 62 && h < 165 && sat > .16 && v > .07) ? Math.min(1, (sat - .16) * 4) * Math.min(1, (v - .07) * 6) : 0;
-        if (!m) { p[i + 3] = 0; continue; }
-        var nr, ng, nb, x = (i / 4) % W, y = (i / 4 / W) | 0, nz = Math.sin(x * .021 + y * .013) + Math.sin(x * .007 - y * .019);
-        if (sea === "autumn") { var hh = nz > .3 ? 18 : nz > -.6 ? 28 : 36; var q = hsv(hh, Math.min(.85, sat * .85 + .08), v); nr = q[0]; ng = q[1]; nb = q[2]; }
-        else if (sea === "winter") { var l = Math.min(1, v * .82 + .16); nr = l * .9; ng = l * .95; nb = Math.min(1, l * 1.02); }
-        else { var q2 = hsv(h * .95 + 4, sat * .85, Math.min(1, v * 1.04)); nr = q2[0]; ng = q2[1]; nb = q2[2]; }
-        var todNow = s.tod === "cur" ? (isA1() ? "dusk" : "day") : s.tod, darkSky = todNow === "dusk" || todNow === "night";
-        if (darkSky) { nr = Math.min(1, nr * .55 + .34); ng = Math.min(1, ng * .55 + .26); nb = Math.min(1, nb * .55 + .2); }
-        p[i] = nr * 255; p[i + 1] = ng * 255; p[i + 2] = nb * 255; p[i + 3] = m * (darkSky ? 150 : sea === "winter" ? 140 : 160);
-      }
-      g.putImageData(d, 0, 0);
-    };
-    im.src = src;
+    if (SEA.c.parentNode !== hst) hst.appendChild(SEA.c);
+    SEA.c.style.display = "none";
+    SEA.key = s.season;
   };
-  function hsv(h, s2, v) { var c = v * s2, x = c * (1 - Math.abs((h / 60) % 2 - 1)), m = v - c, r = 0, g = 0, b = 0;
-    if (h < 60) { r = c; g = x; } else if (h < 120) { r = x; g = c; } else if (h < 180) { g = c; b = x; } else if (h < 240) { g = x; b = c; } else if (h < 300) { r = x; b = c; } else { r = c; b = x; }
-    return [r + m, g + m, b + m]; }
   X.unclash = function () {
     if (!isA1()) return; var st = document.querySelector(".strip"), g = document.querySelector(".goaltile"); if (!st || !g) return;
     st.style.translate = ""; var a = st.getBoundingClientRect(), b = g.getBoundingClientRect(), k = hostToScreen(0, 0).k || 1;
