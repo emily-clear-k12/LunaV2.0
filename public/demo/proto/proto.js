@@ -479,7 +479,7 @@
     var hst = hostEl(), W = isA1() ? 1366 : 1280, H = isA1() ? 768 : 720;
     var list = isA1() ? [].filter.call(hst.children, function (c) { return !c.matches(".strip,.goaltile,.bar,.lsb,.selected-module,.intro-replay,.pa-portal,.intro-film,.astra-say"); }) : [hst];
     list.forEach(function (c) { c.style.transformOrigin = (isA1() ? p.x + "px " + p.y + "px" : (p.x / W * 100) + "% " + (p.y / H * 100) + "%"); c.classList.add("pa-zoom"); });
-    clearTimeout(X.zT); X.zT = setTimeout(function () { list.forEach(function (c) { c.classList.add("pa-zback"); c.classList.remove("pa-zoom"); setTimeout(function () { c.classList.remove("pa-zback"); }, 950); }); }, 1400);
+    clearTimeout(X.zT); X.zT = setTimeout(function () { list.forEach(function (c) { c.classList.add("pa-zback"); c.classList.remove("pa-zoom"); setTimeout(function () { c.classList.remove("pa-zback"); c.style.transformOrigin = ""; }, 950); }); }, 1400);
   };
   X.say = function (txt) {
     var b = X.bub; if (!b) { b = X.bub = el("div", "pa-bubble"); b.setAttribute("role", "status"); document.body.appendChild(b); }

@@ -413,9 +413,9 @@ html.pa-d .pa-trail path{stroke-width:3.5}
 .pa-burst{position:absolute;z-index:6;width:10px;height:10px;margin:-5px 0 0 -5px;border-radius:50%;pointer-events:none;
   background:radial-gradient(circle,#fff 0,var(--c) 35%,transparent 70%);animation:paBurst .85s ease-out forwards}
 @keyframes paBurst{from{transform:scale(1);opacity:1}to{transform:scale(22);opacity:0}}
-.pa-zoom{transform:scale(1.08);transition:transform 1s cubic-bezier(.3,.7,.3,1)}
-.pa-zback{transition:transform .9s ease-in-out}
-@media (prefers-reduced-motion:reduce){.pa-swing,.pa-burst{animation:none !important}.pa-zoom{transform:none}}
+.pa-zoom{scale:1.08;transition:scale 1s cubic-bezier(.3,.7,.3,1)}
+.pa-zback{transition:scale .9s ease-in-out}
+@media (prefers-reduced-motion:reduce){.pa-swing,.pa-burst{animation:none !important}.pa-zoom{scale:none}}
 
 /* ================= weather + season ================= */
 .pa-weather,.pa-season{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
