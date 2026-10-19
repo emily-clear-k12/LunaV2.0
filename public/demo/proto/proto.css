@@ -247,3 +247,79 @@ html.pa-d[data-p-art=dim] .stage > :is(.pa-art,.fx-loop,.fx-overlay){filter:brig
 html.pa-d[data-p-art=bright] .stage > :is(.pa-art,.fx-loop,.fx-overlay){filter:brightness(1.14) saturate(1.06)}
 
 html[data-p-shape=circle] .pa-mb .pa-ml{font-size:7px;letter-spacing:.02em}
+
+/* ---- Lantern shape (A.1) ---- */
+.pa-lanw{position:absolute;inset:0;pointer-events:none}
+.pa-patch{position:absolute;background:url("../../dashboard-a1/tree-clean.jpg") no-repeat;background-size:1366px 768px;
+  -webkit-mask:linear-gradient(90deg,transparent,#000 12px,#000 calc(100% - 12px),transparent),linear-gradient(transparent,#000 12px,#000 calc(100% - 12px),transparent);
+  -webkit-mask-composite:source-in;mask:linear-gradient(90deg,transparent,#000 12px,#000 calc(100% - 12px),transparent),linear-gradient(transparent,#000 12px,#000 calc(100% - 12px),transparent);mask-composite:intersect}
+html.pa-a1[data-p-art=dim] .pa-patch{filter:brightness(.72) saturate(.92)}
+html.pa-a1[data-p-art=bright] .pa-patch{filter:brightness(1.16) saturate(1.08)}
+.pa-lan{position:absolute;filter:drop-shadow(0 0 10px color-mix(in srgb,var(--c) 75%,transparent)) drop-shadow(0 0 26px color-mix(in srgb,var(--c) 45%,transparent))}
+.pa-lan{object-fit:contain;display:block}
+@media (prefers-reduced-motion:no-preference){.pa-lan{animation:paSway 6s ease-in-out infinite;transform-origin:50% 0}.pa-lanw:nth-child(2n) .pa-lan{animation-delay:-2.5s}}
+@keyframes paSway{0%,100%{transform:rotate(-1.2deg)}50%{transform:rotate(1.2deg)}}
+.pa-lb{position:absolute;display:grid;place-items:center}
+.pa-lb img{width:100%;height:100%;object-fit:contain;filter:drop-shadow(0 1px 2px rgba(0,0,0,.6))}
+.pa-lb.cur{border-radius:50%;background:radial-gradient(circle,color-mix(in srgb,var(--c) 55%,#1a1030) 0 58%,transparent 72%);padding:6%;box-sizing:border-box}
+/* ---- Sign icons (D) ---- */
+.pa-signc,.pa-sics{display:none}
+html.pa-d:not([data-p-signic=cur]) .pa-signc,html.pa-d[data-p-badgeic=on] .pa-signc{display:block;position:absolute;pointer-events:none}
+html.pa-d:not([data-p-signic=cur]) .pa-sics,html.pa-d[data-p-badgeic=on] .pa-sics{display:block;position:absolute;inset:0;pointer-events:none}
+html.pa-d[data-p-art=dim] .stage > :is(.pa-signc,.pa-sics){filter:brightness(.72) saturate(.92)}
+html.pa-d[data-p-art=bright] .stage > :is(.pa-signc,.pa-sics){filter:brightness(1.14) saturate(1.06)}
+.pa-si{position:absolute;width:3.7%;aspect-ratio:1;transform:translate(-50%,-50%);display:grid;place-items:center}
+.pa-si :is(svg,img){width:100%;height:100%;display:block;object-fit:contain;filter:drop-shadow(0 2px 2px rgba(40,20,5,.55))}
+.pa-si-badge{width:4.1%}
+/* ---- Badges as icons in the module buttons (both pages) ---- */
+html[data-p-badgeic=on] .pa-mb .pa-ic{display:block;width:22px;height:22px;flex:none;object-fit:contain;filter:drop-shadow(0 1px 1px rgba(0,0,0,.5))}
+html[data-p-badgeic=on][data-p-shape=circle] .pa-mb .pa-ic{width:20px;height:20px}
+html[data-p-badgeic=on][data-p-size=s] .pa-mb .pa-ic{width:16px;height:16px}
+html[data-p-badgeic=on][data-p-size=l] .pa-mb .pa-ic{width:28px;height:28px}
+
+/* ---- Scene: Plan A Portals (A.1 page) ---- */
+.pa-pa{display:none}
+html.pa-a1[data-p-scene=pa] .pa-pa{display:block;position:absolute;inset:0;pointer-events:none}
+.pa-pa > img,.pa-pa > video{position:absolute;inset:0;width:100%;height:100%;object-fit:fill;display:block}
+.pa-pa > img.pv{inset:auto;top:65.8%;width:8.3%;height:25%;transform:translate(-50%,-50%);object-fit:cover;border-radius:50%;
+  -webkit-mask-image:radial-gradient(ellipse at center,#000 58%,transparent 71%);mask-image:radial-gradient(ellipse at center,#000 58%,transparent 71%);filter:saturate(1.05) drop-shadow(0 0 6px rgba(80,220,255,.6))}
+html.pa-a1[data-p-scene=pa] #frame :is(.bg,.fx-loop,.ambient-fx,.pa-lanw){display:none}
+html.pa-a1[data-p-scene=pa] .lantern{border-radius:50%/46%}
+html.pa-a1[data-p-art=dim] .pa-pa{filter:brightness(.72) saturate(.92)}
+html.pa-a1[data-p-art=bright] .pa-pa{filter:brightness(1.16) saturate(1.08)}
+/* ---- Lantern tap: golden rune portal ---- */
+.pa-portal{position:absolute;z-index:30;width:0;height:0;display:none}
+.pa-portal.open{display:block}
+.pa-pring{position:absolute;left:calc(-1 * var(--r));top:calc(-1 * var(--r));width:calc(2 * var(--r));height:calc(2 * var(--r));border-radius:50%;
+  box-shadow:0 0 0 3px #f3c75a,0 0 26px 8px rgba(243,199,90,.7),0 0 60px 18px color-mix(in srgb,var(--mc) 55%,transparent),inset 0 0 30px 10px rgba(255,220,140,.6)}
+.pa-portal.open .pa-pring{animation:paSwirl .55s cubic-bezier(.2,.9,.3,1.15) both}
+@keyframes paSwirl{from{transform:scale(.12) rotate(-260deg);opacity:0}to{transform:none;opacity:1}}
+.pa-pwin{position:absolute;inset:12%;border-radius:50%;overflow:hidden;background:#120a24}
+.pa-pwin img{width:100%;height:100%;object-fit:cover;display:block}
+.pa-pwin::after{content:"";position:absolute;inset:0;border-radius:50%;background:radial-gradient(circle,transparent 55%,color-mix(in srgb,var(--mc) 45%,rgba(20,10,40,.6)) 100%)}
+.pa-prunes{position:absolute;inset:-4%;width:108%;height:108%;font-family:serif}
+@media (prefers-reduced-motion:no-preference){.pa-prunes{animation:paSpin 28s linear infinite}}
+@media (prefers-reduced-motion:reduce){.pa-portal.open .pa-pring{animation:none}}
+@keyframes paSpin{to{transform:rotate(360deg)}}
+.pa-px{position:absolute;right:2%;top:2%;width:32px;height:32px;border-radius:50%;border:2px solid #f3c75a;background:#0b1d33;color:#ffe6a0;font:800 20px/1 var(--ls-sans,"Manrope",sans-serif);cursor:pointer;display:grid;place-items:center;padding:0}
+.pa-pinfo{position:absolute;right:calc(var(--r) + 14px);top:-40px;width:190px;padding:10px 12px;border-radius:14px;background:rgba(11,29,51,.92);border:2px solid #f3c75a;color:#fff;box-sizing:border-box;
+  box-shadow:0 6px 18px rgba(0,0,0,.45)}
+.pa-portal.open .pa-pinfo{animation:paFade .4s .25s both}
+@keyframes paFade{from{opacity:0;transform:translateX(12px)}to{opacity:1;transform:none}}
+.pa-pt{display:block;font:700 15px/1.25 var(--ls-serif,"Source Serif 4",serif);margin-bottom:8px}
+.pa-pgo{width:100%;height:34px;border:0;border-radius:10px;background:linear-gradient(#ffd66b,#f0a92a);color:#14334f;font:800 15px/1 var(--ls-sans,"Manrope",sans-serif);cursor:pointer}
+/* ---- Astra pose + spot ---- */
+.pa-astra-wrap{display:none}
+html.pa-astra-on .pa-astra-wrap{display:block;position:absolute;inset:0;pointer-events:none}
+.pa-astra-wrap > *{position:absolute}
+.pa-aplate{object-fit:fill}
+html.pa-a1.pa-astra-on #frame .fx-loop{visibility:hidden}
+html.pa-a1[data-p-scene=pa] .pa-astra-wrap{display:none}
+.pa-ashadow{border-radius:50%;background:radial-gradient(closest-side,rgba(0,0,0,.55),rgba(0,0,0,.25) 60%,transparent)}
+.pa-astra{object-fit:contain;filter:drop-shadow(0 0 1px rgba(0,0,0,.35))}
+html.pa-a1[data-p-art=dim] .pa-astra-wrap{filter:brightness(.72) saturate(.92)}
+html.pa-a1[data-p-art=bright] .pa-astra-wrap{filter:brightness(1.16) saturate(1.08)}
+html.pa-d[data-p-art=dim] .pa-astra-wrap{filter:brightness(.72) saturate(.92)}
+html.pa-d[data-p-art=bright] .pa-astra-wrap{filter:brightness(1.14) saturate(1.06)}
+html.pa-a1 .pa-astra{filter:brightness(.62) saturate(.85) drop-shadow(0 0 1px rgba(0,0,0,.4))}
+html.pa-a1[data-p-art=bright] .pa-astra{filter:brightness(.7) saturate(.9)}
