@@ -5,6 +5,7 @@
 }
 .stage-frame { background:#120c26; font-family:var(--ls-sans); color:#fff; }
 .bg { position:absolute; inset:0; width:1366px; height:768px; object-fit:cover; display:block; }
+.scene-cut { position:absolute; inset:0; width:1366px; height:768px; pointer-events:none; }
 .strip { position:absolute; left:12px; top:44px; display:flex; gap:10px; pointer-events:none; }
 .strip > * { height:34px; display:flex; align-items:center; padding:0 14px; border-radius:12px; background:rgba(20,83,140,.38);
   -webkit-backdrop-filter:blur(6px); backdrop-filter:blur(6px); border:1px solid rgba(255,255,255,.22); box-sizing:border-box; }

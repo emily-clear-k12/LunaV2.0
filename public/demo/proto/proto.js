@@ -16,7 +16,7 @@
   else if (q.has("proto") || q.has("p")) { s.on = true; put(s); }
   if (s.on === false) return;
 
-  var css = document.createElement("link"); css.rel = "stylesheet"; css.href = base + "proto.css?v=3"; document.head.appendChild(css);
+  var css = document.createElement("link"); css.rel = "stylesheet"; css.href = base + "proto.css?v=5"; document.head.appendChild(css);
   root.classList.add("pa", "pa-" + PAGE);
 
   var D = {
@@ -158,9 +158,6 @@
       W.forEach(function (w, i) {
         var wrap = el("div", "pa-lanw"); wrap.setAttribute("aria-hidden", "true"); wrap.style.setProperty("--c", w.color);
         if (s.lanShape !== "cur") {
-          var px = Math.round(w.x - w.w * .52) - 12, py = Math.round(w.y - w.h * .6) - 12, pw = Math.round(w.w * 1.04) + 24, ph = Math.round(w.h * 1.16) + 24;
-          var pt = el("div", "pa-patch"); pt.style.cssText = "left:" + px + "px;top:" + py + "px;width:" + pw + "px;height:" + ph + "px;background-position:" + (-px) + "px " + (-py) + "px";
-          wrap.appendChild(pt);
           var m = s.lanShape === "mixed" ? LART.mixed[i] : LART[s.lanShape];
           var sh = Math.min(w.w * 1.05 / m.ar, w.h * 1.6), sw = sh * m.ar, top = w.y - w.h * .64;
           var sv = el("img", "pa-lan"); sv.alt = ""; sv.src = "lanterns/" + s.lanShape + "-" + (i + 1) + ".webp";
@@ -352,6 +349,15 @@
   function tod() {
     var t = s.tod, a1 = PAGE === "a1", host = a1 ? document.getElementById("frame") : document.querySelector(".stage"); if (!host) return;
     var on = t !== "cur";
+    if (a1) {
+      var key = on ? t : "base";
+      var bg = document.getElementById("sceneBg"); if (bg) bg.src = "plates/" + key + ".jpg";
+      var lc = document.getElementById("lanCuts"); if (lc) lc.src = "plates/lanterns-" + key + ".webp";
+      var ac = document.getElementById("astraCut"); if (ac) ac.src = "plates/astra-" + key + ".webp";
+      var sc = document.getElementById("signCut"); if (sc) sc.src = "plates/sign-" + key + ".webp";
+      root.classList.remove("pa-tod-on");
+      return;
+    }
     if (!tod.img) { tod.img = el("img", "pa-tod"); tod.img.alt = ""; tod.img.setAttribute("aria-hidden", "true"); }
     var anchor = a1 ? host.querySelector(".bg") : (host.querySelector(".fx-loop") || host.querySelector(".pa-art"));
     if (anchor && anchor.nextSibling !== tod.img) anchor.after(tod.img); else if (!anchor && !tod.img.parentNode) host.insertBefore(tod.img, host.firstChild);
