@@ -16,7 +16,7 @@
   else if (q.has("proto") || q.has("p")) { s.on = true; put(s); }
   if (s.on === false) return;
 
-  var css = document.createElement("link"); css.rel = "stylesheet"; css.href = base + "proto.css?v=8"; document.head.appendChild(css);
+  var css = document.createElement("link"); css.rel = "stylesheet"; css.href = base + "proto.css?v=9"; document.head.appendChild(css);
   root.classList.add("pa", "pa-" + PAGE);
 
   var D = {
@@ -556,7 +556,6 @@
     var hst = hostEl(); if (!hst) return;
     var reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
     var kinds = []; if (s.weather !== "none") kinds.push(s.weather);
-    if (s.season === "spring") kinds.push("blossom"); if (s.season === "winter") kinds.push("frost"); if (s.season === "autumn" && s.weather !== "leaves") kinds.push("fewleaves");
     var kind = reduce ? "" : kinds.join(",");
     if (!WX.c) { WX.c = el("canvas", "pa-weather"); WX.c.setAttribute("aria-hidden", "true"); WX.g = WX.c.getContext("2d"); }
     var anchor = isA1() ? (hst.querySelector(".ambient-fx") || document.getElementById("lanterns")) : (hst.querySelector(".ambient-fx") || hst.querySelector(".pa-sics"));
@@ -586,20 +585,8 @@
     }
     if (WX.parts.length) WX.raf = requestAnimationFrame(frame);
   };
-  /* ---- season: the daytime background is the season painting. Lanterns, Astra, and the sign stay layered on top. ---- */
-  var SEA = { c: null, key: "" };
-  X.season = function () {
-    var hst = hostEl(); if (!hst) return;
-    if (!SEA.c) { SEA.c = el("canvas", "pa-season"); SEA.c.setAttribute("aria-hidden", "true"); }
-    if (SEA.c.parentNode !== hst) hst.appendChild(SEA.c);
-    SEA.c.style.display = "none";
-    SEA.key = s.season;
-    if (!isA1()) return;
-    var bg = document.getElementById("sceneBg");
-    if (!bg) return;
-    bg.src = "plates/season-" + (s.season || "summer") + ".jpg?v=2";
-    root.classList.add("pa-season-art");
-  };
+  /* Season backgrounds are off. Time of day owns the tree. */
+  X.season = function () { root.classList.remove("pa-season-art"); };
   X.unclash = function () {
     if (!isA1()) return; var st = document.querySelector(".strip"), g = document.querySelector(".goaltile"); if (!st || !g) return;
     st.style.translate = ""; var a = st.getBoundingClientRect(), b = g.getBoundingClientRect(), k = hostToScreen(0, 0).k || 1;
@@ -658,7 +645,6 @@
       S("scene", "Atmosphere",
         (A1 ? row("Scene", "scene", [["a1", "Lantern Tree"], ["pa", "Plan A Portals"]]) : "") +
         row("Time of day", "tod", [["cur", "Now"], ["sunrise", "Sunrise"], ["day", "Day"], ["dusk", "Dusk"], ["night", "Night"]]) +
-        row("Season", "season", [["spring", "Spring"], ["summer", "Summer"], ["autumn", "Autumn"], ["winter", "Winter"]]) +
         row("Weather", "weather", [["none", "Clear"], ["rain", "Rain"], ["leaves", "Leaves"], ["snow", "Snow"]]) +
         row("Magic", "magic", [["live", "As built"], ["1", "1"], ["2", "2"], ["3", "3"], ["4", "4"], ["5", "5"]]) +
         '<p class="pa-hint">Magic builds in the open sky only. 1 is a few lights, 5 adds a slow ribbon.</p>' +
