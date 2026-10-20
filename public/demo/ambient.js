@@ -83,6 +83,41 @@
     };
   }
 
+  // Extra stars for the Night time of day only. Most stay lit, a few twinkle brighter.
+  function nightStars(points) {
+    var st = points.map(function (p) {
+      return { x: p[0], y: p[1], ph: rnd(0, TAU), f: rnd(0.12, 0.5), s: rnd(0.45, 1.7), bright: Math.random() < 0.16 };
+    });
+    return function (g, t) {
+      if ((window.__tod || "cur") !== "night") return;
+      var hit = sceneArt.skyHit, W = P.W;
+      g.save();
+      g.globalCompositeOperation = "lighter";
+      st.forEach(function (s) {
+        if (hit) {
+          var xi = s.x | 0, yi = s.y | 0;
+          if (xi < 1 || yi < 1 || xi >= W - 1 || hit[yi * W + xi] < 200) return;
+        }
+        var tw = 0.5 + 0.5 * Math.sin(t * s.f * TAU + s.ph);
+        var a = (s.bright ? 0.85 : 0.42) * (0.72 + 0.28 * tw);
+        var r = s.s * (s.bright ? 1.5 : 1);
+        g.globalAlpha = a;
+        g.fillStyle = s.bright ? "#fffdf6" : "#f4f0ff";
+        g.beginPath(); g.arc(s.x, s.y, Math.max(0.6, r * 0.7), 0, TAU); g.fill();
+        if (s.bright) {
+          g.globalAlpha = a * 0.85;
+          g.strokeStyle = "rgba(255,252,240,.95)";
+          g.lineWidth = 0.8;
+          g.beginPath();
+          g.moveTo(s.x - r * 2.6, s.y); g.lineTo(s.x + r * 2.6, s.y);
+          g.moveTo(s.x, s.y - r * 2.6); g.lineTo(s.x, s.y + r * 2.6);
+          g.stroke();
+        }
+      });
+      g.restore();
+    };
+  }
+
   // Twinkling stars at given points.
   function twinkles(points, color) {
     var st = points.map(function (p) { return { x: p[0], y: p[1], ph: rnd(0, TAU), f: rnd(0.25, 0.8), s: rnd(1, 2) }; });
@@ -496,7 +531,7 @@
       W: 1366, H: 768,
       mount: function (c) { var f = document.getElementById("frame"); if (!f) return false; var ref = f.querySelector(".fx-loop") || f.querySelector(".bg"); ref ? ref.after(c) : f.prepend(c); return true; },
       art: function () { return document.querySelector("#frame .bg"); },
-      skySample: { y0: 20, y1: 560, n: 70 },
+      skySample: { y0: 8, y1: 460, n: 340 },
       flowerSample: { box: [0, 600, 1366, 168], n: 60, test: function (r, g, b) { return b > 150 && b > r + 10 && b > g + 30 && r + g + b > 330; } },
       magic: {
         star: "#fbe9ff", flower: "#d9c6ff", sparkle: "#fff2ff", mote: "#ffe9b8", dragonColor: "#1a0f2e",
@@ -523,7 +558,8 @@
         var W = window.A1_WORLDS || [];
         var lanterns = W.map(function (w) { return { x: w.x, y: w.y + 6, r: w.w * 0.95, sy: 1.25, c: w.color, lo: 0.10, hi: 0.32, flicker: true, f: rnd(0.3, 0.55) }; });
         return [
-          twinkles(sky, "#fbe9ff"),
+          twinkles(sky.slice(0, 70), "#fbe9ff"),
+          nightStars(sky),
           skyMasked(dragons([
             { x: 40, y: 280, w: 380, h: 80, s: [6, 9], a: 0.55 },
             { x: 980, y: 300, w: 360, h: 80, s: [6, 8], a: 0.5 }
@@ -576,7 +612,7 @@
       art: function () { var i = new Image(); i.src = "assets/scene.jpg"; return i; },
       runeBoxes: [[200, 60, 320, 190], [1215, 180, 1262, 242]],
       runeTest: function (r, g, b) { return r > 165 && g > 115 && b < 140 && r - b > 60; },   // warm gold carvings
-      skySample: { y0: 0, y1: 230, n: 60, test: function (r, g, b, x) { return (x < 660 || x > 880) && b > 200 && b > r + 40 && g > 150; } },
+      skySample: { y0: 0, y1: 230, n: 200, test: function (r, g, b, x) { return (x < 660 || x > 880) && b > 200 && b > r + 40 && g > 150; } },
       flowerSample: { box: [0, 560, 1280, 160], n: 40, test: function (r, g, b, x) { return (x < 650 || x > 890) && r > 200 && (g < 150 || b > 180) && r - Math.min(g, b) > 70; } },
       magic: {
         star: "#ffffff", flower: "#fff3c0", sparkle: "#fffbe0", mote: "#fff4c8", dragonColor: "#2c3e5c",
@@ -598,6 +634,7 @@
       },
       layers: function (art) {
         return [
+          nightStars(art.sky || []),
           skyMasked(dragons([
             { x: 900, y: 24, w: 360, h: 90, s: [6, 9], a: 0.36 },
             { x: 470, y: 36, w: 210, h: 70, s: [5, 7], a: 0.3 }
@@ -652,6 +689,7 @@
     var ff = [0, 5, 8, 12, 16, 20][L];
     var starC = day ? "#fffbe6" : M.star, starK = day ? 0.55 : 1;
     out.push(dim(twinkles(sky.slice(0, [0, 22, 30, 40, 48, 64][L]), starC), starK));             // 1: stars (day: faint sparkles)
+    if ((window.__tod || "cur") === "night") out.push(nightStars(sky));
     if (M.lamps) out.push(lights(M.lamps()));
     if (L >= 2 && fl.length) out.push(twinkles(fl.slice(0, [0, 0, 22, 30, 38, 48][L]), M.flower)); // 2: flower shimmer
     if (L >= 3) { out.push(dim(lights(M.mushrooms.map(function (m) { return Object.assign({}, m); })), day ? 0.6 : 1));   // 3: glows
