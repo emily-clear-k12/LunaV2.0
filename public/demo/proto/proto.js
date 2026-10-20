@@ -381,7 +381,7 @@ var CMETA={"astra-cheer":[312,640,0.545,0.995],"astra-point":[294,640,0.48,0.994
   var PN = { point: "Point", wave: "Wave", read: "Read", write: "Write", cheer: "Cheer", stand: "Stand" };
   var CHH = { owl: 300, raccoon: 280, squirrel: 205, astra: 400, fox: 330, bear: 300, bunny: 300 };   // natural height in art px at the front of the deck
   /* foot x, foot y (art px of 1280x720), depth scale; matched to the original Plan D figures */
-  var SPOT = [[165, 662, 1], [302, 666, 1], [452, 656, .97], [590, 648, .97], [880, 628, .9], [1012, 600, .68], [1118, 566, .6]];
+  var SPOT = [[165, 662, 1], [302, 666, 1], [452, 656, .97], [590, 648, .97], [880, 628, .9], [1036, 614, .68], [1126, 597, .6]];
   var SPOTN = ["Far left (deck)", "Left", "Left-centre", "Middle (by signpost)", "Right of signpost", "Bridge start", "On the bridge"];
   var DDEF = { c: ["owl", "raccoon", "squirrel", "astra", "fox", "bear", "bunny"], q: ["stand", "stand", "stand", "point", "point", "wave", "wave"], f: ["off", "off", "off", "off", "on", "off", "off"] };
   /* night glows: windows and lanterns in the porch art */
