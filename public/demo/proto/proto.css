@@ -437,3 +437,40 @@ html.pa-a1[data-p-scene=pa] .pa-season{display:block}
 .pa-wgroup button img{width:36px;height:28px;object-fit:cover;border-radius:4px;flex:none}
 .pa-wgroup button:hover{background:#fffaf1}
 .pa-wgroup button.on{background:#e7b423;border-color:#8d6a12}
+
+/* ================= Plan D: porch backgrounds + character cutouts ================= */
+html.pa-d .pa-art,html.pa-d .pa-signc,html.pa-d .pa-astra-wrap{display:none !important}
+html.pa-d .pa-sics{display:block;position:absolute;inset:0;pointer-events:none}
+.pd-bg,.pd-grade,.pd-glow,.pd-chars{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+.pd-bg{object-fit:fill;display:block}
+.pd-grade{display:none}
+.pd-chars{z-index:0}
+.pd-ch{position:absolute}
+.pd-ch img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;object-position:50% 100%}
+.pd-ch.pd-flip img{transform:scaleX(-1)}
+.pd-sh{position:absolute;left:var(--cx);bottom:-1.2%;width:58%;height:7%;transform:translate(-50%,0);border-radius:50%;
+  background:radial-gradient(closest-side,rgba(30,15,5,.55),rgba(30,15,5,.25) 60%,transparent);filter:blur(1.5px)}
+/* time-of-day grades for combos without a painted still */
+html[data-pd-grade=sunrise] .pd-grade{display:block;background:linear-gradient(180deg,rgba(255,150,150,.5),rgba(255,196,150,.42) 50%,rgba(190,140,170,.4));mix-blend-mode:multiply}
+html[data-pd-grade=sunrise] .pd-bg{filter:saturate(1.05) brightness(1.08) sepia(.15)}
+html[data-pd-grade=sunset] .pd-grade{display:block;background:linear-gradient(180deg,rgba(120,60,160,.45),rgba(255,120,60,.42) 50%,rgba(90,40,70,.4));mix-blend-mode:multiply}
+html[data-pd-grade=sunset] .pd-bg{filter:saturate(1.05) brightness(.96) sepia(.18)}
+html[data-pd-grade=night] .pd-grade{display:block;background:radial-gradient(ellipse at 50% 20%,rgba(60,80,150,.55),rgba(14,22,60,.82));mix-blend-mode:multiply}
+html[data-pd-grade=night] .pd-bg{filter:brightness(.62) saturate(.6) hue-rotate(-8deg)}
+.pd-glow{display:none}
+html[data-pd-grade=night] .pd-glow{display:block;mix-blend-mode:screen}
+.pd-glow i{position:absolute;aspect-ratio:1;transform:translate(-50%,-50%);border-radius:50%;background:radial-gradient(closest-side,rgba(255,214,140,.9),rgba(255,170,70,.35) 45%,transparent);animation:pdFlick 4s ease-in-out infinite alternate}
+@keyframes pdFlick{to{opacity:.8}}
+/* characters take the light of the scene */
+html.pa-d:is([data-p-tod=sunrise]) .pd-chars{filter:sepia(.12) saturate(1.02) brightness(.98)}
+html.pa-d:is([data-p-tod=dusk]) .pd-chars{filter:sepia(.22) saturate(1.05) brightness(.9) hue-rotate(-6deg)}
+html.pa-d[data-p-tod=night] .pd-chars{filter:brightness(.5) saturate(.6) hue-rotate(8deg)}
+html.pa-d[data-p-tod=night] .pa-sics{filter:brightness(.6) saturate(.7)}
+html.pa-d[data-p-art=dim] .stage > :is(.pd-bg,.pd-chars){filter:brightness(.72) saturate(.92)}
+html.pa-d[data-p-art=bright] .stage > :is(.pd-bg,.pd-chars){filter:brightness(1.14) saturate(1.06)}
+/* panel: character rows */
+.pa-chsel{display:flex;gap:4px;align-items:center}
+.pa-chsel select{flex:1 1 0;min-width:0;min-height:34px;font:600 12.5px "Manrope",sans-serif;color:#1a140c;background:#fffaf1;border:1px solid #c9b48a;border-radius:8px;padding:4px 6px}
+.pa-flip{flex:none;width:34px;height:34px;border-radius:8px;border:1px solid #c9b48a;background:#fffaf1;color:#1a140c;font-size:15px;cursor:pointer}
+.pa-flip.on{background:#e7b423;color:#1a140c;border-color:#8d6a12}
+.pa-flip:disabled,.pa-chsel select:disabled{opacity:.35}
