@@ -424,3 +424,10 @@ html.pa-d .pa-trail path{stroke-width:3.5}
 .pa-weather,.pa-season{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
 .pa-season{filter:blur(.4px)}
 html.pa-a1[data-p-scene=pa] .pa-season{display:block}
+
+.pa-worlds{margin-top:8px;max-height:240px;overflow:auto;scrollbar-width:thin;scrollbar-color:#b89a6a transparent}
+.pa-wgroup b{display:block;margin:10px 0 4px;font:800 11px "Manrope",sans-serif;letter-spacing:.08em;text-transform:uppercase;color:#5c4a32}
+.pa-wgroup button{display:flex;align-items:center;gap:8px;width:100%;margin:0 0 4px;padding:4px 6px;border-radius:8px;border:1px solid transparent;background:transparent;color:#1a140c;font:700 13px/1.2 "Manrope",sans-serif;text-align:left;cursor:pointer}
+.pa-wgroup button img{width:36px;height:28px;object-fit:cover;border-radius:4px;flex:none}
+.pa-wgroup button:hover{background:#fffaf1}
+.pa-wgroup button.on{background:#e7b423;border-color:#8d6a12}

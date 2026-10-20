@@ -60,7 +60,7 @@
       var self = this, Wm = window.A1_WORLDS || [], Lm = document.getElementById("lanterns");
       if (Lm && LP) { var ck = [].slice.call(Lm.querySelectorAll(".ls-check")), stt = [].slice.call(Lm.querySelectorAll(".ls-start")); this.marks = [];
         Wm.forEach(function (w, i) { var st = LP.status(w.m); if (st === "done" && ck.length) self.marks.push({ i: i, t: "check", el: ck.shift() }); if (st === "next" && stt.length) self.marks.push({ i: i, t: "start", el: stt.shift() }); }); }
-      if (Lm) [].forEach.call(Lm.querySelectorAll(".lantern"), function (b, i) { b.addEventListener("click", function () { if (s.tap === "portal") self.portal(i); }); });
+      if (Lm) [].forEach.call(Lm.querySelectorAll(".lantern"), function (b, i) { b.addEventListener("click", function () { if (self.onLan) self.onLan(i); if (s.tap === "portal") self.portal(i); }); });
       var W = window.A1_WORLDS || [], tiles = [].slice.call(document.querySelectorAll("#tiles .tile"));
       tiles.forEach(function (t, i) { var w = W[i] || {}; dress(t, i, w.short || w.name || "");
         t.style.setProperty("--fx", w.x + "px"); t.style.setProperty("--fy", (w.y + w.h / 2 + 4) + "px"); });
@@ -112,7 +112,9 @@
       this.closePortal();
     },
     portal: function (i) {
-      var fr = document.getElementById("frame"), W = window.A1_WORLDS || [], w = W[i]; if (!fr || !w) return;
+      var fr = document.getElementById("frame"), W = window.A1_WORLDS || [], built = W[i]; if (!fr || !built) return;
+      var picked = this.worldByKey && this.worldByKey((s.lanWorld || {})[i]);
+      var w = picked || built;
       var p = this.pt;
       if (!p) {
         p = this.pt = el("div", "pa-portal"); p.setAttribute("role", "dialog"); p.setAttribute("aria-label", "World portal");
@@ -132,15 +134,15 @@
       p.classList.toggle("pa-ps", ps);
       var vid = p.querySelector(".pa-pvid");
       if (ps) { if (!vid) { vid = el("video", "pa-pvid"); vid.muted = true; vid.loop = true; vid.playsInline = true; vid.setAttribute("playsinline", ""); vid.setAttribute("aria-hidden", "true"); p.querySelector(".pa-pring").insertBefore(vid, p.querySelector(".pa-pwin")); }
-        vid.poster = "portals/p" + w.m + ".jpg"; if (vid.dataset.m !== String(w.m)) { vid.src = "portals/p" + w.m + ".mp4"; vid.dataset.m = w.m; }
+        vid.poster = "portals/p" + built.m + ".jpg"; if (vid.dataset.m !== String(built.m)) { vid.src = "portals/p" + built.m + ".mp4"; vid.dataset.m = built.m; }
         if (!matchMedia("(prefers-reduced-motion: reduce)").matches) { var pv = vid.play(); if (pv && pv.catch) pv.catch(function () {}); } }
       else if (vid) vid.pause();
       p.style.setProperty("--r", R + "px"); p.style.left = cx + "px"; p.style.top = cy + "px";
       p.classList.toggle("info-left", true);
-      p.style.setProperty("--mc", w.color);
-      p.querySelector(".pa-pwin img").src = w.art;
-      p.querySelector(".pa-pt").textContent = "Module " + w.m + " · " + (w.short || w.name);
-      p.querySelector(".pa-pgo").onclick = function () { location.href = "world.html?w=" + w.id; };
+      p.style.setProperty("--mc", w.color || built.color);
+      p.querySelector(".pa-pwin img").src = w.art || built.art;
+      p.querySelector(".pa-pt").textContent = w.name || ("Module " + built.m + " · " + (built.short || built.name));
+      p.querySelector(".pa-pgo").onclick = function () { location.href = w.href || ("world.html?w=" + built.id); };
       p.classList.remove("open"); void p.offsetWidth; p.classList.add("open");
       setTimeout(function () { var x = p.querySelector(".pa-pgo"); if (x) x.focus({ preventScroll: true }); }, 50);
     },
@@ -655,7 +657,7 @@
         row("Badges as icons", "badgeIc", [["off", "Off"], ["on", "On"]]) +
         row("Tap effect", "tapfx", [["none", "None"], ["swing", "Swing"], ["glow", "Glow burst"], ["sparkle", "Sparkle"]]) +
         row("Camera zoom on tap", "zoom", [["off", "Off"], ["on", "On"]]) +
-        (A1 ? row("Lantern tap", "tap", [["menu", "Bottom menu (current)"], ["portal", "Open portal"]]) + row("Portal style", "pstyle", [["rune", "Gold rune ring"], ["pa", "Plan A portal"]]) : "")) +
+        (A1 ? row("Lantern tap", "tap", [["menu", "Bottom menu (current)"], ["portal", "Open portal"]]) + row("Portal style", "pstyle", [["rune", "Gold rune ring"], ["pa", "Plan A portal"]]) + '<div class="pa-worlds" id="paWorlds"><p class="pa-hint">Click a lantern, then pick which world it opens.</p></div>' : "")) +
       S("menu", "Menu",
         row("Placement", "menu", menuOpts) +
         row("Reveal", "reveal", [["always", "Always"], ["handle", "Slide-up handle"], ["tap", "After a tap"]]) +
@@ -693,6 +695,37 @@
       "</div>";
     if (s.min) p.classList.add("min");
     document.body.appendChild(p);
+    var CATS = window.ASTRA_WORLD_CATALOG || [];
+    function worldByKey(key) {
+      for (var g = 0; g < CATS.length; g++) for (var j = 0; j < CATS[g].items.length; j++) if (CATS[g].items[j].key === key) return CATS[g].items[j];
+      return null;
+    }
+    if (A.a1) A.a1.worldByKey = worldByKey;
+    function fixGo(i) {
+      var btn = document.querySelector("#act .go"), built = (window.A1_WORLDS || [])[i];
+      var w = worldByKey((s.lanWorld || {})[i]) || (built && { href: "world.html?w=" + built.id });
+      if (btn && w) btn.onclick = function () { location.href = w.href; };
+    }
+    function showWorldList(i) {
+      var box = document.getElementById("paWorlds"); if (!box) return;
+      var built = (window.A1_WORLDS || [])[i], cur = (s.lanWorld || {})[i] || (built && ("0:" + built.id));
+      var html = '<p class="pa-hint">Lantern ' + (i + 1) + " opens</p>";
+      CATS.forEach(function (g) {
+        html += '<div class="pa-wgroup"><b>' + g.set + "</b>";
+        g.items.forEach(function (w) {
+          html += '<button type="button" data-world="' + w.key + '"' + (w.key === cur ? ' class="on"' : "") + '><img alt="" src="' + w.art + '"><span>' + w.name + "</span></button>";
+        });
+        html += "</div>";
+      });
+      box.innerHTML = html;
+      var onb = box.querySelector("button.on"); if (onb) onb.scrollIntoView({ block: "nearest" });
+    }
+    if (A.a1) A.a1.onLan = function (i) {
+      s.focusLan = i; sec.lan = 1;
+      var secEl = p.querySelector('[data-sec="lan"]');
+      if (secEl) { secEl.classList.add("open"); var t = secEl.querySelector(".pa-sh"); if (t) t.setAttribute("aria-expanded", "true"); }
+      showWorldList(i); fixGo(i); put(s);
+    };
     function fix(k) {
       if (PAGE === "d" && s.menu === "sign" && ["shape", "color", "size", "finish", "icon", "ml", "mt", "nm", "border", "badgeIn", "reveal"].indexOf(k) >= 0) s.menu = "float";
       if (s.mt === "off" && s.ml === "off" && s.nm === "off") s.ml = "on";
@@ -719,6 +752,13 @@
       var sv = b.getAttribute("data-save"), ld = b.getAttribute("data-load");
       if (sv) { var o2 = {}; KEYS.forEach(function (k) { o2[k] = s[k]; }); try { localStorage.setItem(KEY + "_slot_" + sv, JSON.stringify(o2)); } catch (er) {} p.querySelector('[data-load="' + sv + '"]').disabled = false; flash(b, "Saved"); return; }
       if (ld) { try { var o3 = JSON.parse(localStorage.getItem(KEY + "_slot_" + ld)) || {}; KEYS.forEach(function (k) { if (o3[k] !== undefined) s[k] = o3[k]; }); } catch (er) {} apply(); syncRange(); return; }
+      var wk = b.getAttribute("data-world");
+      if (wk && s.focusLan != null) {
+        if (!s.lanWorld) s.lanWorld = {};
+        s.lanWorld[s.focusLan] = wk; showWorldList(s.focusLan); fixGo(s.focusLan);
+        if (s.tap === "portal" && A.a1) A.a1.portal(s.focusLan);
+        put(s); return;
+      }
       var k = b.getAttribute("data-k"); if (!k) return;
       s[k] = b.getAttribute("data-v"); fix(k); apply();
     });
