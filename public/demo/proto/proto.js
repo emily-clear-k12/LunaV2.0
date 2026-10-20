@@ -33,6 +33,7 @@
   var KEYS = Object.keys(D);
   if (q.get("p")) { try { var qp = JSON.parse(atob(q.get("p"))); s.on = true; KEYS.forEach(function (k) { s[k] = qp[k] !== undefined ? String(qp[k]) : D[k]; }); } catch (e) {} }
   KEYS.forEach(function (k) { if (s[k] === undefined) s[k] = D[k]; });
+  if (!s.keep || typeof s.keep !== "object") s.keep = {};
 
   var SHORT = ["SCR", "ECR", "Stellar Writers", "Writing Process", "Revision", "Editing"];
   var BADGE = ["scr", "ecr", "stellar", "process", "revision", "editing"];
@@ -616,12 +617,17 @@
     if (AD && AD.ready) { AD.layout(); X.layout(); requestAnimationFrame(function () { AD.layout(); X.layout(); }); }
     var p = document.getElementById("paPanel");
     if (p) p.querySelectorAll("[data-k]").forEach(function (b) { b.classList.toggle("on", String(s[b.getAttribute("data-k")]) === b.getAttribute("data-v")); });
+    if (p) p.querySelectorAll("[data-keep]").forEach(function (b) {
+      var on = !!(s.keep && s.keep[b.getAttribute("data-keep")]);
+      b.textContent = on ? "Kept" : "Keep"; b.classList.toggle("on", on);
+      var row = b.closest(".pa-row"); if (row) row.classList.toggle("kept", on);
+    });
     put(s);
   }
   apply();
 
   function seg(k, opts) { return '<div class="pa-seg" data-n="' + opts.length + '">' + opts.map(function (o) { return '<button type="button" data-k="' + k + '" data-v="' + o[0] + '">' + o[1] + "</button>"; }).join("") + "</div>"; }
-  function row(label, k, opts) { return '<div class="pa-row"><small>' + label + "</small>" + seg(k, opts) + "</div>"; }
+  function row(label, k, opts) { return '<div class="pa-row" data-row="' + k + '"><small>' + label + '<button type="button" class="pa-keep" data-keep="' + k + '">Keep</button></small>' + seg(k, opts) + "</div>"; }
     var isD = PAGE === "d";
 
   function boot() {
@@ -636,6 +642,7 @@
       '<div class="pa-top"><b>Dashboard prototype</b><button type="button" data-min aria-label="Collapse or expand">&#8211;</button></div>' +
       '<div class="pa-body">' +
       '<div class="pa-tools"><button type="button" data-rand>&#127922; Randomize</button><button type="button" data-reset>Reset all</button><button type="button" data-copy>Copy link</button></div>' +
+      '<p class="pa-hint">Tap Keep on a choice you like. Randomize leaves it alone. Save A, B, or C stores the whole look.</p>' +
       '<div class="pa-tools pa-slots">' + ["A", "B", "C"].map(function (x) { return '<span><button type="button" data-save="' + x + '">Save ' + x + '</button><button type="button" data-load="' + x + '"' + (localStorage.getItem(KEY + "_slot_" + x) ? "" : " disabled") + '>Load</button></span>'; }).join("") + "</div>" +
       S("scene", "Atmosphere",
         (A1 ? row("Scene", "scene", [["a1", "Lantern Tree"], ["pa", "Plan A Portals"]]) : "") +
@@ -738,10 +745,10 @@
       if (b.hasAttribute("data-min")) { s.min = !s.min; p.classList.toggle("min", s.min); put(s); return; }
       var st = b.getAttribute("data-sec-t");
       if (st) { sec[st] = sec[st] ? 0 : 1; b.parentNode.classList.toggle("open", !!sec[st]); b.setAttribute("aria-expanded", !!sec[st]); put(s); return; }
-      if (b.hasAttribute("data-reset")) { KEYS.forEach(function (k) { s[k] = D[k]; }); apply(); syncRange(); return; }
+      if (b.hasAttribute("data-reset")) { KEYS.forEach(function (k) { s[k] = D[k]; }); s.keep = {}; apply(); syncRange(); return; }
       if (b.hasAttribute("data-rand")) {
         var groups = {}; p.querySelectorAll(".pa-seg [data-k]").forEach(function (x) { (groups[x.getAttribute("data-k")] = groups[x.getAttribute("data-k")] || []).push(x.getAttribute("data-v")); });
-        Object.keys(groups).forEach(function (k) { if (k === "sound") return; var v = groups[k]; s[k] = v[Math.random() * v.length | 0]; });
+        Object.keys(groups).forEach(function (k) { if (k === "sound" || (s.keep && s.keep[k])) return; var v = groups[k]; s[k] = v[Math.random() * v.length | 0]; });
         fix("shape"); apply(); return;
       }
       if (b.hasAttribute("data-copy")) {
@@ -760,6 +767,8 @@
         if (s.tap === "portal" && A.a1) A.a1.portal(s.focusLan);
         put(s); return;
       }
+      var kk = b.getAttribute("data-keep");
+      if (kk) { if (!s.keep) s.keep = {}; if (s.keep[kk]) delete s.keep[kk]; else s.keep[kk] = 1; apply(); return; }
       var k = b.getAttribute("data-k"); if (!k) return;
       s[k] = b.getAttribute("data-v"); fix(k); apply();
     });

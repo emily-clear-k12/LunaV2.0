@@ -13,7 +13,10 @@
 .pa-body{flex:1;min-height:0;overflow-y:auto;overscroll-behavior:contain;padding:6px 14px 20px;scrollbar-width:thin;scrollbar-color:#b89a6a transparent}
 .pa-h{margin:14px 0 6px;font:800 12px "Manrope",sans-serif;letter-spacing:.08em;text-transform:uppercase;color:#1a140c;border-top:1px solid #d9c7a4;padding-top:12px}
 .pa-h:first-child{border-top:0;padding-top:6px}
-.pa-row{margin:10px 0}.pa-row small{display:block;margin:0 0 6px;font:800 11px "Manrope",sans-serif;letter-spacing:.08em;text-transform:uppercase;color:#5c4a32}
+.pa-row{margin:10px 0}.pa-row small{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:0 0 6px;font:800 11px "Manrope",sans-serif;letter-spacing:.08em;text-transform:uppercase;color:#5c4a32}
+.pa-keep{border:1px solid #c9b48a;background:#fffaf1;color:#5c4a32;border-radius:999px;padding:2px 8px;font:800 10px "Manrope",sans-serif;letter-spacing:.06em;text-transform:uppercase;cursor:pointer}
+.pa-keep.on{background:#1a140c;border-color:#1a140c;color:#f4e7cc}
+.pa-row.kept .pa-seg button.on{box-shadow:0 0 0 2px #1a140c}
 .pa-seg{display:grid;grid-template-columns:1fr 1fr;gap:6px}
 .pa-seg[data-n="3"],.pa-seg[data-n="5"],.pa-seg[data-n="6"]{grid-template-columns:repeat(3,1fr)}
 .pa-seg button{min-width:0;min-height:36px;padding:7px 6px;border-radius:10px;border:1px solid #c9b48a;background:#fffaf1;color:#1a140c;
