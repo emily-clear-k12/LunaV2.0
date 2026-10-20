@@ -16,7 +16,7 @@
   else if (q.has("proto") || q.has("p")) { s.on = true; put(s); }
   if (s.on === false) return;
 
-  var css = document.createElement("link"); css.rel = "stylesheet"; css.href = base + "proto.css?v=11"; document.head.appendChild(css);
+  var css = document.createElement("link"); css.rel = "stylesheet"; css.href = base + "proto.css?v=12"; document.head.appendChild(css);
   root.classList.add("pa", "pa-" + PAGE);
 
   var D = {
@@ -300,82 +300,8 @@
     '<path d="M30 42c10-2 15-12 12-22-2-8-10-14-16-10 6 0 9 6 7 12-1 5-4 7-6 9z"/><ellipse cx="18" cy="32" rx="9" ry="11"/><circle cx="16" cy="17" r="7"/><path d="M12 11l1-6 4 5z"/>',
     '<ellipse cx="17" cy="12" rx="4.5" ry="11"/><ellipse cx="31" cy="12" rx="4.5" ry="11"/><ellipse cx="24" cy="31" rx="13" ry="12"/>'
   ];
-  /* ---- extra sign icon sets (hand-built SVG, 48x48) ---- */
-  var OL = 'stroke="#3a2410" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round"';
-  var TOOLS = [
-    // M1 SCR: pencil + short lines
-    '<path d="M6 40h14M6 33h9" fill="none" stroke="#fff6dc" stroke-width="3.2" stroke-linecap="round"/><path d="M6 40h14M6 33h9" fill="none" stroke="#3a2410" stroke-width="1.2" stroke-linecap="round" opacity=".5"/>' +
-    '<g ' + OL + '><path d="M31 6l9 9-19 19-11 3 3-11z" fill="#ffc83d"/><path d="M31 6l9 9-4 4-9-9z" fill="#ff8fa3"/><path d="M13 26l9 9" fill="none"/><path d="M10 37l1.5-5 3.5 3.5z" fill="#3a2410"/></g>',
-    // M2 ECR: open book with long lines
-    '<g ' + OL + '><path d="M24 12c-5-4-12-4-19-2v26c7-2 14-2 19 2z" fill="#fffaf0"/><path d="M24 12c5-4 12-4 19-2v26c-7-2-14-2-19 2z" fill="#e8f4ff"/></g>' +
-    '<g stroke="#4a8fd8" stroke-width="2" stroke-linecap="round"><path d="M10 17h9M10 22h10M10 27h9M29 17h9M29 22h9M29 27h9M29 32h7"/></g>',
-    // M3 Stellar: star + quill
-    '<g ' + OL + '><path d="M18 6l3.6 7.6 8.2 1-6 5.6 1.6 8.2-7.4-4.1-7.4 4.1 1.6-8.2-6-5.6 8.2-1z" fill="#ffd23f"/>' +
-    '<path d="M44 14c-9 2-17 10-21 26l3 1c3-8 7-13 12-16-3 0-5 0-7-1 5-1 9-4 13-10z" fill="#b78cff"/><path d="M24 40l5-12" fill="none"/></g>',
-    // M4 Writing process: checklist
-    '<g ' + OL + '><rect x="9" y="6" width="30" height="36" rx="4" fill="#fffaf0"/><rect x="18" y="3" width="12" height="6" rx="2" fill="#ff9b3d"/></g>' +
-    '<g fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M14 17l3 3 5-6M14 27l3 3 5-6" stroke="#2fb36b" stroke-width="2.8"/><path d="M26 18h8M26 28h8M15 37h19" stroke="#3a2410" stroke-width="2.2" opacity=".55"/></g>',
-    // M5 Revision: eraser + loop arrows
-    '<path d="M38 12a15 15 0 0 0-26 3" fill="none" stroke="#2bb5a8" stroke-width="3.4" stroke-linecap="round"/><path d="M8 12l4 5 5-4" fill="none" stroke="#2bb5a8" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"/>' +
-    '<g ' + OL + '><path d="M10 34l14-14 12 12-8 8H16z" fill="#ff8fb1"/><path d="M10 34l6 6h12l-8-8z" fill="#7ad0ff"/></g>',
-    // M6 Editing: magnifier on a line of text
-    '<path d="M5 41h20" stroke="#3a2410" stroke-width="2.4" stroke-linecap="round" opacity=".55"/>' +
-    '<g ' + OL + '><circle cx="20" cy="20" r="12" fill="#cdeeff"/><path d="M29 29l11 11" stroke-width="7" stroke="#3a2410"/><path d="M29 29l11 11" stroke-width="3.6" stroke="#ff9b3d"/></g>' +
-    '<path d="M14 15a8 8 0 0 1 7-3" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round"/>'
-  ];
-  var BURN = [
-    '<path d="M6 40h13M6 33h8M31 6l9 9-19 19-11 3 3-11zM27 10l9 9M13 26l9 9"/>',
-    '<path d="M24 12c-5-4-12-4-19-2v26c7-2 14-2 19 2zM24 12c5-4 12-4 19-2v26c-7-2-14-2-19 2zM24 12v26M10 18h9M10 24h9M29 18h9M29 24h9M29 30h7"/>',
-    '<path d="M18 6l3.6 7.6 8.2 1-6 5.6 1.6 8.2-7.4-4.1-7.4 4.1 1.6-8.2-6-5.6 8.2-1zM44 14c-9 2-17 10-21 26M44 14c-3 6-7 9-12 10"/>',
-    '<path d="M9 8h30v34H9zM14 17l3 3 5-6M14 28l3 3 5-6M26 18h8M26 29h8M15 37h18"/>',
-    '<path d="M38 12a15 15 0 0 0-26 3M8 12l4 5 5-4M10 34l14-14 12 12-8 8H16zM16 28l12 12"/>',
-    '<circle cx="20" cy="20" r="12"/><path d="M29 29l11 11M5 41h18M14 15a8 8 0 0 1 7-3"/>'
-  ];
-  var GEMC = [["#4a8fff", "#bcd8ff", "#1d4fb8"], ["#22c7b8", "#b4f3ec", "#0f7f76"], ["#a46bff", "#e0ccff", "#6233c4"], ["#ff8a2b", "#ffd2a8", "#c2560c"], ["#ffcc2e", "#fff0b0", "#c08d00"], ["#ff6fae", "#ffd0e4", "#c43575"]];
-  var GEMS = [
-    '<path d="M14 8h20l9 11-19 23L5 19z" fill="A"/><path d="M5 19h38M14 8l5 11 5-11 5 11 5-11M19 19l5 23 5-23" fill="none" stroke="C" stroke-width="1.6"/><path d="M14 8l5 11H5z" fill="B"/>',
-    '<path d="M24 4l14 10v20L24 44 10 34V14z" fill="A"/><path d="M24 4v12l14-2M24 16l-14-2M24 16v28M10 34l14-8 14 8" fill="none" stroke="C" stroke-width="1.6"/><path d="M24 4L10 14l14 2z" fill="B"/>',
-    '<path d="M24 3l11 21-11 21-11-21z" fill="A"/><path d="M13 24h22M24 3v42" fill="none" stroke="C" stroke-width="1.6"/><path d="M24 3L13 24h11z" fill="B"/>',
-    '<path d="M24 5l17 13-6 22H13L7 18z" fill="A"/><path d="M24 5v14l17-1M24 19L7 18M24 19l-11 21M24 19l11 21" fill="none" stroke="C" stroke-width="1.6"/><path d="M24 5L7 18l17 1z" fill="B"/>',
-    '<path d="M10 12h28l6 10-20 20L4 22z" fill="A"/><path d="M4 22h40M10 12l6 10 8-10 8 10 6-10M16 22l8 20 8-20" fill="none" stroke="C" stroke-width="1.6"/><path d="M10 12l6 10H4z" fill="B"/>',
-    '<path d="M24 6c6 0 10 3 12 8l6 6-18 22L6 20l6-6c2-5 6-8 12-8z" fill="A"/><path d="M6 20h36M12 14l6 6 6-14 6 14 6-6M18 20l6 22 6-22" fill="none" stroke="C" stroke-width="1.6"/><path d="M12 14l6 6H6z" fill="B"/>'
-  ];
-  var NAT = [
-    // leaf (blue-green)
-    '<g ' + OL + '><path d="M8 40C8 20 20 8 41 7c0 21-12 33-33 33z" fill="#3fb36b"/><path d="M8 40L32 16M18 30l-1-8M24 24l7 1" fill="none"/></g>',
-    // acorn
-    '<g ' + OL + '><path d="M13 22c0 12 5 19 11 21 6-2 11-9 11-21z" fill="#e8a24a"/><path d="M10 22c0-7 6-11 14-11s14 4 14 11z" fill="#8a5a2b"/><path d="M24 11c0-4 2-6 5-7" fill="none"/></g>',
-    // mushroom
-    '<g ' + OL + '><path d="M18 27h12l2 14H16z" fill="#fff4e0"/><path d="M5 27c0-11 9-19 19-19s19 8 19 19z" fill="#a46bff"/></g><g fill="#fff"><circle cx="16" cy="18" r="3"/><circle cx="28" cy="14" r="2.4"/><circle cx="33" cy="22" r="2.2"/></g>',
-    // pinecone
-    '<g ' + OL + '><path d="M24 8c9 6 12 15 9 24-2 6-6 9-9 10-3-1-7-4-9-10-3-9 0-18 9-24z" fill="#ff8a2b"/><path d="M16 20c5 3 11 3 16 0M15 28c6 4 12 4 18 0M18 36c4 2 8 2 12 0M24 8v34" fill="none"/><path d="M24 8V4" fill="none"/></g>',
-    // flower
-    '<g ' + OL + '><g fill="#ffcc2e"><circle cx="24" cy="12" r="7"/><circle cx="35" cy="20" r="7"/><circle cx="31" cy="33" r="7"/><circle cx="17" cy="33" r="7"/><circle cx="13" cy="20" r="7"/></g><circle cx="24" cy="24" r="6" fill="#ff8a2b"/></g>',
-    // feather
-    '<g ' + OL + '><path d="M38 5C22 9 11 21 9 38l4 2c9-4 19-14 25-35z" fill="#ff6fae"/><path d="M6 44L33 13M14 30l-5-1M19 24l-5-2M25 18l-4-3" fill="none"/></g>'
-  ];
-  var CON = [   // constellations: [points], [lines]
-    [[[10, 34], [18, 22], [28, 26], [38, 12]], [[0, 1], [1, 2], [2, 3]]],
-    [[[8, 14], [20, 10], [30, 18], [40, 14], [34, 34], [16, 36]], [[0, 1], [1, 2], [2, 3], [2, 4], [4, 5], [5, 1]]],
-    [[[24, 6], [28, 20], [42, 22], [30, 30], [34, 44], [24, 35], [14, 44], [18, 30], [6, 22], [20, 20]], [[0, 1], [1, 2], [2, 3], [3, 4], [4, 5], [5, 6], [6, 7], [7, 8], [8, 9], [9, 0]]],
-    [[[6, 40], [14, 30], [22, 34], [30, 22], [38, 26], [42, 10]], [[0, 1], [1, 2], [2, 3], [3, 4], [4, 5]]],
-    [[[24, 6], [38, 16], [34, 38], [14, 38], [10, 16]], [[0, 1], [1, 2], [2, 3], [3, 4], [4, 0]]],
-    [[[8, 24], [18, 14], [30, 14], [40, 24], [30, 34], [18, 34], [24, 24]], [[0, 1], [1, 2], [2, 3], [3, 4], [4, 5], [5, 0], [6, 0], [6, 3]]]
-  ];
-  function conSvg(i) { var c = CON[i], p = c[0], o = '<g stroke="#ffe9a0" stroke-width="1.6" opacity=".9">';
-    c[1].forEach(function (l) { o += '<line x1="' + p[l[0]][0] + '" y1="' + p[l[0]][1] + '" x2="' + p[l[1]][0] + '" y2="' + p[l[1]][1] + '"/>'; });
-    o += "</g>"; p.forEach(function (q, k) { var r = k === 0 ? 4.6 : 3.4; o += '<circle cx="' + q[0] + '" cy="' + q[1] + '" r="' + (r + 2.4) + '" fill="#2a1a40" opacity=".55"/><circle cx="' + q[0] + '" cy="' + q[1] + '" r="' + r + '" fill="#ffd23f" stroke="#fff6c8" stroke-width="1"/>'; });
-    return o; }
-  function setSvg(set, i) {
-    if (set === "tools") return TOOLS[i];
-    if (set === "burn") return '<g fill="none" stroke="#3b1d08" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round" opacity=".88">' + BURN[i] + '</g><g fill="none" stroke="#f6c98a" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" opacity=".35" transform="translate(.8 1)">' + BURN[i] + "</g>";
-    if (set === "gems") { var g = GEMC[i]; return '<g stroke="#2a1608" stroke-width="2" stroke-linejoin="round">' + GEMS[i].replace(/fill="A"/, 'fill="' + g[0] + '"').replace(/fill="B"/, 'fill="' + g[1] + '" stroke="none" opacity=".85"').replace(/stroke="C"/, 'stroke="' + g[2] + '"') + '</g><path d="M17 12l3 5" stroke="#fff" stroke-width="2.4" stroke-linecap="round" opacity=".9"/>'; }
-    if (set === "nature") return NAT[i];
-    if (set === "stars") return conSvg(i);
-    return "";
-  }
   function signIcon(set, i) {
-    if (["tools", "burn", "gems", "nature", "stars"].indexOf(set) >= 0) return "<svg " + SVGNS + ' viewBox="0 0 48 48">' + setSvg(set, i) + "</svg>";
+    if (["tools3d", "gems3d", "forest3d"].indexOf(set) >= 0) return '<img src="../dashboard-d/assets/signicons/' + set.replace("3d", "") + "-" + (i + 1) + '.webp?v=1" alt="">';
     if (set === "badge") return '<img src="../demo/badges/' + BADGE[i] + '.png" alt="">';
     if (set === "symbol") return "<svg " + SVGNS + ' viewBox="0 0 48 48">' + SYM[i] + "</svg>";
     if (set === "buddy") return "<svg " + SVGNS + ' viewBox="0 0 48 48" style="color:#2b190d"><g fill="#2b190d" stroke="#fff3d6" stroke-opacity=".75" stroke-width="1.6" paint-order="stroke">' + BUD[i] + "</g></svg>";
@@ -802,7 +728,7 @@ var CMETA={"astra-cheer":[312,640,0.545,0.995],"astra-point":[294,640,0.48,0.994
         row("Spot", "spot", [["cur", "Current spot"], ["left", "Left"], ["near", "Right, under the goal"]]) +
         row("Speech bubble", "bubble", [["off", "Off"], ["on", "Tip on tap"]]))) +
       S("lan", isD ? "Signpost" : "Markers",
-        (isD ? row("Sign icons", "signIc", [["none", "None (numbers only)"], ["buddy", "Buddies"], ["symbol", "Symbols"], ["badge", "Badges"], ["tools", "Writing tools"], ["burn", "Wood-burned"], ["gems", "Gems"], ["nature", "Forest"], ["stars", "Constellations"]])
+        (isD ? row("Sign icons", "signIc", [["none", "None (numbers only)"], ["buddy", "Buddies"], ["symbol", "Symbols"], ["badge", "Badges"], ["tools3d", "3D Writing tools"], ["gems3d", "3D Gems"], ["forest3d", "3D Forest"]])
              : row("Style", "lanShape", [["cur", "As painted"], ["round", "Round"], ["tall", "Tall"], ["star", "Star"], ["flower", "Flower"], ["moroccan", "Moroccan"], ["stars", "Paper stars"], ["crystals", "Crystals"], ["globes", "Globes"], ["houses", "Houses"], ["scrolls", "Scrolls"], ["inkwells", "Inkwells"]])) +
         row("Badges as icons", "badgeIc", [["off", "Off"], ["on", "On"]]) +
         row("Tap effect", "tapfx", [["none", "None"], ["swing", "Swing"], ["glow", "Glow burst"], ["sparkle", "Sparkle"]]) +
