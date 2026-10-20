@@ -486,7 +486,7 @@ var CMETA={"astra-cheer":[312,640,0.545,0.995],"astra-point":[294,640,0.48,0.994
       d.style.display = ""; d.dataset.c = c; d.className = "pd-ch pd-" + c + (flip ? " pd-flip" : "");
       d.style.left = (p[0] - w * cx) / 12.8 + "%"; d.style.top = (p[1] - h * .997) / 7.2 + "%"; d.style.width = w / 12.8 + "%"; d.style.height = h / 7.2 + "%";
       d.style.zIndex = Math.round(p[1]); d.style.setProperty("--cx", cx * 100 + "%");
-      var im = d.querySelector("img"), u = "assets/chars/" + c + "-" + q + ".webp"; if (im.getAttribute("src") !== u) im.src = u;
+      var im = d.querySelector("img"), u = "assets/chars/" + c + "-" + q + ".webp?v=2"; if (im.getAttribute("src") !== u) im.src = u;
     });
   }
   /* keep every character in one spot: putting X into a spot that someone else holds swaps them */
