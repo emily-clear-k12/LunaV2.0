@@ -281,6 +281,7 @@
   /* Emily's lantern art (dashboard-a1/lanterns/*.webp, cut out from her two sheets). ar = width/height, cy = body centre (fraction of height).
      Single shapes come pre-recoloured to each module's colour; "mixed" = her first sheet as drawn; "moroccan" = her brass set, already in module colours. */
   var LART = { round: { ar: .4412, cy: .377 }, hex: { ar: .3892, cy: .4576 }, tall: { ar: .2944, cy: .4134 }, star: { ar: .6288, cy: .6023 }, flower: { ar: .6562, cy: .4414 }, moroccan: { ar: .356, cy: .5 },
+    stars: { ar: 1.01, cy: .55 }, crystals: { ar: .24, cy: .57 }, globes: { ar: .59, cy: .61 }, houses: { ar: .70, cy: .60 }, scrolls: { ar: .14, cy: .55 }, inkwells: { ar: .11, cy: .64 },
     mixed: [{ ar: .4412, cy: .377 }, { ar: .3892, cy: .4576 }, { ar: .2944, cy: .4134 }, { ar: .6288, cy: .6023 }, { ar: .6562, cy: .4414 }, { ar: .4175, cy: .3859 }] };
   /* simple module symbols (Plan D signs): quill, scroll, star, lightbulb, magnifier, pencil */
   var SYM = [
@@ -651,9 +652,9 @@
         row("Pose", "pose", [["cur", "Current"], ["writing", "Writing"], ["waving", "Waving"], ["reading", "Reading"], ["pointing", "Pointing"], ["books", "On books"], ["plana", "Plan A (animated)"]]) +
         (isD ? '<p class="pa-hint">She stands with the group, in the spot she was painted, so she doesn’t cover the sign.</p>' : row("Spot", "spot", [["cur", "Current spot"], ["left", "Left"], ["near", "Right, under the goal"]])) +
         row("Speech bubble", "bubble", [["off", "Off"], ["on", "Tip on tap"]])) +
-      S("lan", isD ? "Signpost" : "Lanterns",
+      S("lan", isD ? "Signpost" : "Markers",
         (isD ? row("Sign icons", "signIc", [["cur", "Current"], ["none", "None"], ["buddy", "Buddies"], ["symbol", "Symbols"], ["badge", "Badges"]])
-             : row("Lantern shape", "lanShape", [["cur", "Current"], ["round", "Round"], ["hex", "Hexagon"], ["tall", "Tall"], ["star", "Star"], ["flower", "Flower"], ["mixed", "Mixed"], ["moroccan", "Moroccan"]])) +
+             : row("Style", "lanShape", [["cur", "As painted"], ["round", "Round"], ["tall", "Tall"], ["star", "Star"], ["flower", "Flower"], ["moroccan", "Moroccan"], ["stars", "Paper stars"], ["crystals", "Crystals"], ["globes", "Globes"], ["houses", "Houses"], ["scrolls", "Scrolls"], ["inkwells", "Inkwells"]])) +
         row("Badges as icons", "badgeIc", [["off", "Off"], ["on", "On"]]) +
         row("Tap effect", "tapfx", [["none", "None"], ["swing", "Swing"], ["glow", "Glow burst"], ["sparkle", "Sparkle"]]) +
         row("Camera zoom on tap", "zoom", [["off", "Off"], ["on", "On"]]) +
