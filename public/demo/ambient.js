@@ -682,7 +682,46 @@
       try { fn(g, t, dt); } finally { delete g.globalAlpha; }
     };
   }
+  /* Plan D is a bright day, so the meter has to add something you can see at each step. */
+  function pulseSparkles(points, color, base) {
+    var st = points.map(function (p) { return { x: p[0], y: p[1], ph: rnd(0, TAU), f: rnd(0.35, 0.9), s: rnd(1.6, 2.8) }; });
+    return function (g, t) {
+      g.save();
+      g.globalCompositeOperation = "lighter";
+      st.forEach(function (s) {
+        var k = base + (1 - base) * (0.5 + 0.5 * Math.sin(t * s.f * TAU / 2 + s.ph));
+        g.globalAlpha = k;
+        var r = s.s * (1.15 + k * 0.6);
+        g.drawImage(glow(color), s.x - r * 2.6, s.y - r * 2.6, r * 5.2, r * 5.2);
+      });
+      g.restore();
+    };
+  }
+  function forestMagic(art, L) {
+    var M = P.magic, out = [], sky = art.sky || [], fl = art.flowers || [];
+    out.push(lights(M.lamps().map(function (m) { return Object.assign({}, m, { lo: 0.18 + L * 0.02, hi: 0.38 + L * 0.05 }); })));
+    out.push(pulseSparkles(sky.slice(0, [0, 16, 24, 34, 46, 60][L]), "#ffe27a", 0.42));
+    if (L >= 2 && fl.length) out.push(pulseSparkles(fl.slice(0, [0, 0, 16, 26, 36, 46][L]), "#fff4b0", 0.5));
+    if (L >= 3) {
+      out.push(lights(M.mushrooms.map(function (m) { return Object.assign({}, m, { lo: 0.2, hi: 0.58 }); })));
+      if (art.runes) out.push(runes(art.runes, null, 0.18, 0.62));
+      out.push(pulseSparkles(scatter(M.mid, 16 + L * 8), "#fff1a8", 0.34));
+    }
+    if (L >= 4) {
+      out.push(leaves(M.petalFrom, [0.7, 1.5], M.petals, M.avoid));
+      out.push(motes(M.motes, L >= 5 ? 52 : 28, "#ffe9a0"));
+    }
+    if (L >= 5) {
+      var bands = M.aurora.map(function (b) { return Object.assign({}, b, { a: 0.7, h: 26, cols: ["#ffd0c8", "#ffe7b0", "#d9f5c4", "#cfe6ff", "#ead4ff"] }); });
+      out.unshift(skyMasked(aurora(bands, M.auroraSpans), "lighter"));
+    }
+    out.push(fireflies(M.ff, [0, 8, 12, 16, 22, 28][L], ["#fff3a0", "#e8ff9a", "#ffe07a"], 8));
+    out.push(sparkleBursts());
+    return out;
+  }
   function magicLayers(art, L) {
+    var tod0 = window.__tod || "cur";
+    if (preset === "d" && tod0 !== "night" && tod0 !== "dusk") return forestMagic(art, L);
     var M = P.magic, out = [], sky = art.sky || [], fl = art.flowers || [];
     var tod = window.__tod || "cur", day = tod === "day" || tod === "sunrise" || (tod === "cur" && preset === "d");
     var nightSky = !day || tod === "sunrise";
