@@ -16,7 +16,7 @@
   else if (q.has("proto") || q.has("p")) { s.on = true; put(s); }
   if (s.on === false) return;
 
-  var css = document.createElement("link"); css.rel = "stylesheet"; css.href = base + "proto.css?v=12"; document.head.appendChild(css);
+  var css = document.createElement("link"); css.rel = "stylesheet"; css.href = base + "proto.css?v=13"; document.head.appendChild(css);
   root.classList.add("pa", "pa-" + PAGE);
 
   var D = {
@@ -27,7 +27,7 @@
     menu: PAGE === "d" ? "sign" : "bottom",
     badgePos: "goal", badgeSize: "m", badgeLbl: "on", earned: "full",
     stColor: "gold", stShape: "tag", stMotion: "bob",
-    speaker: "off", lanShape: "cur", scene: "a1", tap: "menu", pstyle: "rune", tod: "cur", pose: "cur", spot: "cur", signIc: "cur", badgeIc: "off", tint: "built", art: "normal", magic: "live",
+    speaker: "off", lanShape: "cur", scene: "a1", tap: "menu", pstyle: "rune", tod: "cur", pose: "cur", spot: "cur", signIc: "cur", badgeIc: "off", tint: "built", art: "normal", magic: "live", goStyle: "cur", goLbl: "cur", goPos: "cur", goMo: "none",
     badgeIn: "off", reveal: "always", preview: "off", trail: "off", prog: "none", tapfx: "none", zoom: "off", bubble: "off", sound: "off", vol: "3", weather: "none", season: "summer"
   };
   if (PAGE === "d") { D.signIc = "none"; for (var di = 1; di <= 7; di++) { D["c" + di] = ["owl", "raccoon", "squirrel", "astra", "fox", "bear", "bunny"][di - 1]; D["q" + di] = ["stand", "stand", "stand", "point", "point", "wave", "wave"][di - 1]; D["f" + di] = di === 5 ? "on" : "off"; } }
@@ -648,7 +648,30 @@ var CMETA={"astra-cheer":[312,640,0.545,0.995],"astra-point":[294,640,0.48,0.994
     st.style.translate = ""; var a = st.getBoundingClientRect(), b = g.getBoundingClientRect(), k = hostToScreen(0, 0).k || 1;
     if (Math.min(a.right, b.right) - Math.max(a.left, b.left) > 2 && Math.min(a.bottom, b.bottom) - Math.max(a.top, b.top) > 2) st.style.translate = "0 " + ((b.bottom - a.top + 8) / k) + "px";
   };
-  X.layout = function () { X.unclash(); X.badgeIn(); X.arc(); X.reveal(); X.trail(); X.progress(); X.weather(); X.season(); X.sound(); };
+  /* ================= "Let's go" button: style, label, position, motion (both pages) ================= */
+  var GOLBL = { cur: null, start: "Start", begin: "Begin adventure", go: "Go!" };
+  function goBtn() { return isA1() ? document.querySelector("#act .go") : document.querySelector(".hop"); }
+  X.go = function () {
+    var b = goBtn(); if (!b) return;
+    if (!b.dataset.orig) { var tn = [].filter.call(b.childNodes, function (n) { return n.nodeType === 3 && n.textContent.trim(); })[0]; b.dataset.orig = tn ? tn.textContent : ""; }
+    var tn2 = [].filter.call(b.childNodes, function (n) { return n.nodeType === 3 && n.textContent.trim(); })[0];
+    var want = GOLBL[s.goLbl] ? (isA1() ? GOLBL[s.goLbl] + " \u203a" : GOLBL[s.goLbl] + " ") : b.dataset.orig;
+    if (tn2 && tn2.textContent !== want) tn2.textContent = want;
+    if (!b.querySelector(".pa-gospark")) { var sp = el("span", "pa-gospark", "<i>\u2726</i><i>\u2727</i><i>\u2726</i>"); sp.setAttribute("aria-hidden", "true"); b.appendChild(sp); }
+    var m = LP && LP.next ? LP.next - 1 : 1, col = isA1() ? (((window.A1_WORLDS || [])[m] || {}).color || "#f5b400") : BUDDY[m][1];
+    b.style.setProperty("--go-c", col);
+    b.style.left = b.style.top = "";
+    if (s.goPos === "sign") {
+      if (isA1()) { b.style.left = "690px"; b.style.top = "700px";
+        var tq = hostToScreen(690, 700), br = b.getBoundingClientRect(), kk = tq.k || 1;
+        b.style.left = (690 + (tq.x - (br.left + br.width / 2)) / kk) + "px"; b.style.top = (700 + (tq.y - (br.top + br.height / 2)) / kk) + "px"; }
+      else { var q = hostToScreen(762, 600); b.style.left = q.x + "px"; b.style.top = q.y + "px"; }
+    }
+  };
+  if (window.MutationObserver) document.addEventListener("DOMContentLoaded", function () {
+    var act = document.getElementById("act"); if (act) new MutationObserver(function () { X.go(); }).observe(act, { childList: true });
+  });
+  X.layout = function () { X.go(); X.unclash(); X.badgeIn(); X.arc(); X.reveal(); X.trail(); X.progress(); X.weather(); X.season(); X.sound(); };
 
   X.badgeIn = function () {
     var imgs = [].slice.call(document.querySelectorAll(".lsb i")), btns = isA1() ? [].slice.call(document.querySelectorAll("#tiles .tile")) : AD.btns || [];
@@ -748,6 +771,11 @@ var CMETA={"astra-cheer":[312,640,0.545,0.995],"astra-point":[294,640,0.48,0.994
         row(isD ? "Buddy name" : "World name", "nm", [["off", "Hide"], ["on", "Show"]]) +
         row("Border", "border", [["cur", "Current"], ["none", "None"], ["gold", "Gold rim"], ["glow", "Glow"]]) +
         row("Badges in buttons", "badgeIn", [["off", "Off"], ["on", "On (hides badge row)"]])) +
+      S("gobtn", isD ? "Let's go button" : "Go button",
+        row("Style", "goStyle", [["cur", "Current"], ["wood", "Carved wood"], ["gem", "Gold gem"], ["leather", "Leather tab"], ["lantern", "Lantern"], ["ticket", "Paper ticket"], ["vine", "Leafy vine"], ["compass", "Compass"], ["candy", "Candy 3D"]]) +
+        row("Label", "goLbl", [["cur", isD ? "Let's go!" : "Go"], ["start", "Start"], ["begin", "Begin adventure"], ["go", "Go!"]]) +
+        row("Position", "goPos", [["cur", "Current"], ["br", "Bottom right"], ["bc", "Bottom center"], ["sign", isD ? "By the signpost" : "By the tree base"]]) +
+        row("Motion", "goMo", [["none", "None"], ["bounce", "Gentle bounce"], ["sparkle", "Sparkle"]])) +
       S("goal", "Goal &amp; title",
         row("Goal placement", "goalPos", [["tl", "Top-left"], ["tc", "Top-center"], ["tr", "Top-right"]]) +
         row("Goal style", "goalStyle", [["cur", "Current"], ["wood", "Wood sign"], ["glass", "Frosted"], ["parch", "Parchment"], ["navy", "Navy"]]) +
