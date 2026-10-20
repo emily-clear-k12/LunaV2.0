@@ -586,7 +586,7 @@
     }
     if (WX.parts.length) WX.raf = requestAnimationFrame(frame);
   };
-  /* ---- season: the painted leaves stay as they are. Recoloring them flattened the illustration. ---- */
+  /* ---- season: the daytime background is the season painting. Lanterns, Astra, and the sign stay layered on top. ---- */
   var SEA = { c: null, key: "" };
   X.season = function () {
     var hst = hostEl(); if (!hst) return;
@@ -594,6 +594,10 @@
     if (SEA.c.parentNode !== hst) hst.appendChild(SEA.c);
     SEA.c.style.display = "none";
     SEA.key = s.season;
+    if (!isA1()) return;
+    if (s.tod && s.tod !== "cur" && s.tod !== "day") return;
+    var bg = document.getElementById("sceneBg");
+    if (bg) bg.src = "plates/season-" + (s.season || "summer") + ".jpg";
   };
   X.unclash = function () {
     if (!isA1()) return; var st = document.querySelector(".strip"), g = document.querySelector(".goaltile"); if (!st || !g) return;
