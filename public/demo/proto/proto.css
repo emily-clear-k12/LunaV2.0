@@ -320,7 +320,7 @@ html.pa-astra-on .pa-astra-wrap{display:block;position:absolute;inset:0;pointer-
 .pa-aplate{object-fit:fill}
 html.pa-a1 .pa-aplate{display:none !important}
 html.pa-d .pa-aplate{display:none}
-html.pa-a1[data-p-lanshape]:not([data-p-lanshape="cur"]) #lanCuts{visibility:hidden}
+html.pa-a1.pa-season-art :is(#lanCuts,#astraCut,#signCut){display:none !important}
 html.pa-a1:is([data-p-pose]:not([data-p-pose="cur"]),[data-p-spot]:not([data-p-spot="cur"])) #astraCut{visibility:hidden}
 html.pa-a1.pa-astra-on #frame .fx-loop{visibility:hidden}
 html.pa-a1[data-p-scene=pa] .pa-astra-wrap{display:none}
