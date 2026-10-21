@@ -16,7 +16,7 @@
   else if (q.has("proto") || q.has("p")) { s.on = true; put(s); }
   if (s.on === false) return;
 
-  var css = document.createElement("link"); css.rel = "stylesheet"; css.href = base + "proto.css?v=22"; document.head.appendChild(css);
+  var css = document.createElement("link"); css.rel = "stylesheet"; css.href = base + "proto.css?v=25"; document.head.appendChild(css);
   root.classList.add("pa", "pa-" + PAGE);
 
   var D = {
@@ -28,8 +28,8 @@
     badgePos: "goal", badgeSize: "m", badgeLbl: "on", earned: "full",
     stColor: "gold", stShape: "tag", stMotion: "bob",
     speaker: "off", lanShape: "cur", scene: "a1", tap: "menu", pstyle: "rune", tod: "cur", pose: "cur", spot: "cur", signIc: "cur", badgeIc: "off", tint: "built", art: "normal", magic: "live", goStyle: "cur", goLbl: "cur", goPos: "cur", goMo: "none",
-    badgeIn: "off", reveal: "always", preview: "off", trail: "off", prog: "none", tapfx: "none", zoom: "off", bubble: "off", sound: "off", vol: "3", weather: "none", season: "summer",
-    doneLk: "cur", curHl: "cur", ttlSt: "cur", ttlW: "cur", modCard: "cur", hang: "none", frSize: "m", fr1: "none", fq1: "stand", ff1: "off", fr2: "none", fq2: "stand", ff2: "off", fr3: "none", fq3: "stand", ff3: "off",
+    badgeIn: "off", reveal: "always", preview: "off", trail: "off", prog: "none", lesTrk: "none", lesLook: "dots", lpop: "off", lpSt: "path", lpPos: "item", lpCol: "mod", lpDot: "dots", lpNames: "on", lpGo: "on", lpAnim: "pop", demoMods: "live", demoLes: "live", tapfx: "none", zoom: "off", bubble: "off", sound: "off", vol: "3", weather: "none", season: "summer",
+    doneLk: "cur", curHl: "cur", ttlSt: "cur", ttlW: "cur", modCard: "cur", hang: "none",
     navShow: "on", navSt: "cur", vign: "off", rays: "off", ambType: "cur", ambCol: "gold", moon: "off", clouds: "off", sstars: "off", arTint: "cur", hovSt: "cur", pressSt: "cur", mkLbl: "off", lanIc: "none", unearned: "cur", bFrame: "none", progTxt: "off", trailSt: "dots", stTxt: "cur", stSize: "m", stHide: "off", aSize: "m", aShadow: "off", aMirror: "off", bubSt: "cur", bubAuto: "off", chCount: "7", chSize: "m", chShadow: "cur", spkPos: "cur", autoRead: "off", palette: "cur", menuH: "cur", menuHov: "cur", goalLbl: "cur", ttlSize: "cur", ttlIc: "cur", cursor: "off", intro: "none", txtSh: "none", dTap: "menu",
     trans: "none", sfxTap: "off", sfxHover: "off", sfxBadge: "off", idle: "still", earnFx: "off", goSz: "m", goNext: "off", goHide: "off", calm: "off"
   };
@@ -134,8 +134,8 @@
         document.addEventListener("keydown", function (e) { if (e.key === "Escape") this.closePortal(); }.bind(this));
         fr.appendChild(p);
       }
-      var pa = s.scene === "pa", R = pa ? 100 : 115, cx = pa ? 1210 : 1200, cy = pa ? 250 : 520, ps = s.pstyle === "pa";
-      if (ps) { var PH = pa ? 192 : 290; p.style.setProperty("--pw", PH * .6 + "px"); p.style.setProperty("--ph", PH + "px"); R = PH * .3; if (pa) cy = 248; }
+      var pa = s.scene === "pa", R = pa ? 100 : 115, cx = pa ? 1210 : 683, cy = pa ? 250 : 380, ps = s.pstyle === "pa";  /* tree scene: the portal opens in the trunk, centred */
+      if (ps) { var PH = pa ? 192 : 290; p.style.setProperty("--pw", PH * .6 + "px"); p.style.setProperty("--ph", PH + "px"); R = PH * .3; if (pa) cy = 248; else cy = 360; }
       p.classList.toggle("pa-ps", ps);
       var vid = p.querySelector(".pa-pvid");
       if (ps) { if (!vid) { vid = el("video", "pa-pvid"); vid.muted = true; vid.loop = true; vid.playsInline = true; vid.setAttribute("playsinline", ""); vid.setAttribute("aria-hidden", "true"); p.querySelector(".pa-pring").insertBefore(vid, p.querySelector(".pa-pwin")); }
@@ -143,7 +143,7 @@
         if (!matchMedia("(prefers-reduced-motion: reduce)").matches) { var pv = vid.play(); if (pv && pv.catch) pv.catch(function () {}); } }
       else if (vid) vid.pause();
       p.style.setProperty("--r", R + "px"); p.style.left = cx + "px"; p.style.top = cy + "px";
-      p.classList.toggle("info-left", true);
+      p.classList.toggle("info-left", pa); p.classList.toggle("info-below", !pa);
       p.style.setProperty("--mc", w.color || built.color);
       p.querySelector(".pa-pwin img").src = w.art || built.art;
       p.querySelector(".pa-pt").textContent = w.name || ("Module " + built.m + " · " + (built.short || built.name));
@@ -396,6 +396,7 @@ var CMETA={"astra-cheer":[312,640,0.545,0.995],"astra-point":[294,640,0.48,0.994
   var GLOW = [[34, 200, 26], [81, 197, 26], [227, 305, 34], [398, 237, 22], [1211, 297, 26], [1234, 516, 26], [62, 150, 18]];
   function dbg() { var se = s.season, t = s.tod === "now" ? nowTod() : s.tod;
     var exact = se === "summer" ? ({ cur: "day", day: "day", sunrise: "sunrise", dusk: "sunset" })[t] : (t === "cur" || t === "day") ? ({ spring: "spring", autumn: "fall", winter: "winter" })[se] : null;
+    /* no night painting yet: night = day plate + CSS night grade */
     var img = exact || (se === "summer" ? "day" : ({ spring: "spring", autumn: "fall", winter: "winter" })[se]);
     return { img: img, grade: exact ? "none" : (t === "dusk" ? "sunset" : t) };
   }
@@ -410,7 +411,7 @@ var CMETA={"astra-cheer":[312,640,0.545,0.995],"astra-point":[294,640,0.48,0.994
       st.insertBefore(cs, st.firstChild); st.insertBefore(gl, cs); st.insertBefore(gr, gl); st.insertBefore(bg, gr);
       dScene.els = SPOT.map(function () { var d = el("div", "pd-ch"); d.innerHTML = '<span class="pd-sh"></span><img alt="">'; cs.appendChild(d); return d; });
     }
-    var b = dbg(); var src = "assets/bg/" + b.img + ".jpg"; if (dScene.bg.getAttribute("src") !== src) dScene.bg.src = src;
+    var b = dbg(); var src = "assets/bg/" + ({ sunset: "sunset-v2", sunrise: "sunrise-v2" }[b.img] || b.img) + ".jpg?v=2"; if (dScene.bg.getAttribute("src") !== src) dScene.bg.src = src;
     root.setAttribute("data-pd-grade", b.grade);
     SPOT.forEach(function (p, i) {
       var d = dScene.els[i], c = s["c" + (i + 1)], q = s["q" + (i + 1)];
@@ -489,8 +490,9 @@ var CMETA={"astra-cheer":[312,640,0.545,0.995],"astra-point":[294,640,0.48,0.994
     var c = X.card; if (!c) { c = X.card = el("div", "pa-card"); c.setAttribute("role", "status"); document.body.appendChild(c); }
     var W = window.A1_WORLDS || [], name = isA1() ? (W[i] && (W[i].short || W[i].name)) : BUDDY[i][0] + "'s world";
     var img = isA1() ? (W[i] && W[i].art) : "../dashboard-a1/portals/p" + (i + 1) + ".jpg";
-    c.innerHTML = '<img alt="" src="' + img + '"><div><b>Module ' + (i + 1) + " · " + SHORT[i] + "</b><span>" + name + "</span><p>" + KID[i] + "</p></div>";
-    var r = elx.getBoundingClientRect(), cw = 250, ch = 92;
+    var mp = isA1() && s.lesTrk !== "none" ? '<div class="pa-trk pa-prog-' + s.lesLook + '" style="--mc:' + modCol(i) + '">' + trk(s.lesLook, lesDone(i), lesTotal(i), Array(lesTotal(i)).fill(modCol(i)), "les") + "<small>lessons</small></div>" : "";
+    c.innerHTML = '<img alt="" src="' + img + '"><div><b>Module ' + (i + 1) + " · " + SHORT[i] + "</b><span>" + name + "</span><p>" + KID[i] + "</p>" + mp + "</div>";
+    var r = elx.getBoundingClientRect(), cw = 250, ch = mp ? 116 : 92;
     var x = Math.min(Math.max(8, r.left + r.width / 2 - cw / 2), innerWidth - cw - 8), y = r.top - ch - 10; if (y < 44) y = r.bottom + 10;
     c.style.left = x + "px"; c.style.top = Math.min(y, innerHeight - ch - 8) + "px"; c.classList.add("show");
     clearTimeout(X.cardT); if (sticky) X.cardT = setTimeout(function () { c.classList.remove("show"); }, 3500);
@@ -516,17 +518,69 @@ var CMETA={"astra-cheer":[312,640,0.545,0.995],"astra-point":[294,640,0.48,0.994
     X.tr.innerHTML = out;
   };
   /* ---- progress near the goal ---- */
+  /* ---- progress trackers: overall (modules of 6) + per module (lessons) ---- */
+  function lesTotal(i) { var w = (window.A1_WORLDS || [])[i]; return w && w.crystals ? w.crystals.length : 4; }
+  function trkDone() { return s.demoMods === "live" ? doneCount() : +s.demoMods; }
+  function trkSt(i) { if (s.demoMods === "live") return status(i + 1); var n = +s.demoMods; return i < n ? "done" : i === n ? "next" : "todo"; }
+  function lesDone(i) { var st = trkSt(i), t = lesTotal(i); if (st === "done") return t; if (st !== "next") return 0; return s.demoLes === "live" ? 0 : Math.min(+s.demoLes, t - 1); }
+  function modCol(i) { return isA1() ? (((window.A1_WORLDS || [])[i] || {}).color || "#f5b400") : BUDDY[i][1]; }
+  /* one renderer, used by both trackers; cols = colour per slot */
+  function trk(style, n, tot, cols, unit) {
+    var h = "", k;
+    if (style === "bar") return '<i class="tb" style="--p:' + (n / tot * 100) + '%"></i><span>' + n + " of " + tot + "</span>";
+    if (style === "dots") { for (k = 0; k < tot; k++) h += '<b class="td' + (k < n ? " on" : "") + '" style="--c:' + cols[k] + '"></b>'; return h; }
+    if (style === "stars") { for (k = 0; k < tot; k++) h += '<em class="' + (k < n ? "on" : "") + '">&#9733;</em>'; return h; }
+    if (style === "crystals") return '<svg viewBox="0 0 20 24" aria-hidden="true"><path d="M10 1 18 8 10 23 2 8z" fill="#7fe3ff" stroke="#2a7fb8" stroke-width="1.4"/><path d="M2 8h16M10 1 7 8l3 15 3-15z" fill="none" stroke="#2a7fb8" stroke-width="1"/></svg><span>' + (unit === "mod" ? n * 3 + " crystals" : n + " of " + tot) + "</span>";
+    if (style === "lanterns") { for (k = 0; k < tot; k++) h += '<b class="tl' + (k < n ? " on" : "") + '" style="--c:' + cols[k] + '"><i></i></b>'; return h; }
+    if (style === "jar") return '<b class="tj" style="--p:' + (n / tot * 100) + '%"><i></i></b><span>' + n + " of " + tot + "</span>";
+    if (style === "leaves") { for (k = 0; k < tot; k++) h += '<b class="tf' + (k < n ? " on" : "") + '"></b>'; return h + '<b class="tw' + (n >= tot ? " on" : "") + '"></b>'; }
+    if (style === "starct") return '<b class="ts' + (n > 0 ? " on" : "") + '"></b><span><strong>' + n + "</strong> of " + tot + "</span>";
+    return "";
+  }
   X.progress = function () {
     var g = document.querySelector(isA1() ? ".goaltile" : ".card"); if (!g) return;
     var p = g.querySelector(".pa-prog"); if (s.prog === "none") { if (p) p.remove(); return; }
     if (!p) { p = el("div", "pa-prog"); g.appendChild(p); }
-    var n = doneCount(), html = "";
-    if (s.prog === "bar") html = '<i style="--p:' + (n / 6 * 100) + '%"></i><span>' + n + " of 6 done</span>";
-    else if (s.prog === "stars") { for (var k = 0; k < 6; k++) html += '<em class="' + (k < n ? "on" : "") + '">&#9733;</em>'; }
-    else html = '<svg viewBox="0 0 20 24" aria-hidden="true"><path d="M10 1 18 8 10 23 2 8z" fill="#7fe3ff" stroke="#2a7fb8" stroke-width="1.4"/><path d="M2 8h16M10 1 7 8l3 15 3-15z" fill="none" stroke="#2a7fb8" stroke-width="1"/></svg><span>' + (n * 3) + " crystals</span>";
-    p.className = "pa-prog pa-prog-" + s.prog; p.innerHTML = html;
+    var n = trkDone(), cols = [0, 1, 2, 3, 4, 5].map(modCol);
+    p.className = "pa-prog pa-trk pa-prog-" + s.prog; p.innerHTML = trk(s.prog, n, 6, cols, "mod");
     p.setAttribute("aria-label", n + " of 6 modules done");
   };
+  /* per-module lesson tracker (A.1 only): under item / glowing branch / chain dots */
+  X.mprog = function () {
+    var o = document.getElementById("paMtk");
+    if (o && o.dataset.t !== s.lesTrk) { o.remove(); o = null; }
+    if (!isA1() || s.lesTrk === "none" || s.scene === "pa") { if (o) o.remove(); return; }
+    o = overlay("paMtk", "pa-mtk pa-mtk-" + s.lesTrk, s.lesTrk === "under" ? null : "#lanterns"); if (!o) return; o.className = "pa-mtk pa-mtk-" + s.lesTrk; o.dataset.t = s.lesTrk;
+    var html = "";
+    for (var i = 0; i < 6; i++) { var pt = modPt(i), n = lesDone(i), tt = lesTotal(i), c = modCol(i), ch = CHAIN[i], lab = ' role="img" aria-label="Module ' + (i + 1) + ": " + n + " of " + tt + ' lessons"';
+      if (s.lesTrk === "under") html += '<div class="pa-trk pa-prog-' + s.lesLook + '"' + lab + ' style="' + pct(pt.x, pt.y + pt.h / 2 + 4) + ";--mc:" + c + '">' + trk(s.lesLook, n, tt, Array(tt).fill(c), "les") + "</div>";
+      else if (s.lesTrk === "branch") html += '<i class="pa-bglow"' + lab + ' style="' + pct(ch[0], ch[1] - ch[2]) + ";--mc:" + c + ";--g:" + (n / tt).toFixed(2) + '"></i>';
+      else { var top = ch[1] - ch[2], h2 = ""; for (var k = 0; k < tt; k++) { var y = ch[1] - 6 - (ch[2] - 12) * (tt > 1 ? k / (tt - 1) : 0); h2 += '<b class="td' + (k < n ? " on" : "") + '" style="' + pct(ch[0], y) + ";--c:" + c + '"></b>'; } html += '<span class="pa-cdots"' + lab + ">" + h2 + "</span>"; } }
+    o.innerHTML = html; o.removeAttribute("aria-hidden");
+  };
+  /* lantern details pop-up (A.1) */
+  var LNAMES = ["Warm-up", "Learn it", "Try it together", "Practice", "Show what you know"];
+  X.lpop = function (i, elx) {
+    var o = X.lpEl; if (s.lpop !== "on" || !isA1()) { if (o) o.remove(); X.lpEl = null; return false; }
+    if (!o) { o = X.lpEl = el("div", "pa-lpop"); o.setAttribute("role", "dialog"); o.setAttribute("aria-modal", "false"); document.body.appendChild(o);
+      o.addEventListener("click", function (e) { if (e.target.closest(".pa-lpx")) X.lpClose(); if (e.target.closest(".pa-lpgo")) { X.lpClose(); var g = document.querySelector("#act .go"); if (g) g.click(); } });
+      document.addEventListener("keydown", function (e) { if (e.key === "Escape") X.lpClose(); }); }
+    var W = (window.A1_WORLDS || [])[i] || {}, n = lesDone(i), tt = lesTotal(i), st = trkSt(i), cur = st === "done" ? -1 : n, c = modCol(i), li = "";
+    for (var k = 0; k < tt; k++) { var ls = k < n ? "done" : k === cur ? "cur" : "lock";
+      li += '<li class="' + ls + '"><b><i></i><u>' + (k + 1) + "</u></b>" +
+        (s.lpNames === "on" ? "<span>" + (LNAMES[k] || "Lesson " + (k + 1)) + "</span>" : "") + '<em class="sr">' + (ls === "done" ? "done" : ls === "cur" ? "current" : "locked") + "</em></li>"; }
+    o.className = "pa-lpop lp-" + s.lpSt + " lpp-" + s.lpPos + " lpc-" + s.lpCol + " lpd-" + s.lpDot + " lpa-" + s.lpAnim + (s.lpNames === "on" ? "" : " lp-nonames");
+    o.style.setProperty("--mc", c); o.setAttribute("aria-label", "Module " + (i + 1) + " details");
+    o.innerHTML = '<button type="button" class="pa-lpx" aria-label="Close">&times;</button><small>Module ' + (i + 1) + " · " + SHORT[i] + "</small><h3>" + (W.short || W.name || "") + "</h3>" +
+      '<p class="pa-lpn"><strong>' + n + "</strong> of " + tt + " lessons</p><ol>" + li + "</ol>" + (s.lpGo === "on" ? '<div class="pa-lpgw"><button type="button" class="go pa-lpgo">' + (st === "done" ? "Again" : "Go") + ' <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h13M13 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div>' : "");
+    o.style.left = o.style.top = "";
+    if (s.lpPos === "item" && elx) { var r = elx.getBoundingClientRect(), w = 280, x = r.right + 12; if (x + w > innerWidth - 8) x = r.left - w - 12;
+      o.style.left = Math.max(8, x) + "px"; o.style.top = Math.max(50, Math.min(r.top, innerHeight - 380)) + "px"; }
+    o.classList.remove("show"); void o.offsetWidth; o.classList.add("show");
+    return true;
+  };
+  X.lpClose = function () { if (X.lpEl) X.lpEl.classList.remove("show"); };
+
   /* ---- tap effect + zoom + speech bubble ---- */
   X.pick = function (i, elx) {
     root.classList.add("pa-menu-open"); if (X.handle) X.handle.setAttribute("aria-expanded", "true");
@@ -541,7 +595,7 @@ var CMETA={"astra-cheer":[312,640,0.545,0.995],"astra-point":[294,640,0.48,0.994
     if (s.tapfx === "glow") X.glow(p, col);
     if (s.zoom === "on") X.zoomTo(p);
     if (s.bubble === "on") X.say(TIP[i]);
-    X.preview(i, elx, true);
+    if (!X.lpop(i, elx)) X.preview(i, elx, true);
   };
   X.glow = function (p, col) {
     var hst = hostEl(), g = el("div", "pa-burst"); g.style.setProperty("--c", col || "#ffd27a");
@@ -654,22 +708,6 @@ var CMETA={"astra-cheer":[312,640,0.545,0.995],"astra-point":[294,640,0.48,0.994
   /* ================= Round 1 (Oct 21): A.1 season + friends, done look, current highlight, title bar, D module card, D hanging items ================= */
   var HW = function () { return isA1() ? 1366 : 1280; }, HH = function () { return isA1() ? 768 : 720; };
   function pct(x, y) { return "left:" + (x / HW() * 100) + "%;top:" + (y / HH() * 100) + "%"; }
-  /* A.1 friends: D cutouts at the tree base, 0-3, each with pose + mirror */
-  var FSPOT = [[425, 706, .6], [905, 700, .58], [1075, 704, .55]], FSPOTN = ["Left of Astra", "Right roots", "Far right"];
-  X.friends = function () {
-    if (!isA1()) return; var fr = document.getElementById("frame"); if (!fr) return;
-    if (!X.fbox) { X.fbox = el("div", "pa-friends"); X.fbox.setAttribute("aria-hidden", "true"); X.fels = FSPOT.map(function () { var d = el("div", "pd-ch pa-fr"); d.innerHTML = '<span class="pd-sh"></span><img alt="">'; X.fbox.appendChild(d); return d; }); }
-    var anchor = document.getElementById("signCut"); if (X.fbox.parentNode !== fr) { if (anchor) anchor.after(X.fbox); else fr.appendChild(X.fbox); }
-    FSPOT.forEach(function (p, i) {
-      var d = X.fels[i], c = s["fr" + (i + 1)], q = s["fq" + (i + 1)];
-      if (!c || c === "none") { d.style.display = "none"; return; }
-      if (poses(c).indexOf(q) < 0) q = poses(c)[0];
-      var m = CMETA[c + "-" + q] || [300, 640, .5, 1], h = CHH[c] * p[2] / m[3] * (s.frSize === "s" ? .82 : s.frSize === "l" ? 1.18 : 1), w = h * m[0] / m[1], flip = s["ff" + (i + 1)] === "on", cx = flip ? 1 - m[2] : m[2];
-      d.style.display = ""; d.className = "pd-ch pa-fr pd-" + c + (flip ? " pd-flip" : "");
-      d.style.left = (p[0] - w * cx) + "px"; d.style.top = (p[1] - h * .997) + "px"; d.style.width = w + "px"; d.style.height = h + "px"; d.style.zIndex = 2;
-      var im = d.querySelector("img"), u = "../dashboard-d/assets/chars/" + c + "-" + q + ".webp?v=2"; if (im.getAttribute("src") !== u) im.src = u;
-    });
-  };
   /* A.1 season (code version): colour grade over the tree + light season particles (handled in X.weather) */
   X.season = function () {
     root.classList.remove("pa-season-art");
@@ -912,7 +950,7 @@ var CMETA={"astra-cheer":[312,640,0.545,0.995],"astra-point":[294,640,0.48,0.994
       [].forEach.call(mk, function (m, i) { m.addEventListener("mouseenter", function () { root.classList.add("pa-hov" + i); }); m.addEventListener("mouseleave", function () { root.classList.remove("pa-hov" + i); }); }); }
     X.chains(); X.light(); X.amb(); X.sky(); X.mkLabels(); X.tint(); X.start(); X.texts(); X.intro(); X.bubAuto();
   };
-  X.layout = function () { X.go(); X.unclash(); X.badgeIn(); X.arc(); X.reveal(); X.trail(); X.progress(); X.weather(); X.season(); X.sound(); X.friends(); X.marks(); X.mcard(); X.hang(); X.goNext(); X.badgeFx(); X.r3(); };
+  X.layout = function () { X.go(); X.unclash(); X.badgeIn(); X.arc(); X.reveal(); X.trail(); X.progress(); X.mprog(); X.weather(); X.season(); X.sound(); X.marks(); X.mcard(); X.hang(); X.goNext(); X.badgeFx(); X.r3(); };
 
   X.badgeIn = function () {
     var imgs = [].slice.call(document.querySelectorAll(".lsb i")), btns = isA1() ? [].slice.call(document.querySelectorAll("#tiles .tile")) : AD.btns || [];
@@ -939,12 +977,6 @@ var CMETA={"astra-cheer":[312,640,0.545,0.995],"astra-point":[294,640,0.48,0.994
       var cc = s["c" + si]; cs.value = cc; ps.disabled = cc === "none";
       var want = cc === "none" ? [] : poses(cc); if (ps.dataset.c !== cc) { ps.innerHTML = want.map(function (q) { return '<option value="' + q + '">' + PN[q] + "</option>"; }).join(""); ps.dataset.c = cc; }
       ps.value = s["q" + si]; fb.classList.toggle("on", s["f" + si] === "on"); fb.disabled = cc === "none";
-    }
-    if (p && PAGE === "a1") for (var fi = 1; fi <= 3; fi++) {
-      var fs = p.querySelector('[data-fr="' + fi + '"]'), fps = p.querySelector('[data-fq="' + fi + '"]'), ffb = p.querySelector('[data-ff="' + fi + '"]'); if (!fs) break;
-      var fc = s["fr" + fi]; fs.value = fc; fps.disabled = ffb.disabled = fc === "none";
-      var fw = fc === "none" ? [] : poses(fc); if (fps.dataset.c !== fc) { fps.innerHTML = fw.map(function (q) { return '<option value="' + q + '">' + PN[q] + "</option>"; }).join(""); fps.dataset.c = fc; }
-      fps.value = s["fq" + fi]; ffb.classList.toggle("on", s["ff" + fi] === "on");
     }
     if (p) p.querySelectorAll("[data-k]").forEach(function (b) { b.classList.toggle("on", String(s[b.getAttribute("data-k")]) === b.getAttribute("data-v")); });
     if (p) p.querySelectorAll("[data-keep]").forEach(function (b) {
@@ -997,15 +1029,7 @@ var CMETA={"astra-cheer":[312,640,0.545,0.995],"astra-point":[294,640,0.48,0.994
       S("astra", "Astra",
         row("Pose", "pose", [["cur", "Current"], ["writing", "Writing"], ["waving", "Waving"], ["reading", "Reading"], ["pointing", "Pointing"], ["books", "On books"], ["plana", "Plan A (animated)"]]) +
         row("Spot", "spot", [["cur", "Current spot"], ["left", "Left"], ["near", "Right, under the goal"]]) +
-        row("Speech bubble", "bubble", [["off", "Off"], ["on", "Tip on tap"]])) +
-      S("friends", "Friends (tree base)",
-        '<p class="pa-hint">Plan D buddies sitting with Astra. Pick up to three.</p>' +
-        FSPOT.map(function (p, i) { var n = i + 1;
-          return '<div class="pa-row pa-chrow"><small>' + n + ". " + FSPOTN[i] + '</small><div class="pa-chsel"><select data-fr="' + n + '" aria-label="Friend ' + n + '"><option value="none">None</option>' +
-            CH.filter(function (c) { return c !== "astra"; }).map(function (c) { return '<option value="' + c + '">' + CHN[c] + "</option>"; }).join("") + '</select>' +
-            '<select data-fq="' + n + '" aria-label="Pose for friend ' + n + '"></select>' +
-            '<button type="button" class="pa-flip" data-ff="' + n + '" aria-label="Mirror friend ' + n + '" title="Mirror">&#8644;</button></div></div>'; }).join("") +
-        row("Friend size", "frSize", [["s", "S"], ["m", "M"], ["l", "L"]]))) +
+        row("Speech bubble", "bubble", [["off", "Off"], ["on", "Tip on tap"]]))) +
       S("lan", isD ? "Signpost" : "Markers",
         (isD ? row("Sign icons", "signIc", [["none", "None (numbers only)"], ["buddy", "Buddies"], ["symbol", "Symbols"], ["badge", "Badges"], ["tools3d", "3D Writing tools"], ["gems3d", "3D Gems"], ["forest3d", "3D Forest"]])
              : row("Style", "lanShape", [["cur", "As painted"], ["round", "Round"], ["tall", "Tall"], ["star", "Star"], ["flower", "Flower"], ["moroccan", "Moroccan"], ["stars", "Paper stars"], ["crystals", "Crystals"], ["globes", "Globes"], ["houses", "Houses"], ["scrolls", "Scrolls"], ["inkwells", "Inkwells"]])) +
@@ -1106,7 +1130,19 @@ var CMETA={"astra-cheer":[312,640,0.545,0.995],"astra-point":[294,640,0.48,0.994
         row("Start here color", "stColor", [["gold", "Gold"], ["white", "White"], ["mod", "Module color"]]) +
         row("Start here shape", "stShape", [["tag", "Tag"], ["arrow", "Arrow"], ["ring", "Glowing ring"]]) +
         row("Start here motion", "stMotion", [["bob", "Bob"], ["pulse", "Pulse"], ["still", "Still"]]) +
-        row("Progress by goal", "prog", [["none", "None"], ["bar", "Fill bar"], ["stars", "Six stars"], ["crystals", "Crystals"]]) +
+        row("Overall progress (by goal)", "prog", [["none", "None"], ["bar", "Fill bar"], ["stars", "Six stars"], ["crystals", "Crystals"], ["lanterns", "Lantern dots"], ["jar", "Glowing jar"], ["leaves", "Leaf path"], ["starct", "Star counter"]]) +
+        (isD ? "" : row("Lesson tracker", "lesTrk", [["none", "None"], ["under", "Under item"], ["branch", "Glowing branch"], ["chain", "Chain dots"]]) +
+          row("Under-item look", "lesLook", [["dots", "Dots"], ["stars", "Stars"], ["bar", "Fill bar"], ["lanterns", "Lantern dots"], ["jar", "Glowing jar"], ["leaves", "Leaf path"], ["starct", "Star counter"]]) +
+          row("Lantern details pop-up", "lpop", [["off", "Off"], ["on", "On tap"]]) +
+          row("Pop-up theme", "lpSt", [["path", "Path card"], ["shelf", "Crystal shelf"], ["parch", "Parchment"], ["glass", "Frosted glass"], ["wood", "Wood sign"], ["book", "Storybook page"]]) +
+          row("Pop-up location", "lpPos", [["item", "Next to item"], ["center", "Center"], ["left", "Side panel left"], ["right", "Side panel right"], ["bottom", "Bottom sheet"]]) +
+          row("Pop-up color", "lpCol", [["mod", "Module color"], ["cream", "Cream"], ["navy", "Navy"], ["gold", "Gold"], ["white", "Soft white"]]) +
+          row("Pop-up lesson dots", "lpDot", [["dots", "Dots"], ["stars", "Stars"], ["gems", "Gems"], ["paws", "Paw prints"], ["leaves", "Leaves"], ["nums", "Numbered"]]) +
+          row("Lesson names", "lpNames", [["on", "On"], ["off", "Off"]]) +
+          row("Go button", "lpGo", [["on", "On"], ["off", "Off"]]) +
+          row("Pop-up animation", "lpAnim", [["pop", "Pop"], ["unroll", "Unroll"], ["fade", "Fade"]])) +
+        row("Demo: modules done", "demoMods", [["live", "Live"], ["0", "0"], ["1", "1"], ["2", "2"], ["3", "3"], ["4", "4"], ["5", "5"], ["6", "6"]]) +
+        (isD ? "" : row("Demo: lessons done in current", "demoLes", [["live", "Live"], ["0", "0"], ["1", "1"], ["2", "2"], ["3", "3"], ["4", "4"]])) +
         row("Path trail", "trail", [["off", "Off"], ["on", "On"]]) +
         row("Preview card", "preview", [["off", "Off"], ["on", "On hover / tap"]]) +
         row("Badge placement", "badgePos", [["goal", "Under goal"], ["corner", "Bottom corner"], ["tr", "Top-right"]]) +
@@ -1157,8 +1193,6 @@ var CMETA={"astra-cheer":[312,640,0.545,0.995],"astra-point":[294,640,0.48,0.994
     p.addEventListener("change", function (e) {
       var sc = e.target.getAttribute("data-ch"), sp = e.target.getAttribute("data-pose");
       if (sc) { dSet(+sc, e.target.value); apply(); } else if (sp) { s["q" + sp] = e.target.value; apply(); }
-      var fr = e.target.getAttribute("data-fr"), fq = e.target.getAttribute("data-fq");
-      if (fr) { var v = e.target.value; for (var j = 1; j <= 3; j++) if (j != fr && s["fr" + j] === v && v !== "none") s["fr" + j] = "none"; s["fr" + fr] = v; if (poses(v).indexOf(s["fq" + fr]) < 0) s["fq" + fr] = "stand"; apply(); } else if (fq) { s["fq" + fq] = e.target.value; apply(); }
     });
     p.addEventListener("input", function (e) { var r = e.target.closest("[data-range]"); if (r) { s[r.getAttribute("data-range")] = r.value; apply(); } });
     p.addEventListener("click", function (e) {
@@ -1171,7 +1205,7 @@ var CMETA={"astra-cheer":[312,640,0.545,0.995],"astra-point":[294,640,0.48,0.994
       if (b.hasAttribute("data-rand")) {
         var groups = {}; p.querySelectorAll(".pa-seg [data-k]").forEach(function (x) { (groups[x.getAttribute("data-k")] = groups[x.getAttribute("data-k")] || []).push(x.getAttribute("data-v")); });
         Object.keys(groups).forEach(function (k) { if (k === "sound" || k === "autoRead" || k === "intro" || k === "sfxTap" || k === "sfxHover" || k === "sfxBadge" || k === "calm" || (s.keep && s.keep[k])) return; var v = groups[k]; s[k] = v[Math.random() * v.length | 0]; });
-        if (isD) dShuffle(true); else if (!(s.keep && s.keep.fr)) { var pool = CH.filter(function (c) { return c !== "astra"; }).sort(function () { return Math.random() - .5; }), nf = Math.random() * 4 | 0; for (var fj = 1; fj <= 3; fj++) { s["fr" + fj] = fj <= nf ? pool[fj] : "none"; var P2 = poses(pool[fj]); s["fq" + fj] = P2[Math.random() * P2.length | 0]; s["ff" + fj] = Math.random() < .5 ? "on" : "off"; } }
+        if (isD) dShuffle(true);
         fix("shape"); apply(); return;
       }
       if (b.hasAttribute("data-copy")) {
@@ -1181,7 +1215,6 @@ var CMETA={"astra-cheer":[312,640,0.545,0.995],"astra-point":[294,640,0.48,0.994
         return;
       }
       if (b.hasAttribute("data-shuffle") || b.hasAttribute("data-shufpose")) { dShuffle(b.hasAttribute("data-shufpose")); apply(); return; }
-      var ffp = b.getAttribute("data-ff"); if (ffp) { s["ff" + ffp] = s["ff" + ffp] === "on" ? "off" : "on"; apply(); return; }
       var fp = b.getAttribute("data-flip"); if (fp) { s["f" + fp] = s["f" + fp] === "on" ? "off" : "on"; apply(); return; }
       var sv = b.getAttribute("data-save"), ld = b.getAttribute("data-load");
       if (sv) { var o2 = {}; KEYS.forEach(function (k) { o2[k] = s[k]; }); try { localStorage.setItem(KEY + "_slot_" + sv, JSON.stringify(o2)); } catch (er) {} p.querySelector('[data-load="' + sv + '"]').disabled = false; flash(b, "Saved"); return; }
