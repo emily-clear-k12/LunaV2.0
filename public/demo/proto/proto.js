@@ -16,7 +16,7 @@
   else if (q.has("proto") || q.has("p")) { s.on = true; put(s); }
   if (s.on === false) return;
 
-  var css = document.createElement("link"); css.rel = "stylesheet"; css.href = base + "proto.css?v=15"; document.head.appendChild(css);
+  var css = document.createElement("link"); css.rel = "stylesheet"; css.href = base + "proto.css?v=16"; document.head.appendChild(css);
   root.classList.add("pa", "pa-" + PAGE);
 
   var D = {
@@ -29,7 +29,8 @@
     stColor: "gold", stShape: "tag", stMotion: "bob",
     speaker: "off", lanShape: "cur", scene: "a1", tap: "menu", pstyle: "rune", tod: "cur", pose: "cur", spot: "cur", signIc: "cur", badgeIc: "off", tint: "built", art: "normal", magic: "live", goStyle: "cur", goLbl: "cur", goPos: "cur", goMo: "none",
     badgeIn: "off", reveal: "always", preview: "off", trail: "off", prog: "none", tapfx: "none", zoom: "off", bubble: "off", sound: "off", vol: "3", weather: "none", season: "summer",
-    doneLk: "cur", curHl: "cur", ttlSt: "cur", ttlW: "cur", modCard: "cur", hang: "none", frSize: "m", fr1: "none", fq1: "stand", ff1: "off", fr2: "none", fq2: "stand", ff2: "off", fr3: "none", fq3: "stand", ff3: "off"
+    doneLk: "cur", curHl: "cur", ttlSt: "cur", ttlW: "cur", modCard: "cur", hang: "none", frSize: "m", fr1: "none", fq1: "stand", ff1: "off", fr2: "none", fq2: "stand", ff2: "off", fr3: "none", fq3: "stand", ff3: "off",
+    trans: "none", sfxTap: "off", sfxHover: "off", sfxBadge: "off", idle: "still", earnFx: "off", goSz: "m", goNext: "off", goHide: "off", calm: "off"
   };
   if (PAGE === "d") { D.signIc = "none"; for (var di = 1; di <= 7; di++) { D["c" + di] = ["owl", "raccoon", "squirrel", "astra", "fox", "bear", "bunny"][di - 1]; D["q" + di] = ["stand", "stand", "stand", "point", "point", "wave", "wave"][di - 1]; D["f" + di] = di === 5 ? "on" : "off"; } }
   var KEYS = Object.keys(D);
@@ -611,7 +612,7 @@ var CMETA={"astra-cheer":[312,640,0.545,0.995],"astra-point":[294,640,0.48,0.994
   var WX = { c: null, g: null, parts: [], kind: "", raf: 0 };
   X.weather = function () {
     var hst = hostEl(); if (!hst) return;
-    var reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+    var reduce = matchMedia("(prefers-reduced-motion: reduce)").matches || s.calm === "on";
     var kinds = []; if (s.weather !== "none") kinds.push(s.weather);
     if (isA1()) { if (s.season === "spring") kinds.push("blossom"); if (s.season === "winter" && s.weather !== "snow") kinds.push("frost"); if (s.season === "autumn" && s.weather !== "leaves") kinds.push("fewleaves"); }
     var kind = reduce ? "" : kinds.join(",");
@@ -682,24 +683,31 @@ var CMETA={"astra-cheer":[312,640,0.545,0.995],"astra-point":[294,640,0.48,0.994
     var c = isA1() ? (((window.A1_WORLDS || [])[ni] || {}).color || "#f5b400") : BUDDY[ni][1]; X.hl.style.setProperty("--c", c);
   };
   /* D: module card merge -> copy its text into the goal card */
-  X.card = function () {
+  X.mcard = function () {
     if (isA1()) return; var card = document.querySelector(".top .card"), w = document.querySelector("aside.go .world"); if (!card || !w) return;
     var m = card.querySelector(".pa-merge"); if (s.modCard !== "merge") { if (m) m.remove(); return; }
     if (!m) { m = el("p", "pa-merge"); card.appendChild(m); }
     var pl = w.querySelector(".place"), ls = w.querySelector(".lesson"); m.textContent = (ls ? ls.textContent.split(":")[0] : "Module") + " \u00b7 " + (pl ? pl.textContent : "");
   };
   /* D: hanging items on the bridge rope (art px, follows the painted top rope) */
-  var ROPE = [[960, 505], [1066, 532], [1172, 470]];
-  function ropeAt(t) { var a = ROPE[0], b = ROPE[1], c = ROPE[2], u = 1 - t; return [u * u * a[0] + 2 * u * t * b[0] + t * t * c[0], u * u * a[1] + 2 * u * t * b[1] + t * t * c[1]]; }
+  /* painted top rope: deck post -> sag -> far post -> up to the treehouse */
+  var ROPES = [[[960, 505], [1066, 532], [1172, 470]], [[1172, 470], [1214, 470], [1256, 452]]];
+  function ropeAt(R, t) { var a = R[0], b = R[1], c = R[2], u = 1 - t; return [u * u * a[0] + 2 * u * t * b[0] + t * t * c[0], u * u * a[1] + 2 * u * t * b[1] + t * t * c[1]]; }
   X.hang = function () {
     if (isA1()) return; var st = document.querySelector(".stage"); if (!st) return;
     if (!X.hg) { X.hg = el("div", "pa-hang"); X.hg.setAttribute("aria-hidden", "true"); }
     var cs = st.querySelector(".pd-chars"); if (X.hg.parentNode !== st) { if (cs) cs.before(X.hg); else st.appendChild(X.hg); }
-    if (X.hg.dataset.k === s.hang) return; X.hg.dataset.k = s.hang;
-    var n = { lanterns: 4, garland: 9, bunting: 8, lights: 12 }[s.hang] || 0, html = "", cols = ["#e0703a", "#f5b400", "#3fb6e8", "#4cc28a", "#ef6fa8", "#9b7bea"];
-    for (var i = 0; i < n; i++) { var t = (i + .5) / n, p = ropeAt(t); html += '<i class="h-' + s.hang + '" style="' + pct(p[0], p[1]) + ";--c:" + cols[i % 6] + ";--d:" + (i * .37 % 2) + 's"></i>'; }
+    /* keep items where no character stands in front of the rope */
+    var occ = (dScene.els || []).filter(function (d) { return d.style.display !== "none"; }).map(function (d) { var l = parseFloat(d.style.left) * 12.8, w = parseFloat(d.style.width) * 12.8; return [l + w * .18, l + w * .82, parseFloat(d.style.top) * 7.2]; });
+    var key = s.hang + "|" + occ.map(function (o) { return o.map(Math.round).join(","); }).join(";"); if (X.hg.dataset.k === key) return; X.hg.dataset.k = key;
+    var gap = { lanterns: 34, garland: 15, bunting: 17, lights: 12 }[s.hang] || 0, html = "", cols = ["#e0703a", "#f5b400", "#3fb6e8", "#4cc28a", "#ef6fa8", "#9b7bea"], n = 0, lastX = -99;
+    if (gap) ROPES.forEach(function (R) { for (var i = 0; i <= 200; i++) { var p = ropeAt(R, i / 200);
+      if (p[0] - lastX < gap) continue;
+      if (occ.some(function (o) { return p[0] > o[0] && p[0] < o[1] && p[1] > o[2]; })) continue;
+      lastX = p[0]; html += '<i class="h-' + s.hang + '" style="' + pct(p[0], p[1]) + ";--c:" + cols[n % 6] + ";--d:" + (n * .37 % 2) + 's"></i>'; n++; } });
     X.hg.innerHTML = html;
   };
+
   X.unclash = function () {
     if (!isA1()) return; var st = document.querySelector(".strip"), g = document.querySelector(".goaltile"); if (!st || !g) return;
     st.style.translate = ""; var a = st.getBoundingClientRect(), b = g.getBoundingClientRect(), k = hostToScreen(0, 0).k || 1;
@@ -728,7 +736,74 @@ var CMETA={"astra-cheer":[312,640,0.545,0.995],"astra-point":[294,640,0.48,0.994
   if (window.MutationObserver) document.addEventListener("DOMContentLoaded", function () {
     var act = document.getElementById("act"); if (act) new MutationObserver(function () { X.go(); }).observe(act, { childList: true });
   });
-  X.layout = function () { X.go(); X.unclash(); X.badgeIn(); X.arc(); X.reveal(); X.trail(); X.progress(); X.weather(); X.season(); X.sound(); X.friends(); X.marks(); X.card(); X.hang(); };
+  /* ================= Round 2 (Oct 21): transitions, sound effects, idle motion, badge moment, Go size/next/hidden, calm preview ================= */
+  function calm() { return s.calm === "on" || matchMedia("(prefers-reduced-motion: reduce)").matches; }
+  var FX = { ctx: null };
+  function sfx(kind) {
+    if (!kind || kind === "off" || !X.userTapped) return;
+    try {
+      if (!FX.ctx) FX.ctx = new (window.AudioContext || window.webkitAudioContext)();
+      var c = FX.ctx, t = c.currentTime, v = (+s.vol || 3) / 5 * .5, g = c.createGain(); g.connect(c.destination); g.gain.value = 0;
+      function tone(f, d, type, at, peak) { var o = c.createOscillator(), e = c.createGain(); o.type = type || "sine"; o.frequency.value = f; o.connect(e); e.connect(g);
+        e.gain.setValueAtTime(0, t + at); e.gain.linearRampToValueAtTime(peak, t + at + .008); e.gain.exponentialRampToValueAtTime(.0005, t + at + d); o.start(t + at); o.stop(t + at + d + .05); }
+      function noise(d, f, q, at, peak) { var n = c.createBufferSource(), b = c.createBuffer(1, c.sampleRate * d, c.sampleRate), a = b.getChannelData(0); for (var i = 0; i < a.length; i++) a[i] = (Math.random() * 2 - 1) * (1 - i / a.length);
+        n.buffer = b; var bp = c.createBiquadFilter(); bp.type = "bandpass"; bp.frequency.value = f; bp.Q.value = q; var e = c.createGain(); e.gain.value = peak; n.connect(bp); bp.connect(e); e.connect(g); n.start(t + at); }
+      g.gain.value = v;
+      if (kind === "knock") { tone(190, .12, "triangle", 0, .7); noise(.05, 900, 3, 0, .5); }
+      else if (kind === "chime") { tone(1318, .6, "sine", 0, .35); tone(1976, .45, "sine", .05, .15); }
+      else if (kind === "page") { noise(.22, 2400, .7, 0, .5); }
+      else if (kind === "badge") { [784, 988, 1175, 1568].forEach(function (f, i) { tone(f, .7, "sine", i * .09, .28); }); }
+      else if (kind === "hover") { noise(.16, 1600, .9, 0, .12); }
+    } catch (e) {}
+  }
+  X.sfx = sfx;
+  /* page transitions: plays over the page, then follows the link (A.1) or fades back (Plan D has no link yet) */
+  function transGo(btn, after) {
+    var o = document.getElementById("paTrans") || document.body.appendChild(el("div", "pa-trans"));
+    o.id = "paTrans"; o.className = "pa-trans t-" + s.trans; var r = btn.getBoundingClientRect();
+    o.style.setProperty("--ox", (r.left + r.width / 2) + "px"); o.style.setProperty("--oy", (r.top + r.height / 2) + "px");
+    if (s.trans === "zoom") { var hst = hostEl(); if (hst) { hst.style.transformOrigin = (r.left + r.width / 2) + "px " + (r.top + r.height / 2) + "px"; hst.classList.add("pa-zooming"); } }
+    void o.offsetWidth; o.classList.add("run");
+    setTimeout(function () { after(); setTimeout(function () { o.classList.remove("run"); var h2 = hostEl(); if (h2) h2.classList.remove("pa-zooming"); }, 700); }, 650);
+  }
+  document.addEventListener("click", function (e) {
+    var b = e.target.closest && e.target.closest(".hop, #act .go, .hot[data-arrow], .lantern, #tiles .tile");
+    if (!b || e.target.closest("#paPanel")) return;
+    X.picked = true; if (s.goHide === "on") root.classList.add("pa-picked");
+    sfx(s.sfxTap);
+    if (b.matches(".hop, #act .go") && s.trans !== "none" && !calm() && !b.__paPass) {
+      e.preventDefault(); e.stopImmediatePropagation();
+      transGo(b, function () { b.__paPass = true; b.click(); b.__paPass = false; });
+    }
+  }, true);
+  document.addEventListener("pointerover", function (e) {
+    if (s.sfxHover !== "on" || e.pointerType !== "mouse") return; var b = e.target.closest && e.target.closest(".hot[data-arrow], .lantern, #tiles .tile, .hop, #act .go");
+    if (!b || b === X.lastHov) return; X.lastHov = b; sfx("hover");
+  });
+  document.addEventListener("pointerout", function (e) { if (X.lastHov && !X.lastHov.contains(e.relatedTarget)) X.lastHov = null; });
+  /* badge earned moment (plays once per change, or with the panel's replay button) */
+  X.badgeFx = function (force) {
+    var key = s.earnFx; if (key === "off") { X.bfxKey = key; return; } if (!force && X.bfxKey === key) return; X.bfxKey = key;
+    var e = [].slice.call(document.querySelectorAll(".earned")).filter(function (x) { return !x.closest("#paPanel"); });
+    e.forEach(function (x) { x.classList.remove("pa-bfx"); void x.offsetWidth; if (!calm()) x.classList.add("pa-bfx"); });
+    if (s.earnFx === "sparkle" && !calm()) e.forEach(function (x) { var sp = el("span", "pa-bspark", "<i>\u2726</i><i>\u2727</i><i>\u2726</i><i>\u2727</i>"); sp.setAttribute("aria-hidden", "true"); x.appendChild(sp); setTimeout(function () { sp.remove(); }, 1600); });
+    if (s.earnFx === "fly" && !calm()) e.forEach(function (x) { var r = x.getBoundingClientRect(), f = x.cloneNode(true); f.className = "pa-bfly"; f.style.cssText = "left:" + r.left + "px;top:" + r.top + "px;width:" + r.width + "px;height:" + r.height + "px"; document.body.appendChild(f); f.style.setProperty("--dx", (innerWidth / 2 - r.left - r.width / 2) + "px"); f.style.setProperty("--dy", (innerHeight / 2 - r.top - r.height / 2) + "px"); setTimeout(function () { f.remove(); }, 1300); });
+    if (s.sfxBadge === "on") sfx("badge");
+  };
+  /* Go button: next module name */
+  X.goNext = function () {
+    var b = goBtn(); if (!b) return; var n = b.querySelector(".pa-gonext");
+    if (s.goNext !== "on") { if (n) n.remove(); return; }
+    if (!n) { n = el("small", "pa-gonext"); b.appendChild(n); }
+    var m = LP && LP.next ? LP.next - 1 : 1, nm = SHORT[m]; if (X.pickIdx != null) nm = SHORT[X.pickIdx];
+    n.textContent = nm;
+  };
+  document.addEventListener("click", function (e) {
+    var h = e.target.closest && e.target.closest(".hot[data-arrow], .lantern, #tiles .tile"); if (!h) return;
+    var list = h.matches(".hot") ? document.querySelectorAll(".hot[data-arrow]") : h.matches(".lantern") ? document.querySelectorAll("#lanterns .lantern") : document.querySelectorAll("#tiles .tile");
+    X.pickIdx = [].indexOf.call(list, h); setTimeout(function () { X.goNext(); }, 0);
+  });
+  X.layout = function () { X.go(); X.unclash(); X.badgeIn(); X.arc(); X.reveal(); X.trail(); X.progress(); X.weather(); X.season(); X.sound(); X.friends(); X.marks(); X.mcard(); X.hang(); X.goNext(); X.badgeFx(); };
 
   X.badgeIn = function () {
     var imgs = [].slice.call(document.querySelectorAll(".lsb i")), btns = isA1() ? [].slice.call(document.querySelectorAll("#tiles .tile")) : AD.btns || [];
@@ -847,7 +922,20 @@ var CMETA={"astra-cheer":[312,640,0.545,0.995],"astra-point":[294,640,0.48,0.994
         row("Style", "goStyle", [["cur", "Current"], ["wood", "Carved wood"], ["gem", "Gold gem"], ["leather", "Leather tab"], ["lantern", "Lantern"], ["ticket", "Paper ticket"], ["vine", "Leafy vine"], ["compass", "Compass"], ["candy", "Candy 3D"]]) +
         row("Label", "goLbl", [["cur", isD ? "Let's go!" : "Go"], ["start", "Start"], ["begin", "Begin adventure"], ["go", "Go!"]]) +
         row("Position", "goPos", [["cur", "Current"], ["br", "Bottom right"], ["bc", "Bottom center"], ["sign", isD ? "By the signpost" : "By the tree base"]]) +
-        row("Motion", "goMo", [["none", "None"], ["bounce", "Gentle bounce"], ["sparkle", "Sparkle"]])) +
+        row("Motion", "goMo", [["none", "None"], ["bounce", "Gentle bounce"], ["sparkle", "Sparkle"]]) +
+        row("Size", "goSz", [["s", "S"], ["m", "M (as built)"], ["l", "L"]]) +
+        row("Show next module", "goNext", [["off", "Off"], ["on", "On"]]) +
+        row("Hidden until a pick", "goHide", [["off", "Off"], ["on", "On"]])) +
+      S("motion", "Motion &amp; sound",
+        row("Page transition (Go)", "trans", [["none", "None"], ["fade", "Fade to white"], ["zoom", "Zoom in"], ["page", "Page turn"], ["leaf", "Leaf wipe"]]) +
+        row("Character idle", "idle", [["still", "Still"], ["breathe", "Gentle breathe"], ["sway", "Slow sway"], ["astra", "Astra only"]]) +
+        row("Badge earned moment", "earnFx", [["off", "Off"], ["pop", "Gentle pop"], ["sparkle", "Sparkle burst"], ["fly", "Flies to the row"]]) +
+        '<div class="pa-tools"><button type="button" data-bfx>Replay badge moment</button></div>' +
+        row("Tap sound", "sfxTap", [["off", "Off"], ["knock", "Wood knock"], ["chime", "Chime"], ["page", "Page flip"]]) +
+        row("Hover sound", "sfxHover", [["off", "Off"], ["on", "Soft whoosh"]]) +
+        row("Badge sound", "sfxBadge", [["off", "Off"], ["on", "Soft chime"]]) +
+        '<p class="pa-hint">Sounds start after your first tap (browser rule). Volume is in Atmosphere.</p>' +
+        row("Calm mode preview", "calm", [["off", "Off"], ["on", "On (no motion)"]])) +
       S("goal", "Goal &amp; title",
         row("Goal placement", "goalPos", [["tl", "Top-left"], ["tc", "Top-center"], ["tr", "Top-right"]]) +
         row("Goal style", "goalStyle", [["cur", "Current"], ["wood", "Wood sign"], ["glass", "Frosted"], ["parch", "Parchment"], ["navy", "Navy"]]) +
@@ -925,10 +1013,11 @@ var CMETA={"astra-cheer":[312,640,0.545,0.995],"astra-point":[294,640,0.48,0.994
       if (b.hasAttribute("data-min")) { s.min = !s.min; p.classList.toggle("min", s.min); put(s); return; }
       var st = b.getAttribute("data-sec-t");
       if (st) { sec[st] = sec[st] ? 0 : 1; b.parentNode.classList.toggle("open", !!sec[st]); b.setAttribute("aria-expanded", !!sec[st]); put(s); return; }
+      if (b.hasAttribute("data-bfx")) { X.badgeFx(true); return; }
       if (b.hasAttribute("data-reset")) { KEYS.forEach(function (k) { s[k] = D[k]; }); s.keep = {}; apply(); syncRange(); return; }
       if (b.hasAttribute("data-rand")) {
         var groups = {}; p.querySelectorAll(".pa-seg [data-k]").forEach(function (x) { (groups[x.getAttribute("data-k")] = groups[x.getAttribute("data-k")] || []).push(x.getAttribute("data-v")); });
-        Object.keys(groups).forEach(function (k) { if (k === "sound" || (s.keep && s.keep[k])) return; var v = groups[k]; s[k] = v[Math.random() * v.length | 0]; });
+        Object.keys(groups).forEach(function (k) { if (k === "sound" || k === "sfxTap" || k === "sfxHover" || k === "sfxBadge" || k === "calm" || (s.keep && s.keep[k])) return; var v = groups[k]; s[k] = v[Math.random() * v.length | 0]; });
         if (isD) dShuffle(true); else if (!(s.keep && s.keep.fr)) { var pool = CH.filter(function (c) { return c !== "astra"; }).sort(function () { return Math.random() - .5; }), nf = Math.random() * 4 | 0; for (var fj = 1; fj <= 3; fj++) { s["fr" + fj] = fj <= nf ? pool[fj] : "none"; var P2 = poses(pool[fj]); s["fq" + fj] = P2[Math.random() * P2.length | 0]; s["ff" + fj] = Math.random() < .5 ? "on" : "off"; } }
         fix("shape"); apply(); return;
       }
