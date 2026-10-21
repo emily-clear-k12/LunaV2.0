@@ -541,16 +541,16 @@ html.pa-a1[data-p-gopos=sign] #act .go{transform:translate(-50%,-50%)}
 html[data-p-tod=cur] .pa-fr img,html[data-p-tod=dusk] .pa-fr img{filter:brightness(.8) saturate(.9) sepia(.12) hue-rotate(-12deg)}
 html[data-p-tod=night] .pa-fr img{filter:brightness(.58) saturate(.75) hue-rotate(12deg)}
 html[data-p-tod=sunrise] .pa-fr img{filter:brightness(.92) sepia(.15)}
-/* A.1 season grade (code version; painted repaints listed in the report) */
-.pa-sea{position:absolute;inset:0;pointer-events:none;z-index:1;display:none}
+/* A.1 season: painted plates (sunset light). Other times of day get a grade like Plan D */
+.pa-sea{position:absolute;inset:0;pointer-events:none;display:none}
 .pa-sea i{position:absolute;inset:0}
-html.pa-a1:not([data-p-season=summer]) .pa-sea{display:block}
-html[data-p-season=spring] .pa-sea .g{background:radial-gradient(ellipse 60% 45% at 50% 30%,rgba(255,190,220,.16),transparent 70%);mix-blend-mode:screen}
-html[data-p-season=spring] .pa-sea .gr{background:linear-gradient(to top,rgba(150,230,140,.16),transparent 28%);mix-blend-mode:soft-light}
-html[data-p-season=autumn] .pa-sea .g{background:radial-gradient(ellipse 65% 50% at 50% 28%,rgba(255,140,40,.2),transparent 70%);mix-blend-mode:color-dodge;opacity:.6}
-html[data-p-season=autumn] .pa-sea .gr{background:linear-gradient(to top,rgba(200,90,20,.22),transparent 30%);mix-blend-mode:soft-light}
-html[data-p-season=winter] .pa-sea .g{background:linear-gradient(rgba(190,215,255,.16),rgba(220,235,255,.06));mix-blend-mode:screen}
-html[data-p-season=winter] .pa-sea .gr{background:linear-gradient(to top,rgba(240,246,255,.55),rgba(240,246,255,.12) 9%,transparent 16%)}
+html.pa-a1:not([data-pa-sgrade=none]) .pa-sea{display:block}
+html[data-pa-sgrade=night] .pa-sea .g{background:linear-gradient(rgba(20,30,90,.75),rgba(30,40,90,.55));mix-blend-mode:multiply}
+html[data-pa-sgrade=night] .pa-sea .gr{background:rgba(70,90,170,.22);mix-blend-mode:color}
+html[data-pa-sgrade=day] .pa-sea .g{background:linear-gradient(rgba(120,190,255,.55),rgba(255,240,200,.35) 70%);mix-blend-mode:soft-light}
+html[data-pa-sgrade=day] .pa-sea .gr{background:rgba(255,250,230,.06);mix-blend-mode:overlay}
+html[data-pa-sgrade=sunrise] .pa-sea .g{background:linear-gradient(rgba(255,190,140,.4),rgba(255,230,190,.2));mix-blend-mode:soft-light}
+html[data-pa-sgrade=sunrise] .pa-sea .gr{background:rgba(255,220,180,.1);mix-blend-mode:screen}
 /* done lessons */
 html[data-p-donelk=star] .ls-check{background:linear-gradient(#ffe27a,#f2b200);border:0;border-radius:0;clip-path:polygon(50% 0,63% 35%,100% 38%,71% 60%,80% 98%,50% 77%,20% 98%,29% 60%,0 38%,37% 35%);width:26px;height:26px;filter:drop-shadow(0 2px 2px rgba(0,0,0,.4))}
 html[data-p-donelk=star] .ls-check svg{display:none}

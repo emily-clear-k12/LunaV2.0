@@ -16,7 +16,7 @@
   else if (q.has("proto") || q.has("p")) { s.on = true; put(s); }
   if (s.on === false) return;
 
-  var css = document.createElement("link"); css.rel = "stylesheet"; css.href = base + "proto.css?v=16"; document.head.appendChild(css);
+  var css = document.createElement("link"); css.rel = "stylesheet"; css.href = base + "proto.css?v=17"; document.head.appendChild(css);
   root.classList.add("pa", "pa-" + PAGE);
 
   var D = {
@@ -356,11 +356,13 @@
     var t = s.tod, a1 = PAGE === "a1", host = a1 ? document.getElementById("frame") : document.querySelector(".stage"); if (!host) return;
     var on = t !== "cur";
     if (a1) {
-      var key = on ? t : "base";
-      var bg = document.getElementById("sceneBg"); if (bg) bg.src = "plates/" + key + ".jpg";
-      var lc = document.getElementById("lanCuts"); if (lc) lc.src = "plates/lanterns-" + key + ".webp";
-      var ac = document.getElementById("astraCut"); if (ac) ac.src = "plates/astra-" + key + ".webp";
-      var sc = document.getElementById("signCut"); if (sc) sc.src = "plates/sign-" + key + ".webp";
+      var key = on ? t : "base", se = s.season !== "summer" ? s.season : "";
+      /* painted season plates (sunset light): tighter lantern + Astra cutouts sit on top; other times get a CSS grade */
+      var bg = document.getElementById("sceneBg"); if (bg) bg.src = se ? "plates/seasonplate-" + se + ".jpg?v=1" : "plates/" + key + ".jpg";
+      var lc = document.getElementById("lanCuts"); if (lc) lc.src = "plates/" + (se ? "season-" : "") + "lanterns-" + key + ".webp" + (se ? "?v=1" : "");
+      var ac = document.getElementById("astraCut"); if (ac) { ac.src = "plates/astra-" + key + ".webp"; ac.style.visibility = se ? "hidden" : ""; }
+      var sc = document.getElementById("signCut"); if (sc) sc.src = se ? "plates/season-astra-" + key + ".webp?v=1" : "plates/sign-" + key + ".webp";
+      root.setAttribute("data-pa-sgrade", se && t !== "cur" && t !== "dusk" ? t : "none");
       root.classList.remove("pa-tod-on");
       return;
     }
@@ -668,7 +670,7 @@ var CMETA={"astra-cheer":[312,640,0.545,0.995],"astra-point":[294,640,0.48,0.994
     root.classList.remove("pa-season-art");
     if (!isA1()) return; var fr = document.getElementById("frame"); if (!fr) return;
     if (!X.sea) { X.sea = el("div", "pa-sea"); X.sea.setAttribute("aria-hidden", "true"); X.sea.innerHTML = "<i class='g'></i><i class='gr'></i>"; }
-    var a = document.getElementById("signCut"); if (X.sea.parentNode !== fr) { if (a) a.after(X.sea); else fr.appendChild(X.sea); }
+    var a = document.getElementById("sceneBg"); if (X.sea.parentNode !== fr || X.sea.previousElementSibling !== a) { if (a) a.after(X.sea); else fr.appendChild(X.sea); }
   };
   /* done markers, current highlight */
   X.marks = function () {
