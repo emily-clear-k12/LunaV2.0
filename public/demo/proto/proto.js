@@ -16,7 +16,7 @@
   else if (q.has("proto") || q.has("p")) { s.on = true; put(s); }
   if (s.on === false) return;
 
-  var css = document.createElement("link"); css.rel = "stylesheet"; css.href = base + "proto.css?v=14"; document.head.appendChild(css);
+  var css = document.createElement("link"); css.rel = "stylesheet"; css.href = base + "proto.css?v=15"; document.head.appendChild(css);
   root.classList.add("pa", "pa-" + PAGE);
 
   var D = {
@@ -28,7 +28,8 @@
     badgePos: "goal", badgeSize: "m", badgeLbl: "on", earned: "full",
     stColor: "gold", stShape: "tag", stMotion: "bob",
     speaker: "off", lanShape: "cur", scene: "a1", tap: "menu", pstyle: "rune", tod: "cur", pose: "cur", spot: "cur", signIc: "cur", badgeIc: "off", tint: "built", art: "normal", magic: "live", goStyle: "cur", goLbl: "cur", goPos: "cur", goMo: "none",
-    badgeIn: "off", reveal: "always", preview: "off", trail: "off", prog: "none", tapfx: "none", zoom: "off", bubble: "off", sound: "off", vol: "3", weather: "none", season: "summer"
+    badgeIn: "off", reveal: "always", preview: "off", trail: "off", prog: "none", tapfx: "none", zoom: "off", bubble: "off", sound: "off", vol: "3", weather: "none", season: "summer",
+    doneLk: "cur", curHl: "cur", ttlSt: "cur", ttlW: "cur", modCard: "cur", hang: "none", frSize: "m", fr1: "none", fq1: "stand", ff1: "off", fr2: "none", fq2: "stand", ff2: "off", fr3: "none", fq3: "stand", ff3: "off"
   };
   if (PAGE === "d") { D.signIc = "none"; for (var di = 1; di <= 7; di++) { D["c" + di] = ["owl", "raccoon", "squirrel", "astra", "fox", "bear", "bunny"][di - 1]; D["q" + di] = ["stand", "stand", "stand", "point", "point", "wave", "wave"][di - 1]; D["f" + di] = di === 5 ? "on" : "off"; } }
   var KEYS = Object.keys(D);
@@ -612,6 +613,7 @@ var CMETA={"astra-cheer":[312,640,0.545,0.995],"astra-point":[294,640,0.48,0.994
     var hst = hostEl(); if (!hst) return;
     var reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
     var kinds = []; if (s.weather !== "none") kinds.push(s.weather);
+    if (isA1()) { if (s.season === "spring") kinds.push("blossom"); if (s.season === "winter" && s.weather !== "snow") kinds.push("frost"); if (s.season === "autumn" && s.weather !== "leaves") kinds.push("fewleaves"); }
     var kind = reduce ? "" : kinds.join(",");
     if (!WX.c) { WX.c = el("canvas", "pa-weather"); WX.c.setAttribute("aria-hidden", "true"); WX.g = WX.c.getContext("2d"); }
     var anchor = isA1() ? (hst.querySelector(".ambient-fx") || document.getElementById("lanterns")) : (hst.querySelector(".ambient-fx") || hst.querySelector(".pa-sics"));
@@ -641,8 +643,63 @@ var CMETA={"astra-cheer":[312,640,0.545,0.995],"astra-point":[294,640,0.48,0.994
     }
     if (WX.parts.length) WX.raf = requestAnimationFrame(frame);
   };
-  /* Season backgrounds are off. Time of day owns the tree. */
-  X.season = function () { root.classList.remove("pa-season-art"); };
+  /* ================= Round 1 (Oct 21): A.1 season + friends, done look, current highlight, title bar, D module card, D hanging items ================= */
+  var HW = function () { return isA1() ? 1366 : 1280; }, HH = function () { return isA1() ? 768 : 720; };
+  function pct(x, y) { return "left:" + (x / HW() * 100) + "%;top:" + (y / HH() * 100) + "%"; }
+  /* A.1 friends: D cutouts at the tree base, 0-3, each with pose + mirror */
+  var FSPOT = [[425, 706, .6], [905, 700, .58], [1075, 704, .55]], FSPOTN = ["Left of Astra", "Right roots", "Far right"];
+  X.friends = function () {
+    if (!isA1()) return; var fr = document.getElementById("frame"); if (!fr) return;
+    if (!X.fbox) { X.fbox = el("div", "pa-friends"); X.fbox.setAttribute("aria-hidden", "true"); X.fels = FSPOT.map(function () { var d = el("div", "pd-ch pa-fr"); d.innerHTML = '<span class="pd-sh"></span><img alt="">'; X.fbox.appendChild(d); return d; }); }
+    var anchor = document.getElementById("signCut"); if (X.fbox.parentNode !== fr) { if (anchor) anchor.after(X.fbox); else fr.appendChild(X.fbox); }
+    FSPOT.forEach(function (p, i) {
+      var d = X.fels[i], c = s["fr" + (i + 1)], q = s["fq" + (i + 1)];
+      if (!c || c === "none") { d.style.display = "none"; return; }
+      if (poses(c).indexOf(q) < 0) q = poses(c)[0];
+      var m = CMETA[c + "-" + q] || [300, 640, .5, 1], h = CHH[c] * p[2] / m[3] * (s.frSize === "s" ? .82 : s.frSize === "l" ? 1.18 : 1), w = h * m[0] / m[1], flip = s["ff" + (i + 1)] === "on", cx = flip ? 1 - m[2] : m[2];
+      d.style.display = ""; d.className = "pd-ch pa-fr pd-" + c + (flip ? " pd-flip" : "");
+      d.style.left = (p[0] - w * cx) + "px"; d.style.top = (p[1] - h * .997) + "px"; d.style.width = w + "px"; d.style.height = h + "px"; d.style.zIndex = 2;
+      var im = d.querySelector("img"), u = "../dashboard-d/assets/chars/" + c + "-" + q + ".webp?v=2"; if (im.getAttribute("src") !== u) im.src = u;
+    });
+  };
+  /* A.1 season (code version): colour grade over the tree + light season particles (handled in X.weather) */
+  X.season = function () {
+    root.classList.remove("pa-season-art");
+    if (!isA1()) return; var fr = document.getElementById("frame"); if (!fr) return;
+    if (!X.sea) { X.sea = el("div", "pa-sea"); X.sea.setAttribute("aria-hidden", "true"); X.sea.innerHTML = "<i class='g'></i><i class='gr'></i>"; }
+    var a = document.getElementById("signCut"); if (X.sea.parentNode !== fr) { if (a) a.after(X.sea); else fr.appendChild(X.sea); }
+  };
+  /* done markers, current highlight */
+  X.marks = function () {
+    var hst = hostEl(); if (!hst) return;
+    var mk = isA1() ? [].slice.call(document.querySelectorAll("#lanterns .lantern")) : [].slice.call(document.querySelectorAll(".hot[data-arrow]"));
+    mk.forEach(function (b, i) { var st = status(i + 1); b.classList.toggle("pa-done", st === "done"); b.classList.toggle("pa-next", st === "next"); });
+    if (!X.hl) { X.hl = el("div", "pa-hl", "<i></i>"); X.hl.setAttribute("aria-hidden", "true"); }
+    var ni = (LP && LP.next ? LP.next : 2) - 1, pt = modPt(ni);
+    var under = isA1() ? document.getElementById("lanterns") : hst.querySelector(".fx");
+    if (X.hl.parentNode !== hst) { if (under) under.before(X.hl); else hst.appendChild(X.hl); }
+    X.hl.style.cssText = pct(pt.x, pt.y) + ";width:" + (pt.w / HW() * 100) + "%;height:" + (pt.h / HH() * 100) + "%";
+    var c = isA1() ? (((window.A1_WORLDS || [])[ni] || {}).color || "#f5b400") : BUDDY[ni][1]; X.hl.style.setProperty("--c", c);
+  };
+  /* D: module card merge -> copy its text into the goal card */
+  X.card = function () {
+    if (isA1()) return; var card = document.querySelector(".top .card"), w = document.querySelector("aside.go .world"); if (!card || !w) return;
+    var m = card.querySelector(".pa-merge"); if (s.modCard !== "merge") { if (m) m.remove(); return; }
+    if (!m) { m = el("p", "pa-merge"); card.appendChild(m); }
+    var pl = w.querySelector(".place"), ls = w.querySelector(".lesson"); m.textContent = (ls ? ls.textContent.split(":")[0] : "Module") + " \u00b7 " + (pl ? pl.textContent : "");
+  };
+  /* D: hanging items on the bridge rope (art px, follows the painted top rope) */
+  var ROPE = [[960, 505], [1066, 532], [1172, 470]];
+  function ropeAt(t) { var a = ROPE[0], b = ROPE[1], c = ROPE[2], u = 1 - t; return [u * u * a[0] + 2 * u * t * b[0] + t * t * c[0], u * u * a[1] + 2 * u * t * b[1] + t * t * c[1]]; }
+  X.hang = function () {
+    if (isA1()) return; var st = document.querySelector(".stage"); if (!st) return;
+    if (!X.hg) { X.hg = el("div", "pa-hang"); X.hg.setAttribute("aria-hidden", "true"); }
+    var cs = st.querySelector(".pd-chars"); if (X.hg.parentNode !== st) { if (cs) cs.before(X.hg); else st.appendChild(X.hg); }
+    if (X.hg.dataset.k === s.hang) return; X.hg.dataset.k = s.hang;
+    var n = { lanterns: 4, garland: 9, bunting: 8, lights: 12 }[s.hang] || 0, html = "", cols = ["#e0703a", "#f5b400", "#3fb6e8", "#4cc28a", "#ef6fa8", "#9b7bea"];
+    for (var i = 0; i < n; i++) { var t = (i + .5) / n, p = ropeAt(t); html += '<i class="h-' + s.hang + '" style="' + pct(p[0], p[1]) + ";--c:" + cols[i % 6] + ";--d:" + (i * .37 % 2) + 's"></i>'; }
+    X.hg.innerHTML = html;
+  };
   X.unclash = function () {
     if (!isA1()) return; var st = document.querySelector(".strip"), g = document.querySelector(".goaltile"); if (!st || !g) return;
     st.style.translate = ""; var a = st.getBoundingClientRect(), b = g.getBoundingClientRect(), k = hostToScreen(0, 0).k || 1;
@@ -671,7 +728,7 @@ var CMETA={"astra-cheer":[312,640,0.545,0.995],"astra-point":[294,640,0.48,0.994
   if (window.MutationObserver) document.addEventListener("DOMContentLoaded", function () {
     var act = document.getElementById("act"); if (act) new MutationObserver(function () { X.go(); }).observe(act, { childList: true });
   });
-  X.layout = function () { X.go(); X.unclash(); X.badgeIn(); X.arc(); X.reveal(); X.trail(); X.progress(); X.weather(); X.season(); X.sound(); };
+  X.layout = function () { X.go(); X.unclash(); X.badgeIn(); X.arc(); X.reveal(); X.trail(); X.progress(); X.weather(); X.season(); X.sound(); X.friends(); X.marks(); X.card(); X.hang(); };
 
   X.badgeIn = function () {
     var imgs = [].slice.call(document.querySelectorAll(".lsb i")), btns = isA1() ? [].slice.call(document.querySelectorAll("#tiles .tile")) : AD.btns || [];
@@ -698,6 +755,12 @@ var CMETA={"astra-cheer":[312,640,0.545,0.995],"astra-point":[294,640,0.48,0.994
       var cc = s["c" + si]; cs.value = cc; ps.disabled = cc === "none";
       var want = cc === "none" ? [] : poses(cc); if (ps.dataset.c !== cc) { ps.innerHTML = want.map(function (q) { return '<option value="' + q + '">' + PN[q] + "</option>"; }).join(""); ps.dataset.c = cc; }
       ps.value = s["q" + si]; fb.classList.toggle("on", s["f" + si] === "on"); fb.disabled = cc === "none";
+    }
+    if (p && PAGE === "a1") for (var fi = 1; fi <= 3; fi++) {
+      var fs = p.querySelector('[data-fr="' + fi + '"]'), fps = p.querySelector('[data-fq="' + fi + '"]'), ffb = p.querySelector('[data-ff="' + fi + '"]'); if (!fs) break;
+      var fc = s["fr" + fi]; fs.value = fc; fps.disabled = ffb.disabled = fc === "none";
+      var fw = fc === "none" ? [] : poses(fc); if (fps.dataset.c !== fc) { fps.innerHTML = fw.map(function (q) { return '<option value="' + q + '">' + PN[q] + "</option>"; }).join(""); fps.dataset.c = fc; }
+      fps.value = s["fq" + fi]; ffb.classList.toggle("on", s["ff" + fi] === "on");
     }
     if (p) p.querySelectorAll("[data-k]").forEach(function (b) { b.classList.toggle("on", String(s[b.getAttribute("data-k")]) === b.getAttribute("data-v")); });
     if (p) p.querySelectorAll("[data-keep]").forEach(function (b) {
@@ -729,8 +792,9 @@ var CMETA={"astra-cheer":[312,640,0.545,0.995],"astra-point":[294,640,0.48,0.994
       '<div class="pa-tools pa-slots">' + ["A", "B", "C"].map(function (x) { return '<span><button type="button" data-save="' + x + '">Save ' + x + '</button><button type="button" data-load="' + x + '"' + (localStorage.getItem(KEY + "_slot_" + x) ? "" : " disabled") + '>Load</button></span>'; }).join("") + "</div>" +
       S("scene", "Atmosphere",
         (A1 ? row("Scene", "scene", [["a1", "Lantern Tree"], ["pa", "Plan A Portals"]]) : "") +
-        row("Time of day", "tod", isD ? [["sunrise", "Sunrise"], ["cur", "Day"], ["dusk", "Sunset"], ["night", "Night"]] : [["cur", "Now"], ["sunrise", "Sunrise"], ["day", "Day"], ["dusk", "Dusk"], ["night", "Night"]]) +
-        (isD ? row("Season", "season", [["summer", "Summer"], ["spring", "Spring"], ["autumn", "Fall"], ["winter", "Winter"]]) : "") +
+        row("Time of day", "tod", isD ? [["sunrise", "Sunrise"], ["cur", "Day"], ["dusk", "Sunset"], ["night", "Night"]] : [["cur", "Now"], ["sunrise", "Sunrise"], ["day", "Day"], ["dusk", "Sunset"], ["night", "Night"]]) +
+        row("Season", "season", [["summer", "Summer"], ["spring", "Spring"], ["autumn", "Fall"], ["winter", "Winter"]]) +
+        (isD ? row("Hanging on the bridge rope", "hang", [["none", "None"], ["lanterns", "Lanterns"], ["garland", "Leaf garland"], ["bunting", "Bunting"], ["lights", "Fairy lights"]]) : "") +
         row("Weather", "weather", [["none", "Clear"], ["rain", "Rain"], ["leaves", "Leaves"], ["snow", "Snow"]]) +
         row("Magic", "magic", [["live", "As built"], ["1", "1"], ["2", "2"], ["3", "3"], ["4", "4"], ["5", "5"]]) +
         '<p class="pa-hint">Magic builds in the open sky only. 1 is a few lights, 5 adds a slow ribbon.</p>' +
@@ -749,7 +813,15 @@ var CMETA={"astra-cheer":[312,640,0.545,0.995],"astra-point":[294,640,0.48,0.994
       S("astra", "Astra",
         row("Pose", "pose", [["cur", "Current"], ["writing", "Writing"], ["waving", "Waving"], ["reading", "Reading"], ["pointing", "Pointing"], ["books", "On books"], ["plana", "Plan A (animated)"]]) +
         row("Spot", "spot", [["cur", "Current spot"], ["left", "Left"], ["near", "Right, under the goal"]]) +
-        row("Speech bubble", "bubble", [["off", "Off"], ["on", "Tip on tap"]]))) +
+        row("Speech bubble", "bubble", [["off", "Off"], ["on", "Tip on tap"]])) +
+      S("friends", "Friends (tree base)",
+        '<p class="pa-hint">Plan D buddies sitting with Astra. Pick up to three.</p>' +
+        FSPOT.map(function (p, i) { var n = i + 1;
+          return '<div class="pa-row pa-chrow"><small>' + n + ". " + FSPOTN[i] + '</small><div class="pa-chsel"><select data-fr="' + n + '" aria-label="Friend ' + n + '"><option value="none">None</option>' +
+            CH.filter(function (c) { return c !== "astra"; }).map(function (c) { return '<option value="' + c + '">' + CHN[c] + "</option>"; }).join("") + '</select>' +
+            '<select data-fq="' + n + '" aria-label="Pose for friend ' + n + '"></select>' +
+            '<button type="button" class="pa-flip" data-ff="' + n + '" aria-label="Mirror friend ' + n + '" title="Mirror">&#8644;</button></div></div>'; }).join("") +
+        row("Friend size", "frSize", [["s", "S"], ["m", "M"], ["l", "L"]]))) +
       S("lan", isD ? "Signpost" : "Markers",
         (isD ? row("Sign icons", "signIc", [["none", "None (numbers only)"], ["buddy", "Buddies"], ["symbol", "Symbols"], ["badge", "Badges"], ["tools3d", "3D Writing tools"], ["gems3d", "3D Gems"], ["forest3d", "3D Forest"]])
              : row("Style", "lanShape", [["cur", "As painted"], ["round", "Round"], ["tall", "Tall"], ["star", "Star"], ["flower", "Flower"], ["moroccan", "Moroccan"], ["stars", "Paper stars"], ["crystals", "Crystals"], ["globes", "Globes"], ["houses", "Houses"], ["scrolls", "Scrolls"], ["inkwells", "Inkwells"]])) +
@@ -782,7 +854,13 @@ var CMETA={"astra-cheer":[312,640,0.545,0.995],"astra-point":[294,640,0.48,0.994
         row("Goal size", "goalSize", [["compact", "Compact"], ["large", "Large"]]) +
         row("Title", "title", [["on", "Show"], ["off", "Hide"]]) +
         row("Title placement", "titlePos", [["tl", "Top-left"], ["center", "Centered"]]) +
+        row("Title bar", "ttlSt", [["cur", "As built"], ["frost", "Frosted"], ["wood", "Wood plank"], ["parch", "Parchment"], ["navy", "Navy"], ["none", "No bar"]]) +
+        row("Title weight", "ttlW", [["cur", "As built"], ["600", "Semibold"], ["700", "Bold"]]) +
+        (isD ? row("Writing module card", "modCard", [["cur", "As built"], ["hide", "Hide"], ["merge", "Merge into goal"], ["wood", "Wood sign"], ["parch", "Parchment"], ["medal", "Medallion"]]) : "") +
         row("Ribbon banner", "ribbon", [["off", "Off"], ["on", "On"]])) +
+      S("hl", "Done &amp; current",
+        row("Done lessons", "doneLk", [["cur", "Check (as built)"], ["star", "Gold star"], ["dim", "Dimmed + check"], ["lit", "Stays lit"], ["stamp", "Stamp seal"]]) +
+        row("Current highlight", "curHl", [["cur", isD ? "Halo (as built)" : "As built"], ["glow", "Soft glow"], ["spot", "Spotlight"], ["rim", "Gold rim"], ["rays", "Sun rays"], ["none", "None"]])) +
       S("prog", "Progress &amp; guidance",
         row("Start here color", "stColor", [["gold", "Gold"], ["white", "White"], ["mod", "Module color"]]) +
         row("Start here shape", "stShape", [["tag", "Tag"], ["arrow", "Arrow"], ["ring", "Glowing ring"]]) +
@@ -838,6 +916,8 @@ var CMETA={"astra-cheer":[312,640,0.545,0.995],"astra-point":[294,640,0.48,0.994
     p.addEventListener("change", function (e) {
       var sc = e.target.getAttribute("data-ch"), sp = e.target.getAttribute("data-pose");
       if (sc) { dSet(+sc, e.target.value); apply(); } else if (sp) { s["q" + sp] = e.target.value; apply(); }
+      var fr = e.target.getAttribute("data-fr"), fq = e.target.getAttribute("data-fq");
+      if (fr) { var v = e.target.value; for (var j = 1; j <= 3; j++) if (j != fr && s["fr" + j] === v && v !== "none") s["fr" + j] = "none"; s["fr" + fr] = v; if (poses(v).indexOf(s["fq" + fr]) < 0) s["fq" + fr] = "stand"; apply(); } else if (fq) { s["fq" + fq] = e.target.value; apply(); }
     });
     p.addEventListener("input", function (e) { var r = e.target.closest("[data-range]"); if (r) { s[r.getAttribute("data-range")] = r.value; apply(); } });
     p.addEventListener("click", function (e) {
@@ -849,7 +929,7 @@ var CMETA={"astra-cheer":[312,640,0.545,0.995],"astra-point":[294,640,0.48,0.994
       if (b.hasAttribute("data-rand")) {
         var groups = {}; p.querySelectorAll(".pa-seg [data-k]").forEach(function (x) { (groups[x.getAttribute("data-k")] = groups[x.getAttribute("data-k")] || []).push(x.getAttribute("data-v")); });
         Object.keys(groups).forEach(function (k) { if (k === "sound" || (s.keep && s.keep[k])) return; var v = groups[k]; s[k] = v[Math.random() * v.length | 0]; });
-        if (isD) dShuffle(true);
+        if (isD) dShuffle(true); else if (!(s.keep && s.keep.fr)) { var pool = CH.filter(function (c) { return c !== "astra"; }).sort(function () { return Math.random() - .5; }), nf = Math.random() * 4 | 0; for (var fj = 1; fj <= 3; fj++) { s["fr" + fj] = fj <= nf ? pool[fj] : "none"; var P2 = poses(pool[fj]); s["fq" + fj] = P2[Math.random() * P2.length | 0]; s["ff" + fj] = Math.random() < .5 ? "on" : "off"; } }
         fix("shape"); apply(); return;
       }
       if (b.hasAttribute("data-copy")) {
@@ -859,6 +939,7 @@ var CMETA={"astra-cheer":[312,640,0.545,0.995],"astra-point":[294,640,0.48,0.994
         return;
       }
       if (b.hasAttribute("data-shuffle") || b.hasAttribute("data-shufpose")) { dShuffle(b.hasAttribute("data-shufpose")); apply(); return; }
+      var ffp = b.getAttribute("data-ff"); if (ffp) { s["ff" + ffp] = s["ff" + ffp] === "on" ? "off" : "on"; apply(); return; }
       var fp = b.getAttribute("data-flip"); if (fp) { s["f" + fp] = s["f" + fp] === "on" ? "off" : "on"; apply(); return; }
       var sv = b.getAttribute("data-save"), ld = b.getAttribute("data-load");
       if (sv) { var o2 = {}; KEYS.forEach(function (k) { o2[k] = s[k]; }); try { localStorage.setItem(KEY + "_slot_" + sv, JSON.stringify(o2)); } catch (er) {} p.querySelector('[data-load="' + sv + '"]').disabled = false; flash(b, "Saved"); return; }
