@@ -16,7 +16,7 @@
   else if (q.has("proto") || q.has("p")) { s.on = true; put(s); }
   if (s.on === false) return;
 
-  var css = document.createElement("link"); css.rel = "stylesheet"; css.href = base + "proto.css?v=21"; document.head.appendChild(css);
+  var css = document.createElement("link"); css.rel = "stylesheet"; css.href = base + "proto.css?v=22"; document.head.appendChild(css);
   root.classList.add("pa", "pa-" + PAGE);
 
   var D = {
@@ -360,7 +360,7 @@
       var key = on ? t : "base", se = s.season !== "summer" ? s.season : "", cl = !se && s.lanShape !== "cur", sea = se || cl;
       /* painted plates: seasons have day/night/sunset art (sunrise = day plate + warm grade); summer uses lantern-free plates when lanterns are code-drawn */
       var tk = on ? t : "dusk", bg = document.getElementById("sceneBg");
-      if (bg) bg.src = se ? "plates/seasonplate-" + se + (tk === "day" || tk === "sunrise" ? "-day" : tk === "night" ? "-night" : "") + ".jpg?v=2" : cl ? "plates/clean-" + tk + ".jpg?v=1" : "plates/" + key + ".jpg";
+      if (bg) bg.src = se ? "plates/seasonplate-" + se + (tk === "day" || tk === "sunrise" ? "-day" : tk === "night" ? "-night" : "") + ".jpg?v=" + (se === "winter" && (tk === "day" || tk === "sunrise") ? 3 : 2) : cl ? "plates/clean-" + tk + ".jpg?v=1" : "plates/" + key + ".jpg";
       var lc = document.getElementById("lanCuts"); if (lc) lc.src = "plates/" + (sea ? "season-" : "") + "lanterns-" + key + ".webp" + (sea ? "?v=2" : "");
       var ac = document.getElementById("astraCut"); if (ac) { ac.src = "plates/astra-" + key + ".webp"; ac.style.visibility = sea ? "hidden" : ""; }
       var sc = document.getElementById("signCut"); if (sc) sc.src = sea ? "plates/season-astra-" + key + ".webp?v=2" : "plates/sign-" + key + ".webp";
