@@ -657,3 +657,9 @@ html[data-p-gohide=on].pa-picked :is(.hop,#act .go){animation:paIn .35s ease-out
 /* calm preview: what reduced-motion users see */
 html[data-p-calm=on] *,html[data-p-calm=on] *::before,html[data-p-calm=on] *::after{animation:none !important;transition:none !important}
 html[data-p-calm=on] .ambient-fx{visibility:hidden}
+/* A.1 season mode: clean Astra cutout lit to match the bright painted plates */
+html.pa-a1[data-pa-sea=on] #signCut{filter:brightness(1.32) saturate(1.12) contrast(1.04)}
+html.pa-a1[data-pa-sea=on]:is([data-p-tod=day],[data-p-tod=sunrise]) #signCut{filter:brightness(1.08) saturate(1.05)}
+html.pa-a1[data-pa-sea=on][data-p-tod=night] #signCut{filter:brightness(1.05)}
+html.pa-a1[data-pa-sea=on] #lanCuts{filter:brightness(1.12) saturate(1.08)}
+html.pa-a1[data-pa-sea=on][data-p-tod=night] #lanCuts{filter:none}

@@ -16,7 +16,7 @@
   else if (q.has("proto") || q.has("p")) { s.on = true; put(s); }
   if (s.on === false) return;
 
-  var css = document.createElement("link"); css.rel = "stylesheet"; css.href = base + "proto.css?v=17"; document.head.appendChild(css);
+  var css = document.createElement("link"); css.rel = "stylesheet"; css.href = base + "proto.css?v=18"; document.head.appendChild(css);
   root.classList.add("pa", "pa-" + PAGE);
 
   var D = {
@@ -359,9 +359,10 @@
       var key = on ? t : "base", se = s.season !== "summer" ? s.season : "";
       /* painted season plates (sunset light): tighter lantern + Astra cutouts sit on top; other times get a CSS grade */
       var bg = document.getElementById("sceneBg"); if (bg) bg.src = se ? "plates/seasonplate-" + se + ".jpg?v=1" : "plates/" + key + ".jpg";
-      var lc = document.getElementById("lanCuts"); if (lc) lc.src = "plates/" + (se ? "season-" : "") + "lanterns-" + key + ".webp" + (se ? "?v=1" : "");
+      var lc = document.getElementById("lanCuts"); if (lc) lc.src = "plates/" + (se ? "season-" : "") + "lanterns-" + key + ".webp" + (se ? "?v=2" : "");
       var ac = document.getElementById("astraCut"); if (ac) { ac.src = "plates/astra-" + key + ".webp"; ac.style.visibility = se ? "hidden" : ""; }
-      var sc = document.getElementById("signCut"); if (sc) sc.src = se ? "plates/season-astra-" + key + ".webp?v=1" : "plates/sign-" + key + ".webp";
+      var sc = document.getElementById("signCut"); if (sc) sc.src = se ? "plates/season-astra-" + key + ".webp?v=2" : "plates/sign-" + key + ".webp";
+      root.setAttribute("data-pa-sea", se ? "on" : "off");
       root.setAttribute("data-pa-sgrade", se && t !== "cur" && t !== "dusk" ? t : "none");
       root.classList.remove("pa-tod-on");
       return;
