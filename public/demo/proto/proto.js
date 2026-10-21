@@ -16,7 +16,7 @@
   else if (q.has("proto") || q.has("p")) { s.on = true; put(s); }
   if (s.on === false) return;
 
-  var css = document.createElement("link"); css.rel = "stylesheet"; css.href = base + "proto.css?v=18"; document.head.appendChild(css);
+  var css = document.createElement("link"); css.rel = "stylesheet"; css.href = base + "proto.css?v=20"; document.head.appendChild(css);
   root.classList.add("pa", "pa-" + PAGE);
 
   var D = {
@@ -30,6 +30,7 @@
     speaker: "off", lanShape: "cur", scene: "a1", tap: "menu", pstyle: "rune", tod: "cur", pose: "cur", spot: "cur", signIc: "cur", badgeIc: "off", tint: "built", art: "normal", magic: "live", goStyle: "cur", goLbl: "cur", goPos: "cur", goMo: "none",
     badgeIn: "off", reveal: "always", preview: "off", trail: "off", prog: "none", tapfx: "none", zoom: "off", bubble: "off", sound: "off", vol: "3", weather: "none", season: "summer",
     doneLk: "cur", curHl: "cur", ttlSt: "cur", ttlW: "cur", modCard: "cur", hang: "none", frSize: "m", fr1: "none", fq1: "stand", ff1: "off", fr2: "none", fq2: "stand", ff2: "off", fr3: "none", fq3: "stand", ff3: "off",
+    navShow: "on", navSt: "cur", vign: "off", rays: "off", ambType: "cur", ambCol: "gold", moon: "off", clouds: "off", sstars: "off", arTint: "cur", hovSt: "cur", pressSt: "cur", mkLbl: "off", lanIc: "none", unearned: "cur", bFrame: "none", progTxt: "off", trailSt: "dots", stTxt: "cur", stSize: "m", stHide: "off", aSize: "m", aShadow: "off", aMirror: "off", bubSt: "cur", bubAuto: "off", chCount: "7", chSize: "m", chShadow: "cur", spkPos: "cur", autoRead: "off", palette: "cur", menuH: "cur", menuHov: "cur", goalLbl: "cur", ttlSize: "cur", ttlIc: "cur", cursor: "off", intro: "none", txtSh: "none", dTap: "menu",
     trans: "none", sfxTap: "off", sfxHover: "off", sfxBadge: "off", idle: "still", earnFx: "off", goSz: "m", goNext: "off", goHide: "off", calm: "off"
   };
   if (PAGE === "d") { D.signIc = "none"; for (var di = 1; di <= 7; di++) { D["c" + di] = ["owl", "raccoon", "squirrel", "astra", "fox", "bear", "bunny"][di - 1]; D["q" + di] = ["stand", "stand", "stand", "point", "point", "wave", "wave"][di - 1]; D["f" + di] = di === 5 ? "on" : "off"; } }
@@ -391,7 +392,7 @@ var CMETA={"astra-cheer":[312,640,0.545,0.995],"astra-point":[294,640,0.48,0.994
   var DDEF = { c: ["owl", "raccoon", "squirrel", "astra", "fox", "bear", "bunny"], q: ["stand", "stand", "stand", "point", "point", "wave", "wave"], f: ["off", "off", "off", "off", "on", "off", "off"] };
   /* night glows: windows and lanterns in the porch art */
   var GLOW = [[34, 200, 26], [81, 197, 26], [227, 305, 34], [398, 237, 22], [1211, 297, 26], [1234, 516, 26], [62, 150, 18]];
-  function dbg() { var se = s.season, t = s.tod;
+  function dbg() { var se = s.season, t = s.tod === "now" ? nowTod() : s.tod;
     var exact = se === "summer" ? ({ cur: "day", day: "day", sunrise: "sunrise", dusk: "sunset" })[t] : (t === "cur" || t === "day") ? ({ spring: "spring", autumn: "fall", winter: "winter" })[se] : null;
     var img = exact || (se === "summer" ? "day" : ({ spring: "spring", autumn: "fall", winter: "winter" })[se]);
     return { img: img, grade: exact ? "none" : (t === "dusk" ? "sunset" : t) };
@@ -616,7 +617,8 @@ var CMETA={"astra-cheer":[312,640,0.545,0.995],"astra-point":[294,640,0.48,0.994
   X.weather = function () {
     var hst = hostEl(); if (!hst) return;
     var reduce = matchMedia("(prefers-reduced-motion: reduce)").matches || s.calm === "on";
-    var kinds = []; if (s.weather !== "none") kinds.push(s.weather);
+    var wv = s.weather === "season" ? ({ spring: "petals", autumn: "leaves", winter: "snow" })[s.season] || "none" : s.weather; root.setAttribute("data-pa-wx", wv);
+    var kinds = []; if (wv === "petals") kinds.push("blossom"); else if (wv !== "none" && wv !== "fog") kinds.push(wv);
     if (isA1()) { if (s.season === "spring") kinds.push("blossom"); if (s.season === "winter" && s.weather !== "snow") kinds.push("frost"); if (s.season === "autumn" && s.weather !== "leaves") kinds.push("fewleaves"); }
     var kind = reduce ? "" : kinds.join(",");
     if (!WX.c) { WX.c = el("canvas", "pa-weather"); WX.c.setAttribute("aria-hidden", "true"); WX.g = WX.c.getContext("2d"); }
@@ -806,7 +808,109 @@ var CMETA={"astra-cheer":[312,640,0.545,0.995],"astra-point":[294,640,0.48,0.994
     var list = h.matches(".hot") ? document.querySelectorAll(".hot[data-arrow]") : h.matches(".lantern") ? document.querySelectorAll("#lanterns .lantern") : document.querySelectorAll("#tiles .tile");
     X.pickIdx = [].indexOf.call(list, h); setTimeout(function () { X.goNext(); }, 0);
   });
-  X.layout = function () { X.go(); X.unclash(); X.badgeIn(); X.arc(); X.reveal(); X.trail(); X.progress(); X.weather(); X.season(); X.sound(); X.friends(); X.marks(); X.mcard(); X.hang(); X.goNext(); X.badgeFx(); };
+  /* ================= Round 3 (Oct 21) ================= */
+  var SVGNS = "http://www.w3.org/2000/svg";
+  function overlay(id, cls, before) { var hst = hostEl(); if (!hst) return null; var o = document.getElementById(id); if (!o) { o = el("div", cls); o.id = id; o.setAttribute("aria-hidden", "true"); }
+    var b = before && (typeof before === "string" ? hst.querySelector(before) : before); if (o.parentNode !== hst) { if (b) b.before(o); else hst.appendChild(o); } return o; }
+  /* A.1 season mode: code-drawn brass chains from each lantern top into the branches */
+  var CHAIN = [[230, 105, 52], [397, 205, 70], [294, 312, 112], [1101, 117, 60], [964, 230, 74], [1201, 230, 86]];
+  X.chains = function () {
+    if (!isA1()) return; var lc = document.getElementById("lanCuts"); if (!lc) return;
+    var o = document.getElementById("paChains"); if (!o) { o = document.createElementNS(SVGNS, "svg"); o.id = "paChains"; o.setAttribute("class", "pa-chains"); o.setAttribute("viewBox", "0 0 1366 768"); o.setAttribute("aria-hidden", "true");
+      o.innerHTML = '<defs><linearGradient id="paBr" x1="0" x2="1"><stop offset="0" stop-color="#3a2a14"/><stop offset=".45" stop-color="#b8903f"/><stop offset=".6" stop-color="#e3c27a"/><stop offset="1" stop-color="#3a2a14"/></linearGradient><linearGradient id="paFade" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff" stop-opacity="0"/><stop offset=".22" stop-color="#fff" stop-opacity="1"/></linearGradient><mask id="paChM" maskContentUnits="objectBoundingBox"><rect width="1" height="1" fill="url(#paFade)"/></mask></defs>' +
+        CHAIN.map(function (c) { var x = c[0], y = c[1] + 4, t = y - c[2]; return '<g mask="url(#paChM)"><line x1="' + x + '" y1="' + t + '" x2="' + x + '" y2="' + y + '" stroke="#2a1d0c" stroke-width="5" stroke-dasharray="6 2" opacity=".85"/><line x1="' + x + '" y1="' + t + '" x2="' + x + '" y2="' + y + '" stroke="url(#paBr)" stroke-width="3.4" stroke-dasharray="6 2" stroke-linecap="round"/><line x1="' + (x + .5) + '" y1="' + t + '" x2="' + (x + .5) + '" y2="' + y + '" stroke="#f3dc9c" stroke-width=".8" stroke-dasharray="2 5.4" opacity=".7"/><circle cx="' + x + '" cy="' + (y - 1) + '" r="3.4" fill="none" stroke="url(#paBr)" stroke-width="1.6"/></g>'; }).join(""); }
+    if (o.parentNode !== lc.parentNode || o.nextElementSibling !== lc) lc.before(o);
+  };
+  /* vignette + light rays */
+  X.light = function () { var o = overlay("paLight", "pa-light", isA1() ? "#lanterns" : ".pd-chars"); if (o && !o.firstChild) o.innerHTML = "<i class='v'></i><i class='r'></i>"; };
+  /* own ambient layer (type + colour); "As built" keeps the page's ambient canvas */
+  var AMB = { c: null, raf: 0, key: "" };
+  X.amb = function () {
+    var hst = hostEl(); if (!hst) return; var on = s.ambType !== "cur" && !calm();
+    root.classList.toggle("pa-amb-own", s.ambType !== "cur");
+    if (!AMB.c) { AMB.c = el("canvas", "pa-amb"); AMB.c.setAttribute("aria-hidden", "true"); }
+    var a = hst.querySelector(".ambient-fx"); if (AMB.c.parentNode !== hst) { if (a) a.after(AMB.c); else hst.appendChild(AMB.c); }
+    var ni = (LP && LP.next ? LP.next : 2) - 1, mc = isA1() ? (((window.A1_WORLDS || [])[ni] || {}).color || "#f5b400") : BUDDY[ni][1];
+    var col = s.ambCol === "white" ? "#fffdf2" : s.ambCol === "mod" ? mc : "#ffd76a";
+    var key = s.ambType + col + on; if (key === AMB.key) return; AMB.key = key; cancelAnimationFrame(AMB.raf);
+    var W = HW(), H = HH(), g = AMB.c.getContext("2d"); AMB.c.width = W; AMB.c.height = H; g.clearRect(0, 0, W, H); if (!on) return;
+    var n = { fireflies: 14, dust: 26, twinkle: 18, pollen: 16 }[s.ambType] || 0, P = [];
+    function R(a, b) { return a + Math.random() * (b - a); }
+    for (var i = 0; i < n; i++) P.push({ x: R(0, W), y: s.ambType === "twinkle" ? R(10, H * .45) : R(H * .2, H * .85), vx: R(-8, 8), vy: s.ambType === "pollen" ? R(-6, -14) : R(-5, 5), ph: R(0, 6.3), r: s.ambType === "dust" ? R(.8, 1.6) : R(1.4, 2.6) });
+    var last = performance.now();
+    function f(now) { var dt = Math.min(.05, (now - last) / 1000); last = now; g.clearRect(0, 0, W, H);
+      P.forEach(function (p) { p.ph += dt * (s.ambType === "twinkle" ? 1.6 : 1); p.x += (p.vx + Math.sin(p.ph) * 6) * dt; p.y += p.vy * dt;
+        if (p.x < -10) p.x = W + 10; if (p.x > W + 10) p.x = -10; if (p.y < -10) p.y = H * .85; if (p.y > H) p.y = H * .2;
+        var al = s.ambType === "fireflies" ? .35 + .65 * Math.max(0, Math.sin(p.ph * 1.3)) : s.ambType === "twinkle" ? Math.max(0, Math.sin(p.ph)) : .55;
+        g.globalAlpha = al; g.fillStyle = col; g.shadowColor = col; g.shadowBlur = s.ambType === "dust" ? 0 : 8; g.beginPath(); g.arc(p.x, p.y, p.r, 0, 6.283); g.fill(); });
+      AMB.raf = requestAnimationFrame(f); }
+    AMB.raf = requestAnimationFrame(f);
+  };
+  /* A.1 sky: moon, drifting clouds, rare shooting stars */
+  X.sky = function () { if (!isA1()) return; var o = overlay("paSky", "pa-sky", "#lanCuts"); if (o && !o.firstChild) o.innerHTML = "<i class='moon'></i><i class='cl c1'></i><i class='cl c2'></i><i class='ss s1'></i><i class='ss s2'></i>"; };
+  /* markers: labels, A.1 lantern 3D icons */
+  X.mkLabels = function () {
+    var hst = hostEl(); if (!hst) return; var o = overlay("paMkl", "pa-mkl", null);
+    var key = s.mkLbl + s.lanIc + (isA1() ? s.scene : ""); if (o.dataset.k === key) return; o.dataset.k = key;
+    var titles = window.ASTRA_MODULE_TITLES || SHORT, html = "";
+    for (var i = 0; i < 6; i++) { var p = modPt(i), lb = s.mkLbl === "short" ? SHORT[i] : titles[i] || SHORT[i];
+      if (s.mkLbl !== "off") html += '<span class="pa-ml' + i + '" style="' + (isA1() ? pct(p.x, p.y + p.h / 2 + 4) : pct(p.x + p.w / 2 + 8, p.y)) + '">' + lb + "</span>";
+      if (isA1() && s.lanIc !== "none") html += '<img class="pa-lic" alt="" src="../dashboard-d/assets/signicons/' + s.lanIc.replace("3d", "") + "-" + (i + 1) + '.webp?v=1" style="' + pct(p.x, p.y + p.h * .06) + ";width:" + (p.w * .5 / HW() * 100) + '%">'; }
+    o.innerHTML = html;
+  };
+  /* D arrows: re-tint layer clipped to each painted arrow */
+  X.tint = function () {
+    if (isA1()) return; var st = document.querySelector(".stage"); if (!st) return; var o = overlay("paTint", "pa-tint", ".fx");
+    if (o.dataset.k === s.arTint) return; o.dataset.k = s.arTint;
+    o.innerHTML = s.arTint === "cur" ? "" : [].map.call(document.querySelectorAll(".hot[data-arrow]"), function (h, i) { return '<i style="left:' + h.style.left + ";top:" + h.style.top + ";width:" + h.style.width + ";height:" + h.style.height + ";clip-path:" + h.style.clipPath + ";--c:" + BUDDY[i][1] + '"></i>'; }).join("");
+  };
+  /* Start-here tag: text / size / hide after first tap */
+  X.start = function () {
+    var t = { cur: null, next: "Next", here: "You're here" }[s.stTxt];
+    document.querySelectorAll(".ls-start").forEach(function (e) { var tn = [].filter.call(e.childNodes, function (n) { return n.nodeType === 3; })[0]; if (!e.dataset.o) e.dataset.o = tn ? tn.textContent : ""; if (tn) tn.textContent = t || e.dataset.o; });
+  };
+  /* goal label + icon, title icon */
+  X.texts = function () {
+    var lb = isA1() ? document.querySelector(".goaltile b") : document.querySelector(".card .lbl");
+    if (lb) { var tn = [].filter.call(lb.childNodes, function (n) { return n.nodeType === 3 && n.textContent.trim(); })[0]; if (tn) { if (!lb.dataset.o) lb.dataset.o = tn.textContent; tn.textContent = s.goalLbl === "quest" ? "Your quest" : lb.dataset.o; } }
+  };
+  /* D: Characters count preset (hides spots, keeps choices), "Now" time */
+  function nowTod() { var h = new Date().getHours(); return h < 5 || h >= 20 ? "night" : h < 8 ? "sunrise" : h < 17 ? "cur" : "dusk"; }
+  /* custom cursor, D tap->scene, intro, auto-read, speech bubble auto */
+  X.portalD = function (i) {
+    var o = document.getElementById("paDPortal") || document.body.appendChild(el("div", "pa-dportal")); o.id = "paDPortal";
+    var titles = window.ASTRA_MODULE_TITLES || SHORT;
+    o.innerHTML = '<div class="in"><img alt="" src="../dashboard-a1/portals/p' + (i + 1) + '.jpg"><div><b>Module ' + (i + 1) + "</b><span>" + titles[i] + '</span><button type="button" class="pa-dp-go">Step inside \u203a</button><button type="button" class="pa-dp-x" aria-label="Close">\u00d7</button></div></div>';
+    o.classList.add("show"); o.querySelector(".pa-dp-x").onclick = function () { o.classList.remove("show"); }; o.querySelector(".pa-dp-go").onclick = function () { o.classList.remove("show"); };
+  };
+  document.addEventListener("click", function (e) {
+    var h = e.target.closest && e.target.closest(".hot[data-arrow]"); if (h && s.dTap === "scene") X.portalD(+h.dataset.arrow - 1);
+    if (s.stHide === "on" && e.target.closest && e.target.closest(".hot[data-arrow], .lantern, #tiles .tile")) root.classList.add("pa-sthide");
+  });
+  X.intro = function () {
+    if (X.introDone) return; X.introDone = true; if (s.intro === "none" || calm()) return;
+    if (s.intro === "fade") { root.classList.add("pa-intro-fade"); setTimeout(function () { root.classList.remove("pa-intro-fade"); }, 1300); }
+    if (s.intro === "card") { var c = document.body.appendChild(el("div", "pa-icard", "<b>Astra\u2019s Writing Adventure</b>")); setTimeout(function () { c.classList.add("out"); }, 1100); setTimeout(function () { c.remove(); }, 1800); }
+    if (s.intro === "walk") { root.classList.add("pa-intro-walk"); setTimeout(function () { root.classList.remove("pa-intro-walk"); }, 1800); }
+  };
+  X.autoRead = function () {
+    if (s.autoRead !== "on" || X.readDone || !X.userTapped || !window.speechSynthesis) return; X.readDone = true;
+    var g = isA1() ? document.querySelector(".goaltile") : document.querySelector(".card .txt"); if (!g) return;
+    try { var u = new SpeechSynthesisUtterance("Today's goal: " + (isA1() ? g.textContent.replace(/today'?s goal/i, "") : g.textContent)); u.rate = .95; speechSynthesis.speak(u); } catch (e) {}
+  };
+  document.addEventListener("pointerdown", function () { setTimeout(X.autoRead, 50); }, { capture: true });
+  X.bubAuto = function () { if (s.bubAuto !== "on" || X.bubDone) return; X.bubDone = true; setTimeout(function () { X.say((TIP[(LP && LP.next ? LP.next : 2) - 1]) || TIP[0]); }, 900); };
+  X.r3 = function () {
+    if (!isA1() && s.tod === "now") root.setAttribute("data-p-tod", nowTod());
+    var ln = { "7": 7, "5": 5, "3": 3 }[s.chCount] || 7; if (!isA1() && dScene.els) { var keep = ln === 7 ? [0, 1, 2, 3, 4, 5, 6] : ln === 5 ? [0, 1, 3, 4, 6] : [1, 3, 4]; dScene.els.forEach(function (d, i) { d.classList.toggle("pa-cnt-off", keep.indexOf(i) < 0); }); }
+    var gt = isA1() ? document.querySelector(".goaltile > b") : document.querySelector(".card .lbl");
+    if (gt) { var px = gt.parentNode.querySelector(".pa-ptx") || el("span", "pa-ptx"); if (!px.parentNode) gt.after(px); px.textContent = doneCount() + " of 6"; }
+    var ti = isA1() ? document.querySelector(".strip > h1") : document.querySelector("header.title"); if (ti) { var tr = ti.getBoundingClientRect(); root.style.setProperty("--pa-tx", (tr.right + 8) + "px"); root.style.setProperty("--pa-ty", (tr.top + tr.height / 2 - 14) + "px"); }
+    if (!X.hovB) { X.hovB = true; var mk = isA1() ? document.querySelectorAll("#lanterns .lantern") : document.querySelectorAll(".hot[data-arrow]");
+      [].forEach.call(mk, function (m, i) { m.addEventListener("mouseenter", function () { root.classList.add("pa-hov" + i); }); m.addEventListener("mouseleave", function () { root.classList.remove("pa-hov" + i); }); }); }
+    X.chains(); X.light(); X.amb(); X.sky(); X.mkLabels(); X.tint(); X.start(); X.texts(); X.intro(); X.bubAuto();
+  };
+  X.layout = function () { X.go(); X.unclash(); X.badgeIn(); X.arc(); X.reveal(); X.trail(); X.progress(); X.weather(); X.season(); X.sound(); X.friends(); X.marks(); X.mcard(); X.hang(); X.goNext(); X.badgeFx(); X.r3(); };
 
   X.badgeIn = function () {
     var imgs = [].slice.call(document.querySelectorAll(".lsb i")), btns = isA1() ? [].slice.call(document.querySelectorAll("#tiles .tile")) : AD.btns || [];
@@ -870,10 +974,10 @@ var CMETA={"astra-cheer":[312,640,0.545,0.995],"astra-point":[294,640,0.48,0.994
       '<div class="pa-tools pa-slots">' + ["A", "B", "C"].map(function (x) { return '<span><button type="button" data-save="' + x + '">Save ' + x + '</button><button type="button" data-load="' + x + '"' + (localStorage.getItem(KEY + "_slot_" + x) ? "" : " disabled") + '>Load</button></span>'; }).join("") + "</div>" +
       S("scene", "Atmosphere",
         (A1 ? row("Scene", "scene", [["a1", "Lantern Tree"], ["pa", "Plan A Portals"]]) : "") +
-        row("Time of day", "tod", isD ? [["sunrise", "Sunrise"], ["cur", "Day"], ["dusk", "Sunset"], ["night", "Night"]] : [["cur", "Now"], ["sunrise", "Sunrise"], ["day", "Day"], ["dusk", "Sunset"], ["night", "Night"]]) +
+        row("Time of day", "tod", isD ? [["now", "Now (clock)"], ["sunrise", "Sunrise"], ["cur", "Day"], ["dusk", "Sunset"], ["night", "Night"]] : [["cur", "Now"], ["sunrise", "Sunrise"], ["day", "Day"], ["dusk", "Sunset"], ["night", "Night"]]) +
         row("Season", "season", [["summer", "Summer"], ["spring", "Spring"], ["autumn", "Fall"], ["winter", "Winter"]]) +
         (isD ? row("Hanging on the bridge rope", "hang", [["none", "None"], ["lanterns", "Lanterns"], ["garland", "Leaf garland"], ["bunting", "Bunting"], ["lights", "Fairy lights"]]) : "") +
-        row("Weather", "weather", [["none", "Clear"], ["rain", "Rain"], ["leaves", "Leaves"], ["snow", "Snow"]]) +
+        row("Weather", "weather", [["none", "Clear"], ["season", "Match season"], ["rain", "Rain"], ["leaves", "Leaves"], ["snow", "Snow"], ["petals", "Petals"], ["fog", "Fog"]]) +
         row("Magic", "magic", [["live", "As built"], ["1", "1"], ["2", "2"], ["3", "3"], ["4", "4"], ["5", "5"]]) +
         '<p class="pa-hint">Magic builds in the open sky only. 1 is a few lights, 5 adds a slow ribbon.</p>' +
         row("Art brightness", "art", [["dim", "Dim"], ["normal", "Normal"], ["bright", "Bright"]]) +
@@ -939,6 +1043,50 @@ var CMETA={"astra-cheer":[312,640,0.545,0.995],"astra-point":[294,640,0.48,0.994
         row("Badge sound", "sfxBadge", [["off", "Off"], ["on", "Soft chime"]]) +
         '<p class="pa-hint">Sounds start after your first tap (browser rule). Volume is in Atmosphere.</p>' +
         row("Calm mode preview", "calm", [["off", "Off"], ["on", "On (no motion)"]])) +
+      S("look", "Light &amp; sky",
+        row("Vignette", "vign", [["off", "Off"], ["soft", "Soft"]]) +
+        row("Light rays", "rays", [["off", "Off"], ["on", "Morning shafts"]]) +
+        row("Ambient type", "ambType", [["cur", "As built"], ["fireflies", "Fireflies"], ["dust", "Dust motes"], ["twinkle", "Star twinkles"], ["pollen", "Pollen"]]) +
+        row("Ambient colour", "ambCol", [["gold", "Gold"], ["white", "White"], ["mod", "Module colour"]]) +
+        (A1 ? row("Moon", "moon", [["off", "Hide"], ["on", "Show"]]) + row("Clouds", "clouds", [["off", "Off"], ["on", "Drift"]]) + row("Shooting stars", "sstars", [["off", "Off"], ["on", "Rare"]]) : "") +
+        row("Text shadow", "txtSh", [["none", "None"], ["soft", "Soft"], ["strong", "Strong"]]) +
+        row("Cursor", "cursor", [["off", "Default"], ["wand", "Wand sparkle"], ["glow", "Soft glow"]]) +
+        row("Intro", "intro", [["none", "None"], ["fade", "Fade in"], ["card", "Title card"]].concat(isD ? [["walk", "Characters walk in"]] : [])) +
+        row("Top nav bar", "navShow", [["on", "Show"], ["off", "Hide"]]) +
+        row("Nav bar style", "navSt", [["cur", "Dark (as built)"], ["frost", "Frosted"], ["wood", "Wood"]])) +
+      S("marks2", isD ? "Arrows: look &amp; touch" : "Lanterns: look &amp; touch",
+        (isD ? row("Arrow colour", "arTint", [["cur", "As painted"], ["mod", "Module colours"], ["wood", "Natural wood"], ["gold", "Gold leaf"]]) + row("Arrow tap", "dTap", [["menu", "Pick (as built)"], ["scene", "Open a scene card"]]) :
+               row("3D icons on lanterns", "lanIc", [["none", "None"], ["tools3d", "Writing tools"], ["gems3d", "Gems"], ["forest3d", "Forest"]])) +
+        row("Hover", "hovSt", [["cur", "As built"], ["lift", "Lift"], ["glow", "Glow"], ["wobble", "Wobble"], ["none", "None"]]) +
+        row("Press", "pressSt", [["cur", "As built"], ["push", "Push in"], ["shake", "Little shake"]]) +
+        row("Labels on markers", "mkLbl", [["off", "Off"], ["short", "Short"], ["full", "Full name"], ["hover", "On hover"]]) +
+        row("Start here text", "stTxt", [["cur", "Start here"], ["next", "Next"], ["here", "You're here"]]) +
+        row("Start here size", "stSize", [["s", "S"], ["m", "M"], ["l", "L"]]) +
+        row("Hide Start here after a tap", "stHide", [["off", "Off"], ["on", "On"]]) +
+        row("Path trail style", "trailSt", [["dots", "Gold dots (as built)"], ["paws", "Paw prints"], ["line", "Glowing line"]])) +
+      (isD ? S("chars2", "Characters: group",
+        row("How many (posed cast)", "chCount", [["7", "All 7"], ["5", "5"], ["3", "3"]]) +
+        row("Size", "chSize", [["s", "S"], ["m", "M"], ["l", "L"]]) +
+        row("Shadow", "chShadow", [["cur", "As built"], ["off", "Off"], ["strong", "Stronger"]])) :
+        S("astra2", "Astra: size &amp; shadow",
+        row("Size", "aSize", [["s", "S"], ["m", "M"], ["l", "L"]]) +
+        row("Ground shadow", "aShadow", [["off", "As built"], ["soft", "Soft"]]) +
+        row("Mirror", "aMirror", [["off", "Off"], ["on", "On"]]) +
+        '<p class="pa-hint">Size and mirror move the clean Astra cutout, so they show with a season other than Summer or a pose other than Current.</p>')) +
+      S("ui2", "Menu, badges &amp; text",
+        row("Menu palette", "palette", [["cur", "Bright (as built)"], ["pastel", "Pastel"], ["jewel", "Jewel"]]) +
+        row("Menu height", "menuH", [["cur", "As built"], ["compact", "Compact"], ["tall", "Tall"]]) +
+        row("Menu hover", "menuHov", [["cur", "As built"], ["lift", "Lift"]]) +
+        row("Unearned badges", "unearned", [["cur", "Grey (as built)"], ["sil", "Silhouette"], ["outline", "Outline"], ["hide", "Hidden"]]) +
+        row("Badge frame", "bFrame", [["none", "None"], ["gold", "Gold ring"], ["wood", "Wood disc"]]) +
+        row("Progress text", "progTxt", [["off", "Off"], ["on", "x of 6"]]) +
+        row("Goal label", "goalLbl", [["cur", "Today's goal"], ["quest", "Your quest"], ["hide", "Hidden"]]) +
+        row("Title size", "ttlSize", [["s", "S"], ["cur", "M (as built)"], ["l", "L"]]) +
+        row("Title icon", "ttlIc", [["cur", "As built"], ["star", "Star"], ["book", "Book"], ["none", "None"]]) +
+        row("Speech bubble style", "bubSt", [["cur", "Cream (as built)"], ["parch", "Parchment"], ["frost", "Frosted"], ["wood", "Wood tag"]]) +
+        row("Bubble on load", "bubAuto", [["off", "Off"], ["on", "Show once"]]) +
+        row("Speaker position", "spkPos", [["cur", "By goal (as built)"], ["title", "By title"], ["bl", "Bottom left"]]) +
+        row("Read goal aloud", "autoRead", [["off", "Off"], ["on", "After first tap"]])) +
       S("goal", "Goal &amp; title",
         row("Goal placement", "goalPos", [["tl", "Top-left"], ["tc", "Top-center"], ["tr", "Top-right"]]) +
         row("Goal style", "goalStyle", [["cur", "Current"], ["wood", "Wood sign"], ["glass", "Frosted"], ["parch", "Parchment"], ["navy", "Navy"]]) +
@@ -1020,7 +1168,7 @@ var CMETA={"astra-cheer":[312,640,0.545,0.995],"astra-point":[294,640,0.48,0.994
       if (b.hasAttribute("data-reset")) { KEYS.forEach(function (k) { s[k] = D[k]; }); s.keep = {}; apply(); syncRange(); return; }
       if (b.hasAttribute("data-rand")) {
         var groups = {}; p.querySelectorAll(".pa-seg [data-k]").forEach(function (x) { (groups[x.getAttribute("data-k")] = groups[x.getAttribute("data-k")] || []).push(x.getAttribute("data-v")); });
-        Object.keys(groups).forEach(function (k) { if (k === "sound" || k === "sfxTap" || k === "sfxHover" || k === "sfxBadge" || k === "calm" || (s.keep && s.keep[k])) return; var v = groups[k]; s[k] = v[Math.random() * v.length | 0]; });
+        Object.keys(groups).forEach(function (k) { if (k === "sound" || k === "autoRead" || k === "intro" || k === "sfxTap" || k === "sfxHover" || k === "sfxBadge" || k === "calm" || (s.keep && s.keep[k])) return; var v = groups[k]; s[k] = v[Math.random() * v.length | 0]; });
         if (isD) dShuffle(true); else if (!(s.keep && s.keep.fr)) { var pool = CH.filter(function (c) { return c !== "astra"; }).sort(function () { return Math.random() - .5; }), nf = Math.random() * 4 | 0; for (var fj = 1; fj <= 3; fj++) { s["fr" + fj] = fj <= nf ? pool[fj] : "none"; var P2 = poses(pool[fj]); s["fq" + fj] = P2[Math.random() * P2.length | 0]; s["ff" + fj] = Math.random() < .5 ? "on" : "off"; } }
         fix("shape"); apply(); return;
       }
