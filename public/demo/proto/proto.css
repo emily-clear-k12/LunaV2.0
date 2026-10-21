@@ -549,8 +549,8 @@ html[data-pa-sgrade=night] .pa-sea .g{background:linear-gradient(rgba(20,30,90,.
 html[data-pa-sgrade=night] .pa-sea .gr{background:rgba(70,90,170,.22);mix-blend-mode:color}
 html[data-pa-sgrade=day] .pa-sea .g{background:linear-gradient(rgba(120,190,255,.55),rgba(255,240,200,.35) 70%);mix-blend-mode:soft-light}
 html[data-pa-sgrade=day] .pa-sea .gr{background:rgba(255,250,230,.06);mix-blend-mode:overlay}
-html[data-pa-sgrade=sunrise] .pa-sea .g{background:linear-gradient(rgba(255,190,140,.4),rgba(255,230,190,.2));mix-blend-mode:soft-light}
-html[data-pa-sgrade=sunrise] .pa-sea .gr{background:rgba(255,220,180,.1);mix-blend-mode:screen}
+html[data-pa-sgrade=sunrise] .pa-sea .g{background:radial-gradient(ellipse 70% 55% at 50% 62%,rgba(255,200,120,.55),rgba(255,140,110,.35) 55%,rgba(200,110,150,.3));mix-blend-mode:overlay}
+html[data-pa-sgrade=sunrise] .pa-sea .gr{background:linear-gradient(rgba(240,150,150,.5),rgba(255,190,150,.35) 50%,rgba(200,150,140,.3));mix-blend-mode:multiply}
 /* done lessons */
 html[data-p-donelk=star] .ls-check{background:linear-gradient(#ffe27a,#f2b200);border:0;border-radius:0;clip-path:polygon(50% 0,63% 35%,100% 38%,71% 60%,80% 98%,50% 77%,20% 98%,29% 60%,0 38%,37% 35%);width:26px;height:26px;filter:drop-shadow(0 2px 2px rgba(0,0,0,.4))}
 html[data-p-donelk=star] .ls-check svg{display:none}
@@ -813,3 +813,4 @@ html.pa-intro-walk .pd-chars .pd-ch:nth-child(n+4) img{animation:paWalkR 1.6s cu
 .pa-dp-x{position:absolute;right:8px;top:6px;border:0;background:none;font-size:22px;color:#14304f;cursor:pointer}
 
 html.pa-a1[data-p-scene=pa] :is(#lanCuts,.pa-chains,.pa-sea,.pa-friends,.pa-sky){display:none !important}
+html.pa-a1[data-p-lanshape]:not([data-p-lanshape="cur"]) .pa-chains{display:none !important}
