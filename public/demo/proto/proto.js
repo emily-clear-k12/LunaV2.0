@@ -41,7 +41,7 @@
     vign: "off", rays: "off", ambType: "fireflies", ambCol: "mod", moon: "off", clouds: "off", sstars: "on", txtSh: "soft", cursor: "wand", intro: "none",
     lanIc: "none", hovSt: "cur", pressSt: "cur", mkLbl: "off", stSize: "m", stHide: "off", trailSt: "dots", aSize: "m", aShadow: "off", aMirror: "off",
     palette: "cur", menuH: "cur", menuHov: "cur", unearned: "cur", bFrame: "none", progTxt: "off", goalLbl: "cur", ttlSize: "cur", ttlIc: "cur", bubSt: "cur", bubAuto: "off", spkPos: "cur", autoRead: "off",
-    goalPos: "tr", goalStyle: "cur", goalSize: "compact", title: "off", titlePos: "tl", ttlSt: "cur", ttlW: "cur", ribbon: "off", curHl: "cur" } : {};
+    goalPos: "tr", goalStyle: "cur", goalSize: "compact", title: "off", titlePos: "tl", ttlSt: "cur", ttlW: "cur", ribbon: "off", curHl: "cur", speaker: "off", trans: "none" } : {};
   Object.keys(DEC).forEach(function (k) { D[k] = DEC[k]; });
   if (PAGE === "a1") D.stColor = "white";
   function lockDec() { Object.keys(DEC).forEach(function (k) { s[k] = DEC[k]; }); }
@@ -998,10 +998,25 @@ var CMETA={"astra-cheer":[312,640,0.545,0.995],"astra-point":[294,640,0.48,0.994
       [].forEach.call(mk, function (m, i) { m.addEventListener("mouseenter", function () { root.classList.add("pa-hov" + i); }); m.addEventListener("mouseleave", function () { root.classList.remove("pa-hov" + i); }); }); }
     X.chains(); X.light(); X.amb(); X.sky(); X.mkLabels(); X.tint(); X.start(); X.texts(); X.intro(); X.bubAuto();
   };
-  X.layout = function () { X.go(); X.unclash(); X.badgeIn(); X.arc(); X.reveal(); X.trail(); X.progress(); X.mprog(); X.cords(); X.weather(); X.season(); X.sound(); X.marks(); X.mcard(); X.hang(); X.goNext(); X.badgeFx(); X.r3(); X.declut(); };
+  X.layout = function () { X.go(); X.unclash(); X.badgeIn(); X.arc(); X.reveal(); X.trail(); X.progress(); X.mprog(); X.cords(); X.weather(); X.season(); X.sound(); X.marks(); X.mcard(); X.hang(); X.goNext(); X.badgeFx(); X.r3(); X.demoMarks(); X.declut(); };
+  X.demoMarks = function () { /* A.1: Demo modules done also moves the lantern checks and Start Here */
+    var Lm = document.getElementById("lanterns"), Wm = window.A1_WORLDS || []; if (PAGE !== "a1" || !Lm || !LP) return;
+    var demo = s.demoMods !== "live";
+    [].forEach.call(Lm.querySelectorAll(".ls-check:not(.pa-dm)"), function (e) { e.style.display = demo ? "none" : ""; });
+    [].forEach.call(Lm.querySelectorAll(".pa-dm"), function (e) { e.remove(); });
+    var st = Lm.querySelector(".ls-start");
+    if (st && !st.dataset.l0) { st.dataset.l0 = st.style.left; st.dataset.t0 = st.style.top; }
+    if (!demo) { if (st) { st.style.left = st.dataset.l0; st.style.top = st.dataset.t0; st.style.display = ""; } return; }
+    var n = +s.demoMods;
+    Wm.forEach(function (w, i) { if (i < n) { var c = LP.check(); c.classList.add("pa-dm"); c.style.cssText = "left:" + (w.x + w.w / 2 - 14) + "px;top:" + (w.y - w.h / 2 + 2) + "px"; Lm.appendChild(c); } });
+    if (st) { var w = Wm[n]; if (w) { st.style.left = w.x + "px"; st.style.top = (w.y - w.h / 2 - 6) + "px"; st.style.display = ""; } else st.style.display = "none"; }
+  };
   X.declut = function () {
     var pri = [].slice.call(document.querySelectorAll('.card,.goaltile,#act .go,aside.go,.selected-module,.pa-lpop,.pa-mtk .pa-trk,h1')).filter(function(e){var r=e.getBoundingClientRect();return r.width&&getComputedStyle(e).visibility!='hidden'}).map(function(e){return e.getBoundingClientRect()});
     var sec = [].slice.call(document.querySelectorAll('.pa-bubble,.ls-start,.pa-mkl span,.lsb')), kept = [];
+    var bz = [].slice.call(document.querySelectorAll('.lsb')).map(function(e){return e.getBoundingClientRect()}).filter(function(q){return q.width});
+    [].forEach.call(document.querySelectorAll('#lanterns .ls-start'), function (e) { e.style.marginLeft = ''; if (PAGE !== 'a1') return; var r = e.getBoundingClientRect();
+      bz.forEach(function(q){ if (r.left<q.right&&r.right>q.left&&r.top<q.bottom&&r.bottom>q.top) e.style.marginLeft = Math.round((q.left - r.right - 8) / (r.width / e.offsetWidth || 1)) + 'px'; }); });
     sec.forEach(function(e){ e.style.visibility=''; var r=e.getBoundingClientRect(); if(!r.width) return;
       var hit=pri.concat(kept).some(function(q){return r.left<q.right-1&&r.right>q.left+1&&r.top<q.bottom-1&&r.bottom>q.top+1});
       if(hit) e.style.visibility='hidden'; else kept.push(r); });
@@ -1203,7 +1218,7 @@ var CMETA={"astra-cheer":[312,640,0.545,0.995],"astra-point":[294,640,0.48,0.994
         (isD ? "" : row("Demo: lessons done in current", "demoLes", [["live", "Live"], ["0", "0"], ["1", "1"], ["2", "2"], ["3", "3"], ["4", "4"]])) +
         row("Path trail", "trail", [["off", "Off"], ["on", "On"]]) +
         row("Preview card", "preview", [["off", "Off"], ["on", "On hover / tap"]]) +
-        row("Badge placement", "badgePos", [["goal", "Under goal"], ["corner", "Bottom corner"], ["tr", "Top-right"]]) +
+        row("Badge placement", "badgePos", [["goal", isD ? "Under goal" : "As built"], ["corner", "Bottom corner"], ["tr", "Top-right"]]) +
         row("Badge size", "badgeSize", [["s", "S"], ["m", "M"], ["l", "L"]]) +
         row("Badge labels", "badgeLbl", [["on", "On"], ["off", "Off"]]) +
         row("Earned look", "earned", [["full", "Full color"], ["ring", "Gold ring"], ["sparkle", "Sparkle"]]) +
