@@ -1,0 +1,179 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Plan C · Pop Up Mounts · Astra’s Writing Adventure</title>
+<link rel="icon" type="image/svg+xml" href="../favicon.svg" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&family=Lilita+One&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="../demo/switcher.css" />
+<link rel="stylesheet" href="stage-fit.css" />
+<link rel="preload" as="image" href="assets/intro-poster.jpg" />
+<style>
+  /* Plan C "Pop Up Mounts": a fixed 1366x768 stage (stage-fit.js). Intro film (Astra opens the pop-up book),
+     then each world is a looping clip of the open book + its mount; six bookmark ribbons pick the world. */
+  :root {
+    --frost: rgba(255, 248, 235, .82); --brown: #4a2e1a; --brown-soft: #7a5638;
+    --gold: #d9a93f; --gold-deep: #94690f; --cream: #fff8eb;
+    --display: "Manrope", system-ui, sans-serif;
+  }
+  * { box-sizing: border-box; }
+  body { font-family: var(--display); color: var(--brown); -webkit-font-smoothing: antialiased; }
+  .frost {
+    background: var(--frost); -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, .9); border-radius: 16px; color: var(--brown);
+    box-shadow: 0 6px 18px rgba(30, 20, 8, .28), 0 1px 2px rgba(30, 20, 8, .18);
+  }
+  .vid, .layer { position: absolute; inset: 0; width: 1366px; height: 768px; }
+  .vid { object-fit: cover; display: block; }
+  .intro { z-index: 1; background: #1a2318 url("assets/intro-poster.jpg") center / cover; }
+  .layer { z-index: 2; background: center / cover no-repeat; opacity: 0; transition: opacity .5s ease; }
+  .layer.on { opacity: 1; }
+  .layer video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+
+  /* UI: hidden during the intro, slides in after */
+  .ui { transition: opacity .6s ease, translate .6s cubic-bezier(.2,.8,.2,1); }
+  .scene:not(.ready) .ui { opacity: 0; pointer-events: none; visibility: hidden; }
+  .scene:not(.ready) .ui.from-top { translate: 0 -24px; }
+  .scene:not(.ready) .ui.from-bottom { translate: 0 24px; }
+  .scene:not(.ready) .ui.from-right { translate: 40px 0; }
+
+  .top { position: absolute; top: 44px; right: 16px; z-index: 20; display: flex; flex-direction: column; align-items: flex-end; gap: 6px; }
+  .title { display: flex; align-items: center; gap: 10px; padding: 6px 20px 6px 14px; border-radius: 999px; }
+  .title svg { width: 26px; height: 26px; flex: none; }
+  .title h1 { margin: 0; font-size: 26px; font-weight: 800; line-height: 1.05; white-space: nowrap; }
+  .title h1 small { display: block; font-size: 14px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: var(--gold-deep); }
+  .goal { display: flex; align-items: center; gap: 8px; padding: 5px 14px; border-radius: 999px; }
+  .lbl { margin: 0; display: flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; color: var(--gold-deep); }
+  .lbl svg { width: 14px; height: 14px; }
+  .goal .txt { margin: 0; font-size: 16px; font-weight: 700; line-height: 1.2; white-space: nowrap; }
+
+  /* Painted ribbons in the video are the main control: each glows in its own colour with a soft 2s pulse; the active one glows steadily */
+  .rib { position: absolute; z-index: 15; top: 664px; width: 66px; height: 102px; padding: 0; border: 0; border-radius: 8px 8px 2px 2px; background: transparent; cursor: pointer;
+    box-shadow: 0 0 0 2px color-mix(in srgb, var(--c) 70%, #fff), 0 0 12px 3px var(--c); animation: ribPulse 2s ease-in-out infinite; transition: scale .2s ease; }
+  .rib:nth-child(2) { animation-delay: -.33s; } .rib:nth-child(3) { animation-delay: -.66s; } .rib:nth-child(4) { animation-delay: -1s; }
+  .rib:nth-child(5) { animation-delay: -1.33s; } .rib:nth-child(6) { animation-delay: -1.66s; }
+  @keyframes ribPulse { 0%, 100% { opacity: .55; scale: 1; } 50% { opacity: 1; scale: 1.035; } }
+  .rib:hover { animation: none; opacity: 1; scale: 1.05; background: rgba(255, 250, 235, .12); box-shadow: 0 0 0 2px #fff, 0 0 18px 6px var(--c); }
+  .rib:focus-visible { outline: 3px solid #fff; outline-offset: 3px; }
+  .rib.active { animation: none; opacity: 1; scale: 1; background: rgba(255, 250, 235, .1); box-shadow: 0 0 0 3px #fff, 0 0 22px 8px var(--c), 0 0 6px 2px #fff; }
+
+  /* bottom-right: chosen world label (in its bookmark colour) + small Ride button */
+  .pick { position: absolute; right: 18px; bottom: 18px; z-index: 20; display: flex; align-items: center; gap: 8px; }
+  .wl { display: flex; align-items: center; gap: 9px; height: 50px; padding: 0 18px 0 7px; border-radius: 14px; color: #fffaf0;
+    font: 800 19px/1 var(--display); text-shadow: 0 1px 1px rgba(0,0,0,.35); white-space: nowrap;
+    background: var(--c); border: 1px solid rgba(255,255,255,.85); box-shadow: inset 0 -3px 0 rgba(0,0,0,.18), 0 6px 16px rgba(30,20,8,.35); transition: background .4s ease; }
+  .wl .ic { width: 36px; height: 36px; border-radius: 50%; background: rgba(255,250,240,.92); display: grid; place-items: center; font-size: 20px; text-shadow: none; }
+  .wl .wt { display: flex; flex-direction: column; gap: 1px; }
+  .wl small { font-size: 13px; font-weight: 700; letter-spacing: .06em; opacity: .92; }
+  /* number badge above each painted ribbon (clear of the ribbon icon) */
+  .rib .num { position: absolute; left: 50%; top: -15px; translate: -50% 0; width: 24px; height: 24px; border-radius: 50%;
+    display: grid; place-items: center; font: 800 15px/1 var(--display); color: #fffaf0; background: var(--c);
+    border: 2px solid #fffaf0; box-shadow: 0 2px 5px rgba(0,0,0,.4); }
+  .ride { display: flex; align-items: center; gap: 4px; height: 50px; padding: 0 16px 0 18px; border-radius: 14px; cursor: pointer; font: 800 21px/1 var(--display); color: var(--brown); }
+  .ride svg { width: 20px; height: 20px; }
+  .ride:hover { translate: 0 -2px; }
+  .ride:focus-visible { outline: 3px solid var(--gold); outline-offset: 3px; }
+
+  .toast { position: absolute; right: 18px; bottom: 80px; z-index: 40; padding: 10px 18px; font-size: 19px; font-weight: 800; opacity: 0; translate: 0 8px; transition: opacity .3s, translate .3s; pointer-events: none; }
+  .ridewrap { position: absolute; inset: 0; z-index: 90; background: #0b0f0c; opacity: 0; pointer-events: none; transition: opacity .3s ease; }
+  .ridewrap.on { opacity: 1; pointer-events: auto; }
+  .ridewrap video, .ridewrap img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+  .ridewrap img { opacity: 0; transition: opacity .8s ease; }
+  .ridewrap img.on { opacity: 1; }
+  .ridewrap .skip { z-index: 2; }
+  .arr { position: absolute; z-index: 15; top: 690px; width: 60px; height: 60px; margin-left: -30px; padding: 0; border: 0; border-radius: 50%; background: transparent; cursor: pointer; transition: box-shadow .25s ease, background .25s ease; }
+  .arr:hover, .arr:focus-visible { background: radial-gradient(circle, rgba(255,228,150,.28) 0 55%, transparent 72%); box-shadow: 0 0 18px 6px rgba(255,214,120,.55); outline: none; }
+  .arr:focus-visible { box-shadow: 0 0 0 3px var(--gold), 0 0 18px 6px rgba(255,214,120,.55); }
+  .arr:active { translate: 0 1px; }
+  .replay { position: absolute; left: 16px; top: 14px; z-index: 20; padding: 5px 13px; border-radius: 999px; font: 700 13px/1.2 "Manrope", system-ui, sans-serif; color: #4a2e1a; cursor: pointer;
+    background: rgba(255,248,235,.82); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,.9); box-shadow: 0 2px 8px rgba(40,25,10,.18); }
+  .replay:hover { background: rgba(255,248,235,.95); }
+  .replay:focus-visible { outline: 3px solid var(--gold); outline-offset: 2px; }
+  .page-fade { position: absolute; inset: 0; z-index: 95; background: #0b0f0c; opacity: 0; pointer-events: none; transition: opacity .4s ease; }
+  .page-fade.on { opacity: 1; pointer-events: auto; }
+  .toast.on { opacity: 1; translate: 0 0; }
+
+  /* Start: a book-cover nameplate with a ribbon bookmark hanging from it */
+  .gate { position: absolute; inset: 0; z-index: 60; transition: opacity .5s ease; }
+  .gate.gone { opacity: 0; pointer-events: none; }
+  .plate {
+    position: absolute; left: 870px; top: 210px; width: 330px; padding: 22px 26px 26px; cursor: pointer; text-align: center;
+    font-family: var(--display); color: #fff3d6; border-radius: 14px;
+    background: linear-gradient(160deg, #7b3f22 0%, #5a2c17 55%, #43200f 100%);
+    border: 3px solid #d9a93f; box-shadow: inset 0 0 0 6px #5a2c17, inset 0 0 0 8px rgba(243, 214, 140, .8), 0 18px 34px -10px rgba(20, 10, 2, .75);
+    transition: translate .2s ease;
+  }
+  .plate:hover { translate: 0 -3px; }
+  .plate:focus-visible { outline: 3px solid #fff; outline-offset: 6px; }
+  .plate .k { display: block; font-size: 13px; font-weight: 800; letter-spacing: .2em; text-transform: uppercase; color: #f3d68c; }
+  .plate .t { display: block; margin: 6px 0 2px; font-size: 30px; font-weight: 800; line-height: 1.05; }
+  .plate .s { display: block; font-size: 16px; font-weight: 700; color: #f3d68c; }
+  .plate .go { display: inline-flex; align-items: center; gap: 8px; margin-top: 16px; padding: 8px 22px; border-radius: 999px; background: #f3d68c; color: #4a2e1a; font-size: 22px; font-weight: 800; }
+  .plate .tail { position: absolute; left: 50%; bottom: -70px; width: 46px; height: 82px; margin-left: -23px; z-index: -1;
+    background: linear-gradient(90deg, #6a3aa8, #8b55c9 50%, #6a3aa8); clip-path: polygon(0 0, 100% 0, 100% 100%, 50% 80%, 0 100%); }
+  .gate.opening .plate { translate: 0 30px; opacity: 0; transition: translate .5s ease, opacity .5s ease; }
+
+  .skip { position: absolute; left: 22px; bottom: 22px; z-index: 70; padding: 8px 16px 8px 18px; border-radius: 999px; cursor: pointer;
+    font: 700 16px/1.2 var(--display); opacity: 0; transition: opacity .4s ease, translate .2s ease; }
+  .skip.on { opacity: 1; }
+  .skip:hover { translate: 0 -2px; }
+  .skip:focus-visible { outline: 3px solid var(--gold); outline-offset: 3px; }
+  .skip span { font-size: 20px; line-height: 0; margin-left: 2px; }
+</style>
+</head>
+<body>
+<script src="../demo/switcher.js" data-page="dashboard-c"></script>
+<div class="stage-frame" id="frame">
+<main class="scene" id="scene">
+  <video class="vid intro" id="intro" playsinline preload="auto" poster="assets/intro-poster.jpg" src="assets/intro.mp4" aria-hidden="true"></video>
+  <div class="layer" id="layerA" aria-hidden="true"></div>
+  <div class="layer" id="layerB" aria-hidden="true"></div>
+
+  <div id="ribs"></div>
+  <button type="button" class="arr ui" id="arrPrev" style="left:237px" aria-label="Previous world"></button>
+  <button type="button" class="arr ui" id="arrNext" style="left:816px" aria-label="Next world"></button>
+  <button type="button" class="replay ui from-top" id="replay"><span aria-hidden="true">↺</span> Replay intro</button>
+
+  <div class="top ui from-top">
+    <header class="title frost">
+      <svg viewBox="0 0 26 26" aria-hidden="true"><path d="M3 6c4-2 7-2 10 1 3-3 6-3 10-1v15c-4-2-7-2-10 1-3-3-6-3-10-1z" fill="#fff3d6" stroke="#94690f" stroke-width="1.6" stroke-linejoin="round"/><path d="M13 7v15" stroke="#94690f" stroke-width="1.4"/><path d="M17 9v8l2-1.5 2 1.5V8" fill="#8b55c9"/></svg>
+      <h1>Astra’s Writing Adventure<small>Pop Up Mounts</small></h1>
+    </header>
+    <section class="goal frost" aria-label="Today's goal">
+      <p class="lbl"><svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="6.2" fill="none" stroke="#d9a93f" stroke-width="2"/><circle cx="8" cy="8" r="2.6" fill="#d9a93f"/></svg>Today’s goal</p>
+      <p class="txt">Back up my opinion with strong, specific reasons.</p>
+    </section>
+  </div>
+
+  <div class="pick ui from-bottom" id="pick">
+    <div class="wl" id="wl" aria-live="polite"><span class="ic" id="wlIc" aria-hidden="true">🫖</span><span class="wt"><span id="wlName">Porcelain Tea Gardens</span><small id="wlMod">Module 1</small></span></div>
+    <button class="ride frost" type="button" id="ride" aria-label="Ride to Porcelain Tea Gardens">Ride <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M7 4.5 12.5 10 7 15.5" fill="none" stroke="#4a2e1a" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+  </div>
+  <div class="toast frost" id="toast" role="status" aria-live="polite"></div>
+
+  <div class="ridewrap" id="rideWrap" hidden>
+    <video id="rideVid" playsinline preload="none" aria-hidden="true"></video>
+    <img id="rideArt" alt="">
+    <button type="button" class="skip on" id="rideSkip">Skip <span aria-hidden="true">›</span></button>
+  </div>
+  <div class="page-fade" id="pageFade" aria-hidden="true"></div>
+  <div class="gate" id="gate">
+    <button class="plate" type="button" id="start" autofocus>
+      <span class="k">Astra’s Writing Adventure</span>
+      <span class="t">Pop Up Mounts</span>
+      <span class="s">A book full of worlds</span>
+      <span class="go">Open the book ›</span>
+      <span class="tail" aria-hidden="true"></span>
+    </button>
+  </div>
+  <button class="skip frost" type="button" id="skip" hidden>Skip intro <span aria-hidden="true">›</span></button>
+</main>
+</div>
+<script src="stage-fit.js"></script>
+<script src="worlds.js"></script>
+<script src="popup.js"></script>
+</body>
+</html>

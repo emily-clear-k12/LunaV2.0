@@ -1,0 +1,42 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1"/><link rel="icon" type="image/svg+xml" href="../favicon.svg"/>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&family=Lilita+One&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="../demo/lonestar-brand.css"/><link rel="stylesheet" href="../demo/switcher.css"/><link rel="stylesheet" href="stage-fit.css"/><link rel="stylesheet" href="common.css?v=5"/><title>Plan A.1 · Lantern Tree · Astra's Writing Adventure</title></head>
+<body><script src="../demo/switcher.js" data-page="dashboard-a1"></script>
+<div id="frame" class="stage-frame">
+<img class="bg" id="sceneBg" src="plates/base.jpg" alt="Astra's lantern tree"/>
+<img class="scene-cut" id="lanCuts" src="plates/lanterns-base.webp" alt=""/>
+<img class="scene-cut" id="astraCut" src="plates/astra-base.webp" alt=""/>
+<img class="scene-cut" id="signCut" src="plates/sign-base.webp" alt=""/>
+<div class="strip"><h1>Astra's Writing Adventure</h1></div>
+<div id="lanterns"></div>
+<div class="goaltile"><b>Today's goal</b>Back up every answer with evidence from the text.</div>
+<div id="selected-module" class="selected-module" role="status" hidden></div>
+<div class="bar" id="bar"><div id="tiles" style="display:flex;gap:6px;flex:1;min-width:0"></div><div id="act" style="width:104px;flex:none"><button class="go" disabled>Go ›</button></div></div>
+</div>
+<script src="stage-fit.js"></script><script src="../demo/badges/progress.js"></script><script src="../demo/badges/badges.js" data-mount="#frame" data-mode="abs"></script><script src="../demo/module-titles.js"></script><script src="worlds.js"></script>
+<script>
+(function(){
+  var shortTitles=["SCR","ECR","Stellar Writers","Writing Process","Revision","Editing"], titles=window.ASTRA_MODULE_TITLES, W=window.A1_WORLDS, L=document.getElementById("lanterns"), bar=document.getElementById("bar"), tiles=document.getElementById("tiles"), act=document.getElementById("act"), sel=-1;
+  W.forEach(function(w,i){
+    var b=document.createElement("button"); b.className="lantern"; b.style.cssText="left:"+w.x+"px;top:"+w.y+"px;width:"+w.w+"px;height:"+w.h+"px;--c:"+w.color;
+    b.setAttribute("aria-label","Module "+w.m+": "+titles[i]); b.title="Module "+w.m+": "+titles[i]; b.onclick=function(){pick(i)}; L.appendChild(b);
+    var t=document.createElement("button"); t.className="tile"; t.style.setProperty("--c",w.color); t.innerHTML="<span class=\"module-title\"></span>"; t.querySelector(".module-title").textContent=shortTitles[i]; t.title="Module "+w.m+": "+titles[i]; t.setAttribute("aria-label","Module "+w.m+": "+titles[i]);
+    t.onclick=function(){pick(i)}; tiles.appendChild(t);
+  });
+  var LP=window.lsProgress;
+  W.forEach(function(w,i){ var st=LP.status(w.m), lan=L.children[i], tile=tiles.children[i];
+    if(st==="done"){ var c=LP.check(); c.style.cssText="left:"+(w.x+w.w/2-14)+"px;top:"+(w.y-w.h/2+2)+"px"; L.appendChild(c); var c2=LP.check(); c2.style.cssText="position:relative;width:16px;height:16px;margin-left:auto"; tile.appendChild(c2); lan.setAttribute("aria-label",lan.getAttribute("aria-label")+", done"); }
+    if(st==="next"){ var t=LP.startTag(); t.style.cssText="left:"+w.x+"px;top:"+(w.y-w.h/2-6)+"px"; L.appendChild(t); lan.setAttribute("aria-label",lan.getAttribute("aria-label")+", start here"); }
+  });
+  function pick(i){ sel=i; window.lsBadges?lsBadges.select(i):(window.__lsBadgePending=i); bar.classList.add("show"); document.getElementById("frame").classList.add("sel");
+    [].forEach.call(L.querySelectorAll(".lantern"),function(e,j){e.classList.toggle("on",j===i)}); [].forEach.call(tiles.children,function(e,j){e.classList.toggle("on",j===i)});
+    var selected=document.getElementById("selected-module"); selected.textContent="Module "+W[i].m+": "+titles[i]; selected.hidden=false;
+    var w=W[i]; act.innerHTML = '<button class="go">Go ›</button>';
+    act.firstChild.onclick=function(){ location.href="world.html?w="+w.id; };
+  }
+  var q=new URLSearchParams(location.search).get("m"); if(q){ W.forEach(function(w,i){ if(w.id===q) pick(i); }); }
+})();
+</script>
+<script src="../demo/ambient.js?v=4" data-preset="a1"></script>
+<script src="../demo/worlds-catalog.js"></script><script src="../demo/proto/proto.js?v=27" data-page="a1"></script>
+</body></html>

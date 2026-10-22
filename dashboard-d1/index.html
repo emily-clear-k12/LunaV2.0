@@ -1,0 +1,61 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1"/><link rel="icon" type="image/svg+xml" href="../favicon.svg"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&family=Lilita+One&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="../demo/switcher.css"/><link rel="stylesheet" href="stage-fit.css"/><link rel="stylesheet" href="common.css"/>
+<title>Plan D.1 · Enchanted Playground · Astra’s Writing Adventure</title>
+<style>
+.buddy{position:absolute;transform:translate(-50%,-50%);width:150px;height:150px;border-radius:50%;pointer-events:none;opacity:0;box-shadow:0 0 0 3px color-mix(in srgb,var(--c) 85%,#fff),0 0 30px 10px color-mix(in srgb,var(--c) 60%,transparent);
+ background:radial-gradient(closest-side,rgba(255,246,216,.35) 0%,color-mix(in srgb,var(--c) 35%,transparent) 60%,transparent 100%)}
+.buddy.on{animation:pulse 2.4s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:.6;transform:translate(-50%,-50%) scale(.94)}50%{opacity:1;transform:translate(-50%,-50%) scale(1.06)}}
+.bar{display:flex}
+.tile{height:40px;flex-direction:column;align-items:flex-start;justify-content:center;gap:1px;font:700 13px/1.1 var(--ls-serif)}
+.tile em{font:800 10px var(--ls-sans);letter-spacing:.1em;text-transform:uppercase;color:color-mix(in srgb,var(--c) 60%,#fff)}
+.tile.on em{color:#0b1d33}
+.go{height:40px;width:150px;font:800 16px var(--ls-sans);display:none}.go.show{display:block}
+.go.soon{background:rgba(255,255,255,.18);color:#fff;font:700 14px var(--ls-sans)}
+</style></head>
+<body><script src="../demo/switcher.js" data-page="dashboard-d1"></script>
+<div id="frame" class="stage-frame">
+<img class="bg" src="playground.jpg" alt="An enchanted playground with six forest buddies: an owl in the fort window, a raccoon on the swing, a squirrel on a mushroom, a fox on the zipline, a bunny on the slide and a bear on stepping stones"/>
+<div class="strip"><h1>Astra’s Writing Adventure</h1></div>
+<div class="goaltile"><b>Today’s goal</b>Back up my opinion with strong, specific reasons.</div>
+<div id="glows"></div>
+<div class="bar" id="bar"></div>
+</div>
+<script src="stage-fit.js"></script><script src="../demo/badges/progress.js"></script><script src="../demo/badges/badges.js" data-mount="#frame" data-mode="abs"></script>
+<script>
+(function(){
+  /* Same module order + buddy pairing as Plan D (arrows 1–6). Positions: 1024x576 source × 1366/1024. */
+  var K=1366/1024, B=[
+    {m:1,name:"Bear",place:"Stepping Stones",x:660,y:400,c:"#e0703a"},
+    {m:2,name:"Raccoon",place:"The Swing",x:105,y:300,c:"#9b7bea"},
+    {m:3,name:"Owl",place:"Fort Window",x:325,y:165,c:"#3fb6e8"},
+    {m:4,name:"Fox",place:"The Zipline",x:690,y:195,c:"#f5a524"},
+    {m:5,name:"Squirrel",place:"Mushroom",x:200,y:340,c:"#4cc28a"},
+    {m:6,name:"Bunny",place:"The Slide",x:915,y:270,c:"#ef6fa8"}];
+  var G=document.getElementById("glows"),bar=document.getElementById("bar"),tiles=[],glows=[];
+  B.forEach(function(b,i){
+    var g=document.createElement("div");g.className="buddy";g.style.cssText="left:"+Math.round(b.x*K)+"px;top:"+Math.round(b.y*K)+"px;--c:"+b.c;G.appendChild(g);glows.push(g);
+    var t=document.createElement("button");t.type="button";t.className="tile";t.style.setProperty("--c",b.c);
+    t.innerHTML="<em>Module "+b.m+"</em>"+b.name+" · "+b.place;t.setAttribute("aria-label","Module "+b.m+", "+b.name+", "+b.place);t.onclick=function(){pick(i)};bar.appendChild(t);tiles.push(t);
+  });
+  var LP=window.lsProgress, GT=document.querySelector(".goaltile");
+  GT.style.gap="8px"; GT.style.paddingLeft="6px"; GT.insertBefore(LP.speaker("Today's goal: Back up my opinion with strong, specific reasons."),GT.firstChild);
+  var F=document.getElementById("frame"), marks=[];
+  B.forEach(function(b,i){ var t=tiles[i], st=LP.status(b.m);
+    if(st==="done"){ var c=LP.check(); F.appendChild(c); marks.push([c,i,"done"]); t.setAttribute("aria-label",t.getAttribute("aria-label")+", done"); }
+    if(st==="next"){ var s=LP.startTag(); F.appendChild(s); marks.push([s,i,"next"]); t.setAttribute("aria-label",t.getAttribute("aria-label")+", start here"); }
+    t.addEventListener("click",function(){ LP.sayModule(b.m,b.name+" at "+b.place.replace(/^The /,"the ")); });
+  });
+  /* marks live on the stage (tiles are dimmed until picked), positioned from the tile geometry */
+  function place(){ marks.forEach(function(k){ var t=tiles[k[1]], x=bar.offsetLeft+t.offsetLeft, y=bar.offsetTop+t.offsetTop;
+    if(k[2]==="done") k[0].style.cssText="left:"+(x+t.offsetWidth-14)+"px;top:"+(y-8)+"px";
+    else k[0].style.cssText="left:"+(x+t.offsetWidth/2)+"px;top:"+(y-10)+"px"; }); }
+  var go=document.createElement("button");go.type="button";go.className="go";go.textContent="Go ›";bar.appendChild(go);
+  go.onclick=function(){go.classList.add("soon");go.textContent="Not open yet";};
+  function pick(i){window.lsBadges?lsBadges.select(i):(window.__lsBadgePending=i);tiles.forEach(function(e,j){e.classList.toggle("on",j===i);e.setAttribute("aria-pressed",j===i)});glows.forEach(function(e,j){e.classList.toggle("on",j===i)});
+    go.classList.add("show");go.classList.remove("soon");go.textContent="Go ›";place();}
+  place();
+})();
+</script></body></html>
