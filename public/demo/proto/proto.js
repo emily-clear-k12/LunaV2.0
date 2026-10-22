@@ -16,7 +16,7 @@
   else if (q.has("proto") || q.has("p")) { s.on = true; put(s); }
   if (s.on === false) return;
 
-  var css = document.createElement("link"); css.rel = "stylesheet"; css.href = base + "proto.css?v=28"; document.head.appendChild(css);
+  var css = document.createElement("link"); css.rel = "stylesheet"; css.href = base + "proto.css?v=29"; document.head.appendChild(css);
   root.classList.add("pa", "pa-" + PAGE);
 
   var D = {
@@ -34,20 +34,32 @@
     trans: "none", sfxTap: "off", sfxHover: "off", sfxBadge: "off", idle: "still", earnFx: "off", goSz: "m", goNext: "off", goHide: "off", calm: "off"
   };
   if (PAGE === "d") { D.signIc = "none"; for (var di = 1; di <= 7; di++) { D["c" + di] = ["owl", "raccoon", "squirrel", "astra", "fox", "bear", "bunny"][di - 1]; D["q" + di] = ["stand", "stand", "stand", "point", "point", "wave", "wave"][di - 1]; D["f" + di] = di === 5 ? "on" : "off"; } }
+  /* A.1 meeting decisions (2026-10-22): decided values are fixed defaults and their controls are gone */
+  var DEC = PAGE === "a1" ? { scene: "a1", weather: "none", magic: "1", art: "bright", tint: "cool", sound: "off", pose: "writing", spot: "cur", bubble: "off",
+    lanShape: "cur", tapfx: "glow", zoom: "off", tap: "go", pstyle: "rune", menu: "float", reveal: "always", shape: "tile", color: "mod", size: "s", finish: "frost",
+    ml: "off", mt: "on", nm: "off", border: "cur", goStyle: "cur", goLbl: "cur", goPos: "cur", goMo: "none", goSz: "m", goNext: "off", goHide: "off",
+    vign: "off", rays: "off", ambType: "fireflies", ambCol: "mod", moon: "off", clouds: "off", sstars: "on", txtSh: "soft", cursor: "wand", intro: "none",
+    lanIc: "none", hovSt: "cur", pressSt: "cur", mkLbl: "off", stSize: "m", stHide: "off", trailSt: "dots", aSize: "m", aShadow: "off", aMirror: "off",
+    palette: "cur", menuH: "cur", menuHov: "cur", unearned: "cur", bFrame: "none", progTxt: "off", goalLbl: "cur", ttlSize: "cur", ttlIc: "cur", bubSt: "cur", bubAuto: "off", spkPos: "cur", autoRead: "off",
+    goalPos: "tr", goalStyle: "cur", goalSize: "compact", title: "off", titlePos: "tl", ttlSt: "cur", ttlW: "cur", ribbon: "off", curHl: "cur" } : {};
+  Object.keys(DEC).forEach(function (k) { D[k] = DEC[k]; });
+  if (PAGE === "a1") D.stColor = "white";
+  function lockDec() { Object.keys(DEC).forEach(function (k) { s[k] = DEC[k]; }); }
   var KEYS = Object.keys(D);
   if (q.get("p")) { try { var qp = JSON.parse(atob(q.get("p"))); s.on = true; KEYS.forEach(function (k) { s[k] = qp[k] !== undefined ? String(qp[k]) : D[k]; }); } catch (e) {} }
   KEYS.forEach(function (k) { if (s[k] === undefined) s[k] = D[k]; });
   if (!s.keep || typeof s.keep !== "object") s.keep = {};
+  lockDec();
 
   var SHORT = ["SCR", "ECR", "Stellar Writers", "Writing Process", "Revision", "Editing"];
   var BADGE = ["scr", "ecr", "stellar", "process", "revision", "editing"];
   var BUDDY = [["Bear", "#e0703a"], ["Raccoon", "#9b7bea"], ["Owl", "#3fb6e8"], ["Fox", "#f5a524"], ["Squirrel", "#4cc28a"], ["Bunny", "#ef6fa8"]];   // Plan D arrows 1–6
   /* A.1 presets: coherent looks; anything not listed stays at its default */
   var PRESETS = [
-    ["Cozy Sunset", { lanShape: "cur", season: "summer", tod: "dusk", goalStyle: "wood", ttlSt: "wood", lesTrk: "branch", lpop: "on", lpSt: "parch", lpCol: "mod", lpDot: "dots", goStyle: "wood", ambType: "fireflies", ambCol: "gold", palette: "cur", color: "mod" }],
-    ["Starry Night", { lanShape: "globes", season: "summer", tod: "night", goalStyle: "navy", ttlSt: "navy", lesTrk: "chain", lpop: "on", lpSt: "glass", lpCol: "navy", lpDot: "gems", goStyle: "gem", ambType: "twinkle", ambCol: "white", sstars: "on", palette: "jewel", color: "navy" }],
-    ["Snowy Storybook", { lanShape: "stars", season: "winter", tod: "day", goalStyle: "parch", ttlSt: "parch", lesTrk: "under", lesLook: "stars", lpop: "on", lpSt: "book", lpCol: "cream", lpDot: "stars", goStyle: "leather", weather: "snow", palette: "pastel", color: "navy" }],
-    ["Spring Village", { lanShape: "houses", season: "spring", tod: "day", goalStyle: "glass", ttlSt: "frost", prog: "leaves", lesTrk: "under", lesLook: "dots", lpop: "on", lpSt: "glass", lpCol: "white", lpDot: "leaves", goStyle: "vine", weather: "petals", palette: "pastel", color: "mod" }]
+    ["Cozy Sunset", { season: "summer", tod: "dusk", lesTrk: "branch", lpop: "on", lpSt: "parch", lpCol: "mod", lpDot: "dots", doneLk: "lit", stColor: "white", earned: "sparkle" }],
+    ["Starry Night", { season: "summer", tod: "night", lesTrk: "chain", lpop: "on", lpSt: "glass", lpCol: "navy", lpDot: "gems", doneLk: "star", stColor: "white", stShape: "ring", earned: "ring" }],
+    ["Snowy Storybook", { season: "winter", tod: "day", lesTrk: "under", lesLook: "stars", lpop: "on", lpSt: "book", lpCol: "cream", lpDot: "stars", doneLk: "stamp", stColor: "gold" }],
+    ["Spring Village", { season: "spring", tod: "day", prog: "leaves", lesTrk: "under", lesLook: "dots", lpop: "on", lpSt: "glass", lpCol: "white", lpDot: "leaves", badgeIc: "on", stColor: "mod" }]
   ];
   var LP = window.lsProgress, NEXT = (LP && LP.next) || 2;
 
@@ -56,6 +68,7 @@
   /* the inner parts every module button gets (hidden ones are switched on by the panel) */
   function dress(btn, i, name) {
     var title = btn.querySelector(".module-title") || el("span", "module-title", SHORT[i]);
+    if (PAGE === "a1" && window.ASTRA_MODULE_TITLES && window.ASTRA_MODULE_TITLES[i]) title.textContent = window.ASTRA_MODULE_TITLES[i];
     var tx = el("span", "pa-tx");
     tx.appendChild(el("span", "pa-ml", "Module " + (i + 1)));
     tx.appendChild(title);
@@ -68,11 +81,17 @@
   /* ---------------- page adapters ---------------- */
   var A = {};
   A.a1 = {
+    goIn: function (i) { /* lantern tap goes straight into that lantern's world; short pause lets the glow play */
+      var lw = (s.lanWorld || {})[i], w = (lw && A.wbk && A.wbk(lw)) || null, built = (window.A1_WORLDS || [])[i];
+      var href = w ? w.href : built ? "world.html?w=" + built.id : null; if (!href || window.__paNoNav) return;
+      setTimeout(function () { location.href = href; }, s.calm === "on" || matchMedia("(prefers-reduced-motion: reduce)").matches ? 0 : 380);
+    },
     init: function () {
       var self = this, Wm = window.A1_WORLDS || [], Lm = document.getElementById("lanterns");
       if (Lm && LP) { var ck = [].slice.call(Lm.querySelectorAll(".ls-check")), stt = [].slice.call(Lm.querySelectorAll(".ls-start")); this.marks = [];
         Wm.forEach(function (w, i) { var st = LP.status(w.m); if (st === "done" && ck.length) self.marks.push({ i: i, t: "check", el: ck.shift() }); if (st === "next" && stt.length) self.marks.push({ i: i, t: "start", el: stt.shift() }); }); }
-      if (Lm) [].forEach.call(Lm.querySelectorAll(".lantern"), function (b, i) { b.addEventListener("click", function () { if (self.onLan) self.onLan(i); if (s.tap === "portal") self.portal(i); }); });
+      if (Lm) [].forEach.call(Lm.querySelectorAll(".lantern"), function (b, i) { b.addEventListener("click", function () { if (self.onLan) self.onLan(i); if (s.tap === "portal") self.portal(i); if (s.tap === "go") self.goIn(i); }); });
+      [].forEach.call(document.querySelectorAll("#tiles .tile"), function (b, i) { b.addEventListener("click", function () { if (s.tap === "go") self.goIn(i); }); });
       var W = window.A1_WORLDS || [], tiles = [].slice.call(document.querySelectorAll("#tiles .tile"));
       tiles.forEach(function (t, i) { var w = W[i] || {}; dress(t, i, w.short || w.name || "");
         t.style.setProperty("--fx", w.x + "px"); t.style.setProperty("--fy", (w.y + w.h / 2 + 4) + "px"); });
@@ -554,6 +573,10 @@ var CMETA={"astra-cheer":[312,640,0.545,0.995],"astra-point":[294,640,0.48,0.994
     p.setAttribute("aria-label", n + " of 6 modules done");
   };
   /* per-module lesson tracker (A.1 only): under item / glowing branch / chain dots */
+  function underY(i, y) { /* sit below the module tile when the menu hangs on the lanterns */
+    if (!fl()) return y; var tl = document.querySelectorAll("#tiles .tile")[i]; if (!tl || !tl.offsetHeight) return y;
+    var fy = parseFloat(tl.style.getPropertyValue("--fy")) || 0; return Math.max(y, fy + tl.offsetHeight + 4);
+  }
   X.mprog = function () {
     var o = document.getElementById("paMtk");
     if (o && o.dataset.t !== s.lesTrk) { o.remove(); o = null; }
@@ -562,7 +585,7 @@ var CMETA={"astra-cheer":[312,640,0.545,0.995],"astra-point":[294,640,0.48,0.994
     var html = "";
     for (var i = 0; i < 6; i++) { var pt = modPt(i), n = lesDone(i), tt = lesTotal(i), c = modCol(i), ch = CHAIN[i], lab = ' role="img" aria-label="Module ' + (i + 1) + ": " + n + " of " + tt + ' lessons"';
       var ib = itemBox(i);
-      if (s.lesTrk === "under") html += '<div class="pa-trk pa-prog-' + s.lesLook + '"' + lab + ' style="' + pct(pt.x, ib.bot + 4) + ";--mc:" + c + '">' + trk(s.lesLook, n, tt, Array(tt).fill(c), "les") + "</div>";
+      if (s.lesTrk === "under") html += '<div class="pa-trk pa-prog-' + s.lesLook + '"' + lab + ' style="' + pct(pt.x, underY(i, ib.bot + 4)) + ";--mc:" + c + '">' + trk(s.lesLook, n, tt, Array(tt).fill(c), "les") + "</div>";
       else if (s.lesTrk === "branch") html += '<i class="pa-bglow"' + lab + ' style="' + pct(ch[0], ch[1] - ch[2]) + ";--mc:" + c + ";--g:" + (n / tt).toFixed(2) + '"></i>';
       else { var top = ch[1] - ch[2], bot = Math.min(ib.top, ch[1]), h2 = ""; for (var k = 0; k < tt; k++) { var y = bot - 6 - Math.max(bot - top - 12, (tt - 1) * 11) * (tt > 1 ? k / (tt - 1) : 0); h2 += '<b class="td' + (k < n ? " on" : "") + '" style="' + pct(ch[0], y) + ";--c:" + c + '"></b>'; } html += '<span class="pa-cdots"' + lab + ">" + h2 + "</span>"; } }
     o.innerHTML = html; o.removeAttribute("aria-hidden");
@@ -998,6 +1021,7 @@ var CMETA={"astra-cheer":[312,640,0.545,0.995],"astra-point":[294,640,0.48,0.994
 
   /* ---------------- apply ---------------- */
   function apply() {
+    lockDec();
     KEYS.forEach(function (k) { root.setAttribute("data-p-" + k.toLowerCase(), s[k]); });
     var lvl = s.magic === "live" ? 0 : +s.magic;
     window.__magicLevel = lvl; window.__tod = s.tod;
@@ -1022,7 +1046,7 @@ var CMETA={"astra-cheer":[312,640,0.545,0.995],"astra-point":[294,640,0.48,0.994
   apply();
 
   function seg(k, opts) { return '<div class="pa-seg" data-n="' + opts.length + '">' + opts.map(function (o) { return '<button type="button" data-k="' + k + '" data-v="' + o[0] + '">' + o[1] + "</button>"; }).join("") + "</div>"; }
-  function row(label, k, opts) { return '<div class="pa-row" data-row="' + k + '"><small>' + label + '<button type="button" class="pa-keep" data-keep="' + k + '">Keep</button></small>' + seg(k, opts) + "</div>"; }
+  function row(label, k, opts) { if (k in DEC) return ""; return '<div class="pa-row" data-row="' + k + '"><small>' + label + '<button type="button" class="pa-keep" data-keep="' + k + '">Keep</button></small>' + seg(k, opts) + "</div>"; }
     var isD = PAGE === "d";
 
   function boot() {
@@ -1031,7 +1055,7 @@ var CMETA={"astra-cheer":[312,640,0.545,0.995],"astra-point":[294,640,0.48,0.994
     if (s.min === undefined && window.innerWidth < 700) s.min = true;
     p.id = "paPanel"; p.setAttribute("role", "region"); p.setAttribute("aria-label", "Dashboard prototype");
     var A1 = !isD, sec = s.open || (s.open = { scene: 1 });
-    function S(id, title, body) { return '<section class="pa-sec' + (sec[id] ? " open" : "") + '" data-sec="' + id + '"><button type="button" class="pa-sh" data-sec-t="' + id + '" aria-expanded="' + !!sec[id] + '">' + title + '</button><div class="pa-sb">' + body + "</div></section>"; }
+    function S(id, title, body) { if (body.indexOf("pa-row") < 0 && body.indexOf("pa-worlds") < 0) return ""; return '<section class="pa-sec' + (sec[id] ? " open" : "") + '" data-sec="' + id + '"><button type="button" class="pa-sh" data-sec-t="' + id + '" aria-expanded="' + !!sec[id] + '">' + title + '</button><div class="pa-sb">' + body + "</div></section>"; }
     var menuOpts = (isD ? [["sign", "Signpost only"], ["bottom", "Bottom bar"]] : [["bottom", "Bottom bar"]]).concat([["left", "Side left"], ["right", "Side right"], ["float", isD ? "On the arrows" : "On the lanterns"], ["arc", isD ? "Arc at the bottom" : "Arc (Astra / tree base)"]]);
     p.innerHTML =
       '<div class="pa-top"><b>Dashboard prototype</b><button type="button" data-min aria-label="Collapse or expand">&#8211;</button></div>' +
@@ -1047,11 +1071,11 @@ var CMETA={"astra-cheer":[312,640,0.545,0.995],"astra-point":[294,640,0.48,0.994
         (isD ? row("Hanging on the bridge rope", "hang", [["none", "None"], ["lanterns", "Lanterns"], ["garland", "Leaf garland"], ["bunting", "Bunting"], ["lights", "Fairy lights"]]) : "") +
         row("Weather", "weather", [["none", "Clear"], ["season", "Match season"], ["rain", "Rain"], ["leaves", "Leaves"], ["snow", "Snow"], ["petals", "Petals"], ["fog", "Fog"]]) +
         row("Magic", "magic", [["live", "As built"], ["1", "1"], ["2", "2"], ["3", "3"], ["4", "4"], ["5", "5"]]) +
-        '<p class="pa-hint">Magic builds in the open sky only. 1 is a few lights, 5 adds a slow ribbon.</p>' +
+        (A1 ? "" : '<p class="pa-hint">Magic builds in the open sky only. 1 is a few lights, 5 adds a slow ribbon.</p>') +
         row("Art brightness", "art", [["dim", "Dim"], ["normal", "Normal"], ["bright", "Bright"]]) +
         row("UI tint", "tint", [["built", "As built"], ["warm", "Warm gold"], ["cool", "Cool blue"], ["forest", "Forest"]]) +
         row("Ambient sound", "sound", [["off", "Off"], ["on", "On"]]) +
-        '<div class="pa-row"><small>Volume</small><input type="range" min="1" max="5" step="1" data-range="vol" value="' + s.vol + '" aria-label="Volume"></div>') +
+        (A1 ? "" : '<div class="pa-row"><small>Volume</small><input type="range" min="1" max="5" step="1" data-range="vol" value="' + s.vol + '" aria-label="Volume"></div>')) +
       (isD ? S("chars", "Characters",
         '<div class="pa-tools"><button type="button" data-shuffle>&#128256; Shuffle characters</button><button type="button" data-shufpose>Shuffle + poses</button></div>' +
         SPOT.map(function (p, i) { var n = i + 1;
@@ -1070,7 +1094,7 @@ var CMETA={"astra-cheer":[312,640,0.545,0.995],"astra-point":[294,640,0.48,0.994
         row("Badges as icons", "badgeIc", [["off", "Off"], ["on", "On"]]) +
         row("Tap effect", "tapfx", [["none", "None"], ["swing", "Swing"], ["glow", "Glow burst"], ["sparkle", "Sparkle"]]) +
         row("Camera zoom on tap", "zoom", [["off", "Off"], ["on", "On"]]) +
-        (A1 ? row("Lantern tap", "tap", [["menu", "Bottom menu (current)"], ["portal", "Open portal"]]) + row("Portal style", "pstyle", [["rune", "Gold rune ring"], ["pa", "Plan A portal"]]) + '<div class="pa-worlds" id="paWorlds"><p class="pa-hint">Click a lantern, then pick which world it opens.</p></div>' : "")) +
+        (A1 ? row("Lantern tap", "tap", [["menu", "Bottom menu (current)"], ["portal", "Open portal"]]) + row("Portal style", "pstyle", [["rune", "Gold rune ring"], ["pa", "Plan A portal"]]) + '<div class="pa-lanpick"><small>Lantern</small>' + [1, 2, 3, 4, 5, 6].map(function (n) { return '<button type="button" data-lanpick="' + (n - 1) + '">' + n + "</button>"; }).join("") + '</div><div class="pa-worlds" id="paWorlds"><p class="pa-hint">Pick a lantern number, then the world it opens. Tapping a lantern on the page goes straight in.</p></div>' : "")) +
       S("menu", "Menu",
         row("Placement", "menu", menuOpts) +
         row("Reveal", "reveal", [["always", "Always"], ["handle", "Slide-up handle"], ["tap", "After a tap"]]) +
@@ -1189,6 +1213,7 @@ var CMETA={"astra-cheer":[312,640,0.545,0.995],"astra-point":[294,640,0.48,0.994
     if (s.min) p.classList.add("min");
     document.body.appendChild(p);
     var CATS = window.ASTRA_WORLD_CATALOG || [];
+    A.wbk = function (k) { return worldByKey(k); };
     function worldByKey(key) {
       for (var g = 0; g < CATS.length; g++) for (var j = 0; j < CATS[g].items.length; j++) if (CATS[g].items[j].key === key) return CATS[g].items[j];
       return null;
@@ -1235,6 +1260,7 @@ var CMETA={"astra-cheer":[312,640,0.545,0.995],"astra-point":[294,640,0.48,0.994
       var st = b.getAttribute("data-sec-t");
       if (st) { sec[st] = sec[st] ? 0 : 1; b.parentNode.classList.toggle("open", !!sec[st]); b.setAttribute("aria-expanded", !!sec[st]); put(s); return; }
       if (b.hasAttribute("data-bfx")) { X.badgeFx(true); return; }
+      if (b.hasAttribute("data-lanpick")) { var li = +b.getAttribute("data-lanpick"); s.focusLan = li; showWorldList(li); [].forEach.call(p.querySelectorAll("[data-lanpick]"), function (x) { x.classList.toggle("on", x === b); }); put(s); return; }
       if (b.hasAttribute("data-preset")) { var pr = PRESETS[+b.getAttribute("data-preset")][1]; KEYS.forEach(function (k) { s[k] = D[k]; }); Object.keys(pr).forEach(function (k) { s[k] = pr[k]; }); s.keep = {}; apply(); syncRange(); return; }
       if (b.hasAttribute("data-reset")) { KEYS.forEach(function (k) { s[k] = D[k]; }); s.keep = {}; apply(); syncRange(); return; }
       if (b.hasAttribute("data-rand")) {
@@ -1244,7 +1270,7 @@ var CMETA={"astra-cheer":[312,640,0.545,0.995],"astra-point":[294,640,0.48,0.994
         KEYS.forEach(function (k) { s[k] = D[k]; });
         if (!isD) { var pr = PRESETS[Math.random() * PRESETS.length | 0][1]; Object.keys(pr).forEach(function (k) { s[k] = pr[k]; }); }
         var SAFE = isD ? ["tod", "season", "goalStyle", "ttlSt", "goStyle", "color", "palette", "signIc", "arTint", "stColor", "earned", "doneLk", "curHl", "ambCol", "bFrame", "unearned", "border", "finish", "hang"]
-                       : ["tod", "ambCol", "lpDot", "lpCol", "stColor", "earned", "doneLk", "curHl", "bFrame", "unearned", "border"];
+                       : ["tod", "season", "lpDot", "lpCol", "stColor", "stShape", "earned", "doneLk"];
         SAFE.forEach(function (k) { var v = groups[k]; if (v && Math.random() < .6) s[k] = v[Math.random() * v.length | 0]; });
         if (isD && s.season !== "summer" && Math.random() < .5) s.weather = "season";
         Object.keys(kept).forEach(function (k) { s[k] = kept[k]; });

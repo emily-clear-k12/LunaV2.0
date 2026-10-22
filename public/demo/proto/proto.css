@@ -959,3 +959,18 @@ html[data-p-tod=night] .pa-cords{filter:brightness(.7)}
 html.pa-lpop-open .selected-module{visibility:hidden}
 /* exactly one Astra */
 html.pa-a1[data-pa-pose=on] #signCut,html.pa-a1[data-p-scene=pa] :is(#signCut,#astraCut,.pa-cords,#paMtk,.pa-astra-wrap){display:none !important}
+/* A.1 meeting decisions: no Go, goal or title; bigger wand; rarer shooting stars */
+html.pa-a1 :is(.goaltile,.strip,#act,.pa-say){display:none !important}
+html.pa-a1[data-p-cursor=wand],html.pa-a1[data-p-cursor=wand] *{cursor:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='52' height='52' viewBox='0 0 32 32'%3E%3Cpath d='M4 28 20 12' stroke='%235a3414' stroke-width='3' stroke-linecap='round'/%3E%3Cpath d='M22 2l1.6 4.4L28 8l-4.4 1.6L22 14l-1.6-4.4L16 8l4.4-1.6z' fill='%23ffd23f' stroke='%23b8860b'/%3E%3Ccircle cx='27' cy='15' r='1.3' fill='%23fff3b0'/%3E%3Ccircle cx='15' cy='4' r='1' fill='%23fff3b0'/%3E%3C/svg%3E") 36 13, auto !important}
+@media (prefers-reduced-motion:no-preference){
+  html.pa-a1:not([data-p-calm=on])[data-p-sstars=on] .pa-sky .s1{animation:paSSr 48s ease-out infinite 8s}
+  html.pa-a1:not([data-p-calm=on])[data-p-sstars=on] .pa-sky .s2{animation:paSSr 71s ease-out infinite 33s}
+}
+.pa-lanpick{display:flex;align-items:center;gap:4px;margin:6px 0}.pa-lanpick small{margin-right:4px;font:700 11px "Manrope",sans-serif}
+.pa-lanpick button{width:28px;height:28px;border-radius:8px;border:1px solid #c9b48a;background:#fffaf1;font:800 12px "Manrope",sans-serif;cursor:pointer}.pa-lanpick button.on{background:#1a140c;color:#fff}
+@keyframes paSSr{0%,97.4%{opacity:0;translate:0 0}97.9%{opacity:1}100%{opacity:0;translate:-180px 80px}}
+/* A.1 real module names on the lantern tiles: wrap to two short lines, keep the check off the text */
+html.pa-a1[data-p-menux=float] #tiles .tile{height:auto !important;min-height:24px;max-width:124px;width:max-content;white-space:normal;line-height:1.15;padding:3px 9px !important;text-align:center;gap:4px;overflow:visible}
+html.pa-a1[data-p-menux=float] #tiles .tile .pa-tx{white-space:normal;overflow:visible;text-overflow:clip}
+html.pa-a1[data-p-menux=float] #tiles .tile .module-title{white-space:normal;overflow:visible;text-overflow:clip}
+html.pa-a1[data-p-menux=float] #tiles .tile .ls-check{position:absolute !important;right:-7px;top:-7px;margin:0 !important}
