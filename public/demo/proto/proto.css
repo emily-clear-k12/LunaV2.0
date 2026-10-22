@@ -869,10 +869,11 @@ html:not([data-p-mprog=none]) .pa-mkl span{margin-top:24px}
 /* positions */
 .pa-lpop.lpp-center{left:50% !important;top:50% !important;translate:-50% -50%}
 .pa-lpop.lpp-left,.pa-lpop.lpp-right{top:56px !important;bottom:64px;width:300px;overflow:auto}
-.pa-lpop.lpp-left{left:12px !important;border-radius:0 18px 18px 0}
-.pa-lpop.lpp-right{left:auto !important;right:12px;border-radius:18px 0 0 18px}
-.pa-lpop.lpp-bottom{left:50% !important;top:auto !important;bottom:60px;translate:-50% 0;width:min(760px,92vw);border-radius:20px 20px 12px 12px}
-.pa-lpop.lpp-bottom ol{flex-direction:row;flex-wrap:wrap;gap:8px 18px}
+.pa-lpop.lpp-left{left:14px !important}
+.pa-lpop.lpp-right{left:auto !important;right:14px}
+/* bottom: just the box, floating near the bottom, left of Astra, sized to content */
+.pa-lpop.lpp-bottom{left:auto !important;right:calc(50% + 120px);top:auto !important;bottom:64px;width:auto;max-width:min(470px,44vw)}
+.pa-lpop.lpp-bottom ol{flex-direction:row;flex-wrap:wrap;gap:8px 14px}
 /* colors */
 .pa-lpop.lpc-mod{--bg:linear-gradient(160deg,color-mix(in srgb,var(--mc) 55%,#10223c),#0e1d33 85%);--fg:#fff6e2;--acc:color-mix(in srgb,var(--mc) 40%,#ffe39a)}
 .pa-lpop.lpc-cream{--bg:linear-gradient(#fff9ea,#f5e6c4);--fg:#3b2a14;--acc:#b0701a}
@@ -949,3 +950,10 @@ html[data-p-calm=on] .pa-lpop{transition:opacity .15s !important;transform:none 
 .pa-portal.pa-ps.info-below .pa-pinfo{top:calc(var(--ph) / 2 + 12px)}
 .pa-portal.info-below.open .pa-pinfo{animation-name:paFadeUp}
 @keyframes paFadeUp{from{opacity:0;transform:translateY(-10px)}to{opacity:1;transform:none}}
+.pa-presets{margin:2px 0 8px}.pa-presets small{display:block;font:800 10px "Manrope",sans-serif;letter-spacing:.08em;text-transform:uppercase;opacity:.7;margin-bottom:4px}
+.pa-presets div{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.pa-presets button{padding:7px 6px;border-radius:10px;border:1.5px solid rgba(160,110,30,.35);background:linear-gradient(#fffaf0,#f3e3bf);font:800 11.5px "Manrope",sans-serif;color:#4a2f0c;cursor:pointer}
+.pa-presets button:hover{filter:brightness(1.05)}
+.pa-cords{position:absolute;left:0;top:0;width:1366px;height:768px;pointer-events:none}
+html[data-p-tod=night] .pa-cords{filter:brightness(.7)}
+html.pa-lpop-open .selected-module{visibility:hidden}
