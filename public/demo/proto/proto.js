@@ -16,7 +16,7 @@
   else if (q.has("proto") || q.has("p")) { s.on = true; put(s); }
   if (s.on === false) return;
 
-  var css = document.createElement("link"); css.rel = "stylesheet"; css.href = base + "proto.css?v=27"; document.head.appendChild(css);
+  var css = document.createElement("link"); css.rel = "stylesheet"; css.href = base + "proto.css?v=28"; document.head.appendChild(css);
   root.classList.add("pa", "pa-" + PAGE);
 
   var D = {
@@ -364,7 +364,7 @@
     var t = s.tod, a1 = PAGE === "a1", host = a1 ? document.getElementById("frame") : document.querySelector(".stage"); if (!host) return;
     var on = t !== "cur";
     if (a1) {
-      var key = on ? t : "base", se = s.season !== "summer" ? s.season : "", cl = !se && s.lanShape !== "cur", sea = se || cl;
+      var key = on ? t : "base", se = s.season !== "summer" ? s.season : "", po = s.pose !== "cur" || s.spot !== "cur", cl = !se && (s.lanShape !== "cur" || po), sea = se || cl;  /* posed Astra: lantern-free plate so only one Astra shows */
       /* painted plates: seasons have day/night/sunset art (sunrise = day plate + warm grade); summer uses lantern-free plates when lanterns are code-drawn */
       var tk = on ? t : "dusk", bg = document.getElementById("sceneBg");
       if (bg) bg.src = se ? "plates/seasonplate-" + se + (tk === "day" || tk === "sunrise" ? "-day" : tk === "night" ? "-night" : "") + ".jpg?v=" + (se === "winter" && (tk === "day" || tk === "sunrise") ? 3 : 2) : cl ? "plates/clean-" + tk + ".jpg?v=1" : "plates/" + key + ".jpg";
@@ -372,6 +372,7 @@
       var ac = document.getElementById("astraCut"); if (ac) { ac.src = "plates/astra-" + key + ".webp"; ac.style.visibility = sea ? "hidden" : ""; }
       var sc = document.getElementById("signCut"); if (sc) sc.src = sea ? "plates/season-astra-" + key + ".webp?v=2" : "plates/sign-" + key + ".webp";
       root.setAttribute("data-pa-sea", sea ? "on" : "off");
+      root.setAttribute("data-pa-pose", po ? "on" : "off");
       root.setAttribute("data-pa-plate", se ? se + "-" + tk : cl ? "clean-" + tk : "orig");
       root.setAttribute("data-pa-sgrade", se && tk === "sunrise" ? "sunrise" : "none");
       root.classList.remove("pa-tod-on");
@@ -974,7 +975,15 @@ var CMETA={"astra-cheer":[312,640,0.545,0.995],"astra-point":[294,640,0.48,0.994
       [].forEach.call(mk, function (m, i) { m.addEventListener("mouseenter", function () { root.classList.add("pa-hov" + i); }); m.addEventListener("mouseleave", function () { root.classList.remove("pa-hov" + i); }); }); }
     X.chains(); X.light(); X.amb(); X.sky(); X.mkLabels(); X.tint(); X.start(); X.texts(); X.intro(); X.bubAuto();
   };
-  X.layout = function () { X.go(); X.unclash(); X.badgeIn(); X.arc(); X.reveal(); X.trail(); X.progress(); X.mprog(); X.cords(); X.weather(); X.season(); X.sound(); X.marks(); X.mcard(); X.hang(); X.goNext(); X.badgeFx(); X.r3(); };
+  X.layout = function () { X.go(); X.unclash(); X.badgeIn(); X.arc(); X.reveal(); X.trail(); X.progress(); X.mprog(); X.cords(); X.weather(); X.season(); X.sound(); X.marks(); X.mcard(); X.hang(); X.goNext(); X.badgeFx(); X.r3(); X.declut(); };
+  X.declut = function () {
+    var pri = [].slice.call(document.querySelectorAll('.card,.goaltile,#act .go,aside.go,.selected-module,.pa-lpop,.pa-mtk .pa-trk,h1')).filter(function(e){var r=e.getBoundingClientRect();return r.width&&getComputedStyle(e).visibility!='hidden'}).map(function(e){return e.getBoundingClientRect()});
+    var sec = [].slice.call(document.querySelectorAll('.pa-bubble,.ls-start,.pa-mkl span,.lsb')), kept = [];
+    sec.forEach(function(e){ e.style.visibility=''; var r=e.getBoundingClientRect(); if(!r.width) return;
+      var hit=pri.concat(kept).some(function(q){return r.left<q.right-1&&r.right>q.left+1&&r.top<q.bottom-1&&r.bottom>q.top+1});
+      if(hit) e.style.visibility='hidden'; else kept.push(r); });
+  };
+  setInterval(function(){ try{X.declut()}catch(e){} }, 700);
 
   X.badgeIn = function () {
     var imgs = [].slice.call(document.querySelectorAll(".lsb i")), btns = isA1() ? [].slice.call(document.querySelectorAll("#tiles .tile")) : AD.btns || [];
@@ -1230,8 +1239,15 @@ var CMETA={"astra-cheer":[312,640,0.545,0.995],"astra-point":[294,640,0.48,0.994
       if (b.hasAttribute("data-reset")) { KEYS.forEach(function (k) { s[k] = D[k]; }); s.keep = {}; apply(); syncRange(); return; }
       if (b.hasAttribute("data-rand")) {
         var groups = {}; p.querySelectorAll(".pa-seg [data-k]").forEach(function (x) { (groups[x.getAttribute("data-k")] = groups[x.getAttribute("data-k")] || []).push(x.getAttribute("data-v")); });
-        Object.keys(groups).forEach(function (k) { if (k === "sound" || k === "autoRead" || k === "intro" || k === "sfxTap" || k === "sfxHover" || k === "sfxBadge" || k === "calm" || (s.keep && s.keep[k])) return; var v = groups[k]; s[k] = v[Math.random() * v.length | 0]; });
-        if (isD) dShuffle(true);
+        /* curated: start from defaults (A.1: from a random preset), then vary only safe looks; layout/scene/structure stay put */
+        var kept = {}; Object.keys(s.keep || {}).forEach(function (k) { if (s.keep[k]) kept[k] = s[k]; });
+        KEYS.forEach(function (k) { s[k] = D[k]; });
+        if (!isD) { var pr = PRESETS[Math.random() * PRESETS.length | 0][1]; Object.keys(pr).forEach(function (k) { s[k] = pr[k]; }); }
+        var SAFE = isD ? ["tod", "season", "goalStyle", "ttlSt", "goStyle", "color", "palette", "signIc", "arTint", "stColor", "earned", "doneLk", "curHl", "ambCol", "bFrame", "unearned", "border", "finish", "hang"]
+                       : ["tod", "ambCol", "lpDot", "lpCol", "stColor", "earned", "doneLk", "curHl", "bFrame", "unearned", "border"];
+        SAFE.forEach(function (k) { var v = groups[k]; if (v && Math.random() < .6) s[k] = v[Math.random() * v.length | 0]; });
+        if (isD && s.season !== "summer" && Math.random() < .5) s.weather = "season";
+        Object.keys(kept).forEach(function (k) { s[k] = kept[k]; });
         fix("shape"); apply(); return;
       }
       if (b.hasAttribute("data-copy")) {

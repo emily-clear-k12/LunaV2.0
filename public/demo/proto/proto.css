@@ -957,3 +957,5 @@ html[data-p-calm=on] .pa-lpop{transition:opacity .15s !important;transform:none 
 .pa-cords{position:absolute;left:0;top:0;width:1366px;height:768px;pointer-events:none}
 html[data-p-tod=night] .pa-cords{filter:brightness(.7)}
 html.pa-lpop-open .selected-module{visibility:hidden}
+/* exactly one Astra */
+html.pa-a1[data-pa-pose=on] #signCut,html.pa-a1[data-p-scene=pa] :is(#signCut,#astraCut,.pa-cords,#paMtk,.pa-astra-wrap){display:none !important}
